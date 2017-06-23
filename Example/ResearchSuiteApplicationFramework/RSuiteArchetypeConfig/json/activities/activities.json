@@ -1,0 +1,267 @@
+{
+  "activities": [
+    {
+      "identifier": "baseline",
+      "activity": {
+        "type": "activity",
+        "elements": [
+          {
+            "identifier": "introduction",
+            "type": "instruction",
+            "title": "Baseline Survey",
+            "text": "Thanks for participating!"
+          },
+          {
+            "identifier": "demographics",
+            "type": "measure",
+            "measureID": "demographics"
+          },
+          {
+            "identifier": "pss10",
+            "type": "measure",
+            "measureID": "PSS10"
+          },
+          {
+            "identifier": "PAM",
+            "type": "measure",
+            "measureID": "PAM"
+          },
+          {
+            "identifier": "YADLFull",
+            "type": "measure",
+            "measureID": "YADLFull"
+          },
+          {
+            "identifier": "locations_instruction",
+            "type": "instruction",
+            "title": "Locations",
+            "text": "The next two steps will ask for your home and work locations. These locations will be kept on your device and will not be shared with the research team. We monitor these locations to determine how much time you spend at home and at work."
+          },
+          {
+            "identifier": "home",
+            "type": "measure",
+            "measureID": "home"
+          },
+          {
+            "identifier": "work",
+            "type": "measure",
+            "measureID": "work"
+          },
+          {
+            "identifier": "notification_instruction",
+            "type": "instruction",
+            "title": "Notification Time",
+            "text": "In the next step, please enter the time that you would like to be reminded to take your daily survey"
+          },
+          {
+            "identifier": "notification_time",
+            "type": "measure",
+            "measureID": "notification_time"
+          }
+        ]
+      },
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "sendResultToServer",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "demographics",
+              "transformID": "standard"
+            }
+          },
+          {
+            "type": "sendResultToServer",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "pss10",
+              "transformID": "standard"
+            }
+          },
+          {
+            "type": "setValueInState",
+            "identifier": "baselineCompletionDate",
+            "value": {
+              "type": "special",
+              "keyword": "Now"
+            }
+          },
+          {
+            "type": "setValueInState",
+            "identifier": "YADLActivities",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "YADLFull",
+              "transformID": "identifiersForState"
+            }
+          },
+          {
+            "type": "setValueInState",
+            "identifier": "home",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "home",
+              "transformID": "valueForState"
+            }
+          },
+          {
+            "type": "setValueInState",
+            "identifier": "work",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "work",
+              "transformID": "valueForState"
+            }
+          },
+          {
+            "type": "setValueInState",
+            "identifier": "notificationTime",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "notification_time",
+              "transformID": "valueForState"
+            }
+          }
+        ],
+        "onFailure": [],
+        "finally": []
+      }
+    },
+    {
+      "identifier": "dailyStressAssessment",
+      "activity": {
+        "type": "activity",
+        "elements": [
+          {
+            "identifier": "pss4",
+            "type": "measure",
+            "measureID": "PSS4"
+          }
+        ]
+      },
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "sendResultToServer",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "pss4",
+              "transformID": "standard"
+            }
+          },
+          {
+            "type": "setValueInState",
+            "identifier": "lastDailySurveyCompletion",
+            "value": {
+              "type": "special",
+              "keyword": "Now"
+            }
+          },
+          {
+            "type": "queueActivity",
+            "activityID": "sourceQuestionaireAndRelaxation",
+            "predicate": {
+              "format": "$pssScore > $pssThreshold",
+              "substitutions": {
+                "pssScore": {
+                  "type": "resultTransform",
+                  "measureID": "pss4",
+                  "transformID": "stressScore"
+                },
+                "pssThreshold": {
+                  "type": "constant",
+                  "identifier": "stressScoreThreshold"
+                }
+              }
+            }
+          },
+
+        ],
+        "onFailure": [],
+        "finally": [
+          {
+            "type": "queueActivity",
+            "activityID": "dailyVSR"
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "sourceQuestionaireAndRelaxation",
+      "activity": {
+        "type": "activity",
+        "elements": [
+          {
+            "identifier": "StressSourceQuestionaire",
+            "type": "measure",
+            "measureID": "StressSourceQuestionaire"
+          },
+          {
+            "identifier": "BreathingTasks",
+            "type": "measure",
+            "measureID": "BreathingTask"
+          }
+        ]
+      },
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "sendResultToServer",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "demographics",
+              "transformID": "standard"
+            }
+          }
+        ],
+        "onFailure": [],
+        "finally": []
+      }
+    },
+    {
+      "identifier": "dailyVSR",
+      "activity": {
+        "type": "activity",
+        "elements": [
+          {
+            "identifier": "instruction",
+            "type": "instruction",
+            "text": "For the next two image-based tests, try and answer quickly with what comes naturally to you"
+          },
+          {
+            "identifier": "PAM",
+            "type": "measure",
+            "measureID": "PAM"
+          },
+          {
+            "identifier": "YADLSpot",
+            "type": "measure",
+            "measureID": "YADLSpot"
+          }
+        ]
+      },
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "sendResultToServer",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "pss4",
+              "transformID": "standard"
+            }
+          },
+          {
+            "type": "sendResultToServer",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "pss4",
+              "transformID": "standard"
+            }
+          }
+        ],
+        "onFailure": [],
+        "finally": []
+      }
+    }
+  ]
+}

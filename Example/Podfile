@@ -1,0 +1,19 @@
+use_frameworks!
+platform :ios, '9.0'
+
+target 'ResearchSuiteApplicationFramework_Example' do
+  pod 'ResearchSuiteApplicationFramework', :path => '../'
+
+  pod "sdlrkx"
+  pod "OhmageOMHSDK"
+  pod "OhmageOMHSDK/RSTBSupport"
+  pod "OhmageOMHSDK/RSRPSupport"
+  pod "ResearchSuiteTaskBuilder"
+  pod "ResearchSuiteResultsProcessor"
+
+  target 'ResearchSuiteApplicationFramework_Tests' do
+    inherit! :search_paths
+
+
+  end
+end

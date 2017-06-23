@@ -1,0 +1,31 @@
+{
+  "identifier": "defaultSchedule",
+  "activities": [
+    {
+      "identifier": "baseline",
+      "title": "Baseline Survey",
+      "predicate": {
+        "format": "$baselineDate == nil",
+        "substitutions": {
+          "baselineDate": {
+            "type": "valueInState",
+            "identifier": "baselineCompletionDate"
+          }
+        }
+      }
+    },
+    {
+      "identifier": "daily",
+      "title": "Daily Survey",
+      "predicate": {
+        "format": "$baselineDate != nil",
+        "substitutions": {
+          "baselineDate": {
+            "type": "valueInState",
+            "identifier": "baselineCompletionDate"
+          }
+        }
+      }
+    }
+  ]
+}

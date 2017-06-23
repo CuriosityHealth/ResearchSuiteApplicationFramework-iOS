@@ -1,0 +1,59 @@
+{
+  "state": [
+    {
+      "identifier": "baselineCompletionDate",
+      "type": "Date",
+      "default": null,
+      "protected": true
+    },
+    {
+      "identifier": "lastDailySurveyCompletion",
+      "type": "Date",
+      "default": null,
+      "protected": true
+    },
+    {
+      "identifier": "YADLActivities",
+      "type": "StringArray",
+      "default": null,
+      "protected": true
+    },
+    {
+      "identifier": "home",
+      "type": "Location",
+      "default": null,
+      "protected": true
+    },
+    {
+      "identifier": "work",
+      "type": "Location",
+      "default": null,
+      "protected": true
+    },
+    {
+      "identifier": "notificationTime",
+      "type": "TimeOfDay",
+      "default": "08:00",
+      "protected": true
+    },
+    {
+      "identifier": "isConsented",
+      "type": "Boolean",
+      "default": false,
+      "protected": false
+    }
+  ],
+  "constants": [
+    {
+      "identifier": "stressScoreThreshold",
+      "type": "Integer",
+      "value": 10
+    }
+  ],
+  "functions": [
+    {
+      "identifier": "isSignedIn",
+      "type": "Boolean"
+    }
+  ]
+}

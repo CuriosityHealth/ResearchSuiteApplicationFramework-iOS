@@ -1,0 +1,236 @@
+{
+  "measures": [
+    {
+      "identifier": "demographics",
+      "taskElement": {
+        "type": "elementFile",
+        "identifier": "demographicsFile",
+        "elementFileName": "demographics"
+      },
+      "resultTransforms": [
+        {
+          "identifier": "standard",
+          "transform": "Demographics",
+          "inputMapping": [
+            {"stepIdentifier":"gender", "parameter":"GenderChoiceResult"},
+            {"stepIdentifier":"age", "parameter":"AgeIntegerResult"},
+            {"stepIdentifier":"zip_code", "parameter":"ZipTextResult"},
+            {"stepIdentifier":"education", "parameter":"EducationChoiceResult"},
+            {"stepIdentifier":"employment_income", "parameter":"EmploymentChoiceResult"}
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "home",
+      "taskElement": {
+        "identifier": "location",
+        "type": "location",
+        "title": "Home",
+        "text": "Drop a pin at your home.",
+        "optional": "false",
+        "useCurrentLocation": true
+      },
+      "resultTransforms": [
+        {
+          "identifier": "valueForState",
+          "transform": "location",
+          "inputMapping": [
+            {"parameter":"result", "stepIdentifier":"home"}
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "work",
+      "taskElement": {
+        "identifier": "location",
+        "type": "location",
+        "title": "Work",
+        "text": "Drop a pin at your place of work.",
+        "optional": "false",
+        "useCurrentLocation": true
+      },
+      "resultTransforms": [
+        {
+          "identifier": "valueForState",
+          "transform": "location",
+          "inputMapping": [
+            {"parameter":"result", "stepIdentifier":"work"}
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "notification_time",
+      "taskElement": {
+          "identifier":"notification_time",
+          "type":"timePicker",
+          "text":"Please choose when you would like to be reminded to perform your daily survey.",
+          "optional": false
+      },
+      "resultTransforms": [
+        {
+          "identifier": "valueForState",
+          "transform": "timeOfDay",
+          "inputMapping": [
+            {"parameter":"result", "stepIdentifier":"notification_time"}
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "PAM",
+      "taskElement": {
+        "identifier": "PAM",
+        "type": "PAM"
+      },
+      "resultTransforms": [
+        {
+          "identifier": "standard",
+          "transform": "PAMRaw",
+          "inputMapping": [
+            {"stepIdentifier":"PAM", "parameter":"result"},
+            {
+              "parameter": "schemaID",
+              "constant": {
+                "namespace": "cornell",
+                "name": "photographic-affect-meter",
+                "version": "1.0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "YADLFull",
+      "taskElement": {
+        "type": "elementFile",
+        "identifier": "YADLFull",
+        "elementFileName": "YADLFull"
+      },
+      "resultTransforms": [
+        {
+          "identifier": "identifiersForState",
+          "transform": "YADLFullModerateOrHardIdentifiers",
+          "inputMapping": [
+            {"parameter":"results", "stepIdentifierRegex":"yadl_full\\..*"}
+          ]
+        },
+        {
+          "identifier": "standard",
+          "transform": "YADLFullRaw",
+          "inputMapping": [
+            {
+              "parameter":"results",
+              "stepIdentifierRegex":"yadl_full\\..*"
+            },
+            {
+              "parameter": "schemaID",
+              "constant": {
+                "namespace": "Cornell",
+                "name": "yadl-full-assessment-dance",
+                "version": "1.0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "YADLSpot",
+      "taskElement": {
+        "type": "elementFile",
+        "identifier": "YADLSpot",
+        "elementFileName": "YADLSpot"
+      },
+      "resultTransforms": [
+        {
+          "identifier": "standard",
+          "transform": "YADLSpotRaw",
+          "inputMapping": [
+            {
+              "parameter":"results",
+              "stepIdentifierRegex":"yadl_spot\\..*"
+            },
+            {
+              "parameter": "schemaID",
+              "constant": {
+                "namespace": "Cornell",
+                "name": "yadl-spot-assessment-dance",
+                "version": "1.0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "PSS4",
+      "taskElement": {
+        "type": "elementFile",
+        "identifier": "pss4",
+        "elementFileName": "pss4"
+      },
+      "resultTransforms": [
+        {
+          "identifier": "stressScore",
+          "transform": "PSSScore",
+          "inputMapping": [
+            {"parameter":"results", "stepIdentifierRegex":"pss4\\..*"}
+          ]
+        },
+        {
+          "identifier": "standard",
+          "transform": "PSSRaw",
+          "inputMapping": [
+            {"parameter":"results", "stepIdentifierRegex":"pss4\\..*"}
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "PSS10",
+      "taskElement": {
+        "type": "elementFile",
+        "identifier": "pss10",
+        "elementFileName": "pss10"
+      },
+      "resultTransforms": [
+        {
+          "identifier": "stressScore",
+          "transform": "PSSScore",
+          "inputMapping": [
+            {"parameter":"results", "stepIdentifierRegex":"pss10\\..*"}
+          ]
+        },
+        {
+          "identifier": "standard",
+          "transform": "PSSRaw",
+          "inputMapping": [
+            {"parameter":"results", "stepIdentifierRegex":"pss10\\..*"}
+          ]
+        }
+      ]
+    },
+    {
+      "identifier": "StressSourceQuestionaire",
+      "taskElement": {
+        "type": "elementFile",
+        "identifier": "stressSourceQuestionaire",
+        "elementFileName": "stressSourceQuestionaire"
+      },
+      "resultTransforms": []
+    },
+    {
+      "identifier": "BreathingTask",
+      "taskElement": {
+        "type": "elementFile",
+        "identifier": "relaxationBreathingTask",
+        "elementFileName": "relaxationBreathingTask"
+      },
+      "resultTransforms": []
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "identifier": "main",
+  "type": "tabBar",
+  "onLoad": [],
+  "tabs": [
+    {
+      "type": "list",
+      "title": "Surveys",
+      "shortTitle": "Surveys",
+      "items": [
+        {
+          "identifier": "baseline",
+          "title": "Baseline Survey",
+          "predicate": {
+            "format": "$baselineDate == nil",
+            "substitutions": {
+              "baselineDate": {
+                "type": "valueInState",
+                "identifier": "baselineCompletionDate"
+              }
+            }
+          },
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "baseline"
+            }
+          ]
+        },
+        {
+          "identifier": "daily",
+          "title": "Daily Survey",
+          "predicate": {
+            "format": "$baselineDate != nil",
+            "substitutions": {
+              "baselineDate": {
+                "type": "valueInState",
+                "identifier": "baselineCompletionDate"
+              }
+            }
+          },
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "dailyStressAssessment"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "list",
+      "title": "Settings",
+      "shortTitle": "Settings",
+      "items": [
+        {
+          "identifier": "logOut",
+          "title": "Log Out",
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "baseline"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

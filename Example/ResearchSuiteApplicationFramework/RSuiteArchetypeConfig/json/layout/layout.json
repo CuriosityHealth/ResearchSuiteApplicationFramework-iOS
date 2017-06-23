@@ -1,0 +1,51 @@
+{
+  "layouts": [
+    {
+      "identifier": "consent",
+      "layout": "consent_layout",
+      "predicate": {
+        "format": "$isConsented == false",
+        "substitutions": {
+          "isConsented": {
+            "type": "state",
+            "identifier": "isConsented"
+          }
+        }
+      }
+    },
+    {
+      "identifier": "onboarding",
+      "layout": "onboarding_layout",
+      "predicate": {
+        "format": "$isConsented == true AND $isSignedIn == false",
+        "substitutions": {
+          "isConsented": {
+            "type": "state",
+            "identifier": "isConsented"
+          },
+          "isSignedIn": {
+            "type": "function",
+            "identifier": "isSignedIn"
+          }
+        }
+      }
+    },
+    {
+      "identifier": "main",
+      "layout": "main_layout",
+      "predicate": {
+        "format": "$isConsented == true AND $isSignedIn == true",
+        "substitutions": {
+          "isConsented": {
+            "type": "state",
+            "identifier": "isConsented"
+          },
+          "isSignedIn": {
+            "type": "function",
+            "identifier": "isSignedIn"
+          }
+        }
+      }
+    }
+  ]
+}
