@@ -115,7 +115,8 @@
           "identifier": "identifiersForState",
           "transform": "YADLFullModerateOrHardIdentifiers",
           "inputMapping": [
-            {"parameter":"results", "stepIdentifierRegex":"yadl_full\\..*"}
+            {"parameter":"results", "stepIdentifierRegex":"yadl_full\\..*"},
+            {"parameter": "acceptableAnswers", "constant": ["moderate", "hard"]}
           ]
         },
         {

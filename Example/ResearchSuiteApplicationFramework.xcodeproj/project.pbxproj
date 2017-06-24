@@ -16,6 +16,8 @@
 		83131D323BECC7E820DEF9A4 /* Pods_ResearchSuiteApplicationFramework_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C461E2CAA5BFD2B3F48DC4 /* Pods_ResearchSuiteApplicationFramework_Tests.framework */; };
 		BFA570A4C40479D5637ACF6C /* Pods_ResearchSuiteApplicationFramework_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49DF876BDFF34AD454C0B740 /* Pods_ResearchSuiteApplicationFramework_Example.framework */; };
 		E21FE5D71EFD8769006F6B60 /* RSuiteArchetypeConfig in Resources */ = {isa = PBXBuildFile; fileRef = E21FE5D61EFD8769006F6B60 /* RSuiteArchetypeConfig */; };
+		E21FE5E11EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE5E01EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift */; };
+		E21FE5E31EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE5E21EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,8 @@
 		BB3177DB5C6941729685DBCA /* Pods-ResearchSuiteApplicationFramework_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ResearchSuiteApplicationFramework_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-ResearchSuiteApplicationFramework_Example/Pods-ResearchSuiteApplicationFramework_Example.release.xcconfig"; sourceTree = "<group>"; };
 		C11FC12D6F517515AA375EB7 /* ResearchSuiteApplicationFramework.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = ResearchSuiteApplicationFramework.podspec; path = ../ResearchSuiteApplicationFramework.podspec; sourceTree = "<group>"; };
 		E21FE5D61EFD8769006F6B60 /* RSuiteArchetypeConfig */ = {isa = PBXFileReference; lastKnownFileType = folder; path = RSuiteArchetypeConfig; sourceTree = "<group>"; };
+		E21FE5E01EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "YADLFullRaw+ValueConvertible.swift"; sourceTree = "<group>"; };
+		E21FE5E21EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YADLFullModerateOrHardIdentifiers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +102,8 @@
 				E21FE5D61EFD8769006F6B60 /* RSuiteArchetypeConfig */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				E21FE5E01EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift */,
+				E21FE5E21EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -365,7 +371,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E21FE5E11EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				E21FE5E31EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -447,7 +455,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -487,7 +495,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

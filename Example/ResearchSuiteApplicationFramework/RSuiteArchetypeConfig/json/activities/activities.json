@@ -2,64 +2,61 @@
   "activities": [
     {
       "identifier": "baseline",
-      "activity": {
-        "type": "activity",
-        "elements": [
-          {
-            "identifier": "introduction",
-            "type": "instruction",
-            "title": "Baseline Survey",
-            "text": "Thanks for participating!"
-          },
-          {
-            "identifier": "demographics",
-            "type": "measure",
-            "measureID": "demographics"
-          },
-          {
-            "identifier": "pss10",
-            "type": "measure",
-            "measureID": "PSS10"
-          },
-          {
-            "identifier": "PAM",
-            "type": "measure",
-            "measureID": "PAM"
-          },
-          {
-            "identifier": "YADLFull",
-            "type": "measure",
-            "measureID": "YADLFull"
-          },
-          {
-            "identifier": "locations_instruction",
-            "type": "instruction",
-            "title": "Locations",
-            "text": "The next two steps will ask for your home and work locations. These locations will be kept on your device and will not be shared with the research team. We monitor these locations to determine how much time you spend at home and at work."
-          },
-          {
-            "identifier": "home",
-            "type": "measure",
-            "measureID": "home"
-          },
-          {
-            "identifier": "work",
-            "type": "measure",
-            "measureID": "work"
-          },
-          {
-            "identifier": "notification_instruction",
-            "type": "instruction",
-            "title": "Notification Time",
-            "text": "In the next step, please enter the time that you would like to be reminded to take your daily survey"
-          },
-          {
-            "identifier": "notification_time",
-            "type": "measure",
-            "measureID": "notification_time"
-          }
-        ]
-      },
+      "elements": [
+        {
+          "identifier": "introduction",
+          "type": "instruction",
+          "title": "Baseline Survey",
+          "text": "Thanks for participating!"
+        },
+        {
+          "identifier": "demographics",
+          "type": "measure",
+          "measureID": "demographics"
+        },
+        {
+          "identifier": "pss10",
+          "type": "measure",
+          "measureID": "PSS10"
+        },
+        {
+          "identifier": "PAM",
+          "type": "measure",
+          "measureID": "PAM"
+        },
+        {
+          "identifier": "YADLFull",
+          "type": "measure",
+          "measureID": "YADLFull"
+        },
+        {
+          "identifier": "locations_instruction",
+          "type": "instruction",
+          "title": "Locations",
+          "text": "The next two steps will ask for your home and work locations. These locations will be kept on your device and will not be shared with the research team. We monitor these locations to determine how much time you spend at home and at work."
+        },
+        {
+          "identifier": "home",
+          "type": "measure",
+          "measureID": "home"
+        },
+        {
+          "identifier": "work",
+          "type": "measure",
+          "measureID": "work"
+        },
+        {
+          "identifier": "notification_instruction",
+          "type": "instruction",
+          "title": "Notification Time",
+          "text": "In the next step, please enter the time that you would like to be reminded to take your daily survey"
+        },
+        {
+          "identifier": "notification_time",
+          "type": "measure",
+          "measureID": "notification_time"
+        }
+      ],
       "onCompletion": {
         "onSuccess": [
           {
@@ -129,16 +126,13 @@
     },
     {
       "identifier": "dailyStressAssessment",
-      "activity": {
-        "type": "activity",
-        "elements": [
-          {
-            "identifier": "pss4",
-            "type": "measure",
-            "measureID": "PSS4"
-          }
-        ]
-      },
+      "elements": [
+        {
+          "identifier": "pss4",
+          "type": "measure",
+          "measureID": "PSS4"
+        }
+      ],
       "onCompletion": {
         "onSuccess": [
           {
@@ -151,7 +145,7 @@
           },
           {
             "type": "setValueInState",
-            "identifier": "lastDailySurveyCompletion",
+            "valueIdentifier": "lastDailySurveyCompletion",
             "value": {
               "type": "special",
               "keyword": "Now"
@@ -174,8 +168,7 @@
                 }
               }
             }
-          },
-
+          }
         ],
         "onFailure": [],
         "finally": [
@@ -188,21 +181,18 @@
     },
     {
       "identifier": "sourceQuestionaireAndRelaxation",
-      "activity": {
-        "type": "activity",
-        "elements": [
-          {
-            "identifier": "StressSourceQuestionaire",
-            "type": "measure",
-            "measureID": "StressSourceQuestionaire"
-          },
-          {
-            "identifier": "BreathingTasks",
-            "type": "measure",
-            "measureID": "BreathingTask"
-          }
-        ]
-      },
+      "elements": [
+        {
+          "identifier": "StressSourceQuestionaire",
+          "type": "measure",
+          "measureID": "StressSourceQuestionaire"
+        },
+        {
+          "identifier": "BreathingTasks",
+          "type": "measure",
+          "measureID": "BreathingTask"
+        }
+      ],
       "onCompletion": {
         "onSuccess": [
           {
@@ -220,26 +210,23 @@
     },
     {
       "identifier": "dailyVSR",
-      "activity": {
-        "type": "activity",
-        "elements": [
-          {
-            "identifier": "instruction",
-            "type": "instruction",
-            "text": "For the next two image-based tests, try and answer quickly with what comes naturally to you"
-          },
-          {
-            "identifier": "PAM",
-            "type": "measure",
-            "measureID": "PAM"
-          },
-          {
-            "identifier": "YADLSpot",
-            "type": "measure",
-            "measureID": "YADLSpot"
-          }
-        ]
-      },
+      "elements": [
+        {
+          "identifier": "instruction",
+          "type": "instruction",
+          "text": "For the next two image-based tests, try and answer quickly with what comes naturally to you"
+        },
+        {
+          "identifier": "PAM",
+          "type": "measure",
+          "measureID": "PAM"
+        },
+        {
+          "identifier": "YADLSpot",
+          "type": "measure",
+          "measureID": "YADLSpot"
+        }
+      ],
       "onCompletion": {
         "onSuccess": [
           {
@@ -255,6 +242,63 @@
             "value": {
               "type": "resultTransform",
               "measureID": "pss4",
+              "transformID": "standard"
+            }
+          }
+        ],
+        "onFailure": [],
+        "finally": []
+      }
+    },
+    {
+      "identifier": "yadlFull",
+      "elements": [
+        {
+          "identifier": "YADLFull",
+          "type": "measure",
+          "measureID": "YADLFull"
+        }
+      ],
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "sendResultToServer",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "YADLFull",
+              "transformID": "standard"
+            }
+          },
+          {
+            "type": "setValueInState",
+            "identifier": "YADLActivities",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "YADLFull",
+              "transformID": "identifiersForState"
+            }
+          }
+        ],
+        "onFailure": [],
+        "finally": []
+      }
+    },
+    {
+      "identifier": "yadlSpot",
+      "elements": [
+        {
+          "identifier": "YADLSpot",
+          "type": "measure",
+          "measureID": "YADLSpot"
+        }
+      ],
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "sendResultToServer",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "YADLSpot",
               "transformID": "standard"
             }
           }

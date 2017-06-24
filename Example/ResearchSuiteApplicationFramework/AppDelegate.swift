@@ -7,15 +7,19 @@
 //
 
 import UIKit
+import ResearchSuiteApplicationFramework
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: RSApplicationDelegate {
 
-    var window: UIWindow?
-
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        
+        self.store?.dispatch(RSActionCreators.addMeasuresFromFile(fileName: "measures", inDirectory: "RSuiteArchetypeConfig/json/measures"))
+        self.store?.dispatch(RSActionCreators.addActivitiesFromFile(fileName: "activities", inDirectory: "RSuiteArchetypeConfig/json/activities"))
+        
         return true
     }
 

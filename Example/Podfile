@@ -9,7 +9,7 @@ target 'ResearchSuiteApplicationFramework_Example' do
   pod "OhmageOMHSDK/RSTBSupport"
   pod "OhmageOMHSDK/RSRPSupport"
   pod "ResearchSuiteTaskBuilder"
-  pod "ResearchSuiteResultsProcessor"
+  pod "ResearchSuiteResultsProcessor", :path => '~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios'
 
   target 'ResearchSuiteApplicationFramework_Tests' do
     inherit! :search_paths

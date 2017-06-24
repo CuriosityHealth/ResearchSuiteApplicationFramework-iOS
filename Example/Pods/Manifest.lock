@@ -89,13 +89,15 @@ DEPENDENCIES:
   - OhmageOMHSDK/RSRPSupport
   - OhmageOMHSDK/RSTBSupport
   - ResearchSuiteApplicationFramework (from `../`)
-  - ResearchSuiteResultsProcessor
+  - ResearchSuiteResultsProcessor (from `~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios`)
   - ResearchSuiteTaskBuilder
   - sdlrkx
 
 EXTERNAL SOURCES:
   ResearchSuiteApplicationFramework:
     :path: ../
+  ResearchSuiteResultsProcessor:
+    :path: ~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios
 
 SPEC CHECKSUMS:
   Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
@@ -104,12 +106,12 @@ SPEC CHECKSUMS:
   OMHClient: 42414617fe3e38724ef237d42a62411c7129c27d
   ResearchKit: 3533ea3a2270e4ed7ff830e19755dc959fdfd430
   ResearchSuiteApplicationFramework: 297a9b2dacf1c224d0272d9a0aea0b81ca07085c
-  ResearchSuiteResultsProcessor: 6d1e7d44fd7be8a9801377616cc1cba20e6fe590
+  ResearchSuiteResultsProcessor: 2a279aff2ab7b633d1b66046a81e261b44011106
   ResearchSuiteTaskBuilder: 661dad5fde37d413a2d5d0daf70751351649d630
   ReSwift: f0255f4b4f2dacd12c5d97d34d13fc5dad6d6371
   sdlrkx: cca6b86889540d38f94b28614291acabad7924f0
   SecureQueue: 3aa95a5bba534c3aa938ae634333cbcf5919060b
 
-PODFILE CHECKSUM: 48ec2b8ff931d38157e8d93bc28ead5e1cb07b6a
+PODFILE CHECKSUM: bf96575014fdadc3129d2eaca060eb4db9f989a9
 
 COCOAPODS: 1.2.1
