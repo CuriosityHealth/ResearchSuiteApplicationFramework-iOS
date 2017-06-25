@@ -8,17 +8,24 @@
 
 import UIKit
 import ResearchSuiteApplicationFramework
+import ResearchSuiteTaskBuilder
+import sdlrkx
 
 @UIApplicationMain
 class AppDelegate: RSApplicationDelegate {
+    
+    static var appDelegate: AppDelegate! {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
 
     override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         super.application(application, didFinishLaunchingWithOptions: launchOptions)
         
-        self.store?.dispatch(RSActionCreators.addMeasuresFromFile(fileName: "measures", inDirectory: "RSuiteArchetypeConfig/json/measures"))
-        self.store?.dispatch(RSActionCreators.addActivitiesFromFile(fileName: "activities", inDirectory: "RSuiteArchetypeConfig/json/activities"))
+        self.store?.dispatch(RSActionCreators.addMeasuresFromFile(fileName: "measures"))
+        self.store?.dispatch(RSActionCreators.addActivitiesFromFile(fileName: "activities"))
+        self.store?.dispatch(RSActionCreators.addStateValuesFromFile(fileName: "values"))
         
         return true
     }
@@ -43,6 +50,13 @@ class AppDelegate: RSApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    open override var stepGeneratorServices: [RSTBStepGenerator] {
+        return super.stepGeneratorServices + [
+            YADLFullStepGenerator(),
+            YADLSpotStepGenerator()
+        ]
     }
 
 

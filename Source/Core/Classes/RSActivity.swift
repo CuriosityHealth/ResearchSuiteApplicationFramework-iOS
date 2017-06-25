@@ -20,13 +20,13 @@ public class RSActivity: Decodable {
     }
     
     let identifier: String
-    let elements: [RSActivityElement]
+    let elements: [JSON]
     let onCompletion: OnCompletionStruct
     
     required public init?(json: JSON) {
         
         guard let identifier: String = "identifier" <~~ json,
-            let elements: [RSActivityElement] = "elements" <~~ json,
+            let elements: [JSON] = "elements" <~~ json,
             let onCompletion: JSON = "onCompletion" <~~ json,
             let onSuccess: [JSON] = "onSuccess" <~~ onCompletion,
             let onFailure: [JSON] = "onFailure" <~~ onCompletion,

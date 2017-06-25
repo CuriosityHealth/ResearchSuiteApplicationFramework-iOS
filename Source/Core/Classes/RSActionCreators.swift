@@ -12,6 +12,28 @@ import Gloss
 
 public class RSActionCreators: NSObject {
     
+    public static func addStateValuesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return { state, store in
+            
+            guard let json = RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON,
+                let stateValues: [RSStateValue] = "state" <~~ json else {
+                    return nil
+            }
+            
+            stateValues.map({ (stateValue) -> AddStateValueAction in
+                return AddStateValueAction(stateValue: stateValue)
+            }).forEach { (action) in
+                store.dispatch(action)
+            }
+            
+            
+            
+            return nil
+        }
+        
+    }
+    
     public static func addMeasuresFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return { state, store in
@@ -50,6 +72,45 @@ public class RSActionCreators: NSObject {
             return nil
         }
         
+    }
+    
+    public static func queueActivity(activityID: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return QueueActivityAction(uuid: UUID(), activityID: activityID)
+        }
+    }
+    
+    public static func setValueInState(key: String, value: NSObject?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+
+            //do some checks first
+            
+            guard let stateValueMetadata = RSStateSelectors.getStateValueMetadata(state, for: key) else {
+                return nil
+            }
+            
+            guard let value = value else {
+                if stateValueMetadata.protected {
+                    return SetValueInProtectedStorage(key: key, value: nil)
+                }
+                else {
+                    return SetValueInUnprotectedStorage(key: key, value: nil)
+                }
+            }
+            
+            //check to see if value can be converted to specified type
+            //value is of type NSObject at this point
+            if RSStateValue.typeMatches(type: stateValueMetadata.type, object: value) {
+                if stateValueMetadata.protected {
+                    return SetValueInProtectedStorage(key: key, value: value)
+                }
+                else {
+                    return SetValueInUnprotectedStorage(key: key, value: value)
+                }
+            }
+            
+            return nil
+        }
     }
 
 }

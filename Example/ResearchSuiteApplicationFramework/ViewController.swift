@@ -7,18 +7,37 @@
 //
 
 import UIKit
+import ResearchSuiteApplicationFramework
 
 class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        let activityManager: RSActivityManager = AppDelegate.appDelegate.activityManager
+        
+        activityManager.setDelegate(delegate: self)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    
+    @IBAction func yadlFullTapped(_ sender: Any) {
+        
+        let store = AppDelegate.appDelegate.store!
+        store.dispatch(RSActionCreators.queueActivity(activityID: "yadlFull"))
+        
+    }
+    
+    @IBAction func yadlSpotTapped(_ sender: Any) {
+        
+        let store = AppDelegate.appDelegate.store!
+        store.dispatch(RSActionCreators.queueActivity(activityID: "yadlSpot"))
+        
+    }
 }
 
