@@ -152,8 +152,8 @@
           "transform": "YADLSpotRaw",
           "inputMapping": [
             {
-              "parameter":"results",
-              "stepIdentifierRegex":"yadl_spot\\..*"
+              "parameter":"result",
+              "stepIdentifier":"yadl_spot"
             },
             {
               "parameter": "schemaID",

@@ -39,5 +39,13 @@ class ViewController: UIViewController {
         store.dispatch(RSActionCreators.queueActivity(activityID: "yadlSpot"))
         
     }
+    
+    @IBAction func bothTapped(_ sender: Any) {
+        
+        let store = RSApplicationDelegate.appDelegate.store!
+        store.dispatch(RSActionCreators.queueActivity(activityID: "yadlFull"))
+        store.dispatch(RSActionCreators.queueActivity(activityID: "yadlSpot"))
+        
+    }
 }
 

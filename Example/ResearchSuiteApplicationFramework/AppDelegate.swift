@@ -60,8 +60,9 @@ class AppDelegate: RSApplicationDelegate {
     
     open override var frontEndResultTransformers: [RSRPFrontEndTransformer.Type] {
         return [
-            YADLFullRaw.self,
+            YADLFullRawRegex.self,
             YADLSpotRaw.self,
+            YADLFullModerateOrHardIdentifiers.self
         ]
     }
 

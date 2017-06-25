@@ -15,7 +15,6 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		83131D323BECC7E820DEF9A4 /* Pods_ResearchSuiteApplicationFramework_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9C461E2CAA5BFD2B3F48DC4 /* Pods_ResearchSuiteApplicationFramework_Tests.framework */; };
 		BFA570A4C40479D5637ACF6C /* Pods_ResearchSuiteApplicationFramework_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49DF876BDFF34AD454C0B740 /* Pods_ResearchSuiteApplicationFramework_Example.framework */; };
-		E21FE5E11EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE5E01EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift */; };
 		E21FE5E31EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE5E21EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift */; };
 		E21FE6301EFF7259006F6B60 /* activities.json in Resources */ = {isa = PBXBuildFile; fileRef = E21FE62F1EFF7259006F6B60 /* activities.json */; };
 		E21FE63A1EFF7275006F6B60 /* demographics.json in Resources */ = {isa = PBXBuildFile; fileRef = E21FE6321EFF7275006F6B60 /* demographics.json */; };
@@ -28,6 +27,7 @@
 		E21FE6411EFF7275006F6B60 /* YADLSpot.json in Resources */ = {isa = PBXBuildFile; fileRef = E21FE6391EFF7275006F6B60 /* YADLSpot.json */; };
 		E21FE6441EFF7287006F6B60 /* values.json in Resources */ = {isa = PBXBuildFile; fileRef = E21FE6431EFF7287006F6B60 /* values.json */; };
 		E21FE6481EFF765C006F6B60 /* YADL.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E21FE6471EFF765C006F6B60 /* YADL.xcassets */; };
+		E21FE6561F006C2B006F6B60 /* YADLFullRawRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,7 +60,6 @@
 		A9C461E2CAA5BFD2B3F48DC4 /* Pods_ResearchSuiteApplicationFramework_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ResearchSuiteApplicationFramework_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB3177DB5C6941729685DBCA /* Pods-ResearchSuiteApplicationFramework_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ResearchSuiteApplicationFramework_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-ResearchSuiteApplicationFramework_Example/Pods-ResearchSuiteApplicationFramework_Example.release.xcconfig"; sourceTree = "<group>"; };
 		C11FC12D6F517515AA375EB7 /* ResearchSuiteApplicationFramework.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = ResearchSuiteApplicationFramework.podspec; path = ../ResearchSuiteApplicationFramework.podspec; sourceTree = "<group>"; };
-		E21FE5E01EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "YADLFullRaw+ValueConvertible.swift"; sourceTree = "<group>"; };
 		E21FE5E21EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YADLFullModerateOrHardIdentifiers.swift; sourceTree = "<group>"; };
 		E21FE62F1EFF7259006F6B60 /* activities.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = activities.json; path = RSuiteArchetypeConfig/json/activities/activities.json; sourceTree = "<group>"; };
 		E21FE6321EFF7275006F6B60 /* demographics.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = demographics.json; path = RSuiteArchetypeConfig/json/measures/demographics.json; sourceTree = "<group>"; };
@@ -73,6 +72,7 @@
 		E21FE6391EFF7275006F6B60 /* YADLSpot.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = YADLSpot.json; path = RSuiteArchetypeConfig/json/measures/YADLSpot.json; sourceTree = "<group>"; };
 		E21FE6431EFF7287006F6B60 /* values.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = values.json; path = RSuiteArchetypeConfig/json/values.json; sourceTree = "<group>"; };
 		E21FE6471EFF765C006F6B60 /* YADL.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = YADL.xcassets; sourceTree = "<group>"; };
+		E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YADLFullRawRegex.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,8 +122,8 @@
 				E21FE62B1EFF7237006F6B60 /* config */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
-				E21FE5E01EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift */,
 				E21FE5E21EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift */,
+				E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -459,8 +459,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E21FE5E11EFD9AE7006F6B60 /* YADLFullRaw+ValueConvertible.swift in Sources */,
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				E21FE6561F006C2B006F6B60 /* YADLFullRawRegex.swift in Sources */,
 				E21FE5E31EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);

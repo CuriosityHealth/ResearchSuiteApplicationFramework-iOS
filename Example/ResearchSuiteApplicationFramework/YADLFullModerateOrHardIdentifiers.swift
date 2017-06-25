@@ -34,13 +34,13 @@ open class YADLFullModerateOrHardIdentifiers: RSRPIntermediateResult, RSRPFrontE
         parameters: [String: AnyObject]
         ) -> RSRPIntermediateResult? {
 
-        guard let acceptableAnswers = parameters["acceptableAnswers"] as? [String] else {
+        guard let acceptableAnswers = parameters["acceptableAnswers"] as? [String],
+            let stepResults = parameters["results"] as? [ORKStepResult] else {
             return nil
         }
         
-        let results: [(String, String)] = parameters.flatMap { (pair) -> (String, String)? in
-            guard let stepResult = pair.value as? ORKStepResult,
-                let choiceResult = stepResult.firstResult as? ORKChoiceQuestionResult,
+        let results: [(String, String)] = stepResults.flatMap { (stepResult) -> (String, String)? in
+            guard let choiceResult = stepResult.firstResult as? ORKChoiceQuestionResult,
                 let answer = choiceResult.choiceAnswers?.first as? String,
                 let identifier = stepResult.identifier.components(separatedBy: ".").last else {
                     return nil

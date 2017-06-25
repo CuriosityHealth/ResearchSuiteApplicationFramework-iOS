@@ -38,11 +38,20 @@ public class RSReducer: NSObject {
                 let newActivityQueue = state.activityQueue + [pair]
                 return RSState.newState(fromState: state, activityQueue: newActivityQueue)
                 
-            case let presentActivityAction as QueueActivityAction:
+            case let dequeueActivityAction as DequeueActivityAction:
                 
-                let pair = (presentActivityAction.uuid, presentActivityAction.activityID)
-                let newActivityQueue = state.activityQueue.filter { $0.0 != presentActivityAction.uuid }
+                let newActivityQueue = state.activityQueue.filter { $0.0 != dequeueActivityAction.uuid }
+                return RSState.newState(fromState: state, activityQueue: newActivityQueue)
+                
+            case let setPresentedActivityAction as SetPresentedActivityAction:
+                
+                let pair = (setPresentedActivityAction.uuid, setPresentedActivityAction.activityID)
+                let newActivityQueue = state.activityQueue.filter { $0.0 != setPresentedActivityAction.uuid }
                 return RSState.newState(fromState: state, activityQueue: newActivityQueue, presentedActivity: pair)
+                
+            case let _ as ClearPresentedActivityAction:
+            
+                return RSState.newState(fromState: state, presentedActivity: nil as (UUID, String)?)
 
             default:
                 return state

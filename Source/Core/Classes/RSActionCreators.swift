@@ -80,6 +80,18 @@ public class RSActionCreators: NSObject {
         }
     }
     
+    public static func presentedActivity(uuid: UUID, activityID: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return SetPresentedActivityAction(uuid: uuid, activityID: activityID)
+        }
+    }
+    
+    public static func dismissedActivity(uuid: UUID, activityID: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return ClearPresentedActivityAction()
+        }
+    }
+    
     public static func setValueInState(key: String, value: NSObject?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
 

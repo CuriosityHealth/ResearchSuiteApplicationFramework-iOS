@@ -11,7 +11,7 @@ import UIKit
 public class RSFileStateManager: RSStateManager {
     
     let filePath: String
-    let fileProtectionType: FileProtectionType
+    let fileProtection: NSData.WritingOptions
     
     var map: [String: NSSecureCoding]
     
@@ -20,10 +20,12 @@ public class RSFileStateManager: RSStateManager {
     let fileQueue: DispatchQueue
     static let fileQueueIdentifier = "RSFileStateManager.FileQueue"
     
-    init(filePath: String, fileProtectionType: FileProtectionType) {
+    init(filePath: String, fileProtection: Data.WritingOptions) {
         
-        self.filePath = filePath
-        self.fileProtectionType = fileProtectionType
+        self.filePath = RSFileStateManager.generateFilePath(filePath: filePath)!
+        print(self.filePath)
+        
+        self.fileProtection = fileProtection
         
         do {
             self.map = try RSFileStateManager.loadMap(filePath: filePath)
@@ -36,24 +38,33 @@ public class RSFileStateManager: RSStateManager {
         self.fileQueue = DispatchQueue(label: RSFileStateManager.fileQueueIdentifier)
     }
     
+    private static func generateFilePath(filePath: String) -> String? {
+        guard let documentsPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true).first else {
+            return nil
+        }
+        
+        return documentsPath.appending("/\(filePath)")
+    }
+    
     private static func loadMap(filePath: String) throws -> [String: NSSecureCoding] {
         
-        guard let data = FileManager.default.contents(atPath: filePath) else {
+        guard let fullFilePath = RSFileStateManager.generateFilePath(filePath: filePath),
+            let data = FileManager.default.contents(atPath: fullFilePath) else {
             return [:]
         }
         
         let secureUnarchiver = NSKeyedUnarchiver(forReadingWith: data)
         secureUnarchiver.requiresSecureCoding = true
         
-        return secureUnarchiver.decodeObject(of: [NSArray.self], forKey: NSKeyedArchiveRootObjectKey) as? [String: NSSecureCoding] ?? [:]
+        return secureUnarchiver.decodeObject(of: [NSDictionary.self, NSArray.self], forKey: NSKeyedArchiveRootObjectKey) as? [String: NSSecureCoding] ?? [:]
         
     }
     
-    private static func saveMap(map: [String: NSSecureCoding], filePath: String, fileProtectionType: FileProtectionType) throws {
+    private static func saveMap(map: [String: NSSecureCoding], filePath: String, fileProtection: NSData.WritingOptions) throws {
 
         let fileURL = URL(fileURLWithPath: filePath)
         let data: Data = NSKeyedArchiver.archivedData(withRootObject: map)
-        try data.write(to: fileURL, options: Data.WritingOptions.completeFileProtectionUntilFirstUserAuthentication)
+        try data.write(to: fileURL, options: fileProtection)
         
     }
     
@@ -62,9 +73,11 @@ public class RSFileStateManager: RSStateManager {
         self.memoryQueue.sync {
             self.map[forKey] = value
             
+            let map = self.map
+            
             self.fileQueue.async {
                 do {
-                    try RSFileStateManager.saveMap(map: self.map, filePath: self.filePath, fileProtectionType: self.fileProtectionType)
+                    try RSFileStateManager.saveMap(map: map, filePath: self.filePath, fileProtection: self.fileProtection)
                 } catch let error as NSError {
                     print(error.localizedDescription)
                 }

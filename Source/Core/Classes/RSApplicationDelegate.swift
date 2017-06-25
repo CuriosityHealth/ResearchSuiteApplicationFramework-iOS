@@ -22,6 +22,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     public var taskBuilder: RSTBTaskBuilder!
     
     public var resultsProcessorFrontEnd: RSRPFrontEndService!
+    public var persistentStoreSubscriber: RSStatePersistentStoreSubscriber!
     
     public static var appDelegate: RSApplicationDelegate! {
         return UIApplication.shared.delegate as! RSApplicationDelegate
@@ -70,7 +71,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         //initialize store
-        self.storeManager = RSStoreManager(initialState: nil)
+        self.persistentStoreSubscriber = RSStatePersistentStoreSubscriber(
+            protectedStorageManager: RSFileStateManager(filePath: "protected_state", fileProtection: Data.WritingOptions.completeFileProtectionUnlessOpen),
+            unprotectedStorageManager: RSFileStateManager(filePath: "unprotected_state", fileProtection: Data.WritingOptions.noFileProtection)
+        )
+        
+        self.storeManager = RSStoreManager(initialState: self.persistentStoreSubscriber.loadState())
         self.taskBuilderStateHelper = RSTaskBuilderStateHelper(store: self.store)
         self.taskBuilder = RSTBTaskBuilder(
             stateHelper: self.taskBuilderStateHelper,
@@ -79,6 +85,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             answerFormatGeneratorServices: self.answerFormatGeneratorServices
         )
         self.activityManager = RSActivityManager(store: self.store, taskBuilder: self.taskBuilder)
+        
+        
+        self.store.subscribe(self.persistentStoreSubscriber)
         
         self.activityManager.delegate = self.window?.rootViewController
         

@@ -757,6 +757,7 @@
 		E21FE64E1F000212006F6B60 /* RSValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE64D1F000212006F6B60 /* RSValueTransformer.swift */; };
 		E21FE6501F0002D5006F6B60 /* RSValueManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE64F1F0002D5006F6B60 /* RSValueManager.swift */; };
 		E21FE6521F000469006F6B60 /* RSResultTransformValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE6511F000469006F6B60 /* RSResultTransformValueTransformer.swift */; };
+		E21FE6541F00673E006F6B60 /* RSSetValueInStateActionTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE6531F00673E006F6B60 /* RSSetValueInStateActionTransformer.swift */; };
 		E26C77B0352BBBBC626320085207B406 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE8210591C028341D19E659E92D98B9 /* Extensions.swift */; };
 		E2B16414ADC8CC339AF5FF7CCA9D38AD /* tr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 1ECBDF3B58CDADA063B9C1C17BD0E02D /* tr.lproj */; };
 		E2BE3E120877A859E581D4E7675F29FB /* ORKHealthQuantityTypeRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2C1125ABAB4E38A4045223677DCAA9BF /* ORKHealthQuantityTypeRecorder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1920,6 +1921,7 @@
 		E21FE64D1F000212006F6B60 /* RSValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSValueTransformer.swift; sourceTree = "<group>"; };
 		E21FE64F1F0002D5006F6B60 /* RSValueManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSValueManager.swift; sourceTree = "<group>"; };
 		E21FE6511F000469006F6B60 /* RSResultTransformValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSResultTransformValueTransformer.swift; sourceTree = "<group>"; };
+		E21FE6531F00673E006F6B60 /* RSSetValueInStateActionTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSSetValueInStateActionTransformer.swift; sourceTree = "<group>"; };
 		E2503BB10DB035D66A7C6887688EA589 /* ORKToneAudiometryStep.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ORKToneAudiometryStep.m; path = ResearchKit/ActiveTasks/ORKToneAudiometryStep.m; sourceTree = "<group>"; };
 		E27A369DF260AA79BB8052599D4B058E /* ReSwift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = ReSwift.modulemap; sourceTree = "<group>"; };
 		E286C004F737CC2AF56DC72B84658A83 /* CTFGoNoGoGestureRecognizer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CTFGoNoGoGestureRecognizer.swift; path = source/Behavioral/Core/Classes/GoNoGo/CTFGoNoGoGestureRecognizer.swift; sourceTree = "<group>"; };
@@ -2424,13 +2426,14 @@
 				E21FE60A1EFEB26D006F6B60 /* RSApplicationDelegate.swift */,
 				E21FE60C1EFEB35C006F6B60 /* RSStoreManager.swift */,
 				E21FE6121EFEB6BE006F6B60 /* RSActions.swift */,
+				E21FE6101EFEB599006F6B60 /* RSActionCreators.swift */,
 				E21FE6491EFFFE4B006F6B60 /* RSActionTransformer.swift */,
 				E21FE64B1F000179006F6B60 /* RSSendResultToServerActionTransformer.swift */,
+				E21FE6531F00673E006F6B60 /* RSSetValueInStateActionTransformer.swift */,
 				E21FE64D1F000212006F6B60 /* RSValueTransformer.swift */,
 				E21FE6511F000469006F6B60 /* RSResultTransformValueTransformer.swift */,
 				E21FE64F1F0002D5006F6B60 /* RSValueManager.swift */,
 				E21FE6201EFF27C6006F6B60 /* RSActionManager.swift */,
-				E21FE6101EFEB599006F6B60 /* RSActionCreators.swift */,
 				E21FE5DC1EFD96CA006F6B60 /* ValueConvertible.swift */,
 				E21FE6001EFE1839006F6B60 /* RSHelpers.swift */,
 				E21FE5E61EFDA199006F6B60 /* RSSendResultToServerMiddleware.swift */,
@@ -4372,6 +4375,7 @@
 				E21FE6521F000469006F6B60 /* RSResultTransformValueTransformer.swift in Sources */,
 				E21FE64C1F000179006F6B60 /* RSSendResultToServerActionTransformer.swift in Sources */,
 				E21FE6031EFE1D89006F6B60 /* RSActivity.swift in Sources */,
+				E21FE6541F00673E006F6B60 /* RSSetValueInStateActionTransformer.swift in Sources */,
 				E21FE5FD1EFE16A1006F6B60 /* RSResultTransform.swift in Sources */,
 				E21FE5E71EFDA199006F6B60 /* RSSendResultToServerMiddleware.swift in Sources */,
 				E21FE5EF1EFDA7C7006F6B60 /* RSFileStateManager.swift in Sources */,

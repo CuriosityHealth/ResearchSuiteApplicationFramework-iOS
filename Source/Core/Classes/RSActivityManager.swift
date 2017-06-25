@@ -94,7 +94,10 @@ open class RSActivityManager: NSObject, StoreSubscriber {
                 }
                 
                 //process finally actions
-                self.delegate?.dismiss(animated: true, completion: nil)
+                self.delegate?.dismiss(animated: true, completion: {
+                    let action = RSActionCreators.dismissedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
+                    store.dispatch(action)
+                })
                 
             }
             
@@ -102,6 +105,8 @@ open class RSActivityManager: NSObject, StoreSubscriber {
             self.isLaunching = true
             delegate.present(taskViewController, animated: true, completion: { 
                 self.isLaunching = false
+                let action = RSActionCreators.presentedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
+                store.dispatch(action)
             })
         }
         
@@ -138,7 +143,10 @@ open class RSActivityManager: NSObject, StoreSubscriber {
     
     private func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>) {
         
-        let actionTransforms: [RSActionTransformer.Type] = [RSSendResultToServerActionTransformer.self]
+        let actionTransforms: [RSActionTransformer.Type] = [
+            RSSendResultToServerActionTransformer.self,
+            RSSetValueInStateActionTransformer.self
+        ]
         let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
         
         let context: [String: AnyObject] = ["taskResult": taskResult]

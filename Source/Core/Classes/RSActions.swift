@@ -26,15 +26,16 @@ public struct QueueActivityAction: Action {
     let activityID: String
 }
 
-public struct PresentActivityAction: Action {
+public struct DequeueActivityAction: Action {
+    let uuid: UUID
+}
+
+public struct SetPresentedActivityAction: Action {
     let uuid: UUID
     let activityID: String
 }
 
-public struct DismissActivityAction: Action {
-    let uuid: UUID
-    let activityID: String
-}
+public struct ClearPresentedActivityAction: Action {}
 
 public struct RSSendResultToServerAction: Action {
     let intermediateResult: RSRPIntermediateResult

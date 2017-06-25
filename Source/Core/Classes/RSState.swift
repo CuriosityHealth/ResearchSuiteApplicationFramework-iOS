@@ -9,7 +9,7 @@
 import UIKit
 import ReSwift
 
-public final class RSState: StateType {
+public final class RSState: NSObject, StateType {
     
     public let protectedState: [String: NSObject]
     public let unprotectedState: [String: NSObject]
@@ -49,7 +49,7 @@ public final class RSState: StateType {
         measureMap: [String: RSMeasure]? = nil,
         activityMap: [String: RSActivity]? = nil,
         activityQueue: [(UUID, String)]? = nil,
-        presentedActivity: ((UUID, String)?) = nil
+        presentedActivity: ((UUID, String)?)? = nil
         ) -> RSState {
         
         return RSState(
@@ -66,6 +66,14 @@ public final class RSState: StateType {
     
     open class func empty() -> Self {
         return self.init()
+    }
+    
+    open override var description: String {
+        return "\n\tprotectedState: \(self.protectedState)" +
+            "\n\tunprotectedState: \(self.unprotectedState)" +
+            "\n\tactivityQueue: \(self.activityQueue)" +
+        "\n\tpresentedActivity: \(self.presentedActivity)"
+        
     }
     
 }
