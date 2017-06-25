@@ -18,9 +18,8 @@ open class RSSendResultToServerMiddleware {
             return { next in
                 return { action in
                     
-                    if let sendResultAction = action as? RSSendResultToServerAction,
-                        let intermediateResult = sendResultAction.value as? RSRPIntermediateResult {
-                        RSSendResultToServerMiddleware.defaultResultsProcessorBackEnd.add(intermediateResult: intermediateResult)
+                    if let sendResultAction = action as? RSSendResultToServerAction {
+                        RSSendResultToServerMiddleware.defaultResultsProcessorBackEnd.add(intermediateResult: sendResultAction.intermediateResult)
                     }
                     
                     return next(action)

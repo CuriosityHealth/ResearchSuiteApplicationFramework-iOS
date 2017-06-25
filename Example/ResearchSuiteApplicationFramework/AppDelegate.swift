@@ -9,14 +9,13 @@
 import UIKit
 import ResearchSuiteApplicationFramework
 import ResearchSuiteTaskBuilder
+import ResearchSuiteResultsProcessor
 import sdlrkx
 
 @UIApplicationMain
 class AppDelegate: RSApplicationDelegate {
     
-    static var appDelegate: AppDelegate! {
-        return UIApplication.shared.delegate as! AppDelegate
-    }
+    
 
     override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -56,6 +55,13 @@ class AppDelegate: RSApplicationDelegate {
         return super.stepGeneratorServices + [
             YADLFullStepGenerator(),
             YADLSpotStepGenerator()
+        ]
+    }
+    
+    open override var frontEndResultTransformers: [RSRPFrontEndTransformer.Type] {
+        return [
+            YADLFullRaw.self,
+            YADLSpotRaw.self,
         ]
     }
 

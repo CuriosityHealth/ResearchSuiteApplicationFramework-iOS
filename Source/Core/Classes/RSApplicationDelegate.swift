@@ -9,6 +9,7 @@
 import UIKit
 import ReSwift
 import ResearchSuiteTaskBuilder
+import ResearchSuiteResultsProcessor
 
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     
@@ -19,6 +20,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     public var storeManager: RSStoreManager!
     public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
     public var taskBuilder: RSTBTaskBuilder!
+    
+    public var resultsProcessorFrontEnd: RSRPFrontEndService!
+    
+    public static var appDelegate: RSApplicationDelegate! {
+        return UIApplication.shared.delegate as! RSApplicationDelegate
+    }
     
     public var store: Store<RSState>! {
         return storeManager.store
@@ -54,6 +61,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             RSTBElementFileGenerator(),
             RSTBElementSelectorGenerator()
         ]
+    }
+    
+    open var frontEndResultTransformers: [RSRPFrontEndTransformer.Type] {
+        return []
     }
     
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {

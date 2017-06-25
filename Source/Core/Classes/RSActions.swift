@@ -8,6 +8,7 @@
 
 import UIKit
 import ReSwift
+import ResearchSuiteResultsProcessor
 
 public struct AddStateValueAction: Action {
     let stateValue: RSStateValue
@@ -36,7 +37,7 @@ public struct DismissActivityAction: Action {
 }
 
 public struct RSSendResultToServerAction: Action {
-    let value: ValueConvertible
+    let intermediateResult: RSRPIntermediateResult
 }
 
 struct SetValueInProtectedStorage: Action {

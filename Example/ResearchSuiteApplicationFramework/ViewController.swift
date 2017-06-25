@@ -15,7 +15,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let activityManager: RSActivityManager = AppDelegate.appDelegate.activityManager
+        let activityManager: RSActivityManager = RSApplicationDelegate.appDelegate.activityManager
         
         activityManager.setDelegate(delegate: self)
     }
@@ -28,14 +28,14 @@ class ViewController: UIViewController {
     
     @IBAction func yadlFullTapped(_ sender: Any) {
         
-        let store = AppDelegate.appDelegate.store!
+        let store = RSApplicationDelegate.appDelegate.store!
         store.dispatch(RSActionCreators.queueActivity(activityID: "yadlFull"))
         
     }
     
     @IBAction func yadlSpotTapped(_ sender: Any) {
         
-        let store = AppDelegate.appDelegate.store!
+        let store = RSApplicationDelegate.appDelegate.store!
         store.dispatch(RSActionCreators.queueActivity(activityID: "yadlSpot"))
         
     }

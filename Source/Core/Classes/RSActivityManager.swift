@@ -21,18 +21,25 @@ open class RSActivityManager: NSObject, StoreSubscriber {
     
     var isLaunching = false
     
-    let activityElementTransforms: [RSActivityElementTransformer.Type] = [
+    static let defaultActivityElementTransforms: [RSActivityElementTransformer.Type] = [
         RSMeasureActivityElementTransformer.self,
         RSInstructionActivityElementTransformer.self
     ]
     
+    let activityElementTransforms: [RSActivityElementTransformer.Type]
+    
     let taskBuilder: RSTBTaskBuilder
     
-    init(store: Store<RSState>, taskBuilder: RSTBTaskBuilder) {
+    init(
+        store: Store<RSState>,
+        taskBuilder: RSTBTaskBuilder,
+        activityElementTransforms: [RSActivityElementTransformer.Type] = RSActivityManager.defaultActivityElementTransforms
+        ) {
         
         self.store = store
         self.delegateLock = DispatchQueue(label: "RSActivityManager.delegateLock")
         self.taskBuilder = taskBuilder
+        self.activityElementTransforms = activityElementTransforms
         super.init()
         
         self.store.subscribe(self)
@@ -70,14 +77,16 @@ open class RSActivityManager: NSObject, StoreSubscriber {
             self.isPresenting(delegate: delegate) == false,
             let firstActivity = state.activityQueue.first,
             state.presentedActivity == nil,
-            let task = taskForActivity(activityID: firstActivity.1, state: state) {
+            let activity = RSStateSelectors.activity(state, for: firstActivity.1),
+            let task = taskForActivity(activity: activity, state: state) {
             
             let store = self.store
             let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
                 
                 //process on success action
                 if reason == ORKTaskViewControllerFinishReason.completed {
-                    
+                    let taskResult = taskViewController.result
+                    self.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store)
                 }
                 //process on failure actions
                 else {
@@ -98,18 +107,14 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         
     }
     
-    private func taskForActivity(activityID: String, state: RSState) -> ORKTask? {
-        
-        guard let activity = RSStateSelectors.activity(state, for: activityID) else {
-            return nil
-        }
+    private func taskForActivity(activity: RSActivity, state: RSState) -> ORKTask? {
         
         let steps = activity.elements.flatMap { (json) -> [ORKStep]? in
             return self.transformActivityElement(jsonObject: json, taskBuilder: self.taskBuilder, state: state)
         }.joined()
         let stepArray: [ORKStep] = Array(steps)
         
-        let task = ORKOrderedTask(identifier: activityID, steps: stepArray)
+        let task = ORKOrderedTask(identifier: activity.identifier, steps: stepArray)
         
         return task
         
@@ -128,6 +133,33 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         }
         
         return nil
+        
+    }
+    
+    private func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>) {
+        
+        let actionTransforms: [RSActionTransformer.Type] = [RSSendResultToServerActionTransformer.self]
+        let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
+        
+        let context: [String: AnyObject] = ["taskResult": taskResult]
+        
+        onSuccessActionJSON.forEach { (actionJSON) in
+            
+            guard let type: String = "type" <~~ actionJSON else {
+                return
+            }
+            
+            for transformer in actionTransforms {
+                if transformer.supportsType(type: type) {
+                    guard let actionClosure = transformer.generateAction(jsonObject: actionJSON, context: context) else {
+                        return
+                    }
+                    
+                    store.dispatch(actionClosure)
+                }
+            }
+            
+        }
         
     }
     
