@@ -145,14 +145,22 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         
         let actionTransforms: [RSActionTransformer.Type] = [
             RSSendResultToServerActionTransformer.self,
-            RSSetValueInStateActionTransformer.self
+            RSSetValueInStateActionTransformer.self,
+            RSQueueActivityActionTransformer.self
         ]
         let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
         
         let context: [String: AnyObject] = ["taskResult": taskResult]
         
         onSuccessActionJSON.forEach { (actionJSON) in
+            //check for predicate and evaluate
+            //if predicate exists and evaluates false, do not execute action
+            if let predicate: RSPredicate = "predicate" <~~ actionJSON,
+                self.evaluatePredicate(predicate: predicate, state: store.state, context: context) == false {
+                return
+            }
             
+            //if action malformed, do not execute action
             guard let type: String = "type" <~~ actionJSON else {
                 return
             }
@@ -168,6 +176,35 @@ open class RSActivityManager: NSObject, StoreSubscriber {
             }
             
         }
+        
+    }
+    
+    private func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
+        //construct substitution dictionary
+        
+        let nsPredicate = NSPredicate.init(format: predicate.format)
+        
+        guard let substitutionsJSON = predicate.substitutions else {
+            return nsPredicate.evaluate(with: nil)
+        }
+        
+        
+        var substitutions: [String: Any] = [:]
+        
+        substitutionsJSON.forEach({ (key: String, value: JSON) in
+            
+            if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context),
+                let value = valueConvertible.evaluate() as? NSObject {
+                substitutions[key] = value
+            }
+            
+        })
+        
+        guard substitutions.count == substitutionsJSON.count else {
+            return false
+        }
+        
+        return nsPredicate.evaluate(with: nil, substitutionVariables: substitutions)
         
     }
     

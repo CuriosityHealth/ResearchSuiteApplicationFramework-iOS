@@ -98,6 +98,13 @@ public class RSReducer: NSObject {
                 newStateValueMap[stateValue.identifier] = stateValue
                 return RSState.newState(fromState: state, stateValueMap: newStateValueMap)
                 
+            case let addConstantValueAction as AddConstantValueAction:
+                
+                let constantValue = addConstantValueAction.constantValue
+                var newConstantsMap = state.constantsMap
+                newConstantsMap[constantValue.identifier] = constantValue
+                return RSState.newState(fromState: state, constantsMap: newConstantsMap)
+                
             case let setValueAction as SetValueInProtectedStorage:
                 
                 var stateDict: [String: NSObject] = state.protectedState

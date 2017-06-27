@@ -12,7 +12,7 @@ import ResearchSuiteResultsProcessor
 import Gloss
 import ResearchSuiteApplicationFramework
 
-open class YADLFullModerateOrHardIdentifiers: RSRPIntermediateResult, RSRPFrontEndTransformer, ValueConvertible {
+open class YADLFullModerateOrHardIdentifiers: RSRPIntermediateResult, RSRPFrontEndTransformer {
     
     public var valueConvertibleType: String {
         return "resultTransform"
@@ -83,10 +83,10 @@ open class YADLFullModerateOrHardIdentifiers: RSRPIntermediateResult, RSRPFrontE
             taskRunUUID: taskRunUUID
         )
     }
-    
-    public func evaluate() -> AnyObject? {
+}
+
+extension YADLFullModerateOrHardIdentifiers {
+    open override func evaluate() -> AnyObject? {
         return self.filteredIdentifiers as AnyObject
     }
-    
-
 }

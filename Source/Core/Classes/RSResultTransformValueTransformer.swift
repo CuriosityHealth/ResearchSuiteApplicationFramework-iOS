@@ -18,7 +18,7 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
     }
     
     
-    public static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> AnyObject? {
+    public static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
         
         guard let taskResult = context["taskResult"] as? ORKTaskResult,
             let measureID: String = "measureID" <~~ jsonObject,
@@ -36,4 +36,10 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         
     }
 
+}
+
+extension RSRPIntermediateResult: ValueConvertible {
+    open func evaluate() -> AnyObject? {
+        return self
+    }
 }

@@ -262,6 +262,24 @@
       "onCompletion": {
         "onSuccess": [
           {
+            "type": "queueActivity",
+            "activityID": "yadlSpot",
+            "predicate": {
+              "format": "$activities.@count > $activitiesThreshold",
+              "substitutions": {
+                "activities": {
+                  "type": "resultTransform",
+                  "measureID": "YADLFull",
+                  "transformID": "identifiersForState"
+                },
+                "activitiesThreshold": {
+                  "type": "constant",
+                  "identifier": "YADLActivitiesThreshold"
+                }
+              }
+            }
+          },
+          {
             "type": "sendResultToServer",
             "value": {
               "type": "resultTransform",

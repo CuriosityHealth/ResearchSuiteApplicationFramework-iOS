@@ -9,7 +9,6 @@
 import UIKit
 import Gloss
 import ReSwift
-import ResearchSuiteResultsProcessor
 
 open class RSSetValueInStateActionTransformer: RSActionTransformer {
     
@@ -26,7 +25,7 @@ open class RSSetValueInStateActionTransformer: RSActionTransformer {
         
         return { state, store in
             
-            guard let valueConvertible = RSValueManager.evaluate(jsonObject:valueJSON, state: state, context: context) as? ValueConvertible,
+            guard let valueConvertible = RSValueManager.processValue(jsonObject:valueJSON, state: state, context: context),
                 let value = valueConvertible.evaluate() as? NSObject else {
                 return nil
             }

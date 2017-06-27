@@ -15,6 +15,7 @@ public final class RSState: NSObject, StateType {
     public let unprotectedState: [String: NSObject]
     public let stateValueMap: [String: RSStateValue]
     public let stateValueHasBeenSet: [String: NSObject]
+    public let constantsMap: [String: RSConstantValue]
     public let measureMap: [String: RSMeasure]
     public let activityMap: [String: RSActivity]
     public let activityQueue: [(UUID, String)]
@@ -24,6 +25,7 @@ public final class RSState: NSObject, StateType {
                 unprotectedState: [String: NSObject] = [:],
                 stateValueMap: [String: RSStateValue] = [:],
                 stateValueHasBeenSet: [String: NSObject] = [:],
+                constantsMap: [String: RSConstantValue] = [:],
                 measureMap: [String: RSMeasure] = [:],
                 activityMap: [String: RSActivity] = [:],
                 activityQueue:[(UUID, String)] = [],
@@ -34,6 +36,7 @@ public final class RSState: NSObject, StateType {
         self.unprotectedState = unprotectedState
         self.stateValueMap = stateValueMap
         self.stateValueHasBeenSet = stateValueHasBeenSet
+        self.constantsMap = constantsMap
         self.measureMap = measureMap
         self.activityMap = activityMap
         self.activityQueue = activityQueue
@@ -46,6 +49,7 @@ public final class RSState: NSObject, StateType {
         unprotectedState: [String: NSObject]? = nil,
         stateValueMap: [String: RSStateValue]? = nil,
         stateValueHasBeenSet: [String: NSObject]? = nil,
+        constantsMap: [String: RSConstantValue]? = nil,
         measureMap: [String: RSMeasure]? = nil,
         activityMap: [String: RSActivity]? = nil,
         activityQueue: [(UUID, String)]? = nil,
@@ -57,6 +61,7 @@ public final class RSState: NSObject, StateType {
             unprotectedState: unprotectedState ?? fromState.unprotectedState,
             stateValueMap: stateValueMap ?? fromState.stateValueMap,
             stateValueHasBeenSet: stateValueHasBeenSet ?? fromState.stateValueHasBeenSet,
+            constantsMap: constantsMap ?? fromState.constantsMap,
             measureMap: measureMap ?? fromState.measureMap,
             activityMap: activityMap ?? fromState.activityMap,
             activityQueue: activityQueue ?? fromState.activityQueue,
@@ -71,6 +76,7 @@ public final class RSState: NSObject, StateType {
     open override var description: String {
         return "\n\tprotectedState: \(self.protectedState)" +
             "\n\tunprotectedState: \(self.unprotectedState)" +
+            "\n\tconstants: \(self.constantsMap)" +
             "\n\tactivityQueue: \(self.activityQueue)" +
         "\n\tpresentedActivity: \(self.presentedActivity)"
         

@@ -25,6 +25,7 @@ class AppDelegate: RSApplicationDelegate {
         self.store?.dispatch(RSActionCreators.addMeasuresFromFile(fileName: "measures"))
         self.store?.dispatch(RSActionCreators.addActivitiesFromFile(fileName: "activities"))
         self.store?.dispatch(RSActionCreators.addStateValuesFromFile(fileName: "values"))
+        self.store?.dispatch(RSActionCreators.addConstantsFromFile(fileName: "values"))
         
         return true
     }

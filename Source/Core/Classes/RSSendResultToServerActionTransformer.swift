@@ -26,11 +26,12 @@ open class RSSendResultToServerActionTransformer: RSActionTransformer {
         
         return { state, store in
             
-            guard let value = RSValueManager.evaluate(jsonObject:valueJSON, state: state, context: context) as? RSRPIntermediateResult else {
+            guard let valueConvertible = RSValueManager.processValue(jsonObject:valueJSON, state: state, context: context),
+                let intermediateResult = valueConvertible.evaluate() as? RSRPIntermediateResult else {
                 return nil
             }
             
-            return RSSendResultToServerAction(intermediateResult: value)
+            return RSSendResultToServerAction(intermediateResult: intermediateResult)
             
         }
     }

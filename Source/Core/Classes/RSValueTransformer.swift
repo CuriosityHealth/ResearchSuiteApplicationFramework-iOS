@@ -12,6 +12,6 @@ import Gloss
 public protocol RSValueTransformer {
     
     static func supportsType(type: String) -> Bool
-    static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> AnyObject?
+    static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible?
 
 }

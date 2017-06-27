@@ -13,6 +13,11 @@ import ResearchSuiteResultsProcessor
 public struct AddStateValueAction: Action {
     let stateValue: RSStateValue
 }
+
+public struct AddConstantValueAction: Action {
+    let constantValue: RSConstantValue
+}
+
 public struct AddMeasureAction: Action {
     let measure: RSMeasure
 }

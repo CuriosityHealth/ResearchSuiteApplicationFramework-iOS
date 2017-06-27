@@ -47,5 +47,10 @@ class ViewController: UIViewController {
         store.dispatch(RSActionCreators.queueActivity(activityID: "yadlSpot"))
         
     }
+    
+    @IBAction func baselineTapped(_ sender: Any) {
+        let store = RSApplicationDelegate.appDelegate.store!
+        store.dispatch(RSActionCreators.queueActivity(activityID: "baseline"))
+    }
 }
 

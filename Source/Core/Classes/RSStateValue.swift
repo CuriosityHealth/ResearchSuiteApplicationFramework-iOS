@@ -62,9 +62,17 @@ public class RSStateValue: Decodable {
         }
     }
     
-    static func typeMatches(type: String, object: NSObject) -> Bool {
+//    static func typeMatches(type: String, object: NSObject) -> Bool {
+    static func typeMatches(type: String, object: AnyObject?) -> Bool {
+        
+        //TODO: should nil objects always match?
+        //TODO: This is not working
+        if object == nil {
+            return true
+        }
         
         switch type {
+            
         case "Date":
             return (object as? Date) != nil
             
@@ -79,6 +87,9 @@ public class RSStateValue: Decodable {
             
         case "Boolean":
             return (object as? Bool) != nil
+            
+        case "Integer":
+            return (object as? Int) != nil
             
         default:
             return false

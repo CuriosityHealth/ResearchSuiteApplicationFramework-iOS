@@ -13,11 +13,14 @@ import Gloss
 open class RSValueManager: NSObject {
     
     public static let valueTransformers: [RSValueTransformer.Type] = [
-        RSResultTransformValueTransformer.self
+        RSResultTransformValueTransformer.self,
+        RSConstantValueTransformer.self
     ]
     
     //generate values
-    public static func evaluate(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> AnyObject? {
+    //TODO: make distinction between truly nil values and programming / config errors
+    //right now, we just return nil, which is ambiguous
+    public static func processValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
         
         guard let type: String = "type" <~~ jsonObject else {
             return nil

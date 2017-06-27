@@ -48,6 +48,16 @@
       "identifier": "stressScoreThreshold",
       "type": "Integer",
       "value": 10
+    },
+    {
+      "identifier": "YADLActivitiesThreshold",
+      "type": "Integer",
+      "value": 2
+    },
+    {
+      "identifier": "nilTest",
+      "type": "Boolean",
+      "value": null
     }
   ],
   "functions": [

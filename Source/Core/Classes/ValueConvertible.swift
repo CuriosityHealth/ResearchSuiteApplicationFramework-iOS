@@ -9,6 +9,6 @@
 import UIKit
 
 public protocol ValueConvertible {
-    var valueConvertibleType: String { get }
+//    var valueConvertibleType: String { get }
     func evaluate() -> AnyObject?
 }

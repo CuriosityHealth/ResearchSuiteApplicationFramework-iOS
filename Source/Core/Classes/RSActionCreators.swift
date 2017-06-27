@@ -27,7 +27,27 @@ public class RSActionCreators: NSObject {
                 store.dispatch(action)
             }
             
+            return nil
+        }
+        
+    }
+    
+    public static func addConstantsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return { state, store in
             
+            guard let json = RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON,
+                let constantValueJSON: [JSON] = "constants" <~~ json else {
+                    return nil
+            }
+            
+            constantValueJSON
+                .flatMap { RSConstantValue(json: $0) }
+                .map({ (constantValue) -> AddConstantValueAction in
+                return AddConstantValueAction(constantValue: constantValue)
+            }).forEach { (action) in
+                store.dispatch(action)
+            }
             
             return nil
         }
