@@ -762,6 +762,8 @@
 		E21FE6FE1F01D72D006F6B60 /* RSQueueActivityActionTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE6FD1F01D72D006F6B60 /* RSQueueActivityActionTransformer.swift */; };
 		E21FE7001F01DFA5006F6B60 /* RSConstantValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE6FF1F01DFA5006F6B60 /* RSConstantValue.swift */; };
 		E21FE7021F01E607006F6B60 /* RSConstantValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE7011F01E607006F6B60 /* RSConstantValueTransformer.swift */; };
+		E21FE7361F043EFB006F6B60 /* RSFunctionValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE7351F043EFB006F6B60 /* RSFunctionValue.swift */; };
+		E21FE7381F045C78006F6B60 /* RSFunctionValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE7371F045C78006F6B60 /* RSFunctionValueTransformer.swift */; };
 		E26C77B0352BBBBC626320085207B406 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAE8210591C028341D19E659E92D98B9 /* Extensions.swift */; };
 		E2B16414ADC8CC339AF5FF7CCA9D38AD /* tr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 1ECBDF3B58CDADA063B9C1C17BD0E02D /* tr.lproj */; };
 		E2BE3E120877A859E581D4E7675F29FB /* ORKHealthQuantityTypeRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2C1125ABAB4E38A4045223677DCAA9BF /* ORKHealthQuantityTypeRecorder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1930,6 +1932,8 @@
 		E21FE6FD1F01D72D006F6B60 /* RSQueueActivityActionTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSQueueActivityActionTransformer.swift; sourceTree = "<group>"; };
 		E21FE6FF1F01DFA5006F6B60 /* RSConstantValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSConstantValue.swift; sourceTree = "<group>"; };
 		E21FE7011F01E607006F6B60 /* RSConstantValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSConstantValueTransformer.swift; sourceTree = "<group>"; };
+		E21FE7351F043EFB006F6B60 /* RSFunctionValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSFunctionValue.swift; sourceTree = "<group>"; };
+		E21FE7371F045C78006F6B60 /* RSFunctionValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSFunctionValueTransformer.swift; sourceTree = "<group>"; };
 		E2503BB10DB035D66A7C6887688EA589 /* ORKToneAudiometryStep.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ORKToneAudiometryStep.m; path = ResearchKit/ActiveTasks/ORKToneAudiometryStep.m; sourceTree = "<group>"; };
 		E27A369DF260AA79BB8052599D4B058E /* ReSwift.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "sourcecode.module-map"; path = ReSwift.modulemap; sourceTree = "<group>"; };
 		E286C004F737CC2AF56DC72B84658A83 /* CTFGoNoGoGestureRecognizer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CTFGoNoGoGestureRecognizer.swift; path = source/Behavioral/Core/Classes/GoNoGo/CTFGoNoGoGestureRecognizer.swift; sourceTree = "<group>"; };
@@ -2441,6 +2445,7 @@
 				E21FE6FD1F01D72D006F6B60 /* RSQueueActivityActionTransformer.swift */,
 				E21FE64D1F000212006F6B60 /* RSValueTransformer.swift */,
 				E21FE7011F01E607006F6B60 /* RSConstantValueTransformer.swift */,
+				E21FE7371F045C78006F6B60 /* RSFunctionValueTransformer.swift */,
 				E21FE6511F000469006F6B60 /* RSResultTransformValueTransformer.swift */,
 				E21FE64F1F0002D5006F6B60 /* RSValueManager.swift */,
 				E21FE6201EFF27C6006F6B60 /* RSActionManager.swift */,
@@ -2461,6 +2466,7 @@
 				E21FE5FC1EFE16A1006F6B60 /* RSResultTransform.swift */,
 				E21FE6241EFF59B2006F6B60 /* RSStateValue.swift */,
 				E21FE6FF1F01DFA5006F6B60 /* RSConstantValue.swift */,
+				E21FE7351F043EFB006F6B60 /* RSFunctionValue.swift */,
 				E21FE5FA1EFE147E006F6B60 /* RSMeasure.swift */,
 				E21FE6021EFE1D89006F6B60 /* RSActivity.swift */,
 				E21FE6141EFF0928006F6B60 /* RSActivityManager.swift */,
@@ -4383,6 +4389,7 @@
 			files = (
 				E21FE64E1F000212006F6B60 /* RSValueTransformer.swift in Sources */,
 				E21FE5ED1EFDA74F006F6B60 /* RSStateManager.swift in Sources */,
+				E21FE7361F043EFB006F6B60 /* RSFunctionValue.swift in Sources */,
 				E21FE5FB1EFE147E006F6B60 /* RSMeasure.swift in Sources */,
 				E21FE6521F000469006F6B60 /* RSResultTransformValueTransformer.swift in Sources */,
 				E21FE64C1F000179006F6B60 /* RSSendResultToServerActionTransformer.swift in Sources */,
@@ -4398,6 +4405,7 @@
 				E21FE6191EFF1CDA006F6B60 /* RSActivityElementTransformer.swift in Sources */,
 				E21FE5E91EFDA2E1006F6B60 /* RSFakeBackEnd.swift in Sources */,
 				E21FE5F71EFE0CE9006F6B60 /* RSStatePersistentStoreSubscriber.swift in Sources */,
+				E21FE7381F045C78006F6B60 /* RSFunctionValueTransformer.swift in Sources */,
 				E21FE60D1EFEB35C006F6B60 /* RSStoreManager.swift in Sources */,
 				E21FE60B1EFEB26D006F6B60 /* RSApplicationDelegate.swift in Sources */,
 				E21FE61F1EFF2445006F6B60 /* RSTaskViewController.swift in Sources */,

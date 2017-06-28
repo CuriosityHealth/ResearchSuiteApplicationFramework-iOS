@@ -77,6 +77,10 @@ public class RSStateSelectors: NSObject {
     public static func getConstantValue(_ state: RSState, for identifier: String) -> RSConstantValue? {
         return state.constantsMap[identifier]
     }
+    
+    public static func getFunctionValue(_ state: RSState, for identifier: String) -> RSFunctionValue? {
+        return state.functionsMap[identifier]
+    }
 
 
 }

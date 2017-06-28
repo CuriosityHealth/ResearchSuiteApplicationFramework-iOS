@@ -18,6 +18,19 @@ public struct AddConstantValueAction: Action {
     let constantValue: RSConstantValue
 }
 
+public struct AddFunctionValueAction: Action {
+    let functionValue: RSFunctionValue
+}
+
+public struct RegisterFunctionAction: Action {
+    let identifier: String
+    let function: () -> AnyObject?
+}
+
+public struct UnregisterFunctionAction: Action {
+    let identifier: String
+}
+
 public struct AddMeasureAction: Action {
     let measure: RSMeasure
 }

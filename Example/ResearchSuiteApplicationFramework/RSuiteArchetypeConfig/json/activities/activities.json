@@ -265,7 +265,7 @@
             "type": "queueActivity",
             "activityID": "yadlSpot",
             "predicate": {
-              "format": "$activities.@count > $activitiesThreshold",
+              "format": "$isSignedIn = true AND $activities.@count > $activitiesThreshold",
               "substitutions": {
                 "activities": {
                   "type": "resultTransform",
@@ -275,6 +275,10 @@
                 "activitiesThreshold": {
                   "type": "constant",
                   "identifier": "YADLActivitiesThreshold"
+                },
+                "isSignedIn": {
+                  "type": "function",
+                  "identifier": "isSignedIn"
                 }
               }
             }

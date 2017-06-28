@@ -16,6 +16,7 @@ public final class RSState: NSObject, StateType {
     public let stateValueMap: [String: RSStateValue]
     public let stateValueHasBeenSet: [String: NSObject]
     public let constantsMap: [String: RSConstantValue]
+    public let functionsMap: [String: RSFunctionValue]
     public let measureMap: [String: RSMeasure]
     public let activityMap: [String: RSActivity]
     public let activityQueue: [(UUID, String)]
@@ -26,6 +27,7 @@ public final class RSState: NSObject, StateType {
                 stateValueMap: [String: RSStateValue] = [:],
                 stateValueHasBeenSet: [String: NSObject] = [:],
                 constantsMap: [String: RSConstantValue] = [:],
+                functionsMap: [String: RSFunctionValue] = [:],
                 measureMap: [String: RSMeasure] = [:],
                 activityMap: [String: RSActivity] = [:],
                 activityQueue:[(UUID, String)] = [],
@@ -37,6 +39,7 @@ public final class RSState: NSObject, StateType {
         self.stateValueMap = stateValueMap
         self.stateValueHasBeenSet = stateValueHasBeenSet
         self.constantsMap = constantsMap
+        self.functionsMap = functionsMap
         self.measureMap = measureMap
         self.activityMap = activityMap
         self.activityQueue = activityQueue
@@ -50,6 +53,7 @@ public final class RSState: NSObject, StateType {
         stateValueMap: [String: RSStateValue]? = nil,
         stateValueHasBeenSet: [String: NSObject]? = nil,
         constantsMap: [String: RSConstantValue]? = nil,
+        functionsMap: [String: RSFunctionValue]? = nil,
         measureMap: [String: RSMeasure]? = nil,
         activityMap: [String: RSActivity]? = nil,
         activityQueue: [(UUID, String)]? = nil,
@@ -62,6 +66,7 @@ public final class RSState: NSObject, StateType {
             stateValueMap: stateValueMap ?? fromState.stateValueMap,
             stateValueHasBeenSet: stateValueHasBeenSet ?? fromState.stateValueHasBeenSet,
             constantsMap: constantsMap ?? fromState.constantsMap,
+            functionsMap: functionsMap ?? fromState.functionsMap,
             measureMap: measureMap ?? fromState.measureMap,
             activityMap: activityMap ?? fromState.activityMap,
             activityQueue: activityQueue ?? fromState.activityQueue,

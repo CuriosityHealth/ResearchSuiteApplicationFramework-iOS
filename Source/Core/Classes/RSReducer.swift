@@ -105,6 +105,13 @@ public class RSReducer: NSObject {
                 newConstantsMap[constantValue.identifier] = constantValue
                 return RSState.newState(fromState: state, constantsMap: newConstantsMap)
                 
+            case let addFunctionValueAction as AddFunctionValueAction:
+                
+                let functionValue = addFunctionValueAction.functionValue
+                var newMap = state.functionsMap
+                newMap[functionValue.identifier] = functionValue
+                return RSState.newState(fromState: state, functionsMap: newMap)
+                
             case let setValueAction as SetValueInProtectedStorage:
                 
                 var stateDict: [String: NSObject] = state.protectedState
@@ -149,6 +156,28 @@ public class RSReducer: NSObject {
                     stateValueHasBeenSet: hasSetValueDict
                 )
                 
+            case let registerFunctionAction as RegisterFunctionAction:
+                
+                guard let functionValue = state.functionsMap[registerFunctionAction.identifier] else {
+                    return state
+                }
+
+                //note that functionValue.with returns a new object
+                let newFunctionValue = functionValue.with(function: registerFunctionAction.function)
+                var newMap = state.functionsMap
+                newMap[functionValue.identifier] = newFunctionValue
+                return RSState.newState(fromState: state, functionsMap: newMap)
+                
+            case let unregisterFunctionAction as UnregisterFunctionAction:
+                
+                guard let functionValue = state.functionsMap[unregisterFunctionAction.identifier] else {
+                    return state
+                }
+                
+                let newFunctionValue = functionValue.with(function: nil)
+                var newMap = state.functionsMap
+                newMap[functionValue.identifier] = newFunctionValue
+                return RSState.newState(fromState: state, functionsMap: newMap)
                 
             default:
                 return state

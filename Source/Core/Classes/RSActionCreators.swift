@@ -12,85 +12,86 @@ import Gloss
 
 public class RSActionCreators: NSObject {
     
-    public static func addStateValuesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
-        
+    
+    //loads json from (fileName, directory)
+    //uses selector to select the array we want to process
+    //converts each JSON element in array to an object
+    //converts each object into an action
+    //dispatches each action
+    private static func addArrayOfObjectsFromFile<T>(fileName: String, inDirectory: String? = nil, selector: @escaping (JSON) -> [JSON]?, flatMapFunc: @escaping (JSON) -> T?, mapFunc: @escaping (T) -> Action) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
             guard let json = RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON,
-                let stateValues: [RSStateValue] = "state" <~~ json else {
+                let jsonArray = selector(json) else {
                     return nil
             }
             
-            stateValues.map({ (stateValue) -> AddStateValueAction in
-                return AddStateValueAction(stateValue: stateValue)
-            }).forEach { (action) in
-                store.dispatch(action)
-            }
+            jsonArray
+                .flatMap(flatMapFunc)
+                .map(mapFunc)
+                .forEach { store.dispatch($0) }
             
             return nil
         }
+    }
+    
+    public static func addStateValuesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            selector: { "state" <~~ $0 },
+            flatMapFunc: { RSStateValue(json: $0) },
+            mapFunc: { AddStateValueAction(stateValue: $0) }
+        )
         
     }
     
     public static func addConstantsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
-        return { state, store in
-            
-            guard let json = RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON,
-                let constantValueJSON: [JSON] = "constants" <~~ json else {
-                    return nil
-            }
-            
-            constantValueJSON
-                .flatMap { RSConstantValue(json: $0) }
-                .map({ (constantValue) -> AddConstantValueAction in
-                return AddConstantValueAction(constantValue: constantValue)
-            }).forEach { (action) in
-                store.dispatch(action)
-            }
-            
-            return nil
-        }
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            selector: { "constants" <~~ $0 },
+            flatMapFunc: { RSConstantValue(json: $0) },
+            mapFunc: { AddConstantValueAction(constantValue: $0) }
+        )
+        
+    }
+    
+    public static func addFunctionsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            selector: { "functions" <~~ $0 },
+            flatMapFunc: { RSFunctionValue(json: $0) },
+            mapFunc: { AddFunctionValueAction(functionValue: $0) }
+        )
         
     }
     
     public static func addMeasuresFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
-        return { state, store in
-            
-            guard let json = RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON,
-                let measures: [RSMeasure] = "measures" <~~ json else {
-                    return nil
-            }
-            
-            measures.map({ (measure) -> AddMeasureAction in
-                return AddMeasureAction(measure: measure)
-            }).forEach { (action) in
-                store.dispatch(action)
-            }
-            
-            return nil
-        }
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            selector: { "measures" <~~ $0 },
+            flatMapFunc: { RSMeasure(json: $0) },
+            mapFunc: { AddMeasureAction(measure: $0) }
+        )
         
     }
     
     public static func addActivitiesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
-        return { state, store in
-            
-            guard let json = RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON,
-                let activities: [RSActivity] = "activities" <~~ json else {
-                    return nil
-            }
-            
-            activities.map({ (activity) -> AddActivityAction in
-                return AddActivityAction(activity: activity)
-            }).forEach { (action) in
-                store.dispatch(action)
-            }
-            
-            return nil
-        }
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            selector: { "activities" <~~ $0 },
+            flatMapFunc: { RSActivity(json: $0) },
+            mapFunc: { AddActivityAction(activity: $0) }
+        )
         
     }
     
@@ -142,6 +143,18 @@ public class RSActionCreators: NSObject {
             }
             
             return nil
+        }
+    }
+    
+    public static func registerFunction(identifier: String, function: @escaping () -> AnyObject?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return RegisterFunctionAction(identifier: identifier, function: function)
+        }
+    }
+    
+    public static func unregisterFunction(identifier: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return UnregisterFunctionAction(identifier: identifier)
         }
     }
 

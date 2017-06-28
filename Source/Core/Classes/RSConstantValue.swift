@@ -21,7 +21,7 @@ public class RSConstantValue: Decodable, ValueConvertible {
         guard let identifier: String = "identifier" <~~ json,
             let type: String = "type" <~~ json,
             let value: AnyObject? = "value" <~~ json,
-            RSStateValue.typeMatches(type: type, object: value) else {
+            (value is NSNull || RSStateValue.typeMatches(type: type, object: value)) else {
                 return nil
         }
         
