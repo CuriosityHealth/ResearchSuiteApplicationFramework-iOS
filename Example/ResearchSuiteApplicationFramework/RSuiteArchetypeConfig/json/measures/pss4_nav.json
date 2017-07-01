@@ -1,0 +1,108 @@
+{
+  "identifier": "pss4_nav",
+  "type": "elementList",
+  "navigationRules": [
+    {
+      "trigger": "pss4_assessment",
+      "conditionalNavigation": [
+        {
+          "predicate": {
+            "format": "$stressScore > 10",
+            "substitutions": {
+              "stressScore": {
+                "type": "resultTransform",
+                "childID": "pss4_assessment",
+                "transformID": "stressScore"
+              }
+            }
+          },
+          "destination": "greaterThan"
+        }
+      ],
+      "destination": "lessThan"
+    },
+    {
+      "trigger": "lessThan",
+      "destination": "DONE"
+    }
+  ],
+  "elements": [
+    {
+      "identifier": "introduction",
+      "type": "instruction",
+      "title": "Perceived Stress Scale-4",
+      "text": "The questions in this scale ask you about your feelings and thoughts during the last month.  In each case, please indicate with a check how often you felt or thought a certain way. "
+    },
+    {
+      "identifier": "pss4_assessment",
+      "type": "elementList",
+      "resultTransforms": [
+        {
+          "identifier": "stressScore",
+          "transform": "PSSScore",
+          "inputMapping": [
+            {"parameter":"results", "stepIdentifierRegex":"pss*"}
+          ]
+        }
+      ],
+      "elements": [
+        {
+          "identifier": "pss2",
+          "type": "scale",
+          "text": "In the last month, how often have you felt that you were unable to control the important things in your life?",
+          "minimumValue": 0,
+          "minimumDescription": "never",
+          "maximumValue": 4,
+          "maximumDescription": "very often",
+          "defaultValue": -1,
+          "stepValue": 1
+        },
+        {
+          "identifier": "pss4",
+          "type": "scale",
+          "text": "In the last month, how often have you felt confident about your ability to handle your personal problems?",
+          "minimumValue": 0,
+          "minimumDescription": "never",
+          "maximumValue": 4,
+          "maximumDescription": "very often",
+          "defaultValue": -1,
+          "stepValue": 1
+        },
+        {
+          "identifier": "pss5",
+          "type": "scale",
+          "text": "In the last month, how often have you felt that things were going your way?",
+          "minimumValue": 0,
+          "minimumDescription": "never",
+          "maximumValue": 4,
+          "maximumDescription": "very often",
+          "defaultValue": -1,
+          "stepValue": 1
+        },
+        {
+          "identifier": "pss10",
+          "type": "scale",
+          "text": "In the last month, how often have you felt difficulties were piling up so high that you could not overcome them?",
+          "minimumValue": 0,
+          "minimumDescription": "never",
+          "maximumValue": 4,
+          "maximumDescription": "very often",
+          "defaultValue": -1,
+          "stepValue": 1
+        }
+      ]
+    },
+    {
+      "identifier": "lessThan",
+      "type": "instruction",
+      "title": "Less Than!",
+      "text": "The questions in this scale ask you about your feelings and thoughts during the last month.  In each case, please indicate with a check how often you felt or thought a certain way. "
+    },
+    {
+      "identifier": "greaterThan",
+      "type": "instruction",
+      "title": "Greater Than!!",
+      "text": "The questions in this scale ask you about your feelings and thoughts during the last month.  In each case, please indicate with a check how often you felt or thought a certain way. "
+    }
+  ]
+}

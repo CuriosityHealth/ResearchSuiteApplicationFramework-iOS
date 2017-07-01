@@ -28,6 +28,7 @@
 		E21FE6441EFF7287006F6B60 /* values.json in Resources */ = {isa = PBXBuildFile; fileRef = E21FE6431EFF7287006F6B60 /* values.json */; };
 		E21FE6481EFF765C006F6B60 /* YADL.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E21FE6471EFF765C006F6B60 /* YADL.xcassets */; };
 		E21FE6561F006C2B006F6B60 /* YADLFullRawRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */; };
+		E27667391F07E45E00DDDEF4 /* pss4_nav.json in Resources */ = {isa = PBXBuildFile; fileRef = E27667381F07E45E00DDDEF4 /* pss4_nav.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 		E21FE6431EFF7287006F6B60 /* values.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = values.json; path = RSuiteArchetypeConfig/json/values.json; sourceTree = "<group>"; };
 		E21FE6471EFF765C006F6B60 /* YADL.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = YADL.xcassets; sourceTree = "<group>"; };
 		E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YADLFullRawRegex.swift; sourceTree = "<group>"; };
+		E27667381F07E45E00DDDEF4 /* pss4_nav.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = pss4_nav.json; path = RSuiteArchetypeConfig/json/measures/pss4_nav.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,6 +210,7 @@
 		E21FE6311EFF7268006F6B60 /* measures */ = {
 			isa = PBXGroup;
 			children = (
+				E27667381F07E45E00DDDEF4 /* pss4_nav.json */,
 				E21FE6321EFF7275006F6B60 /* demographics.json */,
 				E21FE6331EFF7275006F6B60 /* measures.json */,
 				E21FE6341EFF7275006F6B60 /* pss4.json */,
@@ -344,6 +347,7 @@
 				E21FE63A1EFF7275006F6B60 /* demographics.json in Resources */,
 				E21FE63C1EFF7275006F6B60 /* pss4.json in Resources */,
 				E21FE6441EFF7287006F6B60 /* values.json in Resources */,
+				E27667391F07E45E00DDDEF4 /* pss4_nav.json in Resources */,
 				E21FE63B1EFF7275006F6B60 /* measures.json in Resources */,
 				E21FE63E1EFF7275006F6B60 /* relaxationBreathingTask.json in Resources */,
 				E21FE6411EFF7275006F6B60 /* YADLSpot.json in Resources */,

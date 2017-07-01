@@ -232,6 +232,15 @@
         "elementFileName": "relaxationBreathingTask"
       },
       "resultTransforms": []
+    },
+    {
+      "identifier": "pss4_nav",
+      "taskElement": {
+        "type": "elementFile",
+        "identifier": "pss4_nav",
+        "elementFileName": "pss4_nav"
+      },
+      "resultTransforms": []
     }
   ]
 }

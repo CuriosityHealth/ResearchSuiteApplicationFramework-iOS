@@ -29,10 +29,12 @@ open class RSActivityManager: NSObject, StoreSubscriber {
     let activityElementTransforms: [RSActivityElementTransformer.Type]
     
     let taskBuilder: RSTBTaskBuilder
+    let stepTreeBuilder: RSStepTreeBuilder
     
     init(
         store: Store<RSState>,
         taskBuilder: RSTBTaskBuilder,
+        stepTreeBuilder: RSStepTreeBuilder,
         activityElementTransforms: [RSActivityElementTransformer.Type] = RSActivityManager.defaultActivityElementTransforms
         ) {
         
@@ -40,6 +42,8 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         self.delegateLock = DispatchQueue(label: "RSActivityManager.delegateLock")
         self.taskBuilder = taskBuilder
         self.activityElementTransforms = activityElementTransforms
+        self.stepTreeBuilder = stepTreeBuilder
+        
         super.init()
         
         self.store.subscribe(self)
@@ -114,14 +118,50 @@ open class RSActivityManager: NSObject, StoreSubscriber {
     
     private func taskForActivity(activity: RSActivity, state: RSState) -> ORKTask? {
         
-        let steps = activity.elements.flatMap { (json) -> [ORKStep]? in
-            return self.transformActivityElement(jsonObject: json, taskBuilder: self.taskBuilder, state: state)
-        }.joined()
-        let stepArray: [ORKStep] = Array(steps)
+        let nodes = activity.elements.flatMap { (json) -> RSStepTreeNode? in
+            return self.transformActivityElementIntoNode(
+                jsonObject: json,
+                stepTreeBuilder: self.stepTreeBuilder,
+                state: state,
+                identifierPrefix: activity.identifier
+            )
+        }
         
-        let task = ORKOrderedTask(identifier: activity.identifier, steps: stepArray)
+        let rootNode = RSStepTreeBranchNode(
+            identifier: activity.identifier,
+            identifierPrefix: "",
+            type: "activity",
+            children: nodes,
+            navigationRules: nil,
+            resultTransforms: nil
+        )
         
-        return task
+        let stepTree = RSStepTree(identifier: activity.identifier, root: rootNode)
+        
+        debugPrint(stepTree)
+        
+        return stepTree
+        
+    }
+    
+    private func transformActivityElementIntoNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, state: RSState, identifierPrefix: String) -> RSStepTreeNode? {
+        
+        guard let type: String = "type" <~~ jsonObject else {
+            return nil
+        }
+        
+        for transformer in self.activityElementTransforms {
+            if transformer.supportsType(type: type) {
+                return transformer.generateNode(
+                    jsonObject: jsonObject,
+                    stepTreeBuilder: stepTreeBuilder,
+                    state: state,
+                    identifierPrefix: identifierPrefix
+                )
+            }
+        }
+        
+        return nil
         
     }
     

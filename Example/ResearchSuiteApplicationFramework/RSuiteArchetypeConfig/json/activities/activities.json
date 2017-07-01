@@ -328,6 +328,21 @@
         "onFailure": [],
         "finally": []
       }
+    },
+    {
+      "identifier": "pss4_nav",
+      "elements": [
+        {
+          "identifier": "pss4_nav",
+          "type": "measure",
+          "measureID": "pss4_nav"
+        }
+      ],
+      "onCompletion": {
+        "onSuccess": [],
+        "onFailure": [],
+        "finally": []
+      }
     }
   ]
 }

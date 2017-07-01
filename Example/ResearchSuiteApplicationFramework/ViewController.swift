@@ -52,5 +52,9 @@ class ViewController: UIViewController {
         let store = RSApplicationDelegate.appDelegate.store!
         store.dispatch(RSActionCreators.queueActivity(activityID: "baseline"))
     }
+    @IBAction func pss4NavTapped(_ sender: Any) {
+        let store = RSApplicationDelegate.appDelegate.store!
+        store.dispatch(RSActionCreators.queueActivity(activityID: "pss4_nav"))
+    }
 }
 

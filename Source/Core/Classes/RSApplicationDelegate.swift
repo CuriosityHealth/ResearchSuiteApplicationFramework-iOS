@@ -20,6 +20,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     public var storeManager: RSStoreManager!
     public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
     public var taskBuilder: RSTBTaskBuilder!
+    public var stepTreeBuilder: RSStepTreeBuilder!
     
     public var resultsProcessorFrontEnd: RSRPFrontEndService!
     public var persistentStoreSubscriber: RSStatePersistentStoreSubscriber!
@@ -43,7 +44,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             RSTBSingleChoiceStepGenerator(),
             RSTBMultipleChoiceStepGenerator(),
             RSTBBooleanStepGenerator(),
-            RSTBPasscodeStepGenerator()
+            RSTBPasscodeStepGenerator(),
+            RSTBScaleStepGenerator()
         ]
     }
     
@@ -68,6 +70,13 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
         return []
     }
     
+    open var stepTreeNodeGenerators: [RSStepTreeNodeGenerator.Type] {
+        return [
+            RSStepTreeElementListGenerator.self,
+            RSStepTreeElementFileGenerator.self
+        ]
+    }
+    
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         //initialize store
@@ -84,7 +93,17 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             stepGeneratorServices: self.stepGeneratorServices,
             answerFormatGeneratorServices: self.answerFormatGeneratorServices
         )
-        self.activityManager = RSActivityManager(store: self.store, taskBuilder: self.taskBuilder)
+        
+        self.stepTreeBuilder = RSStepTreeBuilder(
+            stateHelper: self.taskBuilderStateHelper,
+            nodeGeneratorServices: self.stepTreeNodeGenerators,
+            elementGeneratorServices: self.elementGeneratorServices,
+            stepGeneratorServices: self.stepGeneratorServices,
+            answerFormatGeneratorServices: self.answerFormatGeneratorServices
+        )
+        
+        self.activityManager = RSActivityManager(store: self.store, taskBuilder: self.taskBuilder, stepTreeBuilder: self.stepTreeBuilder)
+        
         
         
         self.store.subscribe(self.persistentStoreSubscriber)

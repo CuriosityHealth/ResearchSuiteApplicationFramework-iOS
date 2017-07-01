@@ -33,52 +33,47 @@ PODS:
   - ResearchSuiteResultsProcessor/Core (0.3.1):
     - Gloss (~> 1.1)
     - ResearchKit (~> 1.3)
-  - ResearchSuiteResultsProcessor/OMHHelper (0.3.1):
-    - OMHClient
-    - ResearchSuiteResultsProcessor/Core
-  - ResearchSuiteTaskBuilder (0.6.0):
+  - ResearchSuiteTaskBuilder (0.7.0):
     - Gloss (~> 1.1)
     - ResearchKit (~> 1.3)
   - ReSwift (3.0.0)
-  - sdlrkx (0.12.0):
-    - sdlrkx/Behavioral (= 0.12.0)
-    - sdlrkx/Behavioral-RSRPOhmageBackend (= 0.12.0)
-    - sdlrkx/Behavioral-RSRPSupport (= 0.12.0)
-    - sdlrkx/Behavioral-RSTBSupport (= 0.12.0)
-    - sdlrkx/Helpers (= 0.12.0)
-    - sdlrkx/VSR (= 0.12.0)
-    - sdlrkx/VSR-RSRPOhmageBackend (= 0.12.0)
-    - sdlrkx/VSR-RSRPSupport (= 0.12.0)
-    - sdlrkx/VSR-RSTBSupport (= 0.12.0)
-  - sdlrkx/Behavioral (0.12.0):
+  - sdlrkx (0.13.0):
+    - sdlrkx/Behavioral (= 0.13.0)
+    - sdlrkx/Behavioral-RSRPOhmageBackend (= 0.13.0)
+    - sdlrkx/Behavioral-RSRPSupport (= 0.13.0)
+    - sdlrkx/Behavioral-RSTBSupport (= 0.13.0)
+    - sdlrkx/Helpers (= 0.13.0)
+    - sdlrkx/VSR (= 0.13.0)
+    - sdlrkx/VSR-RSRPOhmageBackend (= 0.13.0)
+    - sdlrkx/VSR-RSRPSupport (= 0.13.0)
+    - sdlrkx/VSR-RSTBSupport (= 0.13.0)
+  - sdlrkx/Behavioral (0.13.0):
     - ResearchKit (~> 1.4)
     - sdlrkx/Helpers
-  - sdlrkx/Behavioral-RSRPOhmageBackend (0.12.0):
+  - sdlrkx/Behavioral-RSRPOhmageBackend (0.13.0):
     - OMHClient
-    - ResearchSuiteResultsProcessor/OMHHelper
     - sdlrkx/Behavioral-RSRPSupport
-  - sdlrkx/Behavioral-RSRPSupport (0.12.0):
+  - sdlrkx/Behavioral-RSRPSupport (0.13.0):
     - ResearchKit (~> 1.4)
     - ResearchSuiteResultsProcessor (~> 0.2)
     - sdlrkx/Behavioral
-  - sdlrkx/Behavioral-RSTBSupport (0.12.0):
+  - sdlrkx/Behavioral-RSTBSupport (0.13.0):
     - Gloss (~> 1)
     - ResearchSuiteTaskBuilder (~> 0.4)
     - sdlrkx/Behavioral
-  - sdlrkx/Helpers (0.12.0)
-  - sdlrkx/VSR (0.12.0):
+  - sdlrkx/Helpers (0.13.0)
+  - sdlrkx/VSR (0.13.0):
     - Gloss (~> 1)
     - ResearchKit (~> 1.4)
     - sdlrkx/Helpers
-  - sdlrkx/VSR-RSRPOhmageBackend (0.12.0):
+  - sdlrkx/VSR-RSRPOhmageBackend (0.13.0):
     - OMHClient
-    - ResearchSuiteResultsProcessor/OMHHelper
     - sdlrkx/VSR-RSRPSupport
-  - sdlrkx/VSR-RSRPSupport (0.12.0):
+  - sdlrkx/VSR-RSRPSupport (0.13.0):
     - ResearchKit (~> 1.4)
     - ResearchSuiteResultsProcessor (~> 0.2)
     - sdlrkx/VSR
-  - sdlrkx/VSR-RSTBSupport (0.12.0):
+  - sdlrkx/VSR-RSTBSupport (0.13.0):
     - Gloss (~> 1)
     - ResearchSuiteTaskBuilder (~> 0.4)
     - sdlrkx/VSR
@@ -90,7 +85,7 @@ DEPENDENCIES:
   - OhmageOMHSDK/RSTBSupport
   - ResearchSuiteApplicationFramework (from `../`)
   - ResearchSuiteResultsProcessor (from `~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios`)
-  - ResearchSuiteTaskBuilder
+  - ResearchSuiteTaskBuilder (from `~/Developer/ResearchSuite/iOS/ResearchSuiteTaskBuilder-ios`)
   - sdlrkx
 
 EXTERNAL SOURCES:
@@ -98,6 +93,8 @@ EXTERNAL SOURCES:
     :path: ../
   ResearchSuiteResultsProcessor:
     :path: ~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios
+  ResearchSuiteTaskBuilder:
+    :path: ~/Developer/ResearchSuite/iOS/ResearchSuiteTaskBuilder-ios
 
 SPEC CHECKSUMS:
   Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
@@ -107,11 +104,11 @@ SPEC CHECKSUMS:
   ResearchKit: 3533ea3a2270e4ed7ff830e19755dc959fdfd430
   ResearchSuiteApplicationFramework: 297a9b2dacf1c224d0272d9a0aea0b81ca07085c
   ResearchSuiteResultsProcessor: 2a279aff2ab7b633d1b66046a81e261b44011106
-  ResearchSuiteTaskBuilder: 661dad5fde37d413a2d5d0daf70751351649d630
+  ResearchSuiteTaskBuilder: 4be10150e3b5d1549b31e476cab836a41d7ab47c
   ReSwift: f0255f4b4f2dacd12c5d97d34d13fc5dad6d6371
-  sdlrkx: cca6b86889540d38f94b28614291acabad7924f0
+  sdlrkx: 82e3cbd5baba3afd480ea3d3f45bad653e0d91ae
   SecureQueue: 3aa95a5bba534c3aa938ae634333cbcf5919060b
 
-PODFILE CHECKSUM: bf96575014fdadc3129d2eaca060eb4db9f989a9
+PODFILE CHECKSUM: df8c8b9a0b9b2dab08c3a2d7cf74bb68cb879799
 
 COCOAPODS: 1.2.1

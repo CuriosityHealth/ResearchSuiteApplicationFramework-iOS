@@ -8,7 +8,7 @@ target 'ResearchSuiteApplicationFramework_Example' do
   pod "OhmageOMHSDK"
   pod "OhmageOMHSDK/RSTBSupport"
   pod "OhmageOMHSDK/RSRPSupport"
-  pod "ResearchSuiteTaskBuilder"
+  pod "ResearchSuiteTaskBuilder", :path => '~/Developer/ResearchSuite/iOS/ResearchSuiteTaskBuilder-ios'
   pod "ResearchSuiteResultsProcessor", :path => '~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios'
 
   target 'ResearchSuiteApplicationFramework_Tests' do

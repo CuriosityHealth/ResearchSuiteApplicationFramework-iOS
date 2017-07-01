@@ -13,5 +13,8 @@ import Gloss
 
 public protocol RSActivityElementTransformer {
     static func generateSteps(jsonObject: JSON, taskBuilder: RSTBTaskBuilder, state: RSState) -> [ORKStep]?
+    
+    static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, state: RSState, identifierPrefix: String) -> RSStepTreeNode?
+    
     static func supportsType(type: String) -> Bool
 }
