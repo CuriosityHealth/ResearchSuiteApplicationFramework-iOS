@@ -7,12 +7,16 @@
       "conditionalNavigation": [
         {
           "predicate": {
-            "format": "$stressScore > 10",
+            "format": "$pssScore > $pssThreshold",
             "substitutions": {
-              "stressScore": {
+              "pssScore": {
                 "type": "resultTransform",
                 "childID": "pss4_assessment",
                 "transformID": "stressScore"
+              },
+              "pssThreshold": {
+                "type": "constant",
+                "identifier": "stressScoreThreshold"
               }
             }
           },
@@ -94,9 +98,21 @@
     },
     {
       "identifier": "lessThan",
-      "type": "instruction",
-      "title": "Less Than!",
-      "text": "The questions in this scale ask you about your feelings and thoughts during the last month.  In each case, please indicate with a check how often you felt or thought a certain way. "
+      "type": "elementList",
+      "elements": [
+        {
+          "identifier": "lessThan1",
+          "type": "instruction",
+          "title": "Less Than 1!",
+          "text": "The questions in this scale ask you about your feelings and thoughts during the last month.  In each case, please indicate with a check how often you felt or thought a certain way. "
+        },
+        {
+          "identifier": "lessThan2",
+          "type": "instruction",
+          "title": "Less Than 2!",
+          "text": "The questions in this scale ask you about your feelings and thoughts during the last month.  In each case, please indicate with a check how often you felt or thought a certain way. "
+        }
+      ]
     },
     {
       "identifier": "greaterThan",

@@ -45,7 +45,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             RSTBMultipleChoiceStepGenerator(),
             RSTBBooleanStepGenerator(),
             RSTBPasscodeStepGenerator(),
-            RSTBScaleStepGenerator()
+            RSTBScaleStepGenerator(),
+            RSTBLocationStepGenerator()
         ]
     }
     

@@ -64,7 +64,8 @@ class AppDelegate: RSApplicationDelegate {
     open override var stepGeneratorServices: [RSTBStepGenerator] {
         return super.stepGeneratorServices + [
             YADLFullStepGenerator(),
-            YADLSpotStepGenerator()
+            YADLSpotStepGenerator(),
+            PAMStepGenerator()
         ]
     }
     

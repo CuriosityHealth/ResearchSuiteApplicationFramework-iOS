@@ -24,6 +24,7 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         navigationRules: [RSStepTreeNavigationRule]?,
         resultTransforms: [RSResultTransform]?
         ) {
+        assert(children.count > 0, "branch nodes must have children")
         self.children = children
         var childMap: [String: RSStepTreeNode] = [:]
         self.children.forEach { (child) in
