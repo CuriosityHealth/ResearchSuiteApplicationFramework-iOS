@@ -15,7 +15,8 @@ open class RSValueManager: NSObject {
     public static let valueTransformers: [RSValueTransformer.Type] = [
         RSResultTransformValueTransformer.self,
         RSConstantValueTransformer.self,
-        RSFunctionValueTransformer.self
+        RSFunctionValueTransformer.self,
+        RSStepTreeResultTransformValueTransformer.self
     ]
     
     //generate values

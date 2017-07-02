@@ -136,7 +136,7 @@ open class RSActivityManager: NSObject, StoreSubscriber {
             resultTransforms: nil
         )
         
-        let stepTree = RSStepTree(identifier: activity.identifier, root: rootNode)
+        let stepTree = RSStepTree(identifier: activity.identifier, root: rootNode, taskBuilder: self.stepTreeBuilder.rstb, state: state)
         
         debugPrint(stepTree)
         
@@ -196,7 +196,7 @@ open class RSActivityManager: NSObject, StoreSubscriber {
             //check for predicate and evaluate
             //if predicate exists and evaluates false, do not execute action
             if let predicate: RSPredicate = "predicate" <~~ actionJSON,
-                self.evaluatePredicate(predicate: predicate, state: store.state, context: context) == false {
+                RSActivityManager.evaluatePredicate(predicate: predicate, state: store.state, context: context) == false {
                 return
             }
             
@@ -219,7 +219,7 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         
     }
     
-    private func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
+    public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
         //construct substitution dictionary
         
         let nsPredicate = NSPredicate.init(format: predicate.format)

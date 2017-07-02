@@ -28,6 +28,8 @@
 		E21FE6441EFF7287006F6B60 /* values.json in Resources */ = {isa = PBXBuildFile; fileRef = E21FE6431EFF7287006F6B60 /* values.json */; };
 		E21FE6481EFF765C006F6B60 /* YADL.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E21FE6471EFF765C006F6B60 /* YADL.xcassets */; };
 		E21FE6561F006C2B006F6B60 /* YADLFullRawRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */; };
+		E246FEB51F08654600D45DCC /* YADLFullNodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEB41F08654600D45DCC /* YADLFullNodeGenerator.swift */; };
+		E246FEB71F0875DB00D45DCC /* PSScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEB61F0875DB00D45DCC /* PSScore.swift */; };
 		E27667391F07E45E00DDDEF4 /* pss4_nav.json in Resources */ = {isa = PBXBuildFile; fileRef = E27667381F07E45E00DDDEF4 /* pss4_nav.json */; };
 /* End PBXBuildFile section */
 
@@ -74,6 +76,8 @@
 		E21FE6431EFF7287006F6B60 /* values.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = values.json; path = RSuiteArchetypeConfig/json/values.json; sourceTree = "<group>"; };
 		E21FE6471EFF765C006F6B60 /* YADL.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = YADL.xcassets; sourceTree = "<group>"; };
 		E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YADLFullRawRegex.swift; sourceTree = "<group>"; };
+		E246FEB41F08654600D45DCC /* YADLFullNodeGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YADLFullNodeGenerator.swift; sourceTree = "<group>"; };
+		E246FEB61F0875DB00D45DCC /* PSScore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSScore.swift; sourceTree = "<group>"; };
 		E27667381F07E45E00DDDEF4 /* pss4_nav.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = pss4_nav.json; path = RSuiteArchetypeConfig/json/measures/pss4_nav.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -125,7 +129,9 @@
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				E21FE5E21EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift */,
+				E246FEB61F0875DB00D45DCC /* PSScore.swift */,
 				E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */,
+				E246FEB41F08654600D45DCC /* YADLFullNodeGenerator.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
@@ -464,7 +470,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				E246FEB51F08654600D45DCC /* YADLFullNodeGenerator.swift in Sources */,
 				E21FE6561F006C2B006F6B60 /* YADLFullRawRegex.swift in Sources */,
+				E246FEB71F0875DB00D45DCC /* PSScore.swift in Sources */,
 				E21FE5E31EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);

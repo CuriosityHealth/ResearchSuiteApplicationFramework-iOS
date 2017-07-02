@@ -86,7 +86,7 @@ DEPENDENCIES:
   - ResearchSuiteApplicationFramework (from `../`)
   - ResearchSuiteResultsProcessor (from `~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios`)
   - ResearchSuiteTaskBuilder (from `~/Developer/ResearchSuite/iOS/ResearchSuiteTaskBuilder-ios`)
-  - sdlrkx
+  - sdlrkx (from `../../../../ResearchSuite/iOS/sdl-rkx/`)
 
 EXTERNAL SOURCES:
   ResearchSuiteApplicationFramework:
@@ -95,6 +95,8 @@ EXTERNAL SOURCES:
     :path: ~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios
   ResearchSuiteTaskBuilder:
     :path: ~/Developer/ResearchSuite/iOS/ResearchSuiteTaskBuilder-ios
+  sdlrkx:
+    :path: ../../../../ResearchSuite/iOS/sdl-rkx/
 
 SPEC CHECKSUMS:
   Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
@@ -106,9 +108,9 @@ SPEC CHECKSUMS:
   ResearchSuiteResultsProcessor: 2a279aff2ab7b633d1b66046a81e261b44011106
   ResearchSuiteTaskBuilder: 4be10150e3b5d1549b31e476cab836a41d7ab47c
   ReSwift: f0255f4b4f2dacd12c5d97d34d13fc5dad6d6371
-  sdlrkx: 82e3cbd5baba3afd480ea3d3f45bad653e0d91ae
+  sdlrkx: 6c656399f57fd5c0d0c61f6bf4b9392391aaa4a7
   SecureQueue: 3aa95a5bba534c3aa938ae634333cbcf5919060b
 
-PODFILE CHECKSUM: df8c8b9a0b9b2dab08c3a2d7cf74bb68cb879799
+PODFILE CHECKSUM: 1b0112708a4fd35e24a01b7ead8e0a1eee72d75d
 
 COCOAPODS: 1.2.1

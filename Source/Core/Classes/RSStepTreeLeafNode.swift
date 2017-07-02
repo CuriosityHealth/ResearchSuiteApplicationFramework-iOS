@@ -14,7 +14,7 @@ import ResearchKit
 open class RSStepTreeLeafNode: RSStepTreeNode {
     
     let stepGenerator: (RSTBTaskBuilder, String) -> ORKStep?
-    init(
+    public init(
         identifier: String,
         identifierPrefix: String,
         type: String,
@@ -27,5 +27,17 @@ open class RSStepTreeLeafNode: RSStepTreeNode {
     open func step(taskBuilder: RSTBTaskBuilder) -> ORKStep? {
         return self.stepGenerator(taskBuilder, self.identifierPrefix)
     }
+    
+    open override func leaves() -> [RSStepTreeLeafNode] {
+        return [self]
+    }
+    
+//    open override var description: String {
+//        
+//        return self.identifierPrefix == "" ? "\(self.identifier): \(self.type)" : "\n\t\(self.identifierPrefix).\(self.identifier): \(self.type)"
+//        
+//    }
+    
+    
 
 }

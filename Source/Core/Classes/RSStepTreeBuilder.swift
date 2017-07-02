@@ -42,22 +42,22 @@ open class RSStepTreeBuilder: NSObject {
         
     }
     
-    public func stepTree(json: JSON, identifierPrefix: String) -> RSStepTree? {
+    public func stepTree(json: JSON, identifierPrefix: String, state: RSState) -> RSStepTree? {
         
         guard let rootNode = self.node(json: json, identifierPrefix: "") else {
             return nil
         }
         
-        return RSStepTree(identifier: rootNode.identifier, root: rootNode)
+        return RSStepTree(identifier: rootNode.identifier, root: rootNode, taskBuilder: self.rstb, state: state)
     }
     
-    public func stepTree(jsonFileName: String) -> RSStepTree? {
+    public func stepTree(jsonFileName: String, state: RSState) -> RSStepTree? {
         
         guard let element = self.rstb.helper.getJson(forFilename: jsonFileName) as? JSON else {
             return nil
         }
         
-        return self.stepTree(json: element, identifierPrefix: "identifier" <~~ element ?? "")
+        return self.stepTree(json: element, identifierPrefix: "identifier" <~~ element ?? "", state: state)
         
     }
     
@@ -69,7 +69,7 @@ open class RSStepTreeBuilder: NSObject {
         }
         
         guard let descriptor = RSTBElementDescriptor(json: json),
-            let steps = self.rstb.createSteps(forType: descriptor.type, withJsonObject: json as JsonObject),
+            let steps = self.rstb.createSteps(forType: descriptor.type, withJsonObject: json as JsonObject, identifierPrefix: identifierPrefix),
             steps.count > 0 else {
                 return nil
         }
@@ -83,32 +83,34 @@ open class RSStepTreeBuilder: NSObject {
                 identifierPrefix: identifierPrefix,
                 type: descriptor.type,
                 stepGenerator: { (rstb, identifierPrefix) -> ORKStep? in
-                    return rstb.createSteps(forType: descriptor.type, withJsonObject: json as JsonObject)?.first
+                    return rstb.createSteps(forType: descriptor.type, withJsonObject: json as JsonObject, identifierPrefix: identifierPrefix)?.first
             })
             
             return node
         }
         else {
-            let children = steps.map({ (step) -> RSStepTreeLeafNode in
-                return RSStepTreeLeafNode(
-                    identifier: descriptor.identifier,
-                    identifierPrefix: "\(identifierPrefix).\(descriptor.identifier)",
-                    type: descriptor.type,
-                    stepGenerator: { (rstb, identifierPrefix) -> ORKStep? in
-                        return step.copy(withIdentifier: "\(identifierPrefix).\(step.identifier)")
-                })
-            })
-            
-            let node = RSStepTreeBranchNode(
-                identifier: descriptor.identifier,
-                identifierPrefix: identifierPrefix,
-                type: descriptor.type,
-                children: children,
-                navigationRules: nil,
-                resultTransforms: nil
-            )
-            
-            return node
+            assertionFailure("We can't handle more than one step per leaf node now. Implement a node generator")
+            return nil
+//            let children = steps.map({ (step) -> RSStepTreeLeafNode in
+//                return RSStepTreeLeafNode(
+//                    identifier: step.identifier,
+//                    identifierPrefix: "\(identifierPrefix).\(d.identifier)",
+//                    type: descriptor.type,
+//                    stepGenerator: { (rstb, identifierPrefix) -> ORKStep? in
+//                        return step
+//                })
+//            })
+//            
+//            let node = RSStepTreeBranchNode(
+//                identifier: descriptor.identifier,
+//                identifierPrefix: identifierPrefix,
+//                type: descriptor.type,
+//                children: children,
+//                navigationRules: nil,
+//                resultTransforms: nil
+//            )
+//            
+//            return node
         }
         
     }

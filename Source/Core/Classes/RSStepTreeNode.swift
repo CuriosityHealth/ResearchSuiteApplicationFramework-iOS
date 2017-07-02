@@ -26,5 +26,13 @@ open class RSStepTreeNode: NSObject {
         return self.identifierPrefix == "" ? "\(self.identifier): \(self.type)" : "\n\t\(self.identifierPrefix).\(self.identifier): \(self.type)"
         
     }
+    
+    open func leaves() -> [RSStepTreeLeafNode] {
+        return []
+    }
+    
+    open func child(with identifier: String) -> RSStepTreeNode? {
+        return nil
+    }
 
 }

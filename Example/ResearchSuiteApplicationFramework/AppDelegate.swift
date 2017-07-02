@@ -72,8 +72,15 @@ class AppDelegate: RSApplicationDelegate {
         return [
             YADLFullRawRegex.self,
             YADLSpotRaw.self,
-            YADLFullModerateOrHardIdentifiers.self
+            YADLFullModerateOrHardIdentifiers.self,
+            PSScore.self
         ]
+    }
+    
+    open override var stepTreeNodeGenerators: [RSStepTreeNodeGenerator.Type] {
+        return [
+            YADLFullNodeGenerator.self
+        ] + super.stepTreeNodeGenerators
     }
 
 
