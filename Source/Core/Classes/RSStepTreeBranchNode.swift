@@ -69,6 +69,32 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         return child
     }
     
+    open func child(withfullyQualified identifier: String) -> RSStepTreeNode? {
+        guard identifier != "" else {
+            return nil
+        }
+        let identifierStack = identifier.components(separatedBy: ".")
+        
+        guard let head = identifierStack.first,
+            let child = self.childMap[head] else {
+                return nil
+        }
+        
+        let tail = Array(identifierStack.dropFirst())
+        
+        if tail.count > 0 {
+            guard let child = child as? RSStepTreeBranchNode else {
+                return  nil
+            }
+            
+            return child.child(withfullyQualified: tail.joined(separator: "."))
+        }
+        else {
+            return child
+        }
+        
+    }
+    
     
     /**
      Gets the child immediately following child
@@ -101,7 +127,7 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
     
     open func child(for navigationRule: RSStepTreeNavigationRule, with result: ORKTaskResult, state: RSState) -> RSStepTreeNode? {
         
-        let context: [String: AnyObject] = ["taskResult": result, "childMap": self.childMap as AnyObject]
+        let context: [String: AnyObject] = ["taskResult": result, "node": self as AnyObject]
         
         let successfulRuleOpt: RSStepTreeConditionalNavigationRule? = navigationRule.conditionalNavigation.first {
             return RSActivityManager.evaluatePredicate(predicate: $0.predicate, state: state, context: context)
@@ -114,10 +140,5 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         return self.childMap[successfulRule.destination]
     }
     
-    
-    
-    
-    
-    
-    
+
 }

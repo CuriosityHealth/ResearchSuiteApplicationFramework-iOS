@@ -39,7 +39,7 @@
     {
       "identifier": "isConsented",
       "type": "Boolean",
-      "default": false,
+      "default": true,
       "protected": false
     }
   ],

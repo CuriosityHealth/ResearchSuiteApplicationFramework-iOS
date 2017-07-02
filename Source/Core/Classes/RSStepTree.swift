@@ -47,9 +47,37 @@ open class RSStepTree: NSObject, ORKTask {
         return step
     }
     
+    //for now, just use the RK implementation
+    //seems to be working
     open func step(before step: ORKStep?, with result: ORKTaskResult) -> ORKStep? {
         
-        return nil
+        guard let step = step,
+            let stepResults = result.results else {
+            return nil
+        }
+
+        let reversedStepEnumeratedStepResults = Array(stepResults.enumerated().reversed())
+        let firstPair = reversedStepEnumeratedStepResults.first { (offset, stepResult) -> Bool in
+            return stepResult.identifier == step.identifier
+        }
+        
+        guard let index = firstPair?.offset else {
+            return nil
+        }
+        
+        debugPrint(index)
+        let previousIndex = stepResults.index(before: index)
+        debugPrint(previousIndex)
+        let previousStep: ORKStep? = {
+            
+            if previousIndex >= stepResults.startIndex {
+                let identifier: String = stepResults[previousIndex].identifier
+                return self.step(withIdentifier: identifier)
+            }
+            
+            return nil
+        }()
+        return previousStep
         
     }
     
@@ -112,7 +140,7 @@ open class RSStepTree: NSObject, ORKTask {
         //ask for its next child based on result
         //if the next child is a leaf, simply return it
         //otherwise, get the first leaf of the branch node and return that
-        //COMENTARY: that we scope navigation rules to the same level,
+        //COMMENTARY: we scope navigation rules to the same level,
         //i.e., we don't want children to have knowledge of the result of other parts of the tree
         //therefore, we should be able to select the first leaf below the branch
         if let nextChild = parent.child(after: node, with: result, state: self.state) {

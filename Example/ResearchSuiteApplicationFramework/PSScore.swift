@@ -46,6 +46,8 @@ open class PSScore: RSRPIntermediateResult, RSRPFrontEndTransformer {
                 return nil
         }
         
+        debugPrint(stepResults)
+        
         let results: [(String, Int)] = stepResults.flatMap { (stepResult) -> (String, Int)? in
             guard let scaleResult = stepResult.firstResult as? ORKScaleQuestionResult,
                 let score = scaleResult.scaleAnswer?.intValue,

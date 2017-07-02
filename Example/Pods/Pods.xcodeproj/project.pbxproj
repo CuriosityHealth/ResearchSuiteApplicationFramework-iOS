@@ -779,6 +779,8 @@
 		E1843640353438E7EC2923E4C02B2E69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE8ABE575B8B1520A49FF57684D20C28 /* Foundation.framework */; };
 		E1B28B276292EE64F237CBA92A28C9CB /* ORKSignatureStepViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF72AB7CE5025AC279079884F42CC289 /* ORKSignatureStepViewController.m */; };
 		E246FEB91F0879ED00D45DCC /* RSStepTreeResultTransformValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEB81F0879ED00D45DCC /* RSStepTreeResultTransformValueTransformer.swift */; };
+		E246FEBC1F08A28D00D45DCC /* RSLayoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEBB1F08A28D00D45DCC /* RSLayoutManager.swift */; };
+		E246FEBE1F08A2EB00D45DCC /* RSLayoutGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEBD1F08A2EB00D45DCC /* RSLayoutGenerator.swift */; };
 		E26BB83A6BD243DC0E6955FE5768CCF9 /* RSObservableValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E379D993B0256576D04E384781BC92CA /* RSObservableValue.swift */; };
 		E2B16414ADC8CC339AF5FF7CCA9D38AD /* tr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 4434625821C56D6593FB61CCFFFEEE3C /* tr.lproj */; };
 		E2BE3E120877A859E581D4E7675F29FB /* ORKHealthQuantityTypeRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 529A508FCEB62D24200FD9BB35ED67E2 /* ORKHealthQuantityTypeRecorder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1944,6 +1946,8 @@
 		E20E19E674AB2040BC4E333515C25EBF /* ORKPieChartView_Internal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ORKPieChartView_Internal.h; path = ResearchKit/Charts/ORKPieChartView_Internal.h; sourceTree = "<group>"; };
 		E23206988531557C3600A73C0F6008EB /* ORKHolePegTestPlaceStep.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ORKHolePegTestPlaceStep.h; path = ResearchKit/ActiveTasks/ORKHolePegTestPlaceStep.h; sourceTree = "<group>"; };
 		E246FEB81F0879ED00D45DCC /* RSStepTreeResultTransformValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSStepTreeResultTransformValueTransformer.swift; sourceTree = "<group>"; };
+		E246FEBB1F08A28D00D45DCC /* RSLayoutManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSLayoutManager.swift; sourceTree = "<group>"; };
+		E246FEBD1F08A2EB00D45DCC /* RSLayoutGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSLayoutGenerator.swift; sourceTree = "<group>"; };
 		E2565A565FAE3F09F5234837A7B1B17C /* ORKCountdownStepViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ORKCountdownStepViewController.m; path = ResearchKit/ActiveTasks/ORKCountdownStepViewController.m; sourceTree = "<group>"; };
 		E25C84A59615D4A414CD3137C0959EAB /* RSTBElementGeneratorService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RSTBElementGeneratorService.swift; sourceTree = "<group>"; };
 		E2C36843204CB96D3D53F9DECA0A3CBB /* ResearchSuiteResultsProcessor.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ResearchSuiteResultsProcessor.xcconfig; sourceTree = "<group>"; };
@@ -2524,6 +2528,8 @@
 				99F8936A3130F94690BB698EC57A8C70 /* RSActivityManager.swift */,
 				CF3D207BBB075C9DDF50EE4E26F8B4DF /* RSApplicationDelegate.swift */,
 				ECF9DADFA8C4CB5DFA7604E41A4DC2F6 /* RSConstantValue.swift */,
+				E246FEBB1F08A28D00D45DCC /* RSLayoutManager.swift */,
+				E246FEBD1F08A2EB00D45DCC /* RSLayoutGenerator.swift */,
 				3B8505135B69E83BC3A3AFDC07669A66 /* RSConstantValueTransformer.swift */,
 				69EE8E68D18E95AA1BB70DB566DB1D67 /* RSElementListNodeDescriptor.swift */,
 				2B9D052647CE6FFB27F26947EB62ADD3 /* RSFakeBackEnd.swift */,
@@ -5532,8 +5538,10 @@
 				48DB45EA2CF582E19F871716E472B27C /* RSPredicate.swift in Sources */,
 				E3ADB6F8AF97AFAE43600C9E1848B326 /* RSQueueActivityActionTransformer.swift in Sources */,
 				69D32FDED3B97AF7C8DE0126A8E2C6B4 /* RSReducer.swift in Sources */,
+				E246FEBE1F08A2EB00D45DCC /* RSLayoutGenerator.swift in Sources */,
 				149A3F28D0D2855262468A37230DC0ED /* RSResultTransform.swift in Sources */,
 				DF75D656325907EA52DEEFE0B60B2AE1 /* RSResultTransformValueTransformer.swift in Sources */,
+				E246FEBC1F08A28D00D45DCC /* RSLayoutManager.swift in Sources */,
 				A65D8DB9C4AEFAFFEE6B108C162F760D /* RSSendResultToServerActionTransformer.swift in Sources */,
 				DEC53FACF4539C90C8D2684201F2804E /* RSSendResultToServerMiddleware.swift in Sources */,
 				71211B129997A6593E3D6750F82E9792 /* RSSetValueInStateActionTransformer.swift in Sources */,

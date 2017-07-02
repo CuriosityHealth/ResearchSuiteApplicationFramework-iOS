@@ -23,8 +23,12 @@ open class RSStepTreeNode: NSObject {
     
     open override var description: String {
         
-        return self.identifierPrefix == "" ? "\(self.identifier): \(self.type)" : "\n\t\(self.identifierPrefix).\(self.identifier): \(self.type)"
+        return self.identifierPrefix == "" ? "\(self.identifier): \(self.type)" : "\n\t\(self.fullyQualifiedIdentifier): \(self.type)"
         
+    }
+    
+    var fullyQualifiedIdentifier: String {
+        return "\(self.identifierPrefix).\(self.identifier)"
     }
     
     open func leaves() -> [RSStepTreeLeafNode] {

@@ -199,8 +199,8 @@
 		E21FE62B1EFF7237006F6B60 /* config */ = {
 			isa = PBXGroup;
 			children = (
-				E21FE6461EFF763F006F6B60 /* images */,
 				E21FE6451EFF7636006F6B60 /* json */,
+				E21FE6461EFF763F006F6B60 /* images */,
 			);
 			name = config;
 			sourceTree = "<group>";
