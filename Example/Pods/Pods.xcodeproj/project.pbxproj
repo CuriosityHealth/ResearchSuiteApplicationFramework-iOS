@@ -783,6 +783,7 @@
 		E246FEBE1F08A2EB00D45DCC /* RSLayoutGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEBD1F08A2EB00D45DCC /* RSLayoutGenerator.swift */; };
 		E246FED31F0A88D900D45DCC /* RSLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FED21F0A88D900D45DCC /* RSLayout.swift */; };
 		E246FED51F0A8DC800D45DCC /* RSRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FED41F0A8DC800D45DCC /* RSRoute.swift */; };
+		E246FEDD1F0AB95700D45DCC /* RSRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEDC1F0AB95700D45DCC /* RSRouter.swift */; };
 		E26BB83A6BD243DC0E6955FE5768CCF9 /* RSObservableValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = E379D993B0256576D04E384781BC92CA /* RSObservableValue.swift */; };
 		E2B16414ADC8CC339AF5FF7CCA9D38AD /* tr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 4434625821C56D6593FB61CCFFFEEE3C /* tr.lproj */; };
 		E2BE3E120877A859E581D4E7675F29FB /* ORKHealthQuantityTypeRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 529A508FCEB62D24200FD9BB35ED67E2 /* ORKHealthQuantityTypeRecorder.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1952,6 +1953,7 @@
 		E246FEBD1F08A2EB00D45DCC /* RSLayoutGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSLayoutGenerator.swift; sourceTree = "<group>"; };
 		E246FED21F0A88D900D45DCC /* RSLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSLayout.swift; sourceTree = "<group>"; };
 		E246FED41F0A8DC800D45DCC /* RSRoute.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSRoute.swift; sourceTree = "<group>"; };
+		E246FEDC1F0AB95700D45DCC /* RSRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSRouter.swift; sourceTree = "<group>"; };
 		E2565A565FAE3F09F5234837A7B1B17C /* ORKCountdownStepViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ORKCountdownStepViewController.m; path = ResearchKit/ActiveTasks/ORKCountdownStepViewController.m; sourceTree = "<group>"; };
 		E25C84A59615D4A414CD3137C0959EAB /* RSTBElementGeneratorService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RSTBElementGeneratorService.swift; sourceTree = "<group>"; };
 		E2C36843204CB96D3D53F9DECA0A3CBB /* ResearchSuiteResultsProcessor.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = ResearchSuiteResultsProcessor.xcconfig; sourceTree = "<group>"; };
@@ -2535,6 +2537,7 @@
 				E246FEBB1F08A28D00D45DCC /* RSLayoutManager.swift */,
 				E246FED21F0A88D900D45DCC /* RSLayout.swift */,
 				E246FED41F0A8DC800D45DCC /* RSRoute.swift */,
+				E246FEDC1F0AB95700D45DCC /* RSRouter.swift */,
 				E246FEBD1F08A2EB00D45DCC /* RSLayoutGenerator.swift */,
 				3B8505135B69E83BC3A3AFDC07669A66 /* RSConstantValueTransformer.swift */,
 				69EE8E68D18E95AA1BB70DB566DB1D67 /* RSElementListNodeDescriptor.swift */,
@@ -5575,6 +5578,7 @@
 				92D2AB7A0092524C6F2BEEA3F26FC8CE /* RSValueManager.swift in Sources */,
 				DDD4D31A2C8566E9DEB90245B482003C /* RSValueTransformer.swift in Sources */,
 				63216708EB6C1ECF296C5A2BBBB8BABD /* ValueConvertible.swift in Sources */,
+				E246FEDD1F0AB95700D45DCC /* RSRouter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,7 +11,7 @@ import ReSwift
 import ResearchSuiteTaskBuilder
 import ResearchSuiteResultsProcessor
 
-open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSLayoutManagerDelegate {
+open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDelegate {
     
     public var window: UIWindow?
     

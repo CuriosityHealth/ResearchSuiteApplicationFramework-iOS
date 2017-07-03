@@ -21,6 +21,7 @@ public final class RSState: NSObject, StateType {
     public let activityMap: [String: RSActivity]
     public let layoutMap: [String: RSLayout]
     public let routeMap: [String: RSRoute]
+    public let routeIdentifiers: [String]
     public let activityQueue: [(UUID, String)]
     public let presentedActivity: (UUID, String)?
     
@@ -34,6 +35,7 @@ public final class RSState: NSObject, StateType {
                 activityMap: [String: RSActivity] = [:],
                 layoutMap: [String: RSLayout] = [:],
                 routeMap: [String: RSRoute] = [:],
+                routeIdentifiers: [String] = [],
                 activityQueue:[(UUID, String)] = [],
                 presentedActivity: (UUID, String)? = nil
         ) {
@@ -48,6 +50,7 @@ public final class RSState: NSObject, StateType {
         self.activityMap = activityMap
         self.layoutMap = layoutMap
         self.routeMap = routeMap
+        self.routeIdentifiers = routeIdentifiers
         self.activityQueue = activityQueue
         self.presentedActivity = presentedActivity
     }
@@ -64,6 +67,7 @@ public final class RSState: NSObject, StateType {
         activityMap: [String: RSActivity]? = nil,
         layoutMap: [String: RSLayout]? = nil,
         routeMap: [String: RSRoute]? = nil,
+        routeIdentifiers: [String]? = nil,
         activityQueue: [(UUID, String)]? = nil,
         presentedActivity: ((UUID, String)?)? = nil
         ) -> RSState {
@@ -79,6 +83,7 @@ public final class RSState: NSObject, StateType {
             activityMap: activityMap ?? fromState.activityMap,
             layoutMap: layoutMap ?? fromState.layoutMap,
             routeMap: routeMap ?? fromState.routeMap,
+            routeIdentifiers: routeIdentifiers ?? fromState.routeIdentifiers,
             activityQueue: activityQueue ?? fromState.activityQueue,
             presentedActivity: presentedActivity ?? fromState.presentedActivity
         )

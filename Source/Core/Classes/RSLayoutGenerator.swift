@@ -13,6 +13,6 @@ import ReSwift
 public protocol RSLayoutGenerator {
     
     static func supportsType(type: String) -> Bool
-    static func generateLayout(jsonObject: JSON, store: Store<RSState>, layoutManager: RSLayoutManager) -> ValueConvertible?
+    static func generateLayout(jsonObject: JSON, store: Store<RSState>, layoutManager: RSLayoutManager) -> UIViewController?
 
 }

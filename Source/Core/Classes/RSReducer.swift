@@ -223,7 +223,8 @@ public class RSReducer: NSObject {
                 let route = action.route
                 var newMap = state.routeMap
                 newMap[route.identifier] = route
-                return RSState.newState(fromState: state, routeMap: newMap)
+                let newIdentifierList = state.routeIdentifiers.filter { $0 != route.identifier}  + [route.identifier]
+                return RSState.newState(fromState: state, routeMap: newMap, routeIdentifiers: newIdentifierList)
                 
             default:
                 return state

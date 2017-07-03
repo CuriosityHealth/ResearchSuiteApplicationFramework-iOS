@@ -9,11 +9,7 @@
 import UIKit
 import ReSwift
 
-public protocol RSLayoutManagerDelegate: class {
-    func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?)
-}
-
-public class RSLayoutManager: NSObject, StoreSubscriber {
+public class RSLayoutManager: NSObject {
     
     //layout manager needs to sense chagnes to the store
     //reevaluate to see if the layout changes
@@ -21,33 +17,21 @@ public class RSLayoutManager: NSObject, StoreSubscriber {
     //tell delegate to present new view controller
     
     let layoutGenerators: [RSLayoutGenerator.Type]
-    let store: Store<RSState>
-    var layoutID: String?
-    weak var delegate: RSLayoutManagerDelegate?
     
     public init(
-        layoutGenerators: [RSLayoutGenerator.Type]?,
-        store: Store<RSState>,
-        delegate: RSLayoutManagerDelegate
+        layoutGenerators: [RSLayoutGenerator.Type]?
     ) {
-        
         self.layoutGenerators = layoutGenerators ?? []
-        self.store = store
-        self.delegate = delegate
-        
         super.init()
-        
-        store.subscribe(self)
     }
     
-    deinit {
-        self.store.unsubscribe(self)
-    }
-
-    public func newState(state: RSState) {
-        
-        
-        
-        
+    public func generateLayout(layout: RSLayout, store: Store<RSState>) -> UIViewController? {
+        for layoutGenerator in layoutGenerators {
+            if layoutGenerator.supportsType(type: layout.type),
+                let layoutVC = layoutGenerator.generateLayout(jsonObject: layout.element, store: store, layoutManager: self) {
+                return layoutVC
+            }
+        }
+        return nil
     }
 }
