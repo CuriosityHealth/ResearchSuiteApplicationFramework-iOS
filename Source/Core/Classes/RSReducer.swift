@@ -14,7 +14,9 @@ public class RSReducer: NSObject {
     public static let reducer = CombinedReducer([
         ActivityReducer(),
         MeasureReducer(),
-        StateValueReducer()
+        StateValueReducer(),
+        LayoutReducer(),
+        RouteReducer()
     ])
     
     final class ActivityReducer: Reducer {
@@ -178,6 +180,50 @@ public class RSReducer: NSObject {
                 var newMap = state.functionsMap
                 newMap[functionValue.identifier] = newFunctionValue
                 return RSState.newState(fromState: state, functionsMap: newMap)
+                
+            default:
+                return state
+            }
+            
+        }
+    }
+    
+    final class LayoutReducer: Reducer {
+        
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+            case let action as AddLayoutAction:
+                
+                let layout = action.layout
+                var newMap = state.layoutMap
+                newMap[layout.identifier] = layout
+                return RSState.newState(fromState: state, layoutMap: newMap)
+                
+            default:
+                return state
+            }
+            
+        }
+    }
+    
+    final class RouteReducer: Reducer {
+        
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+            case let action as AddRouteAction:
+                
+                let route = action.route
+                var newMap = state.routeMap
+                newMap[route.identifier] = route
+                return RSState.newState(fromState: state, routeMap: newMap)
                 
             default:
                 return state

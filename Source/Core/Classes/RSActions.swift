@@ -39,6 +39,14 @@ public struct AddActivityAction: Action {
     let activity: RSActivity
 }
 
+public struct AddLayoutAction: Action {
+    let layout: RSLayout
+}
+
+public struct AddRouteAction: Action {
+    let route: RSRoute
+}
+
 public struct QueueActivityAction: Action {
     let uuid: UUID
     let activityID: String

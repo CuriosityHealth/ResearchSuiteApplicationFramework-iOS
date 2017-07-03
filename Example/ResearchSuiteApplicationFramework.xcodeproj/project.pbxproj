@@ -30,6 +30,8 @@
 		E21FE6561F006C2B006F6B60 /* YADLFullRawRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */; };
 		E246FEB51F08654600D45DCC /* YADLFullNodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEB41F08654600D45DCC /* YADLFullNodeGenerator.swift */; };
 		E246FEB71F0875DB00D45DCC /* PSScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEB61F0875DB00D45DCC /* PSScore.swift */; };
+		E246FED81F0A8F1D00D45DCC /* layouts.json in Resources */ = {isa = PBXBuildFile; fileRef = E246FED71F0A8F1D00D45DCC /* layouts.json */; };
+		E246FEDB1F0A8F2900D45DCC /* routes.json in Resources */ = {isa = PBXBuildFile; fileRef = E246FEDA1F0A8F2900D45DCC /* routes.json */; };
 		E27667391F07E45E00DDDEF4 /* pss4_nav.json in Resources */ = {isa = PBXBuildFile; fileRef = E27667381F07E45E00DDDEF4 /* pss4_nav.json */; };
 /* End PBXBuildFile section */
 
@@ -78,6 +80,8 @@
 		E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YADLFullRawRegex.swift; sourceTree = "<group>"; };
 		E246FEB41F08654600D45DCC /* YADLFullNodeGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YADLFullNodeGenerator.swift; sourceTree = "<group>"; };
 		E246FEB61F0875DB00D45DCC /* PSScore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSScore.swift; sourceTree = "<group>"; };
+		E246FED71F0A8F1D00D45DCC /* layouts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = layouts.json; path = RSuiteArchetypeConfig/json/layout/layouts.json; sourceTree = "<group>"; };
+		E246FEDA1F0A8F2900D45DCC /* routes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = routes.json; path = RSuiteArchetypeConfig/json/layout/routes.json; sourceTree = "<group>"; };
 		E27667381F07E45E00DDDEF4 /* pss4_nav.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = pss4_nav.json; path = RSuiteArchetypeConfig/json/measures/pss4_nav.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -240,6 +244,8 @@
 		E21FE6451EFF7636006F6B60 /* json */ = {
 			isa = PBXGroup;
 			children = (
+				E246FED91F0A8F2000D45DCC /* routes */,
+				E246FED61F0A8EFC00D45DCC /* layouts */,
 				E21FE6421EFF727F006F6B60 /* values */,
 				E21FE6311EFF7268006F6B60 /* measures */,
 				E21FE62E1EFF724C006F6B60 /* activities */,
@@ -253,6 +259,22 @@
 				E21FE6471EFF765C006F6B60 /* YADL.xcassets */,
 			);
 			name = images;
+			sourceTree = "<group>";
+		};
+		E246FED61F0A8EFC00D45DCC /* layouts */ = {
+			isa = PBXGroup;
+			children = (
+				E246FED71F0A8F1D00D45DCC /* layouts.json */,
+			);
+			name = layouts;
+			sourceTree = "<group>";
+		};
+		E246FED91F0A8F2000D45DCC /* routes */ = {
+			isa = PBXGroup;
+			children = (
+				E246FEDA1F0A8F2900D45DCC /* routes.json */,
+			);
+			name = routes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -349,6 +371,7 @@
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				E21FE6481EFF765C006F6B60 /* YADL.xcassets in Resources */,
 				E21FE6401EFF7275006F6B60 /* YADLFull.json in Resources */,
+				E246FED81F0A8F1D00D45DCC /* layouts.json in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				E21FE63A1EFF7275006F6B60 /* demographics.json in Resources */,
 				E21FE63C1EFF7275006F6B60 /* pss4.json in Resources */,
@@ -357,6 +380,7 @@
 				E21FE63B1EFF7275006F6B60 /* measures.json in Resources */,
 				E21FE63E1EFF7275006F6B60 /* relaxationBreathingTask.json in Resources */,
 				E21FE6411EFF7275006F6B60 /* YADLSpot.json in Resources */,
+				E246FEDB1F0A8F2900D45DCC /* routes.json in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				E21FE63F1EFF7275006F6B60 /* stressSourceQuestionaire.json in Resources */,
 			);

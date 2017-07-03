@@ -10,7 +10,7 @@ import UIKit
 import ReSwift
 
 public protocol RSLayoutManagerDelegate: class {
-    func presentLayout(viewController: UIViewController)
+    func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?)
 }
 
 public class RSLayoutManager: NSObject, StoreSubscriber {

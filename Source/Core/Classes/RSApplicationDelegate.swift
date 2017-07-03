@@ -11,7 +11,7 @@ import ReSwift
 import ResearchSuiteTaskBuilder
 import ResearchSuiteResultsProcessor
 
-open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
+open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSLayoutManagerDelegate {
     
     public var window: UIWindow?
     
@@ -112,6 +112,36 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
         self.activityManager.delegate = self.window?.rootViewController
         
         return true
+    }
+    
+    open func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?) {
+        self.transition(toRootViewController: viewController, animated: true, completion: completion)
+    }
+    
+    /**
+     Convenience method for transitioning to the given view controller as the main window
+     rootViewController.
+     */
+    open func transition(toRootViewController: UIViewController, animated: Bool, completion: ((Bool) -> Swift.Void)? = nil) {
+        guard let window = self.window else { return }
+        if (animated) {
+            let snapshot:UIView = (self.window?.snapshotView(afterScreenUpdates: true))!
+            toRootViewController.view.addSubview(snapshot);
+            
+            self.window?.rootViewController = toRootViewController;
+            
+            UIView.animate(withDuration: 0.3, animations: {() in
+                snapshot.layer.opacity = 0;
+            }, completion: {
+                (value: Bool) in
+                snapshot.removeFromSuperview()
+                completion?(value)
+            })
+        }
+        else {
+            window.rootViewController = toRootViewController
+            completion?(true)
+        }
     }
 
 }

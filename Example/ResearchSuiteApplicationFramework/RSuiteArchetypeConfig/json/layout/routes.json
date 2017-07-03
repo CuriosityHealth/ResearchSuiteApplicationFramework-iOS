@@ -1,8 +1,8 @@
 {
-  "layouts": [
+  "routes": [
     {
       "identifier": "consent",
-      "layout": "consent_layout",
+      "layout": "consent",
       "predicate": {
         "format": "$isConsented == false",
         "substitutions": {
@@ -15,7 +15,7 @@
     },
     {
       "identifier": "onboarding",
-      "layout": "onboarding_layout",
+      "layout": "onboarding",
       "predicate": {
         "format": "$isConsented == true AND $isSignedIn == false",
         "substitutions": {
@@ -32,7 +32,7 @@
     },
     {
       "identifier": "main",
-      "layout": "main_layout",
+      "layout": "main",
       "predicate": {
         "format": "$isConsented == true AND $isSignedIn == true",
         "substitutions": {

@@ -95,6 +95,30 @@ public class RSActionCreators: NSObject {
         
     }
     
+    public static func addLayoutsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            selector: { "layouts" <~~ $0 },
+            flatMapFunc: { RSLayout(json: $0) },
+            mapFunc: { AddLayoutAction(layout: $0) }
+        )
+        
+    }
+    
+    public static func addRoutesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            selector: { "routes" <~~ $0 },
+            flatMapFunc: { RSRoute(json: $0) },
+            mapFunc: { AddRouteAction(route: $0) }
+        )
+        
+    }
+    
     public static func queueActivity(activityID: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             return QueueActivityAction(uuid: UUID(), activityID: activityID)

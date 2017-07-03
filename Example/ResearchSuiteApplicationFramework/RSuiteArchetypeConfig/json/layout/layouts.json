@@ -1,12 +1,9 @@
 {
-  "identifier": "main",
-  "type": "tabBar",
-  "onLoad": [],
-  "tabs": [
+  "layouts": [
     {
+      "identifier": "survey_list",
       "type": "list",
-      "title": "Surveys",
-      "shortTitle": "Surveys",
+      "onLoad": [],
       "items": [
         {
           "identifier": "baseline",
@@ -49,9 +46,9 @@
       ]
     },
     {
+      "identifier":"settings_list",
       "type": "list",
-      "title": "Settings",
-      "shortTitle": "Settings",
+      "onLoad": [],
       "items": [
         {
           "identifier": "logOut",
@@ -64,6 +61,33 @@
           ]
         }
       ]
+    },
+    {
+      "identifier": "main",
+      "type": "tabBar",
+      "onLoad": [],
+      "tabs": [
+        {
+          "identifier": "survey_list",
+          "title": "Surveys",
+          "shortTitle": "Surveys",
+        },
+        {
+          "identifier": "settings_list",
+          "title": "Settings",
+          "shortTitle": "Settings",
+        }
+      ]
+    },
+    {
+      "identifier": "consent",
+      "type": "consent",
+      "onLoad": []
+    },
+    {
+      "identifier": "onboarding",
+      "type": "onboarding",
+      "onLoad": []
     }
   ]
 }

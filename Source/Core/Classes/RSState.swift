@@ -19,6 +19,8 @@ public final class RSState: NSObject, StateType {
     public let functionsMap: [String: RSFunctionValue]
     public let measureMap: [String: RSMeasure]
     public let activityMap: [String: RSActivity]
+    public let layoutMap: [String: RSLayout]
+    public let routeMap: [String: RSRoute]
     public let activityQueue: [(UUID, String)]
     public let presentedActivity: (UUID, String)?
     
@@ -30,6 +32,8 @@ public final class RSState: NSObject, StateType {
                 functionsMap: [String: RSFunctionValue] = [:],
                 measureMap: [String: RSMeasure] = [:],
                 activityMap: [String: RSActivity] = [:],
+                layoutMap: [String: RSLayout] = [:],
+                routeMap: [String: RSRoute] = [:],
                 activityQueue:[(UUID, String)] = [],
                 presentedActivity: (UUID, String)? = nil
         ) {
@@ -42,6 +46,8 @@ public final class RSState: NSObject, StateType {
         self.functionsMap = functionsMap
         self.measureMap = measureMap
         self.activityMap = activityMap
+        self.layoutMap = layoutMap
+        self.routeMap = routeMap
         self.activityQueue = activityQueue
         self.presentedActivity = presentedActivity
     }
@@ -56,6 +62,8 @@ public final class RSState: NSObject, StateType {
         functionsMap: [String: RSFunctionValue]? = nil,
         measureMap: [String: RSMeasure]? = nil,
         activityMap: [String: RSActivity]? = nil,
+        layoutMap: [String: RSLayout]? = nil,
+        routeMap: [String: RSRoute]? = nil,
         activityQueue: [(UUID, String)]? = nil,
         presentedActivity: ((UUID, String)?)? = nil
         ) -> RSState {
@@ -69,6 +77,8 @@ public final class RSState: NSObject, StateType {
             functionsMap: functionsMap ?? fromState.functionsMap,
             measureMap: measureMap ?? fromState.measureMap,
             activityMap: activityMap ?? fromState.activityMap,
+            layoutMap: layoutMap ?? fromState.layoutMap,
+            routeMap: routeMap ?? fromState.routeMap,
             activityQueue: activityQueue ?? fromState.activityQueue,
             presentedActivity: presentedActivity ?? fromState.presentedActivity
         )

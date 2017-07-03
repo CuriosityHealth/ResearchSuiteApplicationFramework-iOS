@@ -27,6 +27,8 @@ class AppDelegate: RSApplicationDelegate {
         self.store?.dispatch(RSActionCreators.addStateValuesFromFile(fileName: "values"))
         self.store?.dispatch(RSActionCreators.addConstantsFromFile(fileName: "values"))
         self.store?.dispatch(RSActionCreators.addFunctionsFromFile(fileName: "values"))
+        self.store?.dispatch(RSActionCreators.addLayoutsFromFile(fileName: "layouts"))
+        self.store?.dispatch(RSActionCreators.addRoutesFromFile(fileName: "routes"))
         
         let registerFunctionAction = RSActionCreators.registerFunction(identifier: "isSignedIn") {
             return true as NSNumber
