@@ -16,10 +16,10 @@ public class RSLayoutManager: NSObject {
     //if the layout changes, need to instantiate the new layout view controller
     //tell delegate to present new view controller
     
-    let layoutGenerators: [RSLayoutGenerator.Type]
+    let layoutGenerators: [RSLayoutGenerator]
     
     public init(
-        layoutGenerators: [RSLayoutGenerator.Type]?
+        layoutGenerators: [RSLayoutGenerator]?
     ) {
         self.layoutGenerators = layoutGenerators ?? []
         super.init()

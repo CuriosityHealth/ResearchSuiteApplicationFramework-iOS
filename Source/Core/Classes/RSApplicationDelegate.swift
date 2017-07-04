@@ -14,6 +14,7 @@ import ResearchSuiteResultsProcessor
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDelegate {
     
     public var window: UIWindow?
+    private var rootNavController: UINavigationController!
     
     public var activityManager: RSActivityManager!
     
@@ -24,6 +25,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
     
     public var resultsProcessorFrontEnd: RSRPFrontEndService!
     public var persistentStoreSubscriber: RSStatePersistentStoreSubscriber!
+    
+    public var layoutManager: RSLayoutManager!
+    public var router: RSRouter!
     
     public static var appDelegate: RSApplicationDelegate! {
         return UIApplication.shared.delegate as! RSApplicationDelegate
@@ -78,6 +82,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
         ]
     }
     
+    open var layoutGenerators: [RSListLayoutGenerator] {
+        return [
+            RSListLayoutGenerator()
+        ]
+    }
+    
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         //initialize store
@@ -105,30 +115,51 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
         
         self.activityManager = RSActivityManager(store: self.store, taskBuilder: self.taskBuilder, stepTreeBuilder: self.stepTreeBuilder)
         
-        
-        
         self.store.subscribe(self.persistentStoreSubscriber)
         
-        self.activityManager.delegate = self.window?.rootViewController
+        self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
+        
+        self.router = RSRouter(
+            store: self.store,
+            layoutManager: self.layoutManager,
+            delegate: self
+        )
+        
+        self.store.subscribe(self.router)
+        
+        //set root view controller
+        self.rootNavController = UINavigationController()
+        self.window?.rootViewController = self.rootNavController
+        self.activityManager.setDelegate(delegate: self.rootNavController)
+        
+        debugPrint(self.rootNavController)
         
         return true
     }
     
     open func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?) {
-        self.transition(toRootViewController: viewController, animated: true, completion: completion)
+        self.transition(toRootViewController: viewController, animated: false, completion: { presented in
+            completion?(presented)
+        })
     }
     
     /**
-     Convenience method for transitioning to the given view controller as the main window
+     Convenience method for transitioning to the given view controller as the nav controller
      rootViewController.
      */
+    
+    //there is a bug when we are presenting a modal view controller and we reset the rootViewController
     open func transition(toRootViewController: UIViewController, animated: Bool, completion: ((Bool) -> Swift.Void)? = nil) {
-        guard let window = self.window else { return }
         if (animated) {
             let snapshot:UIView = (self.window?.snapshotView(afterScreenUpdates: true))!
-            toRootViewController.view.addSubview(snapshot);
+
             
-            self.window?.rootViewController = toRootViewController;
+            //this causes viewdidLoad for toRootViewController to be called
+            //if this is a layout view controller, its actions will be executed
+//            toRootViewController.view.addSubview(snapshot);
+            
+            self.rootNavController.viewControllers = [toRootViewController]
+            toRootViewController.view.addSubview(snapshot)
             
             UIView.animate(withDuration: 0.3, animations: {() in
                 snapshot.layer.opacity = 0;
@@ -139,9 +170,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
             })
         }
         else {
-            window.rootViewController = toRootViewController
+            self.rootNavController.viewControllers = [toRootViewController]
             completion?(true)
         }
+
     }
 
 }

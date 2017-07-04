@@ -7,7 +7,47 @@
 //
 
 import UIKit
+import Gloss
+import ReSwift
 
-class RSActionManager: NSObject {
+open class RSActionManager: NSObject {
+    
+    open class func actionTransforms() -> [RSActionTransformer.Type] {
+        return [
+            RSSendResultToServerActionTransformer.self,
+            RSSetValueInStateActionTransformer.self,
+            RSQueueActivityActionTransformer.self
+        ]
+    }
+    
+    open class func processAction(action: JSON, context: [String: AnyObject], store: Store<RSState>) {
+        
+        //check for predicate and evaluate
+        //if predicate exists and evaluates false, do not execute action
+        if let predicate: RSPredicate = "predicate" <~~ action,
+            RSActivityManager.evaluatePredicate(predicate: predicate, state: store.state, context: context) == false {
+            return
+        }
+        
+        //if action malformed, do not execute action
+        guard let type: String = "type" <~~ action else {
+            return
+        }
+        
+        for transformer in RSActionManager.actionTransforms() {
+            if transformer.supportsType(type: type) {
+                guard let actionClosure = transformer.generateAction(jsonObject: action, context: context) else {
+                    return
+                }
+                
+                store.dispatch(actionClosure)
+            }
+        }
+    
+    }
+    
+    open class func processActions(actions: [JSON], context: [String: AnyObject], store: Store<RSState>) {
+        actions.forEach { RSActionManager.processAction(action: $0, context: context, store: store) }
+    }
 
 }

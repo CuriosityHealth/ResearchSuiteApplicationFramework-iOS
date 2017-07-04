@@ -32,7 +32,8 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '9.0'
 
   s.subspec 'Core' do |core|
-    core.source_files = 'Source/Core/**/*'
+    core.source_files = 'Source/Core/Classes/**/*'
+    core.resources = 'Source/Core/Storyboards/**/*'
     core.dependency 'ResearchKit', '~> 1.4'
     core.dependency 'ReSwift', '~> 3.0'
     core.dependency 'ResearchSuiteTaskBuilder', '~> 0.5'

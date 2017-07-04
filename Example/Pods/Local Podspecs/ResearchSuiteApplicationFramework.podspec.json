@@ -22,7 +22,8 @@
   "subspecs": [
     {
       "name": "Core",
-      "source_files": "Source/Core/**/*",
+      "source_files": "Source/Core/Classes/**/*",
+      "resources": "Source/Core/Storyboards/**/*",
       "dependencies": {
         "ResearchKit": [
           "~> 1.4"

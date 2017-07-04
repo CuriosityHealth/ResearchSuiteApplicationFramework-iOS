@@ -46,6 +46,10 @@
           }
         }
       }
+    },
+    {
+      "identifier": "test",
+      "layout": "survey_list"
     }
   ]
 }

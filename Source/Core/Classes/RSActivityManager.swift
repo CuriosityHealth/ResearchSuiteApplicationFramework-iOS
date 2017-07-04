@@ -16,10 +16,11 @@ open class RSActivityManager: NSObject, StoreSubscriber {
     
     let store: Store<RSState>
     
-    weak var delegate: UIViewController?
+    private weak var delegate: UIViewController?
     let delegateLock: DispatchQueue
     
     var isLaunching = false
+    var state: RSState! = nil
     
     static let defaultActivityElementTransforms: [RSActivityElementTransformer.Type] = [
         RSMeasureActivityElementTransformer.self,
@@ -70,12 +71,17 @@ open class RSActivityManager: NSObject, StoreSubscriber {
             }
             else {
                 self.delegate = delegate
+                DispatchQueue.main.async {
+                    self.newState(state: self.state)
+                }
                 return true
             }
         }
     }
     
     public func newState(state: RSState) {
+        
+        self.state = state
         
         if let delegate = self.getDelegate(),
             self.isPresenting(delegate: delegate) == false,
@@ -107,7 +113,8 @@ open class RSActivityManager: NSObject, StoreSubscriber {
             
             let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
             self.isLaunching = true
-            delegate.present(taskViewController, animated: true, completion: { 
+            debugPrint(self.delegate)
+            self.delegate!.present(taskViewController, animated: true, completion: {
                 self.isLaunching = false
                 let action = RSActionCreators.presentedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
                 store.dispatch(action)
@@ -182,42 +189,12 @@ open class RSActivityManager: NSObject, StoreSubscriber {
     }
     
     private func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>) {
-        
-        let actionTransforms: [RSActionTransformer.Type] = [
-            RSSendResultToServerActionTransformer.self,
-            RSSetValueInStateActionTransformer.self,
-            RSQueueActivityActionTransformer.self
-        ]
         let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
-        
         let context: [String: AnyObject] = ["taskResult": taskResult]
-        
-        onSuccessActionJSON.forEach { (actionJSON) in
-            //check for predicate and evaluate
-            //if predicate exists and evaluates false, do not execute action
-            if let predicate: RSPredicate = "predicate" <~~ actionJSON,
-                RSActivityManager.evaluatePredicate(predicate: predicate, state: store.state, context: context) == false {
-                return
-            }
-            
-            //if action malformed, do not execute action
-            guard let type: String = "type" <~~ actionJSON else {
-                return
-            }
-            
-            for transformer in actionTransforms {
-                if transformer.supportsType(type: type) {
-                    guard let actionClosure = transformer.generateAction(jsonObject: actionJSON, context: context) else {
-                        return
-                    }
-                    
-                    store.dispatch(actionClosure)
-                }
-            }
-            
-        }
-        
+        RSActionManager.processActions(actions: onSuccessActionJSON, context: context, store: store)
     }
+    
+    //TODO: onFailure and Finally action processing
     
     public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
         //construct substitution dictionary
