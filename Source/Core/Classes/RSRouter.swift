@@ -39,12 +39,11 @@ open class RSRouter: NSObject, StoreSubscriber {
         
         let firstRouteOpt = routes.first { (route) -> Bool in
             
-            //TODO: add predicate logic
             guard let predicate = route.predicate else {
                 return true
             }
             
-            return false
+            return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
             
         }
         
@@ -55,13 +54,33 @@ open class RSRouter: NSObject, StoreSubscriber {
         if self.currentRoute == nil {
             self.currentRoute = firstRoute
             if let layoutVC = self.generateLayout(for: firstRoute, state: state) {
-                self.delegate?.presentLayout(viewController: layoutVC, completion: nil)
+                self.delegate?.presentLayout(viewController: layoutVC, completion: {presented in
+                    if presented {
+                        guard let layout = RSStateSelectors.layout(state, for: firstRoute.layout) else {
+                            return
+                        }
+
+                        layout.onLoadActions.forEach({ (action) in
+                            RSActionManager.processAction(action: action, context: ["layoutViewController":layoutVC], store: self.store)
+                        })
+                    }
+                })
             }
         }
         else if self.currentRoute!.identifier != firstRoute.identifier {
             self.currentRoute = firstRoute
             if let layoutVC = self.generateLayout(for: firstRoute, state: state) {
-                self.delegate?.presentLayout(viewController: layoutVC, completion: nil)
+                self.delegate?.presentLayout(viewController: layoutVC, completion: {presented in
+                    if presented {
+                        guard let layout = RSStateSelectors.layout(state, for: firstRoute.layout) else {
+                            return
+                        }
+                        
+                        layout.onLoadActions.forEach({ (action) in
+                            RSActionManager.processAction(action: action, context: ["layoutViewController":layoutVC], store: self.store)
+                        })
+                    }
+                })
             }
         }
         

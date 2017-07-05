@@ -12,3 +12,14 @@ public protocol ValueConvertible {
 //    var valueConvertibleType: String { get }
     func evaluate() -> AnyObject?
 }
+
+open class RSValueConvertible: ValueConvertible {
+    let value: AnyObject?
+    init(value: AnyObject?) {
+        self.value = value
+    }
+    
+    open func evaluate() -> AnyObject? {
+        return self.value
+    }
+}

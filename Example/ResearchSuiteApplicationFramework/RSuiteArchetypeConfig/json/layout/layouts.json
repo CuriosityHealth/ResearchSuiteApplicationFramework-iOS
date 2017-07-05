@@ -15,7 +15,7 @@
             "format": "$baselineDate == nil",
             "substitutions": {
               "baselineDate": {
-                "type": "valueInState",
+                "type": "state",
                 "identifier": "baselineCompletionDate"
               }
             }
@@ -34,7 +34,7 @@
             "format": "$baselineDate != nil",
             "substitutions": {
               "baselineDate": {
-                "type": "valueInState",
+                "type": "state",
                 "identifier": "baselineCompletionDate"
               }
             }

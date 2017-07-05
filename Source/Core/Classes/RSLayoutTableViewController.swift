@@ -22,7 +22,7 @@ class RSLayoutTableViewController: UITableViewController, StoreSubscriber {
         super.viewDidLoad()
         
         //process on load actions
-        self.layout.onLoadActions.forEach { self.processAction(action: $0) }
+//        self.layout.onLoadActions.forEach { self.processAction(action: $0) }
         
         self.store.subscribe(self)
 
@@ -74,9 +74,11 @@ class RSLayoutTableViewController: UITableViewController, StoreSubscriber {
     }
     
     open func shouldShowItem(item: RSListItem) -> Bool {
-        //if predicate doesn't exist, return true
-        //otherwise evaluate predicate
-        return true
+        guard let predicate = item.predicate else {
+            return true
+        }
+        
+        return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
     }
     
     open func itemForIndexPath(indexPath: IndexPath) -> RSListItem? {

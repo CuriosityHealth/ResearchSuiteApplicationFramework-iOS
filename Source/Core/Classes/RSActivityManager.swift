@@ -210,9 +210,23 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         
         substitutionsJSON.forEach({ (key: String, value: JSON) in
             
-            if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context),
-                let value = valueConvertible.evaluate() as? NSObject {
-                substitutions[key] = value
+//            if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context),
+//                let value = valueConvertible.evaluate() as? NSObject {
+//                substitutions[key] = value
+//            }
+            
+            if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context) {
+                
+                //so we know this is a valid value convertible (i.e., it's been recognized by the state map)
+                //we also want to potentially have a null value substituted
+                if let value = valueConvertible.evaluate() {
+                    substitutions[key] = value
+                }
+                else {
+                    let nilObject: AnyObject? = nil as AnyObject?
+                    substitutions[key] = nilObject as Any
+                }
+                
             }
             
         })

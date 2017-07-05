@@ -12,7 +12,7 @@ import ResearchSuiteTaskBuilder
 
 public class RSTaskBuilderStateHelper: NSObject, RSTBStateHelper, StoreSubscriber  {
 
-    var valueSelector: ((String) -> NSSecureCoding?)?
+    var valueSelector: ((String) -> ValueConvertible?)?
     
     let store: Store<RSState>
     
@@ -30,8 +30,13 @@ public class RSTaskBuilderStateHelper: NSObject, RSTBStateHelper, StoreSubscribe
         self.store.dispatch(RSActionCreators.setValueInState(key: forKey, value: value != nil ? value! as? NSObject : nil))
     }
     
+    //TDOD: this should probably throw in the future
     open func valueInState(forKey: String) -> NSSecureCoding? {
-        return self.valueSelector?(forKey)
+        
+        guard let valueConvertible: ValueConvertible = self.valueSelector?(forKey) else {
+            return nil
+        }
+        return valueConvertible.evaluate() as? NSSecureCoding
     }
     
     deinit {

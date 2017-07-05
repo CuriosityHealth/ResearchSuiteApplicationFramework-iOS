@@ -22,19 +22,26 @@ class AppDelegate: RSApplicationDelegate {
         
         super.application(application, didFinishLaunchingWithOptions: launchOptions)
         
+        
+        
+        
         self.store?.dispatch(RSActionCreators.addMeasuresFromFile(fileName: "measures"))
         self.store?.dispatch(RSActionCreators.addActivitiesFromFile(fileName: "activities"))
         self.store?.dispatch(RSActionCreators.addStateValuesFromFile(fileName: "values"))
         self.store?.dispatch(RSActionCreators.addConstantsFromFile(fileName: "values"))
         self.store?.dispatch(RSActionCreators.addFunctionsFromFile(fileName: "values"))
-        self.store?.dispatch(RSActionCreators.addLayoutsFromFile(fileName: "layouts"))
-        self.store?.dispatch(RSActionCreators.addRoutesFromFile(fileName: "routes"))
         
+        
+        //function bindings need to go first in case they are used by routes
         let registerFunctionAction = RSActionCreators.registerFunction(identifier: "isSignedIn") {
             return true as NSNumber
         }
         
         self.store?.dispatch(registerFunctionAction)
+        
+        
+        self.store?.dispatch(RSActionCreators.addLayoutsFromFile(fileName: "layouts"))
+        self.store?.dispatch(RSActionCreators.addRoutesFromFile(fileName: "routes"))
         
         
         

@@ -12,11 +12,13 @@ import Gloss
 
 open class RSValueManager: NSObject {
     
+    //TODO: add state value transformer
     public static let valueTransformers: [RSValueTransformer.Type] = [
         RSResultTransformValueTransformer.self,
         RSConstantValueTransformer.self,
         RSFunctionValueTransformer.self,
-        RSStepTreeResultTransformValueTransformer.self
+        RSStepTreeResultTransformValueTransformer.self,
+        RSStateValueTransformer.self
     ]
     
     //generate values

@@ -32,17 +32,17 @@ public class RSStateValue: Decodable {
     
     }
     
-    func getDefaultValue() -> NSObject? {
+    func getDefaultValue() -> ValueConvertible? {
         switch type {
         case "Date":
-            return nil
+            return RSValueConvertible(value: nil)
             
         case "StringArray":
             guard let value = self.defaultValue as? [String] else {
                 return nil
             }
             
-            return value as NSArray
+            return RSValueConvertible(value: value as NSArray)
             
         case "Location":
             return nil
@@ -55,7 +55,7 @@ public class RSStateValue: Decodable {
                 return nil
             }
             
-            return value as NSNumber
+            return RSValueConvertible(value: value as NSNumber)
             
         default:
             return nil
@@ -97,6 +97,8 @@ public class RSStateValue: Decodable {
         
         
     }
+    
+    
     
 
 }

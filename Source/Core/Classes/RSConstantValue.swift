@@ -16,6 +16,8 @@ public class RSConstantValue: Decodable, ValueConvertible {
     public let type: String
     public let value: AnyObject?
     
+    
+    //TODO: Default does not work for boolean
     required public init?(json: JSON) {
         
         guard let identifier: String = "identifier" <~~ json,

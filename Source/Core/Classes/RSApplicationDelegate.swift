@@ -138,7 +138,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
     }
     
     open func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?) {
-        self.transition(toRootViewController: viewController, animated: false, completion: { presented in
+        self.transition(toRootViewController: viewController, animated: true, completion: { presented in
             completion?(presented)
         })
     }
