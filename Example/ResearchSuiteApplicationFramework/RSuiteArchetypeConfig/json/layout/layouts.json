@@ -42,6 +42,46 @@
               "activityID": "dailyStressAssessment"
             }
           ]
+        },
+        {
+          "identifier": "home",
+          "title": "Set Home Location",
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "home"
+            }
+          ]
+        },
+        {
+          "identifier": "work",
+          "title": "Set Work Location",
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "work"
+            }
+          ]
+        },
+        {
+          "identifier": "yadlFull",
+          "title": "YADL Full",
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "yadlFull"
+            }
+          ]
+        },
+        {
+          "identifier": "yadlSpot",
+          "title": "YADL Spot",
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "yadlSpot"
+            }
+          ]
         }
       ]
     },
@@ -81,8 +121,20 @@
     },
     {
       "identifier": "consent",
-      "type": "consent",
-      "onLoad": []
+      "type": "title",
+      "onLoad": [],
+      "title": "Welcome!",
+      "image": "titleImage",
+      "button": {
+        "identifier": "getStarted",
+        "title": "Get Started",
+        "onTap": [
+          {
+            "type": "queueActivity",
+            "activityID": "consent"
+          }
+        ]
+      }
     },
     {
       "identifier": "onboarding",

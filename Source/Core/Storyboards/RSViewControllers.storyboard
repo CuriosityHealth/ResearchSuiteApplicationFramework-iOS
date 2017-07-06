@@ -5,6 +5,8 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -48,6 +50,59 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7cE-jf-8Ma" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1660" y="-81"/>
+        </scene>
+        <!--Layout Title View Controller-->
+        <scene sceneID="7y6-fL-Tv9">
+            <objects>
+                <viewController storyboardIdentifier="titleLayoutViewController" id="xmN-ev-NpC" customClass="RSLayoutTitleViewController" customModule="ResearchSuiteApplicationFramework" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="FYd-6E-2O1"/>
+                        <viewControllerLayoutGuide type="bottom" id="sQk-Et-qjh"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="0pd-2w-hSN">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TH1-3j-kbb">
+                                <rect key="frame" x="162" y="91.5" width="51.5" height="33.5"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8pM-Mv-Ysp">
+                                <rect key="frame" x="19" y="165" width="337.5" height="337.5"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="8pM-Mv-Ysp" secondAttribute="height" multiplier="1:1" id="2gm-BI-vuV"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t5b-ud-1kJ">
+                                <rect key="frame" x="164" y="597" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="tappedButton:" destination="xmN-ev-NpC" eventType="touchUpInside" id="4Vc-L6-CxR"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="TH1-3j-kbb" firstAttribute="centerX" secondItem="0pd-2w-hSN" secondAttribute="centerX" id="1cg-iw-inq"/>
+                            <constraint firstItem="t5b-ud-1kJ" firstAttribute="centerX" secondItem="0pd-2w-hSN" secondAttribute="centerX" id="3Xm-CH-v7z"/>
+                            <constraint firstItem="sQk-Et-qjh" firstAttribute="top" secondItem="t5b-ud-1kJ" secondAttribute="bottom" constant="40" id="TaU-fe-B5w"/>
+                            <constraint firstItem="8pM-Mv-Ysp" firstAttribute="centerX" secondItem="0pd-2w-hSN" secondAttribute="centerX" id="Y8D-y8-yLo"/>
+                            <constraint firstItem="8pM-Mv-Ysp" firstAttribute="centerY" secondItem="0pd-2w-hSN" secondAttribute="centerY" id="YMM-ch-F7u"/>
+                            <constraint firstItem="8pM-Mv-Ysp" firstAttribute="width" secondItem="0pd-2w-hSN" secondAttribute="width" multiplier="0.9" id="gun-Vf-xyU"/>
+                            <constraint firstItem="8pM-Mv-Ysp" firstAttribute="top" secondItem="TH1-3j-kbb" secondAttribute="bottom" constant="40" id="rGd-Zy-SOf"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="button" destination="t5b-ud-1kJ" id="wAA-8l-bGM"/>
+                        <outlet property="imageView" destination="8pM-Mv-Ysp" id="iT6-5w-DvB"/>
+                        <outlet property="titleLabel" destination="TH1-3j-kbb" id="Lgb-P5-6Xm"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OzM-3p-ezM" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1690.4000000000001" y="663.41829085457277"/>
         </scene>
     </scenes>
 </document>

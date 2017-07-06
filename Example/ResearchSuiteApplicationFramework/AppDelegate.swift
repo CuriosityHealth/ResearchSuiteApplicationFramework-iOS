@@ -86,7 +86,7 @@ class AppDelegate: RSApplicationDelegate {
             PSScore.self,
             PSSRaw.self,
             DemographicsResult.self
-        ]
+        ] + super.frontEndResultTransformers
     }
     
     open override var stepTreeNodeGenerators: [RSStepTreeNodeGenerator.Type] {

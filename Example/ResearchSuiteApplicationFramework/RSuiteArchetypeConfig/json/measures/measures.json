@@ -80,6 +80,24 @@
       ]
     },
     {
+      "identifier": "consent",
+      "taskElement": {
+          "identifier":"consent_choice",
+          "type":"boolean",
+          "text":"Have you consented?",
+          "optional": false
+      },
+      "resultTransforms": [
+        {
+          "identifier": "valueForState",
+          "transform": "boolean",
+          "inputMapping": [
+            {"parameter":"result", "stepIdentifier":"consent_choice"}
+          ]
+        }
+      ]
+    },
+    {
       "identifier": "PAM",
       "taskElement": {
         "identifier": "PAM",

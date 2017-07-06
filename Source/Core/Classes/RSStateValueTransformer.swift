@@ -19,7 +19,7 @@ open class RSStateValueTransformer: RSValueTransformer {
                 return nil
         }
         
-        return RSStateSelectors.getValueInStorage(state)(identifier)
+        return RSStateSelectors.getValueInStorage(state, for: identifier)
     }
     
 }

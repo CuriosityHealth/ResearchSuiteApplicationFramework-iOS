@@ -39,7 +39,7 @@
     {
       "identifier": "isConsented",
       "type": "Boolean",
-      "default": true,
+      "default": false,
       "protected": false
     }
   ],
@@ -48,6 +48,11 @@
       "identifier": "stressScoreThreshold",
       "type": "Integer",
       "value": 10
+    },
+    {
+      "identifier": "geofenceRadius",
+      "type": "Integer",
+      "value": 250
     },
     {
       "identifier": "YADLActivitiesThreshold",

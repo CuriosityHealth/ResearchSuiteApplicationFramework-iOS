@@ -75,7 +75,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
     open var frontEndResultTransformers: [RSRPFrontEndTransformer.Type] {
         return [
             RSLocationStepResult.self,
-            RSTimeOfDayStepResult.self
+            RSTimeOfDayStepResult.self,
+            RSBooleanStepResult.self
         ]
     }
     
@@ -86,9 +87,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
         ]
     }
     
-    open var layoutGenerators: [RSListLayoutGenerator] {
+    open var layoutGenerators: [RSLayoutGenerator] {
         return [
-            RSListLayoutGenerator()
+            RSListLayoutGenerator(),
+            RSTitleLayoutGenerator()
         ]
     }
     

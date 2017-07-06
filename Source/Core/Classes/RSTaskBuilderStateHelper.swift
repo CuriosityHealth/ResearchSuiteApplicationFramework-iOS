@@ -13,6 +13,8 @@ import ResearchSuiteTaskBuilder
 public class RSTaskBuilderStateHelper: NSObject, RSTBStateHelper, StoreSubscriber  {
 
     var valueSelector: ((String) -> ValueConvertible?)?
+    var constantsSelector: ((String) -> ValueConvertible?)?
+    var functionSelector: ((String) -> ValueConvertible?)?
     
     let store: Store<RSState>
     
@@ -23,7 +25,17 @@ public class RSTaskBuilderStateHelper: NSObject, RSTBStateHelper, StoreSubscribe
     }
     
     open func newState(state: RSState) {
-        self.valueSelector = RSStateSelectors.getValueInStorage(state)
+        self.valueSelector = { key in
+            return RSStateSelectors.getValueInStorage(state, for: key)
+        }
+        
+        self.constantsSelector = { key in
+            return RSStateSelectors.getConstantValue(state, for: key)
+        }
+        
+        self.functionSelector = { key in
+            return RSStateSelectors.getFunctionValue(state, for: key)
+        }
     }
     
     open func setValueInState(value: NSSecureCoding?, forKey: String) {
@@ -31,12 +43,20 @@ public class RSTaskBuilderStateHelper: NSObject, RSTBStateHelper, StoreSubscribe
     }
     
     //TDOD: this should probably throw in the future
+    
     open func valueInState(forKey: String) -> NSSecureCoding? {
         
-        guard let valueConvertible: ValueConvertible = self.valueSelector?(forKey) else {
-            return nil
+        if let valueConvertible: ValueConvertible = self.valueSelector?(forKey) {
+            return valueConvertible.evaluate() as? NSSecureCoding
         }
-        return valueConvertible.evaluate() as? NSSecureCoding
+        else if let valueConvertible: ValueConvertible = self.constantsSelector?(forKey) {
+            return valueConvertible.evaluate() as? NSSecureCoding
+        }
+        else if let valueConvertible: ValueConvertible = self.functionSelector?(forKey) {
+            return valueConvertible.evaluate() as? NSSecureCoding
+        }
+        
+        return nil
     }
     
     deinit {

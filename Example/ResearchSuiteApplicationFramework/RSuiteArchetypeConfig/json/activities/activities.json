@@ -343,6 +343,81 @@
         "onFailure": [],
         "finally": []
       }
+    },
+    {
+      "identifier": "home",
+      "elements": [
+        {
+          "identifier": "home",
+          "type": "measure",
+          "measureID": "home"
+        }
+      ],
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "setValueInState",
+            "identifier": "home",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "home",
+              "transformID": "valueForState"
+            }
+          }
+        ],
+        "onFailure": [],
+        "finally": []
+      }
+    },
+    {
+      "identifier": "work",
+      "elements": [
+        {
+          "identifier": "work",
+          "type": "measure",
+          "measureID": "work"
+        }
+      ],
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "setValueInState",
+            "identifier": "work",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "work",
+              "transformID": "valueForState"
+            }
+          }
+        ],
+        "onFailure": [],
+        "finally": []
+      }
+    },
+    {
+      "identifier": "consent",
+      "elements": [
+        {
+          "identifier": "consent",
+          "type": "measure",
+          "measureID": "consent"
+        }
+      ],
+      "onCompletion": {
+        "onSuccess": [
+          {
+            "type": "setValueInState",
+            "identifier": "isConsented",
+            "value": {
+              "type": "resultTransform",
+              "measureID": "consent",
+              "transformID": "valueForState"
+            }
+          }
+        ],
+        "onFailure": [],
+        "finally": []
+      }
     }
   ]
 }

@@ -10,7 +10,7 @@ import UIKit
 import Gloss
 import CoreLocation
 
-public class RSConstantValue: Decodable, ValueConvertible {
+public class RSConstantValue: NSObject, Decodable, ValueConvertible {
     
     public let identifier: String
     public let type: String
@@ -31,10 +31,16 @@ public class RSConstantValue: Decodable, ValueConvertible {
         self.type = type
         self.value = value
         
+        super.init()
+        
     }
     
     public func evaluate() -> AnyObject? {
         return self.value
+    }
+    
+    public override var description: String {
+        return "\(self.value)"
     }
 
 }

@@ -61,25 +61,21 @@ public class RSStateSelectors: NSObject {
     }
     
     //TODO: The returned closure should probably throw a key error in the future
-    public static func getValueInStorage(_ state: RSState) -> (String) -> ValueConvertible? {
-        return { key in
-            
-            guard let stateValueMetadata = state.stateValueMap[key] else {
-                return nil
-            }
-            
-            if !(state.stateValueHasBeenSet[key] as? Bool ?? false) {
-                return stateValueMetadata.getDefaultValue()
+    public static func getValueInStorage(_ state: RSState, for key: String) -> ValueConvertible? {
+        guard let stateValueMetadata = state.stateValueMap[key] else {
+            return nil
+        }
+        
+        if !(state.stateValueHasBeenSet[key] as? Bool ?? false) {
+            return stateValueMetadata.getDefaultValue()
+        }
+        else {
+            if stateValueMetadata.protected {
+                return  RSValueConvertible(value: state.protectedState[key])
             }
             else {
-                if stateValueMetadata.protected {
-                    return  RSValueConvertible(value: state.protectedState[key])
-                }
-                else {
-                    return RSValueConvertible(value: state.unprotectedState[key])
-                }
+                return RSValueConvertible(value: state.unprotectedState[key])
             }
-            
         }
     }
     
