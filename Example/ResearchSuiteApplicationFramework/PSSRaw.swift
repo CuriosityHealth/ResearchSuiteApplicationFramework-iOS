@@ -1,8 +1,8 @@
 //
-//  PSScore.swift
+//  PSSRaw.swift
 //  ResearchSuiteApplicationFramework
 //
-//  Created by James Kizer on 7/1/17.
+//  Created by James Kizer on 7/5/17.
 //  Copyright © 2017 CocoaPods. All rights reserved.
 //
 
@@ -12,14 +12,13 @@ import ResearchSuiteResultsProcessor
 import Gloss
 import ResearchSuiteApplicationFramework
 
-open class PSScore: RSRPIntermediateResult, RSRPFrontEndTransformer {
-    
+open class PSSRaw: RSRPIntermediateResult, RSRPFrontEndTransformer {
     
     public var valueConvertibleType: String {
         return "resultTransform"
     }
     
-    static public let kType = "PSSScore"
+    static public let kType = "PSSRaw"
     
     private static let supportedTypes = [
         kType
@@ -43,10 +42,8 @@ open class PSScore: RSRPIntermediateResult, RSRPFrontEndTransformer {
         ) -> RSRPIntermediateResult? {
         
         guard let stepResults = parameters["results"] as? [ORKStepResult] else {
-                return nil
+            return nil
         }
-        
-        debugPrint(stepResults)
         
         let results: [(String, Int)] = stepResults.flatMap { (stepResult) -> (String, Int)? in
             guard let scaleResult = stepResult.firstResult as? ORKScaleQuestionResult,
@@ -57,6 +54,10 @@ open class PSScore: RSRPIntermediateResult, RSRPFrontEndTransformer {
             
             return (identifier, score)
         }
+        
+        var answerMap: [String: Int] = [:]
+        
+        results.forEach { answerMap[$0.0] = $0.1 }
         
         let score = results.reduce(0) { (acc, pair) -> Int in
             let adjustedScore: Int = {
@@ -70,27 +71,31 @@ open class PSScore: RSRPIntermediateResult, RSRPFrontEndTransformer {
             return acc + adjustedScore
         }
         
-        return PSScore(
+        return PSSRaw(
             uuid: UUID(),
             taskIdentifier: taskIdentifier,
             taskRunUUID: taskRunUUID,
+            answerMap: answerMap,
             score: score
         )
         
     }
     
     
-
+    
     let score: Int
+    let answerMap: [String: Int]
     
     public init?(
         uuid: UUID,
         taskIdentifier: String,
         taskRunUUID: UUID,
+        answerMap: [String: Int],
         score: Int
         ) {
         
         self.score = score
+        self.answerMap = answerMap
         
         super.init(
             type: YADLFullModerateOrHardIdentifiers.kType,
@@ -100,10 +105,4 @@ open class PSScore: RSRPIntermediateResult, RSRPFrontEndTransformer {
         )
     }
 
-}
-
-extension PSScore {
-    open override func evaluate() -> AnyObject? {
-        return self.score as NSNumber
-    }
 }

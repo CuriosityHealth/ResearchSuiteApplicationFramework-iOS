@@ -28,7 +28,7 @@
         "type": "location",
         "title": "Home",
         "text": "Drop a pin at your home.",
-        "optional": "false",
+        "optional": false,
         "useCurrentLocation": true
       },
       "resultTransforms": [
@@ -36,7 +36,7 @@
           "identifier": "valueForState",
           "transform": "location",
           "inputMapping": [
-            {"parameter":"result", "stepIdentifier":"home"}
+            {"parameter":"result", "stepIdentifier":"location"}
           ]
         }
       ]
@@ -48,7 +48,7 @@
         "type": "location",
         "title": "Work",
         "text": "Drop a pin at your place of work.",
-        "optional": "false",
+        "optional": false,
         "useCurrentLocation": true
       },
       "resultTransforms": [
@@ -56,7 +56,7 @@
           "identifier": "valueForState",
           "transform": "location",
           "inputMapping": [
-            {"parameter":"result", "stepIdentifier":"work"}
+            {"parameter":"result", "stepIdentifier":"location"}
           ]
         }
       ]

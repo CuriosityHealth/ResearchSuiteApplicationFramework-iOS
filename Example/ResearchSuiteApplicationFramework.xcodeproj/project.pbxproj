@@ -32,6 +32,8 @@
 		E246FEB71F0875DB00D45DCC /* PSScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEB61F0875DB00D45DCC /* PSScore.swift */; };
 		E246FED81F0A8F1D00D45DCC /* layouts.json in Resources */ = {isa = PBXBuildFile; fileRef = E246FED71F0A8F1D00D45DCC /* layouts.json */; };
 		E246FEDB1F0A8F2900D45DCC /* routes.json in Resources */ = {isa = PBXBuildFile; fileRef = E246FEDA1F0A8F2900D45DCC /* routes.json */; };
+		E246FEEC1F0D85F000D45DCC /* PSSRaw.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEEB1F0D85F000D45DCC /* PSSRaw.swift */; };
+		E246FEEE1F0D873600D45DCC /* DemographicsResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEED1F0D873600D45DCC /* DemographicsResult.swift */; };
 		E27667391F07E45E00DDDEF4 /* pss4_nav.json in Resources */ = {isa = PBXBuildFile; fileRef = E27667381F07E45E00DDDEF4 /* pss4_nav.json */; };
 /* End PBXBuildFile section */
 
@@ -82,6 +84,8 @@
 		E246FEB61F0875DB00D45DCC /* PSScore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSScore.swift; sourceTree = "<group>"; };
 		E246FED71F0A8F1D00D45DCC /* layouts.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = layouts.json; path = RSuiteArchetypeConfig/json/layout/layouts.json; sourceTree = "<group>"; };
 		E246FEDA1F0A8F2900D45DCC /* routes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = routes.json; path = RSuiteArchetypeConfig/json/layout/routes.json; sourceTree = "<group>"; };
+		E246FEEB1F0D85F000D45DCC /* PSSRaw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PSSRaw.swift; sourceTree = "<group>"; };
+		E246FEED1F0D873600D45DCC /* DemographicsResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemographicsResult.swift; sourceTree = "<group>"; };
 		E27667381F07E45E00DDDEF4 /* pss4_nav.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = pss4_nav.json; path = RSuiteArchetypeConfig/json/measures/pss4_nav.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -134,6 +138,8 @@
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				E21FE5E21EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift */,
 				E246FEB61F0875DB00D45DCC /* PSScore.swift */,
+				E246FEEB1F0D85F000D45DCC /* PSSRaw.swift */,
+				E246FEED1F0D873600D45DCC /* DemographicsResult.swift */,
 				E21FE6551F006C2B006F6B60 /* YADLFullRawRegex.swift */,
 				E246FEB41F08654600D45DCC /* YADLFullNodeGenerator.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
@@ -495,6 +501,8 @@
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				E246FEB51F08654600D45DCC /* YADLFullNodeGenerator.swift in Sources */,
+				E246FEEC1F0D85F000D45DCC /* PSSRaw.swift in Sources */,
+				E246FEEE1F0D873600D45DCC /* DemographicsResult.swift in Sources */,
 				E21FE6561F006C2B006F6B60 /* YADLFullRawRegex.swift in Sources */,
 				E246FEB71F0875DB00D45DCC /* PSScore.swift in Sources */,
 				E21FE5E31EFD9C4C006F6B60 /* YADLFullModerateOrHardIdentifiers.swift in Sources */,

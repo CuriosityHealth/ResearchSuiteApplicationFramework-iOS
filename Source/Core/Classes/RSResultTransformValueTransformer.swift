@@ -21,6 +21,7 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
     public static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
         
         guard let taskResult = context["taskResult"] as? ORKTaskResult,
+            let stepResults = taskResult.results as? [ORKStepResult],
             let measureID: String = "measureID" <~~ jsonObject,
             let transformID: String = "transformID" <~~ jsonObject,
             let measure: RSMeasure = RSStateSelectors.measure(state, for: measureID),
@@ -28,8 +29,32 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
             return nil
         }
         
+        let prefix = "\(taskResult.identifier).\(measureID)"
+        
+        //filter
+        let filteredStepResults = stepResults
+            .filter { $0.identifier.hasPrefix(prefix) }
+            .map { (stepResult) -> ORKStepResult in
+                let stepResultIdentifierComponents = stepResult.identifier.components(separatedBy: ".")
+                debugPrint(stepResultIdentifierComponents)
+                
+                //note that the "child" here is actually a parent of the step
+                let prefixComponents = prefix.components(separatedBy: ".")
+                debugPrint(prefixComponents)
+                let remainingComponents = stepResultIdentifierComponents.dropFirst(prefixComponents.count)
+                debugPrint(remainingComponents)
+                return ORKStepResult(stepIdentifier: remainingComponents.joined(separator: "."), results: stepResult.results)
+        }
+        
+        //map -> step result w/ new identifier
+        
+        let filteredTaskResult = ORKTaskResult(taskIdentifier: taskResult.identifier, taskRun: UUID(), outputDirectory: nil)
+        filteredTaskResult.results = filteredStepResults
+        
+        //select and map results
+        
         return RSRPFrontEndService.processResult(
-            taskResult: taskResult,
+            taskResult: filteredTaskResult,
             resultTransform: resultTransform,
             frontEndTransformers: RSApplicationDelegate.appDelegate.frontEndResultTransformers
         )

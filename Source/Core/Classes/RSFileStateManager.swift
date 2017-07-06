@@ -12,6 +12,7 @@ public class RSFileStateManager: RSStateManager {
     
     let filePath: String
     let fileProtection: NSData.WritingOptions
+//    let decodingClasses: [Swift.AnyClass]
     
     var map: [String: NSSecureCoding]
     
@@ -20,15 +21,17 @@ public class RSFileStateManager: RSStateManager {
     let fileQueue: DispatchQueue
     static let fileQueueIdentifier = "RSFileStateManager.FileQueue"
     
-    init(filePath: String, fileProtection: Data.WritingOptions) {
+    init(filePath: String, fileProtection: Data.WritingOptions, decodingClasses: [Swift.AnyClass]) {
         
         self.filePath = RSFileStateManager.generateFilePath(filePath: filePath)!
         print(self.filePath)
         
         self.fileProtection = fileProtection
         
+//        self.decodingClasses = decodingClasses
+        
         do {
-            self.map = try RSFileStateManager.loadMap(filePath: filePath)
+            self.map = try RSFileStateManager.loadMap(filePath: filePath, decodingClasses: decodingClasses)
         } catch let error as NSError {
             print(error.localizedDescription)
             self.map = [:]
@@ -46,7 +49,7 @@ public class RSFileStateManager: RSStateManager {
         return documentsPath.appending("/\(filePath)")
     }
     
-    private static func loadMap(filePath: String) throws -> [String: NSSecureCoding] {
+    private static func loadMap(filePath: String, decodingClasses: [Swift.AnyClass]) throws -> [String: NSSecureCoding] {
         
         guard let fullFilePath = RSFileStateManager.generateFilePath(filePath: filePath),
             let data = FileManager.default.contents(atPath: fullFilePath) else {
@@ -56,7 +59,7 @@ public class RSFileStateManager: RSStateManager {
         let secureUnarchiver = NSKeyedUnarchiver(forReadingWith: data)
         secureUnarchiver.requiresSecureCoding = true
         
-        return secureUnarchiver.decodeObject(of: [NSDictionary.self, NSArray.self], forKey: NSKeyedArchiveRootObjectKey) as? [String: NSSecureCoding] ?? [:]
+        return secureUnarchiver.decodeObject(of: decodingClasses, forKey: NSKeyedArchiveRootObjectKey) as? [String: NSSecureCoding] ?? [:]
         
     }
     

@@ -790,6 +790,10 @@
 		E1843640353438E7EC2923E4C02B2E69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE8ABE575B8B1520A49FF57684D20C28 /* Foundation.framework */; };
 		E1B28B276292EE64F237CBA92A28C9CB /* ORKSignatureStepViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF72AB7CE5025AC279079884F42CC289 /* ORKSignatureStepViewController.m */; };
 		E246FEEA1F0D744500D45DCC /* RSStateValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEE91F0D744500D45DCC /* RSStateValueTransformer.swift */; };
+		E246FEF01F0D95A000D45DCC /* RSSpecialValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEEF1F0D95A000D45DCC /* RSSpecialValueTransformer.swift */; };
+		E246FEF21F0D9D6A00D45DCC /* RSDefaultStepResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEF11F0D9D6A00D45DCC /* RSDefaultStepResult.swift */; };
+		E246FEF41F0DA2D900D45DCC /* RSLocationStepResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEF31F0DA2D900D45DCC /* RSLocationStepResult.swift */; };
+		E246FEF61F0DB23300D45DCC /* RSTimeOfDayStepResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEF51F0DB23300D45DCC /* RSTimeOfDayStepResult.swift */; };
 		E2B16414ADC8CC339AF5FF7CCA9D38AD /* tr.lproj in Resources */ = {isa = PBXBuildFile; fileRef = 4434625821C56D6593FB61CCFFFEEE3C /* tr.lproj */; };
 		E2BE3E120877A859E581D4E7675F29FB /* ORKHealthQuantityTypeRecorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 529A508FCEB62D24200FD9BB35ED67E2 /* ORKHealthQuantityTypeRecorder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E2C9C9969A607C679F6763C138E54B07 /* SecureQueueError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF8A095657542B53CE9E8E17AD6DFAD /* SecureQueueError.swift */; };
@@ -1967,6 +1971,10 @@
 		E20E19E674AB2040BC4E333515C25EBF /* ORKPieChartView_Internal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ORKPieChartView_Internal.h; path = ResearchKit/Charts/ORKPieChartView_Internal.h; sourceTree = "<group>"; };
 		E23206988531557C3600A73C0F6008EB /* ORKHolePegTestPlaceStep.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ORKHolePegTestPlaceStep.h; path = ResearchKit/ActiveTasks/ORKHolePegTestPlaceStep.h; sourceTree = "<group>"; };
 		E246FEE91F0D744500D45DCC /* RSStateValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSStateValueTransformer.swift; sourceTree = "<group>"; };
+		E246FEEF1F0D95A000D45DCC /* RSSpecialValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSSpecialValueTransformer.swift; sourceTree = "<group>"; };
+		E246FEF11F0D9D6A00D45DCC /* RSDefaultStepResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSDefaultStepResult.swift; sourceTree = "<group>"; };
+		E246FEF31F0DA2D900D45DCC /* RSLocationStepResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSLocationStepResult.swift; sourceTree = "<group>"; };
+		E246FEF51F0DB23300D45DCC /* RSTimeOfDayStepResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSTimeOfDayStepResult.swift; sourceTree = "<group>"; };
 		E2565A565FAE3F09F5234837A7B1B17C /* ORKCountdownStepViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = ORKCountdownStepViewController.m; path = ResearchKit/ActiveTasks/ORKCountdownStepViewController.m; sourceTree = "<group>"; };
 		E25C84A59615D4A414CD3137C0959EAB /* RSTBElementGeneratorService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RSTBElementGeneratorService.swift; sourceTree = "<group>"; };
 		E28FFA0C17650C35168F87C715EE3F38 /* RSQueueActivityActionTransformer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RSQueueActivityActionTransformer.swift; sourceTree = "<group>"; };
@@ -2970,6 +2978,7 @@
 				23650B04D6B715CD638F796F5721ECAE /* RSFileStateManager.swift */,
 				27D1EEE2C3C814C0A6C45AE36EC55C5F /* RSFunctionValue.swift */,
 				702C0DCA1317C6099A9EB0E2B4E82E81 /* RSFunctionValueTransformer.swift */,
+				E246FEEF1F0D95A000D45DCC /* RSSpecialValueTransformer.swift */,
 				42BE26539086F68E163FD7301FF1B50F /* RSHelpers.swift */,
 				BF62BFE461739F0AA80DFDEC5CB94AFE /* RSInstructionActivityElementTransformer.swift */,
 				03E40229AFA92298E6B66CBB1509F17C /* RSLayout.swift */,
@@ -2990,6 +2999,9 @@
 				E28FFA0C17650C35168F87C715EE3F38 /* RSQueueActivityActionTransformer.swift */,
 				DA5D170421AF5FA081B5001058833865 /* RSReducer.swift */,
 				013D969D8023766713485F07D6B24F7E /* RSResultTransform.swift */,
+				E246FEF11F0D9D6A00D45DCC /* RSDefaultStepResult.swift */,
+				E246FEF51F0DB23300D45DCC /* RSTimeOfDayStepResult.swift */,
+				E246FEF31F0DA2D900D45DCC /* RSLocationStepResult.swift */,
 				C16617ECC71423976AEC20F78007681F /* RSResultTransformValueTransformer.swift */,
 				B04C681E99E4D78DF36F1E60B6F54D00 /* RSRoute.swift */,
 				3FB17EEA08FEC2FC4BDCEA5C4F513E8C /* RSRouter.swift */,
@@ -5240,6 +5252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E246FEF41F0DA2D900D45DCC /* RSLocationStepResult.swift in Sources */,
 				F999B8B859B1A61E84AA956EFB3617B5 /* ResearchSuiteApplicationFramework-dummy.m in Sources */,
 				51D7D72B9C70F5FF09A7CAC1913FBD18 /* RSActionCreators.swift in Sources */,
 				EB889076B9ED3F19448A09F3C9D03E51 /* RSActionManager.swift in Sources */,
@@ -5262,12 +5275,14 @@
 				0525241F3A2AA7354D9A482720C6D04A /* RSLayout.swift in Sources */,
 				02818DDA644DBD9458D26C25AEE7BF4E /* RSLayoutGenerator.swift in Sources */,
 				7C68CAC62C3AE05C01D652511498AAE6 /* RSLayoutManager.swift in Sources */,
+				E246FEF01F0D95A000D45DCC /* RSSpecialValueTransformer.swift in Sources */,
 				83064D2A8318F70A46E03D3D7196F58C /* RSLayoutTabBarViewController.swift in Sources */,
 				0AD058EAD3E7C117D4BD8332573E7CB7 /* RSLayoutTableViewController.swift in Sources */,
 				FA900E57AE77052F6DD67FF97E77AB33 /* RSListItem.swift in Sources */,
 				5C46B68CE873A82008D771AB7DD59D20 /* RSListLayout.swift in Sources */,
 				661E3DD0B1D207C31B18131DEABC787C /* RSListLayoutGenerator.swift in Sources */,
 				A377428AB9C24F436D6CB1E1FF171462 /* RSMeasure.swift in Sources */,
+				E246FEF61F0DB23300D45DCC /* RSTimeOfDayStepResult.swift in Sources */,
 				4E993D1222F56E2ADCFAD1F3223128CF /* RSMeasureActivityElementTransformer.swift in Sources */,
 				C3EB8E51AE6467430D05E35491946EF2 /* RSMeasureManager.swift in Sources */,
 				23E17AE8B566695A7CBFA22CAF0DF7AB /* RSObservableValue.swift in Sources */,
@@ -5278,6 +5293,7 @@
 				3ABBE30742A61D44B966DC602FA44BCB /* RSReducer.swift in Sources */,
 				8AE8F1DD095318DC2F30A9B62350B583 /* RSResultTransform.swift in Sources */,
 				3CB4850320FA7015F4888E02E10BA6F8 /* RSResultTransformValueTransformer.swift in Sources */,
+				E246FEF21F0D9D6A00D45DCC /* RSDefaultStepResult.swift in Sources */,
 				972DB35ED939D12537C26371CF3C59E5 /* RSRoute.swift in Sources */,
 				98FD63BBF3C2320C22D415710F76761A /* RSRouter.swift in Sources */,
 				B2BC1CD7216530D4FE7198E5E5A9094E /* RSSendResultToServerActionTransformer.swift in Sources */,

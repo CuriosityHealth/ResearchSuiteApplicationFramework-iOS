@@ -71,16 +71,8 @@
             "type": "sendResultToServer",
             "value": {
               "type": "resultTransform",
-              "measureID": "pss10",
+              "measureID": "PSS10",
               "transformID": "standard"
-            }
-          },
-          {
-            "type": "setValueInState",
-            "identifier": "baselineCompletionDate",
-            "value": {
-              "type": "special",
-              "keyword": "Now"
             }
           },
           {
@@ -117,6 +109,14 @@
               "type": "resultTransform",
               "measureID": "notification_time",
               "transformID": "valueForState"
+            }
+          },
+          {
+            "type": "setValueInState",
+            "identifier": "baselineCompletionDate",
+            "value": {
+              "type": "special",
+              "identifier": "now"
             }
           }
         ],

@@ -10,6 +10,7 @@ import UIKit
 import ReSwift
 import ResearchSuiteTaskBuilder
 import ResearchSuiteResultsProcessor
+import CoreLocation
 
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDelegate {
     
@@ -72,7 +73,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
     }
     
     open var frontEndResultTransformers: [RSRPFrontEndTransformer.Type] {
-        return []
+        return [
+            RSLocationStepResult.self,
+            RSTimeOfDayStepResult.self
+        ]
     }
     
     open var stepTreeNodeGenerators: [RSStepTreeNodeGenerator.Type] {
@@ -88,12 +92,30 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
         ]
     }
     
+    open var persistentStoreObjectDecodingClasses: [Swift.AnyClass] {
+        return [
+            NSDictionary.self,
+            NSArray.self,
+            NSDate.self,
+            CLLocation.self,
+            NSDateComponents.self
+        ]
+    }
+    
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         //initialize store
         self.persistentStoreSubscriber = RSStatePersistentStoreSubscriber(
-            protectedStorageManager: RSFileStateManager(filePath: "protected_state", fileProtection: Data.WritingOptions.completeFileProtectionUnlessOpen),
-            unprotectedStorageManager: RSFileStateManager(filePath: "unprotected_state", fileProtection: Data.WritingOptions.noFileProtection)
+            protectedStorageManager: RSFileStateManager(
+                filePath: "protected_state",
+                fileProtection: Data.WritingOptions.completeFileProtectionUnlessOpen,
+                decodingClasses: self.persistentStoreObjectDecodingClasses
+            ),
+            unprotectedStorageManager: RSFileStateManager(
+                filePath: "unprotected_state",
+                fileProtection: Data.WritingOptions.noFileProtection,
+                decodingClasses: self.persistentStoreObjectDecodingClasses
+            )
         )
         
         self.storeManager = RSStoreManager(initialState: self.persistentStoreSubscriber.loadState())
@@ -133,6 +155,13 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
         self.activityManager.setDelegate(delegate: self.rootNavController)
         
         debugPrint(self.rootNavController)
+        
+        //function bindings need to go first in case they are used by routes
+        let registerFunctionAction = RSActionCreators.registerFunction(identifier: "now") {
+            return Date() as NSDate
+        }
+        
+        self.store.dispatch(registerFunctionAction)
         
         return true
     }

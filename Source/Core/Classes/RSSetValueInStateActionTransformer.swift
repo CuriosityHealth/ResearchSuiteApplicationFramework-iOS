@@ -25,6 +25,7 @@ open class RSSetValueInStateActionTransformer: RSActionTransformer {
         
         return { state, store in
             
+            //TODO: Support NSNull
             guard let valueConvertible = RSValueManager.processValue(jsonObject:valueJSON, state: state, context: context),
                 let value = valueConvertible.evaluate() as? NSObject else {
                 return nil

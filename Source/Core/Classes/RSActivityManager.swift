@@ -205,15 +205,9 @@ open class RSActivityManager: NSObject, StoreSubscriber {
             return nsPredicate.evaluate(with: nil)
         }
         
-        
         var substitutions: [String: Any] = [:]
         
         substitutionsJSON.forEach({ (key: String, value: JSON) in
-            
-//            if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context),
-//                let value = valueConvertible.evaluate() as? NSObject {
-//                substitutions[key] = value
-//            }
             
             if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context) {
                 
@@ -223,6 +217,7 @@ open class RSActivityManager: NSObject, StoreSubscriber {
                     substitutions[key] = value
                 }
                 else {
+                    assertionFailure("Added NSNull support for this type")
                     let nilObject: AnyObject? = nil as AnyObject?
                     substitutions[key] = nilObject as Any
                 }

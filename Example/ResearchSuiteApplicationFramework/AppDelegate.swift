@@ -83,7 +83,9 @@ class AppDelegate: RSApplicationDelegate {
             YADLFullRawRegex.self,
             YADLSpotRaw.self,
             YADLFullModerateOrHardIdentifiers.self,
-            PSScore.self
+            PSScore.self,
+            PSSRaw.self,
+            DemographicsResult.self
         ]
     }
     

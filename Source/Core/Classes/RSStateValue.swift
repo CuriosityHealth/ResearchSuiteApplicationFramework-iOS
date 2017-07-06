@@ -35,7 +35,7 @@ public class RSStateValue: Decodable {
     func getDefaultValue() -> ValueConvertible? {
         switch type {
         case "Date":
-            return RSValueConvertible(value: nil)
+            return RSValueConvertible(value: NSNull())
             
         case "StringArray":
             guard let value = self.defaultValue as? [String] else {

@@ -3,10 +3,7 @@
     {
       "identifier": "survey_list",
       "type": "list",
-      "onLoad": [{
-        "type": "queueActivity",
-        "activityID": "pss4_nav"
-      }],
+      "onLoad": [],
       "items": [
         {
           "identifier": "baseline",

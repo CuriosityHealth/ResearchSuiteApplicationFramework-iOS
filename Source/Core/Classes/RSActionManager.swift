@@ -34,6 +34,8 @@ open class RSActionManager: NSObject {
             return
         }
         
+        debugPrint(action)
+        
         for transformer in RSActionManager.actionTransforms() {
             if transformer.supportsType(type: type) {
                 guard let actionClosure = transformer.generateAction(jsonObject: action, context: context) else {

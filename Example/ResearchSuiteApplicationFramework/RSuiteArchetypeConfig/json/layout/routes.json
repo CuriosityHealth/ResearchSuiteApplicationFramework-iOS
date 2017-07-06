@@ -34,7 +34,7 @@
       "identifier": "main",
       "layout": "survey_list",
       "predicate": {
-        "format": "$isConsented == true AND $isSignedIn == true",
+        "format": "$isConsented == true AND $isSignedIn == true AND $nilTest == nil",
         "substitutions": {
           "isConsented": {
             "type": "state",
@@ -43,6 +43,10 @@
           "isSignedIn": {
             "type": "function",
             "identifier": "isSignedIn"
+          },
+          "nilTest": {
+            "type": "constant",
+            "identifier": "nilTest"
           }
         }
       }
