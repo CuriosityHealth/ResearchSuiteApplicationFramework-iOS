@@ -145,10 +145,10 @@
           },
           {
             "type": "setValueInState",
-            "valueIdentifier": "lastDailySurveyCompletion",
+            "identifier": "lastDailySurveyCompletion",
             "value": {
               "type": "special",
-              "keyword": "Now"
+              "keyword": "now"
             }
           },
           {

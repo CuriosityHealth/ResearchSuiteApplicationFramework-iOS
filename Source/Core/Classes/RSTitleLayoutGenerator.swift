@@ -28,7 +28,7 @@ open class RSTitleLayoutGenerator: RSLayoutGenerator {
             return nil
         }
         
-        titleLayoutVC.layout = layout
+        titleLayoutVC.titleLayout = layout
         titleLayoutVC.store = store
         
         return titleLayoutVC

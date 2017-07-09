@@ -90,7 +90,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
     open var layoutGenerators: [RSLayoutGenerator] {
         return [
             RSListLayoutGenerator(),
-            RSTitleLayoutGenerator()
+            RSTitleLayoutGenerator(),
+            RSTabLayoutGenerator()
         ]
     }
     

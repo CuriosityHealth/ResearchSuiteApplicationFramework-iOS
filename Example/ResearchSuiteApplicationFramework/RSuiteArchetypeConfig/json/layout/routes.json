@@ -32,7 +32,7 @@
     },
     {
       "identifier": "main",
-      "layout": "survey_list",
+      "layout": "main",
       "predicate": {
         "format": "$isConsented == true AND $isSignedIn == true AND $nilTest == nil",
         "substitutions": {

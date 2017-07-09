@@ -3,7 +3,12 @@
     {
       "identifier": "survey_list",
       "type": "list",
-      "onLoad": [],
+      "onLoad": [
+        {
+          "type": "queueActivity",
+          "activityID": "yadlSpot"
+        }
+      ],
       "items": [
         {
           "identifier": "baseline",
@@ -82,6 +87,16 @@
               "activityID": "yadlSpot"
             }
           ]
+        },
+        {
+          "identifier": "pss4_nav",
+          "title": "pss4_nav",
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "pss4_nav"
+            }
+          ]
         }
       ]
     },
@@ -95,8 +110,12 @@
           "title": "Log Out",
           "onTap": [
             {
-              "type": "queueActivity",
-              "activityID": "baseline"
+              "type": "setValueInState",
+              "identifier": "isConsented",
+              "value": {
+                "type": "constant",
+                "identifier": "false"
+              }
             }
           ]
         }
@@ -104,18 +123,29 @@
     },
     {
       "identifier": "main",
-      "type": "tabBar",
-      "onLoad": [],
+      "type": "tab",
+      "onLoad": [
+        {
+          "type": "queueActivity",
+          "activityID": "yadlFull"
+        }
+      ],
       "tabs": [
         {
           "identifier": "survey_list",
           "title": "Surveys",
-          "shortTitle": "Surveys",
+          "shortTitle": "Surveys"
         },
         {
           "identifier": "settings_list",
           "title": "Settings",
           "shortTitle": "Settings",
+          "onTap": [
+            {
+              "type": "queueActivity",
+              "activityID": "pss4_nav"
+            }
+          ]
         }
       ]
     },

@@ -789,6 +789,10 @@
 		E13B1E3A9C73D70FCFF904E5B95BB45C /* ORKVoiceEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 43F251B4424A011D8EA8ABE0E4C0A81D /* ORKVoiceEngine.m */; };
 		E1843640353438E7EC2923E4C02B2E69 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AE8ABE575B8B1520A49FF57684D20C28 /* Foundation.framework */; };
 		E1B28B276292EE64F237CBA92A28C9CB /* ORKSignatureStepViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FF72AB7CE5025AC279079884F42CC289 /* ORKSignatureStepViewController.m */; };
+		E21D11621F12771900351E7A /* RSTabLayoutGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21D11611F12771900351E7A /* RSTabLayoutGenerator.swift */; };
+		E21D11641F12777100351E7A /* RSTabLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21D11631F12777100351E7A /* RSTabLayout.swift */; };
+		E21D11661F1277A400351E7A /* RSTabItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21D11651F1277A400351E7A /* RSTabItem.swift */; };
+		E21D11681F12D60500351E7A /* RSLayoutViewControllerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21D11671F12D60500351E7A /* RSLayoutViewControllerProtocol.swift */; };
 		E246FEEA1F0D744500D45DCC /* RSStateValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEE91F0D744500D45DCC /* RSStateValueTransformer.swift */; };
 		E246FEF01F0D95A000D45DCC /* RSSpecialValueTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEEF1F0D95A000D45DCC /* RSSpecialValueTransformer.swift */; };
 		E246FEF21F0D9D6A00D45DCC /* RSDefaultStepResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = E246FEF11F0D9D6A00D45DCC /* RSDefaultStepResult.swift */; };
@@ -1974,6 +1978,10 @@
 		E195569F59CF4D50799D73828D2F8CE8 /* ORKSpatialSpanTargetView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ORKSpatialSpanTargetView.h; path = ResearchKit/ActiveTasks/ORKSpatialSpanTargetView.h; sourceTree = "<group>"; };
 		E1CAFEAD3825C83E6A732BC870FCD5BD /* ORKScaleRangeImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ORKScaleRangeImageView.h; path = ResearchKit/Common/ORKScaleRangeImageView.h; sourceTree = "<group>"; };
 		E20E19E674AB2040BC4E333515C25EBF /* ORKPieChartView_Internal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ORKPieChartView_Internal.h; path = ResearchKit/Charts/ORKPieChartView_Internal.h; sourceTree = "<group>"; };
+		E21D11611F12771900351E7A /* RSTabLayoutGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSTabLayoutGenerator.swift; sourceTree = "<group>"; };
+		E21D11631F12777100351E7A /* RSTabLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSTabLayout.swift; sourceTree = "<group>"; };
+		E21D11651F1277A400351E7A /* RSTabItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSTabItem.swift; sourceTree = "<group>"; };
+		E21D11671F12D60500351E7A /* RSLayoutViewControllerProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSLayoutViewControllerProtocol.swift; sourceTree = "<group>"; };
 		E23206988531557C3600A73C0F6008EB /* ORKHolePegTestPlaceStep.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = ORKHolePegTestPlaceStep.h; path = ResearchKit/ActiveTasks/ORKHolePegTestPlaceStep.h; sourceTree = "<group>"; };
 		E246FEE91F0D744500D45DCC /* RSStateValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSStateValueTransformer.swift; sourceTree = "<group>"; };
 		E246FEEF1F0D95A000D45DCC /* RSSpecialValueTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSSpecialValueTransformer.swift; sourceTree = "<group>"; };
@@ -2995,13 +3003,17 @@
 				A7D9C28BED0AEB0DDA195C415894E1F9 /* RSLayoutGenerator.swift */,
 				1D9A6AE7B77D2767EADAA20911C1DB36 /* RSLayoutManager.swift */,
 				FDDB63F258CC873B13EEC1E09127FAF5 /* RSLayoutTabBarViewController.swift */,
+				E21D11671F12D60500351E7A /* RSLayoutViewControllerProtocol.swift */,
 				CCC6B7669ED6002729DD44D525E29CCA /* RSLayoutTableViewController.swift */,
 				E246FEF71F0E597700D45DCC /* RSLayoutTitleViewController.swift */,
 				B38024326FDB27928739AF3437521A89 /* RSListItem.swift */,
 				66022473794D24C84820271E59EB35A5 /* RSListLayout.swift */,
+				E21D11631F12777100351E7A /* RSTabLayout.swift */,
+				E21D11651F1277A400351E7A /* RSTabItem.swift */,
 				E246FEF91F0E5A2000D45DCC /* RSTitleLayout.swift */,
 				E246FEFB1F0E5A6900D45DCC /* RSLayoutButton.swift */,
 				4F54130EEE66BAB17CCA761D5E565480 /* RSListLayoutGenerator.swift */,
+				E21D11611F12771900351E7A /* RSTabLayoutGenerator.swift */,
 				E246FEFD1F0E5C5400D45DCC /* RSTitleLayoutGenerator.swift */,
 				26451F8FA564330A0339F99E6689A28E /* RSMeasure.swift */,
 				DCBB9CEB07A66EA5A293A3F8E98E390F /* RSMeasureActivityElementTransformer.swift */,
@@ -5277,6 +5289,7 @@
 				9AC25DCD1594CAF9EA67ADFC7F5DA0EC /* RSActivity.swift in Sources */,
 				F7259C86C1B58FB8B1E545B9C79926EF /* RSActivityElementTransformer.swift in Sources */,
 				B2719D6090FAC2D7AD5A6FB786250CF0 /* RSActivityManager.swift in Sources */,
+				E21D11621F12771900351E7A /* RSTabLayoutGenerator.swift in Sources */,
 				1A06F622985715D51820733AC0BA9BC5 /* RSApplicationDelegate.swift in Sources */,
 				1104963B32454D277B55AA95FB22C49B /* RSConstantValue.swift in Sources */,
 				E246FEF81F0E597700D45DCC /* RSLayoutTitleViewController.swift in Sources */,
@@ -5301,6 +5314,7 @@
 				661E3DD0B1D207C31B18131DEABC787C /* RSListLayoutGenerator.swift in Sources */,
 				A377428AB9C24F436D6CB1E1FF171462 /* RSMeasure.swift in Sources */,
 				E246FEF61F0DB23300D45DCC /* RSTimeOfDayStepResult.swift in Sources */,
+				E21D11661F1277A400351E7A /* RSTabItem.swift in Sources */,
 				4E993D1222F56E2ADCFAD1F3223128CF /* RSMeasureActivityElementTransformer.swift in Sources */,
 				C3EB8E51AE6467430D05E35491946EF2 /* RSMeasureManager.swift in Sources */,
 				23E17AE8B566695A7CBFA22CAF0DF7AB /* RSObservableValue.swift in Sources */,
@@ -5310,6 +5324,7 @@
 				530BBC3CB83AB9D973C3BE61840054EB /* RSQueueActivityActionTransformer.swift in Sources */,
 				3ABBE30742A61D44B966DC602FA44BCB /* RSReducer.swift in Sources */,
 				8AE8F1DD095318DC2F30A9B62350B583 /* RSResultTransform.swift in Sources */,
+				E21D11681F12D60500351E7A /* RSLayoutViewControllerProtocol.swift in Sources */,
 				3CB4850320FA7015F4888E02E10BA6F8 /* RSResultTransformValueTransformer.swift in Sources */,
 				E246FEF21F0D9D6A00D45DCC /* RSDefaultStepResult.swift in Sources */,
 				972DB35ED939D12537C26371CF3C59E5 /* RSRoute.swift in Sources */,
@@ -5341,6 +5356,7 @@
 				291F1EDEDFD09F789D258C3A113F8A7B /* RSTaskViewController.swift in Sources */,
 				CD143EC7D6F047844C4C67FD05D6A2FA /* RSValueManager.swift in Sources */,
 				8C483C8C778EC8E6EBC021D8EDE95BB9 /* RSValueTransformer.swift in Sources */,
+				E21D11641F12777100351E7A /* RSTabLayout.swift in Sources */,
 				96531919706F26FFEC6A21BB44262C17 /* ValueConvertible.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

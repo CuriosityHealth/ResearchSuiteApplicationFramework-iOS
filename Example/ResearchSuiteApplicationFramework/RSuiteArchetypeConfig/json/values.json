@@ -63,6 +63,16 @@
       "identifier": "nilTest",
       "type": "Boolean",
       "value": null
+    },
+    {
+      "identifier": "true",
+      "type": "Boolean",
+      "value": true
+    },
+    {
+      "identifier": "false",
+      "type": "Boolean",
+      "value": false
     }
   ],
   "functions": [

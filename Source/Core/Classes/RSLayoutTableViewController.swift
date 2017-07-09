@@ -10,11 +10,14 @@ import UIKit
 import ReSwift
 import Gloss
 
-class RSLayoutTableViewController: UITableViewController, StoreSubscriber {
+class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
     var store: Store<RSState>!
     var state: RSState!
-    var layout: RSListLayout!
+    var listLayout: RSListLayout!
+    var layout: RSLayout! {
+        return self.listLayout
+    }
     
     var visibleLayoutItems: [RSListItem] = []
     
@@ -38,7 +41,7 @@ class RSLayoutTableViewController: UITableViewController, StoreSubscriber {
     }
     
     open func computeVisibleLayoutItems() -> [String] {
-        return self.layout.items.filter { self.shouldShowItem(item: $0) }.map { $0.identifier }
+        return self.listLayout.items.filter { self.shouldShowItem(item: $0) }.map { $0.identifier }
     }
     
     open func newState(state: RSState) {
@@ -62,7 +65,7 @@ class RSLayoutTableViewController: UITableViewController, StoreSubscriber {
         let newVisibleLayoutItems = self.computeVisibleLayoutItems()
         let currentVisibleLayoutItems = self.visibleLayoutItems.map { $0.identifier }
         if newVisibleLayoutItems != currentVisibleLayoutItems {
-            self.visibleLayoutItems = newVisibleLayoutItems.flatMap { self.layout.itemMap[$0] }
+            self.visibleLayoutItems = newVisibleLayoutItems.flatMap { self.listLayout.itemMap[$0] }
             self.loadFinished()
         }
         
@@ -129,6 +132,14 @@ class RSLayoutTableViewController: UITableViewController, StoreSubscriber {
         
         //dispatch onTap actions
         item.onTapActions.forEach { self.processAction(action: $0) }
+        
+    }
+    
+    open func layoutDidLoad() {
+        
+        self.layout.onLoadActions.forEach({ (action) in
+            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: self.store)
+        })
         
     }
 

@@ -28,7 +28,7 @@ open class RSListLayoutGenerator: RSLayoutGenerator {
             return nil
         }
         
-        listLayoutVC.layout = layout
+        listLayoutVC.listLayout = layout
         listLayoutVC.store = store
         
         return listLayoutVC

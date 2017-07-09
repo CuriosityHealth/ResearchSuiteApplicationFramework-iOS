@@ -10,10 +10,13 @@ import UIKit
 import ReSwift
 import Gloss
 
-class RSLayoutTitleViewController: UIViewController, StoreSubscriber {
+class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
     var store: Store<RSState>!
-    var layout: RSTitleLayout!
+    var titleLayout: RSTitleLayout!
+    var layout: RSLayout! {
+        return self.titleLayout
+    }
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
@@ -24,9 +27,9 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber {
 
         // Do any additional setup after loading the view.
         
-        self.titleLabel.text = self.layout.title
-        self.imageView.image = self.layout.image
-        self.button.setTitle(self.layout.button.title, for: .normal)
+        self.titleLabel.text = self.titleLayout.title
+        self.imageView.image = self.titleLayout.image
+        self.button.setTitle(self.titleLayout.button.title, for: .normal)
         
         self.store.subscribe(self)
         
@@ -39,7 +42,7 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber {
     open func newState(state: RSState) {
         self.button.isEnabled = {
             
-            guard let predicate = self.layout.button.predicate else {
+            guard let predicate = self.titleLayout.button.predicate else {
                 return true
             }
             
@@ -54,7 +57,15 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber {
     
     @IBAction func tappedButton(_ sender: Any) {
         
-        self.layout.button.onTapActions.forEach { self.processAction(action: $0) }
+        self.titleLayout.button.onTapActions.forEach { self.processAction(action: $0) }
+        
+    }
+    
+    open func layoutDidLoad() {
+        
+        self.layout.onLoadActions.forEach({ (action) in
+            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: self.store)
+        })
         
     }
 

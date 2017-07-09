@@ -56,13 +56,21 @@ open class RSRouter: NSObject, StoreSubscriber {
             if let layoutVC = self.generateLayout(for: firstRoute, state: state) {
                 self.delegate?.presentLayout(viewController: layoutVC, completion: {presented in
                     if presented {
-                        guard let layout = RSStateSelectors.layout(state, for: firstRoute.layout) else {
+                        
+                        guard let lvc = layoutVC as? RSLayoutViewControllerProtocol else {
                             return
                         }
-
-                        layout.onLoadActions.forEach({ (action) in
-                            RSActionManager.processAction(action: action, context: ["layoutViewController":layoutVC], store: self.store)
-                        })
+                        
+                        lvc.layoutDidLoad()
+                        
+                        
+//                        guard let layout = RSStateSelectors.layout(state, for: firstRoute.layout) else {
+//                            return
+//                        }
+//
+//                        layout.onLoadActions.forEach({ (action) in
+//                            RSActionManager.processAction(action: action, context: ["layoutViewController":layoutVC], store: self.store)
+//                        })
                     }
                 })
             }
@@ -72,13 +80,20 @@ open class RSRouter: NSObject, StoreSubscriber {
             if let layoutVC = self.generateLayout(for: firstRoute, state: state) {
                 self.delegate?.presentLayout(viewController: layoutVC, completion: {presented in
                     if presented {
-                        guard let layout = RSStateSelectors.layout(state, for: firstRoute.layout) else {
+                        
+                        guard let lvc = layoutVC as? RSLayoutViewControllerProtocol else {
                             return
                         }
                         
-                        layout.onLoadActions.forEach({ (action) in
-                            RSActionManager.processAction(action: action, context: ["layoutViewController":layoutVC], store: self.store)
-                        })
+                        lvc.layoutDidLoad()
+                        
+//                        guard let layout = RSStateSelectors.layout(state, for: firstRoute.layout) else {
+//                            return
+//                        }
+//                        
+//                        layout.onLoadActions.forEach({ (action) in
+//                            RSActionManager.processAction(action: action, context: ["layoutViewController":layoutVC], store: self.store)
+//                        })
                     }
                 })
             }
