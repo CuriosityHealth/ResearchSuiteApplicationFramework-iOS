@@ -9,7 +9,7 @@
 import UIKit
 import ReSwift
 
-open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RSLayoutViewControllerProtocol {
+open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RSLayoutViewControllerProtocol, UITabBarControllerDelegate {
     
     
     //note that viewDidLoad for RSLayoutTabBarViewController was getting invoked prior to returning
@@ -30,16 +30,10 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
     var layoutManager: RSLayoutManager!
     
     var visibleLayoutItems: [RSTabItem] = []
-    
-    //dont forget that we want to execute the onTap actions when the tab is changed
-    
-
     override open func viewDidLoad() {
         super.viewDidLoad()
-
-        //
-//        self.store.subscribe(self)
         
+        self.delegate = self
     }
     
     deinit {
@@ -66,7 +60,7 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
         
         self.state = state
         
-        //we should only reload cells if values bound by list item predicates have changed
+        //we should only reload tabs if values bound by list item predicates have changed
         //but this is probably a premature optimization
         let newVisibleLayoutItems = self.computeVisibleLayoutItems()
         let currentVisibleLayoutItems = self.visibleLayoutItems.map { $0.identifier }
@@ -92,17 +86,17 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
             //first set view controllers
             self.setViewControllers(vcs, animated: true)
             
-            //then execute actions for newly shown visible items
-            let pairs: [(UIViewController, RSLayout)] = vcs.flatMap { layoutVC in
-                guard let lvc = layoutVC as? RSLayoutViewControllerProtocol else {
-                    return nil
-                }
-                return (layoutVC, lvc.layout)
-            }
-            
             //if this is not the first load, emit onLoad actions for each new VCs
             //these will get handled by layoutDidLoad
             if currentVisibleLayoutItems.count > 0 {
+                //then execute actions for newly shown visible items
+                let pairs: [(UIViewController, RSLayout)] = vcs.flatMap { layoutVC in
+                    guard let lvc = layoutVC as? RSLayoutViewControllerProtocol else {
+                        return nil
+                    }
+                    return (layoutVC, lvc.layout)
+                }
+                
                 pairs
                     .filter { !currentVisibleLayoutItems.contains($0.1.identifier) }
                     .forEach { pair in
@@ -140,6 +134,23 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
         
         vcs.forEach { $0.layoutDidLoad() }
         
+    }
+    
+    open func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        guard let layoutVC = viewController as? RSLayoutViewControllerProtocol,
+            let layout = layoutVC.layout else {
+            return
+        }
+        
+        guard let tabItem = self.visibleLayoutItems.first(where: { (tabItem) -> Bool in
+            return layout.identifier == tabItem.identifier
+        }) else {
+            return
+        }
+        
+        tabItem.onTapActions.forEach({ (action) in
+            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: self.store)
+        })
     }
 
 }
