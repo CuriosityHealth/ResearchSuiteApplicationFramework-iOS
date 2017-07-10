@@ -16,7 +16,8 @@ public class RSReducer: NSObject {
         MeasureReducer(),
         StateValueReducer(),
         LayoutReducer(),
-        RouteReducer()
+        RouteReducer(),
+        PresentationReducer()
     ])
     
     final class ActivityReducer: Reducer {
@@ -45,15 +46,15 @@ public class RSReducer: NSObject {
                 let newActivityQueue = state.activityQueue.filter { $0.0 != dequeueActivityAction.uuid }
                 return RSState.newState(fromState: state, activityQueue: newActivityQueue)
                 
-            case let setPresentedActivityAction as SetPresentedActivityAction:
-                
-                let pair = (setPresentedActivityAction.uuid, setPresentedActivityAction.activityID)
-                let newActivityQueue = state.activityQueue.filter { $0.0 != setPresentedActivityAction.uuid }
-                return RSState.newState(fromState: state, activityQueue: newActivityQueue, presentedActivity: pair)
-                
-            case let _ as ClearPresentedActivityAction:
-            
-                return RSState.newState(fromState: state, presentedActivity: nil as (UUID, String)?)
+//            case let setPresentedActivityAction as SetPresentedActivityAction:
+//                
+//                let pair = (setPresentedActivityAction.uuid, setPresentedActivityAction.activityID)
+//                let newActivityQueue = state.activityQueue.filter { $0.0 != setPresentedActivityAction.uuid }
+//                return RSState.newState(fromState: state, activityQueue: newActivityQueue, presentedActivity: pair)
+//
+//            case let _ as ClearPresentedActivityAction:
+//            
+//                return RSState.newState(fromState: state, presentedActivity: nil as (UUID, String)?)
 
             default:
                 return state
@@ -231,5 +232,42 @@ public class RSReducer: NSObject {
             }
             
         }
+    }
+    
+    final class PresentationReducer: Reducer  {
+        
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+            case _ as PresentActivityRequest:
+                return RSState.newState(fromState: state, isPresenting: true)
+                
+            case let action as PresentActivitySuccess:
+                let pair = (action.uuid, action.activityID)
+                let newActivityQueue = state.activityQueue.filter { $0.0 != action.uuid }
+                return RSState.newState(fromState: state, activityQueue: newActivityQueue, isPresenting: false, presentedActivity: pair)
+                
+            case let action as PresentActivityFailure:
+                let newActivityQueue = state.activityQueue.filter { $0.0 != action.uuid }
+                return RSState.newState(fromState: state, activityQueue: newActivityQueue, isPresenting: false)
+                
+            case _ as DismissActivityRequest:
+                return RSState.newState(fromState: state, isDismissing: true)
+                
+            case _ as DismissActivitySuccess:
+                return RSState.newState(fromState: state, isDismissing: false, presentedActivity: nil)
+                
+            case _ as DismissActivityFailure:
+                return RSState.newState(fromState: state, isDismissing: false)
+            
+            default:
+                return state
+            }
+            
+        }
+        
     }
 }

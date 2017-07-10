@@ -67,15 +67,43 @@ public struct RSSendResultToServerAction: Action {
     let intermediateResult: RSRPIntermediateResult
 }
 
-struct SetValueInProtectedStorage: Action {
+public struct SetValueInProtectedStorage: Action {
     let key: String
     let value: NSObject?
 }
 
-struct SetValueInUnprotectedStorage: Action {
+public struct SetValueInUnprotectedStorage: Action {
     let key: String
     let value: NSObject?
 }
+
+public struct PresentActivityRequest: Action {
+    let uuid: UUID
+    let activityID: String
+}
+
+public struct PresentActivitySuccess: Action {
+    let uuid: UUID
+    let activityID: String
+}
+
+public struct PresentActivityFailure: Action {
+    let uuid: UUID
+    let activityID: String
+}
+
+public struct DismissActivityRequest: Action {
+    
+}
+
+public struct DismissActivitySuccess: Action {
+    
+}
+
+public struct DismissActivityFailure: Action {
+    
+}
+
 
 
 

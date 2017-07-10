@@ -23,6 +23,8 @@ public final class RSState: NSObject, StateType {
     public let routeMap: [String: RSRoute]
     public let routeIdentifiers: [String]
     public let activityQueue: [(UUID, String)]
+    public let isPresenting: Bool
+    public let isDismissing: Bool
     public let presentedActivity: (UUID, String)?
     
     public init(protectedState: [String: NSObject] = [:],
@@ -37,6 +39,8 @@ public final class RSState: NSObject, StateType {
                 routeMap: [String: RSRoute] = [:],
                 routeIdentifiers: [String] = [],
                 activityQueue:[(UUID, String)] = [],
+                isPresenting: Bool = false,
+                isDismissing: Bool = false,
                 presentedActivity: (UUID, String)? = nil
         ) {
         
@@ -52,6 +56,8 @@ public final class RSState: NSObject, StateType {
         self.routeMap = routeMap
         self.routeIdentifiers = routeIdentifiers
         self.activityQueue = activityQueue
+        self.isPresenting = isPresenting
+        self.isDismissing = isDismissing
         self.presentedActivity = presentedActivity
     }
     
@@ -69,6 +75,8 @@ public final class RSState: NSObject, StateType {
         routeMap: [String: RSRoute]? = nil,
         routeIdentifiers: [String]? = nil,
         activityQueue: [(UUID, String)]? = nil,
+        isPresenting: Bool? = nil,
+        isDismissing: Bool? = nil,
         presentedActivity: ((UUID, String)?)? = nil
         ) -> RSState {
         
@@ -85,6 +93,8 @@ public final class RSState: NSObject, StateType {
             routeMap: routeMap ?? fromState.routeMap,
             routeIdentifiers: routeIdentifiers ?? fromState.routeIdentifiers,
             activityQueue: activityQueue ?? fromState.activityQueue,
+            isPresenting: isPresenting ?? fromState.isPresenting,
+            isDismissing: isDismissing ?? fromState.isDismissing,
             presentedActivity: presentedActivity ?? fromState.presentedActivity
         )
     }

@@ -86,6 +86,29 @@ public class RSStateSelectors: NSObject {
     public static func getFunctionValue(_ state: RSState, for identifier: String) -> RSFunctionValue? {
         return state.functionsMap[identifier]
     }
+    
+    public static func getNextActivity(_ state: RSState) -> (UUID, String)? {
+        return state.activityQueue.first
+    }
+    
+    public static func isPresenting(_ state: RSState) -> Bool {
+        return state.isPresenting
+    }
+    
+    public static func isDismissing(_ state: RSState) -> Bool {
+        return state.isDismissing
+    }
+    
+    public static func presentedActivity(_ state: RSState) -> (UUID, String)? {
+        return state.presentedActivity
+    }
+    
+    public static func shouldPresent(_ state: RSState) -> Bool {
+        return (state.activityQueue.first != nil) &&
+            (!state.isPresenting) &&
+            (state.presentedActivity == nil) &&
+            (!state.isDismissing)
+    }
 
 
 }

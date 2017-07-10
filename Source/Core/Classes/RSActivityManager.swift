@@ -19,7 +19,7 @@ open class RSActivityManager: NSObject, StoreSubscriber {
     private weak var delegate: UIViewController?
     let delegateLock: DispatchQueue
     
-    var isLaunching = false
+//    var isLaunching = false
     var state: RSState! = nil
     
     static let defaultActivityElementTransforms: [RSActivityElementTransformer.Type] = [
@@ -59,14 +59,16 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         return self.delegateLock.sync { return self.delegate }
     }
     
-    private func isPresenting(delegate: UIViewController) -> Bool {
-        return ((delegate.presentedViewController as? RSTaskViewController) != nil) || self.isLaunching
-    }
+//    private func isPresenting(delegate: UIViewController) -> Bool {
+//        return ((delegate.presentedViewController as? RSTaskViewController) != nil) || self.isLaunching
+//    }
     
     public func setDelegate(delegate: UIViewController) -> Bool {
         return self.delegateLock.sync {
             if let oldDelegate = self.delegate,
-                self.isPresenting(delegate: oldDelegate) {
+                RSStateSelectors.isPresenting(self.state),
+                RSStateSelectors.presentedActivity(self.state) != nil,
+                RSStateSelectors.isDismissing(self.state) {
                 return false
             }
             else {
@@ -84,46 +86,51 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         self.state = state
         
         if let delegate = self.getDelegate(),
-            self.isPresenting(delegate: delegate) == false,
-            let firstActivity = state.activityQueue.first,
-            state.presentedActivity == nil,
-            let activity = RSStateSelectors.activity(state, for: firstActivity.1),
-            let task = taskForActivity(activity: activity, state: state) {
-            
-            let store = self.store
-            let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
-                
-                //process on success action
-                if reason == ORKTaskViewControllerFinishReason.completed {
-                    let taskResult = taskViewController.result
-                    self.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store)
-                }
-                //process on failure actions
-                else {
-                    
-                }
-                
-                //process finally actions
-                self.delegate?.dismiss(animated: true, completion: {
-                    let action = RSActionCreators.dismissedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
-                    store.dispatch(action)
-                })
-                
-            }
-            
-            let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
-            self.isLaunching = true
-            debugPrint(self.delegate)
-            self.delegate!.present(taskViewController, animated: true, completion: {
-                self.isLaunching = false
-                let action = RSActionCreators.presentedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
-                store.dispatch(action)
-            })
+            RSStateSelectors.shouldPresent(state) {
+            self.store.dispatch(RSActionCreators.presentActivity(on: delegate, activityManager: self))
         }
+        
+//        if let delegate = self.getDelegate(),
+//            self.isPresenting(delegate: delegate) == false,
+//            let firstActivity = state.activityQueue.first,
+//            state.presentedActivity == nil,
+//            let activity = RSStateSelectors.activity(state, for: firstActivity.1),
+//            let task = taskForActivity(activity: activity, state: state) {
+//            
+//            let store = self.store
+//            let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
+//                
+//                //process on success action
+//                if reason == ORKTaskViewControllerFinishReason.completed {
+//                    let taskResult = taskViewController.result
+//                    self.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store)
+//                }
+//                //process on failure actions
+//                else {
+//                    
+//                }
+//                
+//                //process finally actions
+//                self.delegate?.dismiss(animated: true, completion: {
+//                    let action = RSActionCreators.dismissedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
+//                    store.dispatch(action)
+//                })
+//                
+//            }
+//            
+//            let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
+//            self.isLaunching = true
+//            debugPrint(self.delegate)
+//            self.delegate!.present(taskViewController, animated: true, completion: {
+//                self.isLaunching = false
+//                let action = RSActionCreators.presentedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
+//                store.dispatch(action)
+//            })
+//        }
         
     }
     
-    private func taskForActivity(activity: RSActivity, state: RSState) -> ORKTask? {
+    public func taskForActivity(activity: RSActivity, state: RSState) -> ORKTask? {
         
         let nodes = activity.elements.flatMap { (json) -> RSStepTreeNode? in
             return self.transformActivityElementIntoNode(

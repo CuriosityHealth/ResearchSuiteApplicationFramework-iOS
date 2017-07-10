@@ -9,6 +9,7 @@
 import UIKit
 import ReSwift
 import Gloss
+import ResearchKit
 
 public class RSActionCreators: NSObject {
     
@@ -180,6 +181,169 @@ public class RSActionCreators: NSObject {
         return { state, store in
             return UnregisterFunctionAction(identifier: identifier)
         }
+    }
+    
+    public static func presentActivity(on viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            
+            //if nothing is presented and there are things to present, then begin presentation on delegate
+            
+            guard !RSStateSelectors.isPresenting(state),
+                RSStateSelectors.presentedActivity(state) == nil else {
+                return nil
+            }
+            
+            guard let firstActivity: (UUID, String) = RSStateSelectors.getNextActivity(state),
+                let activity = RSStateSelectors.activity(state, for: firstActivity.1),
+                let task = activityManager.taskForActivity(activity: activity, state: state) else {
+                    return nil
+            }
+            
+            let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
+                
+                //process on success action
+                if reason == ORKTaskViewControllerFinishReason.completed {
+                    let taskResult = taskViewController.result
+                    RSActionCreators.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store)
+                }
+                    //process on failure actions
+                else {
+                    RSActionCreators.processOnFailureActions(activity: activity, store: store)
+                }
+                
+                //process finally actions
+                RSActionCreators.processFinallyActions(activity: activity, store: store)
+                
+                //dismiss view controller
+                store.dispatch(RSActionCreators.dismissActivity(on: viewController, activityManager: activityManager))
+                
+//
+//                self.delegate?.dismiss(animated: true, completion: {
+//                    let action = RSActionCreators.dismissedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
+//                    store.dispatch(action)
+//                })
+                
+            }
+            
+            let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
+            
+            let presentRequestAction = PresentActivityRequest(uuid: firstActivity.0, activityID: firstActivity.1)
+            store.dispatch(presentRequestAction)
+            
+            viewController.present(taskViewController, animated: true, completion: {
+                
+                let presentSuccessAction = PresentActivitySuccess(uuid: firstActivity.0, activityID: firstActivity.1)
+                store.dispatch(presentSuccessAction)
+
+            })
+            
+            
+//            if let delegate = self.getDelegate(),
+//                self.isPresenting(delegate: delegate) == false,
+//                let firstActivity = state.activityQueue.first,
+//                state.presentedActivity == nil,
+//                let activity = RSStateSelectors.activity(state, for: firstActivity.1),
+//                let task = taskForActivity(activity: activity, state: state) {
+//                
+//                let store = self.store
+//                let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
+//                    
+//                    //process on success action
+//                    if reason == ORKTaskViewControllerFinishReason.completed {
+//                        let taskResult = taskViewController.result
+//                        self.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store)
+//                    }
+//                        //process on failure actions
+//                    else {
+//                        
+//                    }
+//                    
+//                    //process finally actions
+//                    self.delegate?.dismiss(animated: true, completion: {
+//                        let action = RSActionCreators.dismissedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
+//                        store.dispatch(action)
+//                    })
+//                    
+//                }
+//                
+//                let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
+//                self.isLaunching = true
+//                debugPrint(self.delegate)
+//                self.delegate!.present(taskViewController, animated: true, completion: {
+//                    self.isLaunching = false
+//                    let action = RSActionCreators.presentedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
+//                    store.dispatch(action)
+//                })
+//            }
+            
+            
+            return nil
+        }
+    }
+    
+    public static func dismissActivity(on viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return nil
+        }
+    }
+    
+    
+    private static func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>) {
+        let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
+        let context: [String: AnyObject] = ["taskResult": taskResult]
+        RSActionManager.processActions(actions: onSuccessActionJSON, context: context, store: store)
+    }
+    
+    private static func processOnFailureActions(activity: RSActivity, store: Store<RSState>) {
+        let onFailureActionJSON: [JSON] = activity.onCompletion.onFailureActions
+        let context: [String: AnyObject] = [:]
+        RSActionManager.processActions(actions: onFailureActionJSON, context: context, store: store)
+    }
+    
+    private static func processFinallyActions(activity: RSActivity, store: Store<RSState>) {
+        let finallyActionJSON: [JSON] = activity.onCompletion.finallyActions
+        let context: [String: AnyObject] = [:]
+        RSActionManager.processActions(actions: finallyActionJSON, context: context, store: store)
+    }
+    
+    //TODO: onFailure and Finally action processing
+    
+    public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
+        //construct substitution dictionary
+        
+        let nsPredicate = NSPredicate.init(format: predicate.format)
+        
+        guard let substitutionsJSON = predicate.substitutions else {
+            return nsPredicate.evaluate(with: nil)
+        }
+        
+        var substitutions: [String: Any] = [:]
+        
+        substitutionsJSON.forEach({ (key: String, value: JSON) in
+            
+            if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context) {
+                
+                //so we know this is a valid value convertible (i.e., it's been recognized by the state map)
+                //we also want to potentially have a null value substituted
+                if let value = valueConvertible.evaluate() {
+                    substitutions[key] = value
+                }
+                else {
+                    assertionFailure("Added NSNull support for this type")
+                    let nilObject: AnyObject? = nil as AnyObject?
+                    substitutions[key] = nilObject as Any
+                }
+                
+            }
+            
+        })
+        
+        guard substitutions.count == substitutionsJSON.count else {
+            return false
+        }
+        
+        return nsPredicate.evaluate(with: nil, substitutionVariables: substitutions)
+        
     }
 
 }
