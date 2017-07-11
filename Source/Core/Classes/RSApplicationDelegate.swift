@@ -12,10 +12,10 @@ import ResearchSuiteTaskBuilder
 import ResearchSuiteResultsProcessor
 import CoreLocation
 
-open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDelegate {
+open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     
     public var window: UIWindow?
-    private var rootNavController: UINavigationController!
+    private var rootNavController: RSRoutingNavigationController!
     
     public var activityManager: RSActivityManager!
     
@@ -28,7 +28,6 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
     public var persistentStoreSubscriber: RSStatePersistentStoreSubscriber!
     
     public var layoutManager: RSLayoutManager!
-    public var router: RSRouter!
     
     public static var appDelegate: RSApplicationDelegate! {
         return UIApplication.shared.delegate as! RSApplicationDelegate
@@ -144,16 +143,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
         
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
         
-        self.router = RSRouter(
-            store: self.store,
-            layoutManager: self.layoutManager,
-            delegate: self
-        )
-        
-        self.store.subscribe(self.router)
-        
         //set root view controller
-        self.rootNavController = UINavigationController()
+        self.rootNavController = RSRoutingNavigationController()
+        self.rootNavController.store = self.store
+        self.rootNavController.layoutManager = self.layoutManager
+        self.rootNavController.viewControllers = [UIViewController()]
+        
         self.window?.rootViewController = self.rootNavController
         self.activityManager.setDelegate(delegate: self.rootNavController)
         
@@ -168,44 +163,4 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, RSRouterDe
         
         return true
     }
-    
-    open func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?) {
-        self.transition(toRootViewController: viewController, animated: true, completion: { presented in
-            completion?(presented)
-        })
-    }
-    
-    /**
-     Convenience method for transitioning to the given view controller as the nav controller
-     rootViewController.
-     */
-    
-    //there is a bug when we are presenting a modal view controller and we reset the rootViewController
-    open func transition(toRootViewController: UIViewController, animated: Bool, completion: ((Bool) -> Swift.Void)? = nil) {
-        if (animated) {
-            let snapshot:UIView = (self.window?.snapshotView(afterScreenUpdates: true))!
-
-            
-            //this causes viewdidLoad for toRootViewController to be called
-            //if this is a layout view controller, its actions will be executed
-//            toRootViewController.view.addSubview(snapshot);
-            
-            self.rootNavController.viewControllers = [toRootViewController]
-            toRootViewController.view.addSubview(snapshot)
-            
-            UIView.animate(withDuration: 0.3, animations: {() in
-                snapshot.layer.opacity = 0;
-            }, completion: {
-                (value: Bool) in
-                snapshot.removeFromSuperview()
-                completion?(value)
-            })
-        }
-        else {
-            self.rootNavController.viewControllers = [toRootViewController]
-            completion?(true)
-        }
-
-    }
-
 }

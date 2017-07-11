@@ -186,8 +186,14 @@ public class RSActionCreators: NSObject {
     public static func presentActivity(on viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
-            //if nothing is presented and there are things to present, then begin presentation on delegate
+            //make sure we are not in the middle of routing
+            //and there is a valid route
+            guard !RSStateSelectors.isRouting(state),
+                RSStateSelectors.currentRoute(state) != nil else {
+                return nil
+            }
             
+            //if nothing is presented and there are things to present, then begin presentation on delegate
             guard !RSStateSelectors.isPresenting(state),
                 RSStateSelectors.presentedActivity(state) == nil else {
                 return nil
@@ -217,12 +223,6 @@ public class RSActionCreators: NSObject {
                 //dismiss view controller
                 store.dispatch(RSActionCreators.dismissActivity(firstActivity.0, activity: activity, viewController: viewController, activityManager: activityManager))
                 
-//
-//                self.delegate?.dismiss(animated: true, completion: {
-//                    let action = RSActionCreators.dismissedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
-//                    store.dispatch(action)
-//                })
-                
             }
             
             let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
@@ -236,46 +236,6 @@ public class RSActionCreators: NSObject {
                 store.dispatch(presentSuccessAction)
 
             })
-            
-            
-//            if let delegate = self.getDelegate(),
-//                self.isPresenting(delegate: delegate) == false,
-//                let firstActivity = state.activityQueue.first,
-//                state.presentedActivity == nil,
-//                let activity = RSStateSelectors.activity(state, for: firstActivity.1),
-//                let task = taskForActivity(activity: activity, state: state) {
-//                
-//                let store = self.store
-//                let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
-//                    
-//                    //process on success action
-//                    if reason == ORKTaskViewControllerFinishReason.completed {
-//                        let taskResult = taskViewController.result
-//                        self.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store)
-//                    }
-//                        //process on failure actions
-//                    else {
-//                        
-//                    }
-//                    
-//                    //process finally actions
-//                    self.delegate?.dismiss(animated: true, completion: {
-//                        let action = RSActionCreators.dismissedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
-//                        store.dispatch(action)
-//                    })
-//                    
-//                }
-//                
-//                let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
-//                self.isLaunching = true
-//                debugPrint(self.delegate)
-//                self.delegate!.present(taskViewController, animated: true, completion: {
-//                    self.isLaunching = false
-//                    let action = RSActionCreators.presentedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
-//                    store.dispatch(action)
-//                })
-//            }
-            
             
             return nil
         }
@@ -320,9 +280,7 @@ public class RSActionCreators: NSObject {
         let context: [String: AnyObject] = [:]
         RSActionManager.processActions(actions: finallyActionJSON, context: context, store: store)
     }
-    
-    //TODO: onFailure and Finally action processing
-    
+
     public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
         //construct substitution dictionary
         
@@ -359,6 +317,69 @@ public class RSActionCreators: NSObject {
         
         return nsPredicate.evaluate(with: nil, substitutionVariables: substitutions)
         
+    }
+    
+    public static func setRoute(route: RSRoute, layoutManager: RSLayoutManager, delegate: RSRouterDelegate) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            
+            guard !RSStateSelectors.isRouting(state) else {
+                    return nil
+            }
+            
+            //also verify that we are not in the middle of presenting a task
+            guard !RSStateSelectors.isPresenting(state),
+                RSStateSelectors.presentedActivity(state) == nil,
+                !RSStateSelectors.isDismissing(state) else {
+                    return nil
+            }
+            
+            //if current route is nil, route first route
+            //if current route is not first route, route first route
+            let currentRoute = RSStateSelectors.currentRoute(state)
+            
+            if currentRoute == nil ||
+                currentRoute!.identifier != route.identifier {
+                
+                let routeRequestAction = ChangeRouteRequest(route: route)
+                store.dispatch(routeRequestAction)
+                
+                guard let layoutVC = RSActionCreators.generateLayout(for: route, state: state, store: store, layoutManager: layoutManager) else {
+                    let routeRequestAction = ChangeRouteFailure(route: route)
+                    store.dispatch(routeRequestAction)
+                    return nil
+                }
+                
+                delegate.presentLayout(viewController: layoutVC, completion: { (completed) in
+                    
+                    if completed {
+                        let routeRequestAction = ChangeRouteSuccess(route: route)
+                        store.dispatch(routeRequestAction)
+                        
+                        guard let lvc = layoutVC as? RSLayoutViewControllerProtocol else {
+                            return
+                        }
+                        
+                        lvc.layoutDidLoad()
+                    }
+                    else {
+                        let routeRequestAction = ChangeRouteFailure(route: route)
+                        store.dispatch(routeRequestAction)
+                    }
+                    
+                })
+                
+            }
+            
+            return nil
+        }
+    }
+    
+    static func generateLayout(for route: RSRoute, state: RSState, store: Store<RSState>, layoutManager: RSLayoutManager ) -> UIViewController? {
+        
+        guard let layout = RSStateSelectors.layout(state, for: route.layout) else {
+            return nil
+        }
+        return layoutManager.generateLayout(layout: layout, store: store)
     }
 
 }

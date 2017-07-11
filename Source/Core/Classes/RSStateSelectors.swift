@@ -110,5 +110,12 @@ public class RSStateSelectors: NSObject {
             (!state.isDismissing)
     }
 
+    public static func isRouting(_ state: RSState) -> Bool {
+        return state.isRouting
+    }
+    
+    public static func currentRoute(_ state: RSState) -> RSRoute? {
+        return state.currentRoute
+    }
 
 }

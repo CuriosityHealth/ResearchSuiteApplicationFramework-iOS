@@ -26,6 +26,8 @@ public final class RSState: NSObject, StateType {
     public let isPresenting: Bool
     public let isDismissing: Bool
     public let presentedActivity: (UUID, String)?
+    public let isRouting: Bool
+    public let currentRoute: RSRoute?
     
     public init(protectedState: [String: NSObject] = [:],
                 unprotectedState: [String: NSObject] = [:],
@@ -41,7 +43,9 @@ public final class RSState: NSObject, StateType {
                 activityQueue:[(UUID, String)] = [],
                 isPresenting: Bool = false,
                 isDismissing: Bool = false,
-                presentedActivity: (UUID, String)? = nil
+                presentedActivity: (UUID, String)? = nil,
+                isRouting: Bool = false,
+                currentRoute: RSRoute? = nil
         ) {
         
         self.protectedState = protectedState
@@ -59,6 +63,8 @@ public final class RSState: NSObject, StateType {
         self.isPresenting = isPresenting
         self.isDismissing = isDismissing
         self.presentedActivity = presentedActivity
+        self.isRouting = isRouting
+        self.currentRoute = currentRoute
     }
     
     static func newState(
@@ -77,7 +83,9 @@ public final class RSState: NSObject, StateType {
         activityQueue: [(UUID, String)]? = nil,
         isPresenting: Bool? = nil,
         isDismissing: Bool? = nil,
-        presentedActivity: ((UUID, String)?)? = nil
+        presentedActivity: ((UUID, String)?)? = nil,
+        isRouting: Bool? = nil,
+        currentRoute: RSRoute?? = nil
         ) -> RSState {
         
         return RSState(
@@ -95,7 +103,9 @@ public final class RSState: NSObject, StateType {
             activityQueue: activityQueue ?? fromState.activityQueue,
             isPresenting: isPresenting ?? fromState.isPresenting,
             isDismissing: isDismissing ?? fromState.isDismissing,
-            presentedActivity: presentedActivity ?? fromState.presentedActivity
+            presentedActivity: presentedActivity ?? fromState.presentedActivity,
+            isRouting: isRouting ?? fromState.isRouting,
+            currentRoute: currentRoute ?? fromState.currentRoute
         )
     }
     

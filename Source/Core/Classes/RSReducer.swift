@@ -211,6 +211,18 @@ public class RSReducer: NSObject {
         }
     }
     
+//    public struct ChangeRouteRequest: Action {
+//        let route: RSRoute
+//    }
+//    
+//    public struct ChangeRouteSuccess: Action {
+//        let route: RSRoute
+//    }
+//    
+//    public struct ChangeRouteFailure: Action {
+//        let route: RSRoute
+//    }
+//    
     final class RouteReducer: Reducer {
         
         open func handleAction(action: Action, state: RSState?) -> RSState {
@@ -226,6 +238,15 @@ public class RSReducer: NSObject {
                 newMap[route.identifier] = route
                 let newIdentifierList = state.routeIdentifiers.filter { $0 != route.identifier}  + [route.identifier]
                 return RSState.newState(fromState: state, routeMap: newMap, routeIdentifiers: newIdentifierList)
+                
+            case _ as ChangeRouteRequest:
+                return RSState.newState(fromState: state, isRouting: true)
+                
+            case let action as ChangeRouteSuccess:
+                return RSState.newState(fromState: state, isRouting: false, currentRoute: action.route)
+                
+            case _ as ChangeRouteFailure:
+                return RSState.newState(fromState: state, isRouting: false)
                 
             default:
                 return state

@@ -107,6 +107,16 @@ public struct DismissActivityFailure: Action {
     let activityID: String
 }
 
+public struct ChangeRouteRequest: Action {
+    let route: RSRoute
+}
 
+public struct ChangeRouteSuccess: Action {
+    let route: RSRoute
+}
+
+public struct ChangeRouteFailure: Action {
+    let route: RSRoute
+}
 
 
