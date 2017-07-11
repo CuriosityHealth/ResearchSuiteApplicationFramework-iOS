@@ -93,15 +93,18 @@ public struct PresentActivityFailure: Action {
 }
 
 public struct DismissActivityRequest: Action {
-    
+    let uuid: UUID
+    let activityID: String
 }
 
 public struct DismissActivitySuccess: Action {
-    
+    let uuid: UUID
+    let activityID: String
 }
 
 public struct DismissActivityFailure: Action {
-    
+    let uuid: UUID
+    let activityID: String
 }
 
 

@@ -258,7 +258,7 @@ public class RSReducer: NSObject {
                 return RSState.newState(fromState: state, isDismissing: true)
                 
             case _ as DismissActivitySuccess:
-                return RSState.newState(fromState: state, isDismissing: false, presentedActivity: nil)
+                return RSState.newState(fromState: state, isDismissing: false, presentedActivity: nil as (UUID, String)?)
                 
             case _ as DismissActivityFailure:
                 return RSState.newState(fromState: state, isDismissing: false)

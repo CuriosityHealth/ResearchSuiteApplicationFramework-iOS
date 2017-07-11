@@ -215,7 +215,7 @@ public class RSActionCreators: NSObject {
                 RSActionCreators.processFinallyActions(activity: activity, store: store)
                 
                 //dismiss view controller
-                store.dispatch(RSActionCreators.dismissActivity(on: viewController, activityManager: activityManager))
+                store.dispatch(RSActionCreators.dismissActivity(firstActivity.0, activity: activity, viewController: viewController, activityManager: activityManager))
                 
 //
 //                self.delegate?.dismiss(animated: true, completion: {
@@ -281,8 +281,23 @@ public class RSActionCreators: NSObject {
         }
     }
     
-    public static func dismissActivity(on viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func dismissActivity(_ uuid: UUID, activity: RSActivity, viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
+            
+            guard !RSStateSelectors.isDismissing(state),
+                let presentedActivityPair = RSStateSelectors.presentedActivity(state),
+                presentedActivityPair.0 == uuid else {
+                    return nil
+            }
+            
+            let dismissRequestAction = DismissActivityRequest(uuid: presentedActivityPair.0, activityID: presentedActivityPair.1)
+            store.dispatch(dismissRequestAction)
+            
+            viewController.dismiss(animated: true, completion: {
+                let dismissSuccessAction = DismissActivitySuccess(uuid: presentedActivityPair.0, activityID: presentedActivityPair.1)
+                store.dispatch(dismissSuccessAction)
+            })
+            
             return nil
         }
     }
