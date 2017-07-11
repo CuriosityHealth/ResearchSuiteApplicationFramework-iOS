@@ -107,7 +107,9 @@ public class RSStateSelectors: NSObject {
         return (state.activityQueue.first != nil) &&
             (!state.isPresenting) &&
             (state.presentedActivity == nil) &&
-            (!state.isDismissing)
+            (!state.isDismissing) &&
+            (!state.isRouting) &&
+            (state.currentRoute != nil)
     }
 
     public static func isRouting(_ state: RSState) -> Bool {
@@ -116,6 +118,17 @@ public class RSStateSelectors: NSObject {
     
     public static func currentRoute(_ state: RSState) -> RSRoute? {
         return state.currentRoute
+    }
+    
+    public static func shouldRoute(_ state: RSState, route: RSRoute) -> Bool {
+        
+        let shouldRoute = !RSStateSelectors.isRouting(state) &&
+            RSStateSelectors.currentRoute(state) != route &&
+            !RSStateSelectors.isPresenting(state) &&
+            RSStateSelectors.presentedActivity(state) == nil &&
+            !RSStateSelectors.isDismissing(state)
+        
+        return shouldRoute
     }
 
 }

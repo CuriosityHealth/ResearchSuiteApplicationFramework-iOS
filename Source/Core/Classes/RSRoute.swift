@@ -10,7 +10,7 @@ import UIKit
 import Gloss
 
 
-open class RSRoute: Decodable {
+open class RSRoute: Decodable, Equatable {
     
     public let identifier: String
     public let layout: String
@@ -26,6 +26,10 @@ open class RSRoute: Decodable {
         self.identifier = identifier
         self.layout = layout
         self.predicate = "predicate" <~~ json
+    }
+    
+    public static func ==(lhs: RSRoute, rhs: RSRoute) -> Bool {
+        return lhs.identifier == rhs.identifier
     }
     
 }

@@ -12,15 +12,7 @@ import ResearchKit
 import ResearchSuiteTaskBuilder
 import Gloss
 
-open class RSActivityManager: NSObject, StoreSubscriber {
-    
-    let store: Store<RSState>
-    
-    private weak var delegate: UIViewController?
-    let delegateLock: DispatchQueue
-    
-//    var isLaunching = false
-    var state: RSState! = nil
+open class RSActivityManager: NSObject {
     
     static let defaultActivityElementTransforms: [RSActivityElementTransformer.Type] = [
         RSMeasureActivityElementTransformer.self,
@@ -28,106 +20,19 @@ open class RSActivityManager: NSObject, StoreSubscriber {
     ]
     
     let activityElementTransforms: [RSActivityElementTransformer.Type]
-    
-    let taskBuilder: RSTBTaskBuilder
+
     let stepTreeBuilder: RSStepTreeBuilder
     
     init(
-        store: Store<RSState>,
-        taskBuilder: RSTBTaskBuilder,
         stepTreeBuilder: RSStepTreeBuilder,
         activityElementTransforms: [RSActivityElementTransformer.Type] = RSActivityManager.defaultActivityElementTransforms
         ) {
-        
-        self.store = store
-        self.delegateLock = DispatchQueue(label: "RSActivityManager.delegateLock")
-        self.taskBuilder = taskBuilder
+
         self.activityElementTransforms = activityElementTransforms
         self.stepTreeBuilder = stepTreeBuilder
         
         super.init()
-        
-        self.store.subscribe(self)
-        
-    }
     
-    deinit {
-        self.store.unsubscribe(self)
-    }
-    
-    private func getDelegate() -> UIViewController? {
-        return self.delegateLock.sync { return self.delegate }
-    }
-    
-//    private func isPresenting(delegate: UIViewController) -> Bool {
-//        return ((delegate.presentedViewController as? RSTaskViewController) != nil) || self.isLaunching
-//    }
-    
-    public func setDelegate(delegate: UIViewController) -> Bool {
-        return self.delegateLock.sync {
-            if let oldDelegate = self.delegate,
-                RSStateSelectors.isPresenting(self.state),
-                RSStateSelectors.presentedActivity(self.state) != nil,
-                RSStateSelectors.isDismissing(self.state) {
-                return false
-            }
-            else {
-                self.delegate = delegate
-                DispatchQueue.main.async {
-                    self.newState(state: self.state)
-                }
-                return true
-            }
-        }
-    }
-    
-    public func newState(state: RSState) {
-        
-        self.state = state
-        
-        if let delegate = self.getDelegate(),
-            RSStateSelectors.shouldPresent(state) {
-            self.store.dispatch(RSActionCreators.presentActivity(on: delegate, activityManager: self))
-        }
-        
-//        if let delegate = self.getDelegate(),
-//            self.isPresenting(delegate: delegate) == false,
-//            let firstActivity = state.activityQueue.first,
-//            state.presentedActivity == nil,
-//            let activity = RSStateSelectors.activity(state, for: firstActivity.1),
-//            let task = taskForActivity(activity: activity, state: state) {
-//            
-//            let store = self.store
-//            let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
-//                
-//                //process on success action
-//                if reason == ORKTaskViewControllerFinishReason.completed {
-//                    let taskResult = taskViewController.result
-//                    self.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store)
-//                }
-//                //process on failure actions
-//                else {
-//                    
-//                }
-//                
-//                //process finally actions
-//                self.delegate?.dismiss(animated: true, completion: {
-//                    let action = RSActionCreators.dismissedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
-//                    store.dispatch(action)
-//                })
-//                
-//            }
-//            
-//            let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
-//            self.isLaunching = true
-//            debugPrint(self.delegate)
-//            self.delegate!.present(taskViewController, animated: true, completion: {
-//                self.isLaunching = false
-//                let action = RSActionCreators.presentedActivity(uuid: firstActivity.0, activityID: firstActivity.1)
-//                store.dispatch(action)
-//            })
-//        }
-        
     }
     
     public func taskForActivity(activity: RSActivity, state: RSState) -> ORKTask? {
@@ -157,7 +62,7 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         return stepTree
         
     }
-    
+
     private func transformActivityElementIntoNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, state: RSState, identifierPrefix: String) -> RSStepTreeNode? {
         
         guard let type: String = "type" <~~ jsonObject else {
@@ -178,30 +83,6 @@ open class RSActivityManager: NSObject, StoreSubscriber {
         return nil
         
     }
-    
-    private func transformActivityElement(jsonObject: JSON, taskBuilder: RSTBTaskBuilder, state: RSState) -> [ORKStep]? {
-        
-        guard let type: String = "type" <~~ jsonObject else {
-            return nil
-        }
-        
-        for transformer in self.activityElementTransforms {
-            if transformer.supportsType(type: type) {
-                return transformer.generateSteps(jsonObject:jsonObject, taskBuilder:taskBuilder, state:state)
-            }
-        }
-        
-        return nil
-        
-    }
-    
-    private func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>) {
-        let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
-        let context: [String: AnyObject] = ["taskResult": taskResult]
-        RSActionManager.processActions(actions: onSuccessActionJSON, context: context, store: store)
-    }
-    
-    //TODO: onFailure and Finally action processing
     
     public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
         //construct substitution dictionary

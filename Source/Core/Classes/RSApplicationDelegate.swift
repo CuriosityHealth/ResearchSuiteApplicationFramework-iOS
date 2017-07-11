@@ -137,22 +137,19 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             answerFormatGeneratorServices: self.answerFormatGeneratorServices
         )
         
-        self.activityManager = RSActivityManager(store: self.store, taskBuilder: self.taskBuilder, stepTreeBuilder: self.stepTreeBuilder)
-        
         self.store.subscribe(self.persistentStoreSubscriber)
         
+        self.activityManager = RSActivityManager(stepTreeBuilder: self.stepTreeBuilder)
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
         
         //set root view controller
         self.rootNavController = RSRoutingNavigationController()
         self.rootNavController.store = self.store
         self.rootNavController.layoutManager = self.layoutManager
+        self.rootNavController.activityManager = self.activityManager
         self.rootNavController.viewControllers = [UIViewController()]
         
         self.window?.rootViewController = self.rootNavController
-        self.activityManager.setDelegate(delegate: self.rootNavController)
-        
-        debugPrint(self.rootNavController)
         
         //function bindings need to go first in case they are used by routes
         let registerFunctionAction = RSActionCreators.registerFunction(identifier: "now") {

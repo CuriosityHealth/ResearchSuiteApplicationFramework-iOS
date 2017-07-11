@@ -17,6 +17,7 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
     
     var store: Store<RSState>!
     var layoutManager: RSLayoutManager!
+    var activityManager: RSActivityManager!
 
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -44,11 +45,6 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
             
             let snapshot:UIView = (self.topViewController?.view.snapshotView(afterScreenUpdates: true))!
             
-            
-            //this causes viewdidLoad for toRootViewController to be called
-            //if this is a layout view controller, its actions will be executed
-//            toRootViewController.view.addSubview(snapshot);
-            
             self.viewControllers = [toRootViewController]
             toRootViewController.view.addSubview(snapshot)
             
@@ -69,8 +65,9 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
     
     open func newState(state: RSState) {
         
-        let routes = RSStateSelectors.routes(state)
         
+        //first, lets check to see if there is a new layout to route
+        let routes = RSStateSelectors.routes(state)
         let firstRouteOpt = routes.first { (route) -> Bool in
             
             guard let predicate = route.predicate else {
@@ -81,12 +78,16 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
             
         }
         
-        guard let firstRoute = firstRouteOpt,
-            !RSStateSelectors.isRouting(state) else {
-            return
+        if let firstRoute = firstRouteOpt,
+            RSStateSelectors.shouldRoute(state, route: firstRoute) {
+            self.store.dispatch(RSActionCreators.setRoute(route: firstRoute, layoutManager: self.layoutManager, delegate: self))
+        }
+            //otherwise, check to see if there is an activity to present
+        else if RSStateSelectors.shouldPresent(state) {
+            self.store.dispatch(RSActionCreators.presentActivity(on: self, activityManager: self.activityManager))
         }
         
-        self.store.dispatch(RSActionCreators.setRoute(route: firstRoute, layoutManager: self.layoutManager, delegate: self))
+        
         
     }
     
