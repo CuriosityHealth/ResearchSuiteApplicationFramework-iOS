@@ -20,10 +20,12 @@ class AppDelegate: RSApplicationDelegate {
     override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        let superLaunched = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+        if !superLaunched {
+            return false
+        }
         
-        
-        
+        //note that we can add 
         
         self.store?.dispatch(RSActionCreators.addMeasuresFromFile(fileName: "measures"))
         self.store?.dispatch(RSActionCreators.addActivitiesFromFile(fileName: "activities"))
@@ -42,8 +44,6 @@ class AppDelegate: RSApplicationDelegate {
         
         self.store?.dispatch(RSActionCreators.addLayoutsFromFile(fileName: "layouts"))
         self.store?.dispatch(RSActionCreators.addRoutesFromFile(fileName: "routes"))
-        
-        
         
         return true
     }

@@ -29,6 +29,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     
     public var layoutManager: RSLayoutManager!
     
+    public var openURLManager: RSOpenURLManager!
+    
     public static var appDelegate: RSApplicationDelegate! {
         return UIApplication.shared.delegate as! RSApplicationDelegate
     }
@@ -104,6 +106,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
         ]
     }
     
+    open var openURLDelegates: [RSOpenURLDelegate] {
+        return []
+    }
+    
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         //initialize store
@@ -158,6 +164,13 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
         
         self.store.dispatch(registerFunctionAction)
         
+        self.openURLManager = RSOpenURLManager(openURLDelegates: self.openURLDelegates)
+        
         return true
+    }
+    
+    //note that this is invoked after application didFinishLauchingWithOptions
+    open func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+        return self.openURLManager.handleURL(app: app, url: url, options: options)
     }
 }
