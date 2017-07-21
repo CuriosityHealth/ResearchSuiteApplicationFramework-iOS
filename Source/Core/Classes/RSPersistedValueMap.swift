@@ -10,14 +10,14 @@ import UIKit
 
 public class RSPersistedValueMap: NSObject {
     
-    let stateManager: RSStateManager
+    let stateManager: RSStateManagerProtocol
     
     let keyArrayKey: String
     let valueKeyComputeFunction: (String) -> (String)
     var map: [String: RSPersistedValue<NSObject>]
     var keys: RSPersistedValue<NSArray>
     
-    init(key: String, stateManager: RSStateManager) {
+    init(key: String, stateManager: RSStateManagerProtocol) {
         self.stateManager = stateManager
         
         self.keyArrayKey = [key, "arrayKey"].joined(separator: ".")

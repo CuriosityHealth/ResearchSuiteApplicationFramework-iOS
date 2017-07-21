@@ -116,13 +116,13 @@ public class RSReducer: NSObject {
                 newMap[functionValue.identifier] = functionValue
                 return RSState.newState(fromState: state, functionsMap: newMap)
                 
-            case let setValueAction as SetValueInProtectedStorage:
+            case let action as SetValueInState:
                 
-                var stateDict: [String: NSObject] = state.protectedState
+                var stateDict: [String: NSObject] = state.applicationState
                 
-                let key = setValueAction.key
+                let key = action.key
                 
-                if let value = setValueAction.value,
+                if let value = action.value,
                     !(value is NSNull) {
                     stateDict[key] = value
                 }
@@ -135,30 +135,23 @@ public class RSReducer: NSObject {
                 
                 return RSState.newState(
                     fromState: state,
-                    protectedState: stateDict,
+                    applicationState: stateDict,
                     stateValueHasBeenSet: hasSetValueDict
                 )
                 
-            case let setValueAction as SetValueInUnprotectedStorage:
+            case let action as ResetValueInState:
                 
-                var stateDict: [String: NSObject] = state.unprotectedState
+                var stateDict: [String: NSObject] = state.applicationState
                 
-                let key = setValueAction.key
-                
-                if let value = setValueAction.value,
-                    !(value is NSNull) {
-                    stateDict[key] = value
-                }
-                else {
-                    stateDict.removeValue(forKey: key)
-                }
+                let key = action.key
+                stateDict.removeValue(forKey: key)
                 
                 var hasSetValueDict: [String: NSObject] = state.stateValueHasBeenSet
-                hasSetValueDict[key] = NSNumber(booleanLiteral: true)
+                hasSetValueDict[key] = NSNumber(booleanLiteral: false)
                 
                 return RSState.newState(
                     fromState: state,
-                    unprotectedState: stateDict,
+                    applicationState: stateDict,
                     stateValueHasBeenSet: hasSetValueDict
                 )
                 

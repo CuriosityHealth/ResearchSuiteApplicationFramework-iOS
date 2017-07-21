@@ -11,9 +11,9 @@ import UIKit
 public class RSPersistedValue<T: Equatable>: RSObservableValue<T> {
     
     let key: String
-    let stateManager: RSStateManager
+    let stateManager: RSStateManagerProtocol
     
-    init(key: String, stateManager: RSStateManager) {
+    init(key: String, stateManager: RSStateManagerProtocol) {
         self.key = key
         self.stateManager = stateManager
         

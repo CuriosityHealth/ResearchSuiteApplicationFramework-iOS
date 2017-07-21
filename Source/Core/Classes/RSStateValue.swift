@@ -15,20 +15,20 @@ public class RSStateValue: Decodable {
     public let identifier: String
     public let type: String
     public let defaultValue: AnyObject?
-    public let protected: Bool
+    public let stateManager: String
     
     required public init?(json: JSON) {
         
         guard let identifier: String = "identifier" <~~ json,
             let type: String = "type" <~~ json,
-            let protected:Bool  = "protected" <~~ json else {
+            let stateManager: String  = "stateManager" <~~ json else {
                 return nil
         }
         
         self.identifier = identifier
         self.type = type
         self.defaultValue = "default" <~~ json
-        self.protected = protected
+        self.stateManager = stateManager
     
     }
     

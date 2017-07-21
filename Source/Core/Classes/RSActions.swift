@@ -68,15 +68,36 @@ public struct RSSendResultToServerAction: Action {
     let intermediateResult: RSRPIntermediateResult
 }
 
-public struct SetValueInProtectedStorage: Action {
+public struct SetValueInState: Action {
     let key: String
     let value: NSObject?
 }
 
-public struct SetValueInUnprotectedStorage: Action {
+public struct ResetValueInState: Action {
     let key: String
-    let value: NSObject?
 }
+
+public struct ResetStateManagerRequest: Action {
+    let identifier: String
+}
+
+public struct ResetStateManagerSuccess: Action {
+    let identifier: String
+}
+
+public struct ResetStateManagerFailure: Action {
+    let identifier: String
+}
+
+//public struct SetValueInProtectedStorage: Action {
+//    let key: String
+//    let value: NSObject?
+//}
+//
+//public struct SetValueInUnprotectedStorage: Action {
+//    let key: String
+//    let value: NSObject?
+//}
 
 public struct PresentActivityRequest: Action {
     let uuid: UUID

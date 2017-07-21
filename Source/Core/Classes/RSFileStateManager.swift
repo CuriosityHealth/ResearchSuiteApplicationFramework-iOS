@@ -7,12 +7,45 @@
 //
 
 import UIKit
+import Gloss
+import CoreLocation
 
-public class RSFileStateManager: RSStateManager {
+open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
+    
+    public static func supportsType(type: String) -> Bool {
+        return type == "file"
+    }
+    
+    public static func generateStateManager(jsonObject: JSON) -> RSStateManagerProtocol? {
+        
+        guard let filePath: String = "filePath" <~~ jsonObject,
+            let protected: Bool = "protected" <~~ jsonObject else {
+                return nil
+        }
+        
+        let decodingClasses = self.decodingClasses
+        
+        return RSFileStateManager(
+            filePath: filePath,
+            fileProtection: protected ? Data.WritingOptions.completeFileProtectionUnlessOpen : Data.WritingOptions.noFileProtection,
+            decodingClasses: decodingClasses
+        )
+        
+    }
+    
+    open class var decodingClasses: [Swift.AnyClass] {
+        return [
+            NSDictionary.self,
+            NSArray.self,
+            NSDate.self,
+            CLLocation.self,
+            NSDateComponents.self,
+            NSUUID.self
+        ]
+    }
     
     let filePath: String
     let fileProtection: NSData.WritingOptions
-//    let decodingClasses: [Swift.AnyClass]
     
     var map: [String: NSSecureCoding]
     
@@ -27,9 +60,7 @@ public class RSFileStateManager: RSStateManager {
         print(self.filePath)
         
         self.fileProtection = fileProtection
-        
-//        self.decodingClasses = decodingClasses
-        
+    
         do {
             self.map = try RSFileStateManager.loadMap(filePath: filePath, decodingClasses: decodingClasses)
         } catch let error as NSError {

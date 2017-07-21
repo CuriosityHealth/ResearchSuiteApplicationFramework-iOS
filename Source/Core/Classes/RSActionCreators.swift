@@ -149,28 +149,33 @@ public class RSActionCreators: NSObject {
             }
             
             guard let value = value else {
-                if stateValueMetadata.protected {
-                    return SetValueInProtectedStorage(key: key, value: nil)
-                }
-                else {
-                    return SetValueInUnprotectedStorage(key: key, value: nil)
-                }
+                return SetValueInState(key: key, value: nil)
             }
             
             //check to see if value can be converted to specified type
             //value is of type NSObject at this point
             if RSStateValue.typeMatches(type: stateValueMetadata.type, object: value) {
-                if stateValueMetadata.protected {
-                    return SetValueInProtectedStorage(key: key, value: value)
-                }
-                else {
-                    return SetValueInUnprotectedStorage(key: key, value: value)
-                }
+                return SetValueInState(key: key, value: value)
             }
             
             return nil
         }
     }
+    
+    //for now, the most direct way to do this is filter data items by state manager id, reset data item
+    public static func resetStateManager(stateManagerID: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            
+            let stateValueMetadata = RSStateSelectors.getStateValueMetadataForStateManager(state, stateManagerID: stateManagerID)
+            
+            stateValueMetadata.forEach { stateValue in
+                store.dispatch(ResetValueInState(key: stateValue.identifier))
+            }
+            
+            return nil
+        }
+    }
+
     
     public static func registerFunction(identifier: String, function: @escaping () -> AnyObject?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in

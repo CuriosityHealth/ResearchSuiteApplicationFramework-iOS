@@ -12,8 +12,9 @@ import ResearchSuiteResultsProcessor
 
 public final class RSState: NSObject, StateType {
     
-    public let protectedState: [String: NSObject]
-    public let unprotectedState: [String: NSObject]
+//    public let protectedState: [String: NSObject]
+//    public let unprotectedState: [String: NSObject]
+    public let applicationState: [String: NSObject]
     public let stateValueMap: [String: RSStateValue]
     public let stateValueHasBeenSet: [String: NSObject]
     public let constantsMap: [String: RSConstantValue]
@@ -31,8 +32,7 @@ public final class RSState: NSObject, StateType {
     public let currentRoute: RSRoute?
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
-    public init(protectedState: [String: NSObject] = [:],
-                unprotectedState: [String: NSObject] = [:],
+    public init(applicationState: [String: NSObject] = [:],
                 stateValueMap: [String: RSStateValue] = [:],
                 stateValueHasBeenSet: [String: NSObject] = [:],
                 constantsMap: [String: RSConstantValue] = [:],
@@ -51,8 +51,7 @@ public final class RSState: NSObject, StateType {
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:]
         ) {
         
-        self.protectedState = protectedState
-        self.unprotectedState = unprotectedState
+        self.applicationState = applicationState
         self.stateValueMap = stateValueMap
         self.stateValueHasBeenSet = stateValueHasBeenSet
         self.constantsMap = constantsMap
@@ -73,8 +72,7 @@ public final class RSState: NSObject, StateType {
     
     static func newState(
         fromState: RSState,
-        protectedState: [String: NSObject]? = nil,
-        unprotectedState: [String: NSObject]? = nil,
+        applicationState: [String: NSObject]? = nil,
         stateValueMap: [String: RSStateValue]? = nil,
         stateValueHasBeenSet: [String: NSObject]? = nil,
         constantsMap: [String: RSConstantValue]? = nil,
@@ -94,8 +92,7 @@ public final class RSState: NSObject, StateType {
         ) -> RSState {
         
         return RSState(
-            protectedState: protectedState ?? fromState.protectedState,
-            unprotectedState: unprotectedState ?? fromState.unprotectedState,
+            applicationState: applicationState ?? fromState.applicationState,
             stateValueMap: stateValueMap ?? fromState.stateValueMap,
             stateValueHasBeenSet: stateValueHasBeenSet ?? fromState.stateValueHasBeenSet,
             constantsMap: constantsMap ?? fromState.constantsMap,
@@ -120,8 +117,8 @@ public final class RSState: NSObject, StateType {
     }
     
     open override var description: String {
-        return "\n\tprotectedState: \(self.protectedState)" +
-            "\n\tunprotectedState: \(self.unprotectedState)" +
+        return "\n\tapplicationState: \(self.applicationState)" +
+            "\n\tstateValueHasBeenSet: \(self.stateValueHasBeenSet)" +
             "\n\tconstants: \(self.constantsMap)" +
             "\n\tactivityQueue: \(self.activityQueue)" +
         "\n\tpresentedActivity: \(self.presentedActivity)"

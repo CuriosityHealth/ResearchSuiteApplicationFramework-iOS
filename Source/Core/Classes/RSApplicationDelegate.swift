@@ -11,6 +11,7 @@ import ReSwift
 import ResearchSuiteTaskBuilder
 import ResearchSuiteResultsProcessor
 import CoreLocation
+import Gloss
 
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     
@@ -97,16 +98,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
         ]
     }
     
-    open var persistentStoreObjectDecodingClasses: [Swift.AnyClass] {
-        return [
-            NSDictionary.self,
-            NSArray.self,
-            NSDate.self,
-            CLLocation.self,
-            NSDateComponents.self,
-            NSUUID.self
-        ]
-    }
+//    open var persistentStoreObjectDecodingClasses: [Swift.AnyClass] {
+//        return [
+//            NSDictionary.self,
+//            NSArray.self,
+//            NSDate.self,
+//            CLLocation.self,
+//            NSDateComponents.self,
+//            NSUUID.self
+//        ]
+//    }
     
     open var openURLDelegates: [RSOpenURLDelegate] {
         return []
@@ -116,7 +117,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
         return [
             RSSendResultToServerActionTransformer.self,
             RSSetValueInStateActionTransformer.self,
-            RSQueueActivityActionTransformer.self
+            RSQueueActivityActionTransformer.self,
+            RSResetStateManagerActionTransformer.self
         ]
     }
     
@@ -127,20 +129,47 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
         ]
     }
     
+    open var stateManagerGenerators: [RSStateManagerGenerator.Type] {
+        return [
+            RSFileStateManager.self
+        ]
+    }
+    
+    open var stateManagersFileName: String = "state"
+    
+    open var stateManagerDescriptors: [RSStateManagerDescriptor] {
+        let selector: (JSON)-> [JSON]? = { "stateManagers" <~~ $0 }
+        guard let json = RSHelpers.getJson(forFilename: self.stateManagersFileName) as? JSON,
+            let jsonArray = selector(json) else {
+                return []
+        }
+        
+        return jsonArray.flatMap { RSStateManagerDescriptor(json: $0) }
+    }
+    
+    
+    
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         //initialize store
+//        self.persistentStoreSubscriber = RSStatePersistentStoreSubscriber(
+//            protectedStorageManager: RSFileStateManager(
+//                filePath: "protected_state",
+//                fileProtection: Data.WritingOptions.completeFileProtectionUnlessOpen,
+//                decodingClasses: self.persistentStoreObjectDecodingClasses
+//            ),
+//            unprotectedStorageManager: RSFileStateManager(
+//                filePath: "unprotected_state",
+//                fileProtection: Data.WritingOptions.noFileProtection,
+//                decodingClasses: self.persistentStoreObjectDecodingClasses
+//            )
+//        )
+        
+        
+        
         self.persistentStoreSubscriber = RSStatePersistentStoreSubscriber(
-            protectedStorageManager: RSFileStateManager(
-                filePath: "protected_state",
-                fileProtection: Data.WritingOptions.completeFileProtectionUnlessOpen,
-                decodingClasses: self.persistentStoreObjectDecodingClasses
-            ),
-            unprotectedStorageManager: RSFileStateManager(
-                filePath: "unprotected_state",
-                fileProtection: Data.WritingOptions.noFileProtection,
-                decodingClasses: self.persistentStoreObjectDecodingClasses
-            )
+            stateManagerDescriptors: self.stateManagerDescriptors,
+            stateManagerGenerators: self.stateManagerGenerators
         )
         
         let middleware: [Middleware] = self.storeMiddleware.map { $0.getMiddleware(appDelegate: self) }

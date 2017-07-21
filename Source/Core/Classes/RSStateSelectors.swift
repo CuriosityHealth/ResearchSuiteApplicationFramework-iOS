@@ -11,25 +11,35 @@ import ResearchSuiteResultsProcessor
 
 public class RSStateSelectors: NSObject {
     
-    public static func getProtectedStorage(_ state: RSState) -> [String : NSObject] {
-        return state.protectedState
+    public static func getApplicationState(_ state: RSState) -> [String : NSObject] {
+        return state.applicationState
     }
     
-    public static func getValueInProtectedStorage(_ state: RSState) -> (String) -> NSSecureCoding? {
+    public static func getValueInApplicationState(_ state: RSState) -> (String) -> NSSecureCoding? {
         return { key in
-            return state.protectedState[key] as? NSSecureCoding
+            return state.applicationState[key] as? NSSecureCoding
         }
     }
     
-    public static func getUnprotectedStorage(_ state: RSState) -> [String : NSObject] {
-        return state.unprotectedState
-    }
-    
-    public static func getValueInUnprotectedStorage(_ state: RSState) -> (String) -> NSSecureCoding? {
-        return { key in
-            return state.unprotectedState[key] as? NSSecureCoding
-        }
-    }
+//    public static func getProtectedStorage(_ state: RSState) -> [String : NSObject] {
+//        return state.protectedState
+//    }
+//    
+//    public static func getValueInProtectedStorage(_ state: RSState) -> (String) -> NSSecureCoding? {
+//        return { key in
+//            return state.protectedState[key] as? NSSecureCoding
+//        }
+//    }
+//    
+//    public static func getUnprotectedStorage(_ state: RSState) -> [String : NSObject] {
+//        return state.unprotectedState
+//    }
+//    
+//    public static func getValueInUnprotectedStorage(_ state: RSState) -> (String) -> NSSecureCoding? {
+//        return { key in
+//            return state.unprotectedState[key] as? NSSecureCoding
+//        }
+//    }
     
     public static func getStateValueHasBeenSet(_ state: RSState) -> [String : NSObject] {
         return state.stateValueHasBeenSet
@@ -61,6 +71,14 @@ public class RSStateSelectors: NSObject {
         return state.stateValueMap[identifier]
     }
     
+    public static func getAllStateValueMetadata(_ state: RSState) -> [RSStateValue] {
+        return Array(state.stateValueMap.values)
+    }
+    
+    public static func getStateValueMetadataForStateManager(_ state: RSState, stateManagerID: String) -> [RSStateValue] {
+        return Array(state.stateValueMap.values.filter { $0.stateManager == stateManagerID })
+    }
+    
     //TODO: The returned closure should probably throw a key error in the future
     public static func getValueInStorage(_ state: RSState, for key: String) -> ValueConvertible? {
         guard let stateValueMetadata = state.stateValueMap[key] else {
@@ -71,12 +89,7 @@ public class RSStateSelectors: NSObject {
             return stateValueMetadata.getDefaultValue()
         }
         else {
-            if stateValueMetadata.protected {
-                return  RSValueConvertible(value: state.protectedState[key])
-            }
-            else {
-                return RSValueConvertible(value: state.unprotectedState[key])
-            }
+            return  RSValueConvertible(value: state.applicationState[key])
         }
     }
     
