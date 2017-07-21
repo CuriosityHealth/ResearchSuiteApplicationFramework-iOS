@@ -148,7 +148,7 @@
             "identifier": "lastDailySurveyCompletion",
             "value": {
               "type": "special",
-              "keyword": "now"
+              "identifier": "now"
             }
           },
           {

@@ -20,7 +20,8 @@ open class RSSendResultToServerActionTransformer: RSActionTransformer {
     //this return a closure, of which state and store are injected
     open static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
 
-        guard let valueJSON: JSON = "value" <~~ jsonObject else {
+        guard let valueJSON: JSON = "value" <~~ jsonObject,
+            let backendIdentifier: String = "backendIdentifier" <~~ jsonObject else {
             return nil
         }
         
@@ -31,7 +32,7 @@ open class RSSendResultToServerActionTransformer: RSActionTransformer {
                 return nil
             }
             
-            return RSSendResultToServerAction(intermediateResult: intermediateResult)
+            return RSSendResultToServerAction(backendIdentifier: backendIdentifier, intermediateResult: intermediateResult)
             
         }
     }

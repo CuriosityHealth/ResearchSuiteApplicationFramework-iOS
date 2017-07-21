@@ -26,13 +26,19 @@ open class RSSetValueInStateActionTransformer: RSActionTransformer {
         return { state, store in
             
             //TODO: Support NSNull
-            guard let valueConvertible = RSValueManager.processValue(jsonObject:valueJSON, state: state, context: context),
-                let value = valueConvertible.evaluate() as? NSObject else {
+            //Maybe, split this guard, if valueConvertible return nil, then we can return nil
+            //otherwise if evaulate returns nil, assume that we actually want to set the value in the state to nil
+            guard let valueConvertible = RSValueManager.processValue(jsonObject:valueJSON, state: state, context: context) else {
                 return nil
             }
             
-            store.dispatch(RSActionCreators.setValueInState(key: identifier, value: value))
-            
+            if let value = valueConvertible.evaluate() as? NSObject {
+                store.dispatch(RSActionCreators.setValueInState(key: identifier, value: value))
+            }
+            else {
+                store.dispatch(RSActionCreators.setValueInState(key: identifier, value: nil))
+            }
+
             return nil
             
         }

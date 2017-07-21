@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ResearchSuiteResultsProcessor
 
 public class RSStateSelectors: NSObject {
     
@@ -129,6 +130,10 @@ public class RSStateSelectors: NSObject {
             !RSStateSelectors.isDismissing(state)
         
         return shouldRoute
+    }
+    
+    public static func getResultsProcessorBackEnd(_ state: RSState, for identifier: String) -> RSRPBackEnd? {
+        return state.resultsProcessorBackEndMap[identifier]
     }
 
 }

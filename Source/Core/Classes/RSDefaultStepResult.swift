@@ -32,7 +32,13 @@ open class RSDefaultStepResult: RSRPIntermediateResult, RSRPFrontEndTransformer 
         
         guard let stepResult = parameters["result"] as? ORKStepResult,
             let result = stepResult.firstResult else {
-            return nil
+                return self.init(
+                    type: self.type(),
+                    uuid: UUID(),
+                    taskIdentifier: taskIdentifier,
+                    taskRunUUID: taskRunUUID,
+                    result: nil
+                )
         }
         
         return self.init(
@@ -44,14 +50,14 @@ open class RSDefaultStepResult: RSRPIntermediateResult, RSRPFrontEndTransformer 
         )
     }
     
-    let result: ORKResult
+    let result: ORKResult?
     
     required public init?(
         type: String,
         uuid: UUID,
         taskIdentifier: String,
         taskRunUUID: UUID,
-        result: ORKResult
+        result: ORKResult?
         ) {
         
         self.result = result

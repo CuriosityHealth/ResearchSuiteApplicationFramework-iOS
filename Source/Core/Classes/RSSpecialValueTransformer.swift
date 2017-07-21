@@ -29,6 +29,8 @@ open class RSSpecialValueTransformer: RSValueTransformer {
         switch specialIdentifier {
         case "now":
             return RSValueConvertible(value: Date() as AnyObject)
+        case "UUID":
+            return RSValueConvertible(value: UUID() as AnyObject)
         default:
             return nil
         }

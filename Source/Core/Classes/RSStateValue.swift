@@ -50,6 +50,9 @@ public class RSStateValue: Decodable {
         case "TimeOfDay":
             return nil
             
+        case "UUID":
+            return RSValueConvertible(value: NSNull())
+            
         case "Boolean":
             guard let value = self.defaultValue as? Bool else {
                 return nil
@@ -67,7 +70,7 @@ public class RSStateValue: Decodable {
         
         //TODO: should nil objects always match?
         //TODO: This is not working
-        if object == nil {
+        if object == nil || object is NSNull {
             return true
         }
         
@@ -90,6 +93,12 @@ public class RSStateValue: Decodable {
             
         case "Integer":
             return (object as? Int) != nil
+            
+        case "UUID":
+            return (object as? UUID) != nil
+            
+        case "String":
+            return (object as? String) != nil
             
         default:
             return false

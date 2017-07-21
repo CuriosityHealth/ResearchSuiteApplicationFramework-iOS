@@ -12,14 +12,6 @@ import ReSwift
 
 open class RSActionManager: NSObject {
     
-    open class func actionTransforms() -> [RSActionTransformer.Type] {
-        return [
-            RSSendResultToServerActionTransformer.self,
-            RSSetValueInStateActionTransformer.self,
-            RSQueueActivityActionTransformer.self
-        ]
-    }
-    
     open class func processAction(action: JSON, context: [String: AnyObject], store: Store<RSState>) {
         
         //check for predicate and evaluate
@@ -35,8 +27,11 @@ open class RSActionManager: NSObject {
         }
         
         debugPrint(action)
+
+        //TODO: I don't really like this, maybe create an action manager object?
+        let transforms = RSApplicationDelegate.appDelegate.actionCreatorTransforms
         
-        for transformer in RSActionManager.actionTransforms() {
+        for transformer in transforms {
             if transformer.supportsType(type: type) {
                 guard let actionClosure = transformer.generateAction(jsonObject: action, context: context) else {
                     return

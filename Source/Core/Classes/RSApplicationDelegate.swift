@@ -77,7 +77,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
         return [
             RSLocationStepResult.self,
             RSTimeOfDayStepResult.self,
-            RSBooleanStepResult.self
+            RSBooleanStepResult.self,
+            RSTextStepResult.self
         ]
     }
     
@@ -102,12 +103,28 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             NSArray.self,
             NSDate.self,
             CLLocation.self,
-            NSDateComponents.self
+            NSDateComponents.self,
+            NSUUID.self
         ]
     }
     
     open var openURLDelegates: [RSOpenURLDelegate] {
         return []
+    }
+    
+    open var actionCreatorTransforms: [RSActionTransformer.Type] {
+        return [
+            RSSendResultToServerActionTransformer.self,
+            RSSetValueInStateActionTransformer.self,
+            RSQueueActivityActionTransformer.self
+        ]
+    }
+    
+    open var storeMiddleware: [RSMiddlewareProvider.Type] {
+        return [
+            RSLoggingMiddleware.self,
+            RSSendResultToServerMiddleware.self
+        ]
     }
     
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -126,7 +143,13 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             )
         )
         
-        self.storeManager = RSStoreManager(initialState: self.persistentStoreSubscriber.loadState())
+        let middleware: [Middleware] = self.storeMiddleware.map { $0.getMiddleware(appDelegate: self) }
+        
+        self.storeManager = RSStoreManager(
+            initialState: self.persistentStoreSubscriber.loadState(),
+            middleware: middleware
+        )
+        
         self.taskBuilderStateHelper = RSTaskBuilderStateHelper(store: self.store)
         self.taskBuilder = RSTBTaskBuilder(
             stateHelper: self.taskBuilderStateHelper,

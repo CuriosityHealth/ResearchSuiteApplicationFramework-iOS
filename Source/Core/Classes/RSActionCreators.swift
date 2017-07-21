@@ -10,6 +10,7 @@ import UIKit
 import ReSwift
 import Gloss
 import ResearchKit
+import ResearchSuiteResultsProcessor
 
 public class RSActionCreators: NSObject {
     
@@ -376,10 +377,24 @@ public class RSActionCreators: NSObject {
     
     static func generateLayout(for route: RSRoute, state: RSState, store: Store<RSState>, layoutManager: RSLayoutManager ) -> UIViewController? {
         
+        //note that if we cant generate a layout, we go into an endless loop!!
+        //TODO: Fix THIS!!!
         guard let layout = RSStateSelectors.layout(state, for: route.layout) else {
             return nil
         }
         return layoutManager.generateLayout(layout: layout, store: store)
+    }
+    
+    public static func registerResultsProcessorBackEnd(identifier: String, backEnd: RSRPBackEnd) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return RegisterResultsProcessorBackEndAction(identifier: identifier, backEnd: backEnd)
+        }
+    }
+    
+    public static func unregisterResultsProcessorBackEnd(identifier: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return UnregisterResultsProcessorBackEndAction(identifier: identifier)
+        }
     }
 
 }

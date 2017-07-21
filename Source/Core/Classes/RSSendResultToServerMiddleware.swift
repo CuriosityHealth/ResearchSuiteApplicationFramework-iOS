@@ -10,10 +10,9 @@ import UIKit
 import ReSwift
 import ResearchSuiteResultsProcessor
 
-open class RSSendResultToServerMiddleware {
+open class RSSendResultToServerMiddleware: RSMiddlewareProvider {
     
-    //public typealias Middleware = (DispatchFunction?, @escaping GetState) -> (@escaping DispatchFunction) -> DispatchFunction
-    static func sendResultToServerMidleware() -> Middleware {
+    open static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware {
         return { dispatch, getState in
             return { next in
                 return { action in
@@ -28,7 +27,7 @@ open class RSSendResultToServerMiddleware {
             }
         }
     }
-    
+
     static var defaultResultsProcessorBackEnd: RSRPBackEnd {
         return RSFakeBackEnd()
     }

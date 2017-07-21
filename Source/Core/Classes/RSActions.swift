@@ -64,6 +64,7 @@ public struct SetPresentedActivityAction: Action {
 public struct ClearPresentedActivityAction: Action {}
 
 public struct RSSendResultToServerAction: Action {
+    let backendIdentifier: String
     let intermediateResult: RSRPIntermediateResult
 }
 
@@ -117,6 +118,15 @@ public struct ChangeRouteSuccess: Action {
 
 public struct ChangeRouteFailure: Action {
     let route: RSRoute
+}
+
+public struct RegisterResultsProcessorBackEndAction: Action {
+    let identifier: String
+    let backEnd: RSRPBackEnd
+}
+
+public struct UnregisterResultsProcessorBackEndAction: Action {
+    let identifier: String
 }
 
 

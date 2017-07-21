@@ -31,6 +31,7 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         
         let prefix = "\(taskResult.identifier).\(measureID)"
         
+        debugPrint(taskResult)
         //filter
         let filteredStepResults = stepResults
             .filter { $0.identifier.hasPrefix(prefix) }
@@ -51,6 +52,7 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         let filteredTaskResult = ORKTaskResult(taskIdentifier: taskResult.identifier, taskRun: UUID(), outputDirectory: nil)
         filteredTaskResult.results = filteredStepResults
         
+        debugPrint(filteredTaskResult)
         //select and map results
         
         return RSRPFrontEndService.processResult(

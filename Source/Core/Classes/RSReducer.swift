@@ -17,7 +17,8 @@ public class RSReducer: NSObject {
         StateValueReducer(),
         LayoutReducer(),
         RouteReducer(),
-        PresentationReducer()
+        PresentationReducer(),
+        ResultsProcessorReducer()
     ])
     
     final class ActivityReducer: Reducer {
@@ -121,7 +122,8 @@ public class RSReducer: NSObject {
                 
                 let key = setValueAction.key
                 
-                if let value = setValueAction.value {
+                if let value = setValueAction.value,
+                    !(value is NSNull) {
                     stateDict[key] = value
                 }
                 else {
@@ -143,7 +145,8 @@ public class RSReducer: NSObject {
                 
                 let key = setValueAction.key
                 
-                if let value = setValueAction.value {
+                if let value = setValueAction.value,
+                    !(value is NSNull) {
                     stateDict[key] = value
                 }
                 else {
@@ -290,5 +293,31 @@ public class RSReducer: NSObject {
             
         }
         
+    }
+    
+    final class ResultsProcessorReducer: Reducer {
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+            case let action as RegisterResultsProcessorBackEndAction:
+
+                var newMap = state.resultsProcessorBackEndMap
+                newMap[action.identifier] = action.backEnd
+                return RSState.newState(fromState: state, resultsProcessorBackEndMap: newMap)
+                
+            case let action as UnregisterResultsProcessorBackEndAction:
+                
+                var newMap = state.resultsProcessorBackEndMap
+                newMap.removeValue(forKey: action.identifier)
+                return RSState.newState(fromState: state, resultsProcessorBackEndMap: newMap)
+                
+            default:
+                return state
+            }
+            
+        }
     }
 }

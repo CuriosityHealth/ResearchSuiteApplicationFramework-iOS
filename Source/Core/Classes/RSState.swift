@@ -8,6 +8,7 @@
 
 import UIKit
 import ReSwift
+import ResearchSuiteResultsProcessor
 
 public final class RSState: NSObject, StateType {
     
@@ -28,6 +29,7 @@ public final class RSState: NSObject, StateType {
     public let presentedActivity: (UUID, String)?
     public let isRouting: Bool
     public let currentRoute: RSRoute?
+    public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
     public init(protectedState: [String: NSObject] = [:],
                 unprotectedState: [String: NSObject] = [:],
@@ -45,7 +47,8 @@ public final class RSState: NSObject, StateType {
                 isDismissing: Bool = false,
                 presentedActivity: (UUID, String)? = nil,
                 isRouting: Bool = false,
-                currentRoute: RSRoute? = nil
+                currentRoute: RSRoute? = nil,
+                resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:]
         ) {
         
         self.protectedState = protectedState
@@ -65,6 +68,7 @@ public final class RSState: NSObject, StateType {
         self.presentedActivity = presentedActivity
         self.isRouting = isRouting
         self.currentRoute = currentRoute
+        self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
     }
     
     static func newState(
@@ -85,7 +89,8 @@ public final class RSState: NSObject, StateType {
         isDismissing: Bool? = nil,
         presentedActivity: ((UUID, String)?)? = nil,
         isRouting: Bool? = nil,
-        currentRoute: RSRoute?? = nil
+        currentRoute: RSRoute?? = nil,
+        resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil
         ) -> RSState {
         
         return RSState(
@@ -105,7 +110,8 @@ public final class RSState: NSObject, StateType {
             isDismissing: isDismissing ?? fromState.isDismissing,
             presentedActivity: presentedActivity ?? fromState.presentedActivity,
             isRouting: isRouting ?? fromState.isRouting,
-            currentRoute: currentRoute ?? fromState.currentRoute
+            currentRoute: currentRoute ?? fromState.currentRoute,
+            resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap
         )
     }
     
