@@ -150,4 +150,7 @@ public struct UnregisterResultsProcessorBackEndAction: Action {
     let identifier: String
 }
 
+public struct CompleteConfiguration: Action {
+}
+
 

@@ -18,8 +18,11 @@ public class RSReducer: NSObject {
         LayoutReducer(),
         RouteReducer(),
         PresentationReducer(),
-        ResultsProcessorReducer()
+        ResultsProcessorReducer(),
+        AppConfigurationReducer()
     ])
+    
+    
     
     final class ActivityReducer: Reducer {
         
@@ -306,6 +309,23 @@ public class RSReducer: NSObject {
                 var newMap = state.resultsProcessorBackEndMap
                 newMap.removeValue(forKey: action.identifier)
                 return RSState.newState(fromState: state, resultsProcessorBackEndMap: newMap)
+                
+            default:
+                return state
+            }
+            
+        }
+    }
+    
+    final class AppConfigurationReducer: Reducer {
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+            case _ as CompleteConfiguration:
+                return RSState.newState(fromState: state, configurationCompleted: true)
                 
             default:
                 return state

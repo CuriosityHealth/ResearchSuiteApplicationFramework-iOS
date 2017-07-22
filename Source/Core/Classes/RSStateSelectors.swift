@@ -148,5 +148,9 @@ public class RSStateSelectors: NSObject {
     public static func getResultsProcessorBackEnd(_ state: RSState, for identifier: String) -> RSRPBackEnd? {
         return state.resultsProcessorBackEndMap[identifier]
     }
+    
+    public static func isConfigurationCompleted(_ state: RSState) -> Bool {
+        return state.configurationCompleted
+    }
 
 }

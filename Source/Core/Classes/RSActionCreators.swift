@@ -401,5 +401,11 @@ public class RSActionCreators: NSObject {
             return UnregisterResultsProcessorBackEndAction(identifier: identifier)
         }
     }
+    
+    static public func completeConfiguration() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return CompleteConfiguration()
+        }
+    }
 
 }

@@ -79,6 +79,15 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
     
     public func newState(state: RSState) {
         
+        //we need to prevent writing to the persistent maps before the application has 
+        //configured the state metadata
+        //if there is no state metadata, then we would end up removing everything from the persistent
+        //store and get in a weird state
+        
+        guard RSStateSelectors.isConfigurationCompleted(state) else {
+            return
+        }
+
         //need to set each stateManager
         //For each stateManager, create a map of values in the application state
         //first, get state metadata for each state manager
@@ -88,6 +97,8 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
         
         for (stateManagerID, persistedValueMap) in self.stateManagerMap {
             let stateMetadata = RSStateSelectors.getStateValueMetadataForStateManager(state, stateManagerID: stateManagerID)
+            //We need to prevent
+            assert(stateMetadata.count > 0, "Attempting to set persistent store with no state metadata. THIS WILL CLEAR THE STORE!!!")
             let validKeys = stateMetadata.map { $0.identifier }
             var newMap: [String: NSObject] = [:]
             for (key, value) in applicationState {
@@ -106,7 +117,8 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
         var mergedMap: [String: NSObject] = [:]
         
         for (_, persistedValueMap) in self.stateManagerMap {
-            for (key, value) in persistedValueMap.get() {
+            let persistedValues = persistedValueMap.get()
+            for (key, value) in persistedValues {
                 mergedMap[key] = value
             }
         }

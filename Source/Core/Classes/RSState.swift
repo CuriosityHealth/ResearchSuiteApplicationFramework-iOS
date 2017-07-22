@@ -14,6 +14,7 @@ public final class RSState: NSObject, StateType {
     
 //    public let protectedState: [String: NSObject]
 //    public let unprotectedState: [String: NSObject]
+    public let configurationCompleted: Bool
     public let applicationState: [String: NSObject]
     public let stateValueMap: [String: RSStateValue]
     public let stateValueHasBeenSet: [String: NSObject]
@@ -32,7 +33,8 @@ public final class RSState: NSObject, StateType {
     public let currentRoute: RSRoute?
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
-    public init(applicationState: [String: NSObject] = [:],
+    public init(configurationCompleted: Bool = false,
+                applicationState: [String: NSObject] = [:],
                 stateValueMap: [String: RSStateValue] = [:],
                 stateValueHasBeenSet: [String: NSObject] = [:],
                 constantsMap: [String: RSConstantValue] = [:],
@@ -51,6 +53,7 @@ public final class RSState: NSObject, StateType {
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:]
         ) {
         
+        self.configurationCompleted = configurationCompleted
         self.applicationState = applicationState
         self.stateValueMap = stateValueMap
         self.stateValueHasBeenSet = stateValueHasBeenSet
@@ -72,6 +75,7 @@ public final class RSState: NSObject, StateType {
     
     static func newState(
         fromState: RSState,
+        configurationCompleted: Bool? = nil,
         applicationState: [String: NSObject]? = nil,
         stateValueMap: [String: RSStateValue]? = nil,
         stateValueHasBeenSet: [String: NSObject]? = nil,
@@ -92,6 +96,7 @@ public final class RSState: NSObject, StateType {
         ) -> RSState {
         
         return RSState(
+            configurationCompleted: configurationCompleted ?? fromState.configurationCompleted,
             applicationState: applicationState ?? fromState.applicationState,
             stateValueMap: stateValueMap ?? fromState.stateValueMap,
             stateValueHasBeenSet: stateValueHasBeenSet ?? fromState.stateValueHasBeenSet,
