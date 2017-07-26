@@ -75,8 +75,12 @@
                                     <constraint firstAttribute="width" secondItem="8pM-Mv-Ysp" secondAttribute="height" multiplier="1:1" id="2gm-BI-vuV"/>
                                 </constraints>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t5b-ud-1kJ">
-                                <rect key="frame" x="164" y="597" width="46" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t5b-ud-1kJ" customClass="RSBorderedButton" customModule="ResearchSuiteExtensions">
+                                <rect key="frame" x="112" y="583" width="150" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="COO-aS-1ib"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="wiA-zD-e7C"/>
+                                </constraints>
                                 <state key="normal" title="Button"/>
                                 <connections>
                                     <action selector="tappedButton:" destination="xmN-ev-NpC" eventType="touchUpInside" id="4Vc-L6-CxR"/>

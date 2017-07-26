@@ -38,6 +38,7 @@ Pod::Spec.new do |s|
     core.dependency 'ReSwift', '~> 3.0'
     core.dependency 'ResearchSuiteTaskBuilder', '~> 0.5'
     core.dependency 'ResearchSuiteResultsProcessor', '~> 0.3'
+    core.dependency 'ResearchSuiteExtensions'
     core.dependency 'Gloss', '~> 1.2'
   end
 

@@ -9,6 +9,7 @@
 import UIKit
 import ReSwift
 import Gloss
+import ResearchSuiteExtensions
 
 class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
@@ -20,7 +21,7 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutVi
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var button: UIButton!
+    @IBOutlet weak var button: RSBorderedButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -36,10 +36,12 @@ open class RSStepTreeResultTransformValueTransformer: RSValueTransformer {
         debugPrint(child.fullyQualifiedIdentifier)
         debugPrint(stepResults)
         
-        
+        let fullyQualifiedChildIdentifier = child.fullyQualifiedIdentifier
         //filter
         let filteredStepResults = stepResults
-            .filter { $0.identifier.hasPrefix(child.fullyQualifiedIdentifier) }
+            .filter { stepResult in
+                return stepResult.identifier.hasPrefix(child.fullyQualifiedIdentifier)
+            }
             .map { (stepResult) -> ORKStepResult in
                 let stepResultIdentifierComponents = stepResult.identifier.components(separatedBy: ".")
                 debugPrint(stepResultIdentifierComponents)

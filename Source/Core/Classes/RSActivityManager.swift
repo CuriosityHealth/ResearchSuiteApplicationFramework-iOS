@@ -105,7 +105,7 @@ open class RSActivityManager: NSObject {
                     substitutions[key] = value
                 }
                 else {
-                    assertionFailure("Added NSNull support for this type")
+//                    assertionFailure("Added NSNull support for this type")
                     let nilObject: AnyObject? = nil as AnyObject?
                     substitutions[key] = nilObject as Any
                 }

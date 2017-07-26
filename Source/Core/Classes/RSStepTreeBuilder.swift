@@ -89,7 +89,7 @@ open class RSStepTreeBuilder: NSObject {
             return node
         }
         else {
-            assertionFailure("We can't handle more than one step per leaf node now. Implement a node generator")
+            assertionFailure("We can't handle more than one step per leaf node now. Implement a node generator (RSStepTreeNodeGeneratorService)")
             return nil
 //            let children = steps.map({ (step) -> RSStepTreeLeafNode in
 //                return RSStepTreeLeafNode(

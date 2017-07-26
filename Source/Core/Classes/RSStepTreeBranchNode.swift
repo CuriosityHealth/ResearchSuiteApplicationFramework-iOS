@@ -29,7 +29,7 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         var childMap: [String: RSStepTreeNode] = [:]
         self.children.forEach { (child) in
             
-            assert(childMap[child.identifier] == nil, "children cannot have duplicate names")
+            assert(childMap[child.identifier] == nil, "children cannot have duplicate names: \(child.identifier)")
             childMap[child.identifier] = child
             
         }
