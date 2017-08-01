@@ -11,6 +11,7 @@ import ReSwift
 
 public protocol RSRouterDelegate: class {
     func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?)
+    func setContentHidden(contentHidden: Bool)
 }
 
 open class RSRoutingNavigationController: UINavigationController, StoreSubscriber, RSRouterDelegate {
@@ -29,6 +30,13 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
         self.store.unsubscribe(self)
     }
     
+    open func setContentHidden(contentHidden: Bool) {
+        if let vc = self.presentedViewController {
+            vc.view.isHidden = contentHidden
+        }
+        
+        self.view.isHidden = contentHidden
+    }
 
     open func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?) {
         self.transition(toRootViewController: viewController, animated: true, completion: { presented in
