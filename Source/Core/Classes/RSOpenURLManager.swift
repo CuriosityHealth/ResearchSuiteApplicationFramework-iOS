@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ResearchSuiteExtensions
 
 open class RSOpenURLManager: NSObject {
     

@@ -17,6 +17,15 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         return "resultTransform" == type
     }
     
+//    static func printAllFirstResults(taskResult: ORKTaskResult) {
+//        taskResult.results?.forEach({ (result) in
+//            
+//            if  let stepResult = result as? ORKStepResult,
+//                let firstResult = stepResult.firstResult {
+//                debugPrint(firstResult)
+//            }
+//        })
+//    }
     
     public static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
         
@@ -32,6 +41,9 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         let prefix = "\(taskResult.identifier).\(measureID)"
         
         debugPrint(taskResult)
+        
+//        printAllFirstResults(taskResult: taskResult)
+        
         //filter
         let filteredStepResults = stepResults
             .filter { $0.identifier.hasPrefix(prefix) }
@@ -44,7 +56,10 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
                 debugPrint(prefixComponents)
                 let remainingComponents = stepResultIdentifierComponents.dropFirst(prefixComponents.count)
                 debugPrint(remainingComponents)
+                
                 return ORKStepResult(stepIdentifier: remainingComponents.joined(separator: "."), results: stepResult.results)
+                
+//                return ORKStepResult(stepIdentifier: remainingComponents.joined(separator: "."), results: Array(stepResult.results ?? []))
         }
         
         //map -> step result w/ new identifier
@@ -53,6 +68,9 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         filteredTaskResult.results = filteredStepResults
         
         debugPrint(filteredTaskResult)
+        
+//        printAllFirstResults(taskResult: filteredTaskResult)
+        
         //select and map results
         
         return RSRPFrontEndService.processResult(

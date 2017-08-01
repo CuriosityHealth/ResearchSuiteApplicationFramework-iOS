@@ -12,6 +12,7 @@ import ResearchSuiteTaskBuilder
 import ResearchSuiteResultsProcessor
 import CoreLocation
 import Gloss
+import ResearchSuiteExtensions
 
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
     
@@ -62,7 +63,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate {
             RSTBTextFieldStepGenerator(),
             RSTBIntegerStepGenerator(),
             RSTBTimePickerStepGenerator(),
-            RSTBDatePickerStepGenerator()
+            RSTBDatePickerStepGenerator(),
+            RSTBScaleStepGenerator()
         ]
     }
     

@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
   s.name             = 'ResearchSuiteApplicationFramework'
   s.version          = '0.1.0'
-  s.summary          = 'The ResearchSuiteAppFramework is the easiest way to build mobile health research studies.'
+  s.summary          = 'The ResearchSuite Application Framework is the easiest way to build mobile health research studies.'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-  The ResearchSuiteAppFramework is the easiest way to build mobile health research studies.
+  The ResearchSuite Application Framework is the easiest way to build mobile health research studies.
   NOTE: VERY EXPERIMENTAL!!
                        DESC
 

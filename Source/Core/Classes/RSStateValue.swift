@@ -100,6 +100,9 @@ public class RSStateValue: Decodable {
         case "String":
             return (object as? String) != nil
             
+        case "Double":
+            return (object as? Double) != nil
+            
         default:
             return false
         }

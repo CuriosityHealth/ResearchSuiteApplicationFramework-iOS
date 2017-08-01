@@ -27,7 +27,7 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
         
         return RSFileStateManager(
             filePath: filePath,
-            fileProtection: protected ? Data.WritingOptions.completeFileProtectionUnlessOpen : Data.WritingOptions.noFileProtection,
+            fileProtection: [protected ? Data.WritingOptions.completeFileProtectionUnlessOpen : Data.WritingOptions.noFileProtection, Data.WritingOptions.atomic],
             decodingClasses: decodingClasses
         )
         
