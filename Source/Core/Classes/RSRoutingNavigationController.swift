@@ -73,6 +73,10 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
     
     open func newState(state: RSState) {
         
+        //only route if the passcode view controller is NOT presented
+        if RSApplicationDelegate.appDelegate.isPasscodePresented() {
+            return
+        }
         
         //first, lets check to see if there is a new layout to route
         let routes = RSStateSelectors.routes(state)

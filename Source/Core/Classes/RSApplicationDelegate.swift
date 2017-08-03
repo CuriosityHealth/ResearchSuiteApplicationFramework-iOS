@@ -236,6 +236,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             ORKPasscodeViewController.isPasscodeStoredInKeychain()
     }
     
+    open func isPasscodePresented() -> Bool {
+        return self.passcodeViewController != nil
+    }
+    
     private func instantiateViewControllerForPasscode() -> UIViewController? {
         return ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
     }
