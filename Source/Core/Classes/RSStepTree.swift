@@ -16,9 +16,11 @@ open class RSStepTree: NSObject, ORKTask {
     let root: RSStepTreeNode
     let taskBuilder: RSTBTaskBuilder
     let state: RSState
+    let leafIdentifiers: [String]
     public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSTBTaskBuilder, state: RSState) {
         self.identifier = identifier
         self.root = root
+        self.leafIdentifiers = self.root.leaves().map { $0.fullyQualifiedIdentifier }
         self.taskBuilder = taskBuilder
         self.state = state
     }
@@ -79,6 +81,15 @@ open class RSStepTree: NSObject, ORKTask {
         }()
         return previousStep
         
+    }
+    
+    open func progress(ofCurrentStep step: ORKStep, with result: ORKTaskResult) -> ORKTaskProgress {
+        
+        guard let index = self.leafIdentifiers.index(of: step.identifier) else {
+            return ORKTaskProgressMake(0, 0)
+        }
+        
+        return ORKTaskProgressMake(UInt(index), UInt(self.leafIdentifiers.count))
     }
     
     open override var description: String {
