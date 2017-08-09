@@ -10,7 +10,7 @@ import UIKit
 import ReSwift
 
 public protocol RSRouterDelegate: class {
-    func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?)
+    func presentLayout(viewController: UIViewController, animated: Bool, completion: ((Bool) -> Swift.Void)?)
     func setContentHidden(contentHidden: Bool)
 }
 
@@ -38,8 +38,8 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
         self.view.isHidden = contentHidden
     }
 
-    open func presentLayout(viewController: UIViewController, completion: ((Bool) -> Swift.Void)?) {
-        self.transition(toRootViewController: viewController, animated: true, completion: { presented in
+    open func presentLayout(viewController: UIViewController, animated: Bool, completion: ((Bool) -> Swift.Void)?) {
+        self.transition(toRootViewController: viewController, animated: animated, completion: { presented in
             completion?(presented)
         })
     }
@@ -74,7 +74,7 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
     open func newState(state: RSState) {
         
         //only route if the passcode view controller is NOT presented
-        if RSApplicationDelegate.appDelegate.isPasscodePresented() {
+        guard !RSStateSelectors.isPasscodePresented(state) else {
             return
         }
         
@@ -93,9 +93,15 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
         if let firstRoute = firstRouteOpt,
             RSStateSelectors.shouldRoute(state, route: firstRoute) {
             self.store.dispatch(RSActionCreators.setRoute(route: firstRoute, layoutManager: self.layoutManager, delegate: self))
+            return
+        }
+            
+        guard !RSStateSelectors.isPresentingPasscode(state),
+            !RSStateSelectors.isDismissingPasscode(state) else {
+                return
         }
             //otherwise, check to see if there is an activity to present
-        else if RSStateSelectors.shouldPresent(state) {
+        if RSStateSelectors.shouldPresent(state) {
             self.store.dispatch(RSActionCreators.presentActivity(on: self, activityManager: self.activityManager))
         }
         

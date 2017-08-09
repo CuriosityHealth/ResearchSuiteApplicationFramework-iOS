@@ -8,6 +8,7 @@
 
 import UIKit
 import ReSwift
+import ResearchKit
 
 public class RSReducer: NSObject {
     
@@ -282,7 +283,25 @@ public class RSReducer: NSObject {
                 
             case _ as DismissActivityFailure:
                 return RSState.newState(fromState: state, isDismissing: false)
-            
+                
+            case _ as PresentPasscodeRequest:
+                return RSState.newState(fromState: state, isPresentingPasscode: true)
+                
+            case let action as PresentPasscodeSuccess:
+                return RSState.newState(fromState: state, isPresentingPasscode: false, passcodeViewController: action.passcodeViewController)
+                
+            case _ as PresentPasscodeFailure:
+                return RSState.newState(fromState: state, isPresentingPasscode: false)
+                
+            case _ as DismissPasscodeRequest:
+                return RSState.newState(fromState: state, isDismissingPasscode: true)
+                
+            case _ as DismissPasscodeSuccess:
+                return RSState.newState(fromState: state, passcodeViewController: nil as ORKPasscodeViewController?, isDismissingPasscode: false)
+                
+            case _ as DismissPasscodeFailure:
+                return RSState.newState(fromState: state, isDismissingPasscode: false)
+
             default:
                 return state
             }

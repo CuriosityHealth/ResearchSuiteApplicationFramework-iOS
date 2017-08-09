@@ -355,7 +355,7 @@ public class RSActionCreators: NSObject {
                     return nil
                 }
                 
-                delegate.presentLayout(viewController: layoutVC, completion: { (completed) in
+                delegate.presentLayout(viewController: layoutVC, animated: currentRoute != nil, completion: { (completed) in
                     
                     if completed {
                         let routeRequestAction = ChangeRouteSuccess(route: route)

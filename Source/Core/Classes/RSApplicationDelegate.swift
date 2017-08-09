@@ -258,21 +258,40 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     public func lockScreen() {
         
-        guard self.shouldShowPasscode(), let vc = instantiateViewControllerForPasscode() else {
+        let state: RSState = self.store.state
+        guard RSStateSelectors.shouldShowPasscode(state) else {
             return
         }
         
-        window?.makeKeyAndVisible()
+        
+        
+        let vc = ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
         
         vc.modalPresentationStyle = .fullScreen
         vc.modalTransitionStyle = .coverVertical
         
-        passcodeViewController = vc
-        presentViewController(vc, animated: false, completion: nil)
+        let uuid = UUID()
+        self.store.dispatch(PresentPasscodeRequest(uuid: uuid, passcodeViewController: vc))
+        
+        window?.makeKeyAndVisible()
+        
+        presentViewController(vc, animated: false, completion: {
+            self.store.dispatch(PresentPasscodeSuccess(uuid: uuid, passcodeViewController: vc))
+        })
     }
     
     private func dismissPasscodeViewController(_ animated: Bool) {
-        self.passcodeViewController?.presentingViewController?.dismiss(animated: animated, completion: nil)
+        
+        let state: RSState = self.store.state
+        guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
+            return
+        }
+        
+        let uuid = UUID()
+        self.store.dispatch(DismissPasscodeRequest(uuid: uuid, passcodeViewController: passcodeViewController))
+        passcodeViewController.presentingViewController?.dismiss(animated: animated, completion: {
+            self.store.dispatch(DismissPasscodeSuccess(uuid: uuid, passcodeViewController: passcodeViewController))
+        })
     }
     
     private func resetPasscode() {
@@ -319,7 +338,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     }
     
     open func applicationWillResignActive(_ application: UIApplication) {
-        if shouldShowPasscode() {
+        
+        let state: RSState = self.store.state
+        if RSStateSelectors.shouldShowPasscode(state) {
             // Hide content so it doesn't appear in the app switcher.
             if let vc = self.window?.rootViewController {
                 self.setContentHidden(vc: vc, contentHidden: true)

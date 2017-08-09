@@ -9,6 +9,7 @@
 import UIKit
 import ReSwift
 import ResearchSuiteResultsProcessor
+import ResearchKit
 
 public struct AddStateValueAction: Action {
     let stateValue: RSStateValue
@@ -152,5 +153,36 @@ public struct UnregisterResultsProcessorBackEndAction: Action {
 
 public struct CompleteConfiguration: Action {
 }
+
+public struct PresentPasscodeRequest: Action {
+    let uuid: UUID
+    let passcodeViewController: ORKPasscodeViewController
+}
+
+public struct PresentPasscodeSuccess: Action {
+    let uuid: UUID
+    let passcodeViewController: ORKPasscodeViewController
+}
+
+public struct PresentPasscodeFailure: Action {
+    let uuid: UUID
+    let passcodeViewController: ORKPasscodeViewController
+}
+
+public struct DismissPasscodeRequest: Action {
+    let uuid: UUID
+    let passcodeViewController: ORKPasscodeViewController
+}
+
+public struct DismissPasscodeSuccess: Action {
+    let uuid: UUID
+    let passcodeViewController: ORKPasscodeViewController
+}
+
+public struct DismissPasscodeFailure: Action {
+    let uuid: UUID
+    let passcodeViewController: ORKPasscodeViewController
+}
+
 
 

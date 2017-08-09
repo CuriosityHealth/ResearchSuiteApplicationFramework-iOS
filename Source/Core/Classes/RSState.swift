@@ -9,6 +9,7 @@
 import UIKit
 import ReSwift
 import ResearchSuiteResultsProcessor
+import ResearchKit
 
 public final class RSState: NSObject, StateType {
     
@@ -33,6 +34,11 @@ public final class RSState: NSObject, StateType {
     public let currentRoute: RSRoute?
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
+    //passcode stuff
+    public let isPresentingPasscode: Bool
+    public let passcodeViewController: ORKPasscodeViewController?
+    public let isDismissingPasscode: Bool
+    
     public init(configurationCompleted: Bool = false,
                 applicationState: [String: NSObject] = [:],
                 stateValueMap: [String: RSStateValue] = [:],
@@ -50,7 +56,10 @@ public final class RSState: NSObject, StateType {
                 presentedActivity: (UUID, String)? = nil,
                 isRouting: Bool = false,
                 currentRoute: RSRoute? = nil,
-                resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:]
+                resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
+                isPresentingPasscode: Bool = false,
+                passcodeViewController: ORKPasscodeViewController? = nil,
+                isDismissingPasscode: Bool = false
         ) {
         
         self.configurationCompleted = configurationCompleted
@@ -71,6 +80,9 @@ public final class RSState: NSObject, StateType {
         self.isRouting = isRouting
         self.currentRoute = currentRoute
         self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
+        self.isPresentingPasscode = isPresentingPasscode
+        self.passcodeViewController = passcodeViewController
+        self.isDismissingPasscode = isDismissingPasscode
     }
     
     static func newState(
@@ -92,7 +104,10 @@ public final class RSState: NSObject, StateType {
         presentedActivity: ((UUID, String)?)? = nil,
         isRouting: Bool? = nil,
         currentRoute: RSRoute?? = nil,
-        resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil
+        resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
+        isPresentingPasscode: Bool? = nil,
+        passcodeViewController: ORKPasscodeViewController?? = nil,
+        isDismissingPasscode: Bool? = nil
         ) -> RSState {
         
         return RSState(
@@ -113,7 +128,10 @@ public final class RSState: NSObject, StateType {
             presentedActivity: presentedActivity ?? fromState.presentedActivity,
             isRouting: isRouting ?? fromState.isRouting,
             currentRoute: currentRoute ?? fromState.currentRoute,
-            resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap
+            resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap,
+            isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
+            passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
+            isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode    
         )
     }
     
@@ -122,11 +140,13 @@ public final class RSState: NSObject, StateType {
     }
     
     open override var description: String {
-        return "\n\tapplicationState: \(self.applicationState)" +
-            "\n\tstateValueHasBeenSet: \(self.stateValueHasBeenSet)" +
-            "\n\tconstants: \(self.constantsMap)" +
+        return
+//            "\n\tapplicationState: \(self.applicationState)" +
+//            "\n\tstateValueHasBeenSet: \(self.stateValueHasBeenSet)" +
+//            "\n\tconstants: \(self.constantsMap)" +
             "\n\tactivityQueue: \(self.activityQueue)" +
-        "\n\tpresentedActivity: \(self.presentedActivity)"
+        "\n\tpresentedActivity: \(self.presentedActivity)" +
+        "\n\tpresentedPasscode: \(self.passcodeViewController)"
         
     }
     

@@ -8,6 +8,7 @@
 
 import UIKit
 import ResearchSuiteResultsProcessor
+import ResearchKit
 
 public class RSStateSelectors: NSObject {
     
@@ -123,7 +124,8 @@ public class RSStateSelectors: NSObject {
             (state.presentedActivity == nil) &&
             (!state.isDismissing) &&
             (!state.isRouting) &&
-            (state.currentRoute != nil)
+            (state.currentRoute != nil) &&
+            (state.configurationCompleted)
     }
 
     public static func isRouting(_ state: RSState) -> Bool {
@@ -151,6 +153,27 @@ public class RSStateSelectors: NSObject {
     
     public static func isConfigurationCompleted(_ state: RSState) -> Bool {
         return state.configurationCompleted
+    }
+    
+    public static func shouldShowPasscode(_ state: RSState) -> Bool {
+        return !RSStateSelectors.isPasscodePresented(state) &&
+            ORKPasscodeViewController.isPasscodeStoredInKeychain()
+    }
+    
+    public static func isPasscodePresented(_ state: RSState) -> Bool {
+        return state.passcodeViewController != nil
+    }
+    
+    public static func isPresentingPasscode(_ state: RSState) -> Bool {
+        return state.isPresentingPasscode
+    }
+    
+    public static func isDismissingPasscode(_ state: RSState) -> Bool {
+        return state.isDismissingPasscode
+    }
+    
+    public static func passcodeViewController(_ state: RSState) -> ORKPasscodeViewController? {
+        return state.passcodeViewController
     }
 
 }
