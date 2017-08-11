@@ -126,10 +126,17 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     }
     
     open var storeMiddleware: [RSMiddlewareProvider.Type] {
-        return [
-            RSLoggingMiddleware.self,
-            RSSendResultToServerMiddleware.self
-        ]
+        #if DEBUG
+            return [
+                RSLoggingMiddleware.self,
+                RSSendResultToServerMiddleware.self
+            ]
+        #else
+            return [
+                RSSendResultToServerMiddleware.self
+            ]
+        #endif
+        
     }
     
     open var stateManagerGenerators: [RSStateManagerGenerator.Type] {

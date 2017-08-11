@@ -33,8 +33,8 @@ open class RSStepTreeResultTransformValueTransformer: RSValueTransformer {
         
         //lets create a new task result that selects only the results below child and maps the identifiers
         
-        debugPrint(child.fullyQualifiedIdentifier)
-        debugPrint(stepResults)
+//        debugPrint(child.fullyQualifiedIdentifier)
+//        debugPrint(stepResults)
         
         let fullyQualifiedChildIdentifier = child.fullyQualifiedIdentifier
         //filter
@@ -44,13 +44,13 @@ open class RSStepTreeResultTransformValueTransformer: RSValueTransformer {
             }
             .map { (stepResult) -> ORKStepResult in
                 let stepResultIdentifierComponents = stepResult.identifier.components(separatedBy: ".")
-                debugPrint(stepResultIdentifierComponents)
+//                debugPrint(stepResultIdentifierComponents)
                 
                 //note that the "child" here is actually a parent of the step
                 let childIdentifierComponents = child.fullyQualifiedIdentifier.components(separatedBy: ".")
-                debugPrint(childIdentifierComponents)
+//                debugPrint(childIdentifierComponents)
                 let remainingComponents = stepResultIdentifierComponents.dropFirst(childIdentifierComponents.count)
-                debugPrint(remainingComponents)
+//                debugPrint(remainingComponents)
                 return ORKStepResult(stepIdentifier: remainingComponents.joined(separator: "."), results: stepResult.results)
         }
         
@@ -59,7 +59,7 @@ open class RSStepTreeResultTransformValueTransformer: RSValueTransformer {
         let filteredTaskResult = ORKTaskResult(taskIdentifier: taskResult.identifier, taskRun: UUID(), outputDirectory: nil)
         filteredTaskResult.results = filteredStepResults
         
-        debugPrint(filteredTaskResult)
+//        debugPrint(filteredTaskResult)
         
         return RSRPFrontEndService.processResult(
             taskResult: filteredTaskResult,

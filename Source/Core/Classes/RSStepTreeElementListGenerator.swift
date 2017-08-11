@@ -12,7 +12,7 @@ import Gloss
 open class RSStepTreeElementListGenerator: RSStepTreeNodeGenerator {
 
     open static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String) -> RSStepTreeNode? {
-        debugPrint(jsonObject)
+//        debugPrint(jsonObject)
         guard let descriptor = RSElementListNodeDescriptor(json: jsonObject) else {
             return nil
         }

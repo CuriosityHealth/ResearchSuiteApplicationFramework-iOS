@@ -40,7 +40,7 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         
         let prefix = "\(taskResult.identifier).\(measureID)"
         
-        debugPrint(taskResult)
+//        debugPrint(taskResult)
         
 //        printAllFirstResults(taskResult: taskResult)
         
@@ -49,13 +49,13 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
             .filter { $0.identifier.hasPrefix(prefix) }
             .map { (stepResult) -> ORKStepResult in
                 let stepResultIdentifierComponents = stepResult.identifier.components(separatedBy: ".")
-                debugPrint(stepResultIdentifierComponents)
+//                debugPrint(stepResultIdentifierComponents)
                 
                 //note that the "child" here is actually a parent of the step
                 let prefixComponents = prefix.components(separatedBy: ".")
-                debugPrint(prefixComponents)
+//                debugPrint(prefixComponents)
                 let remainingComponents = stepResultIdentifierComponents.dropFirst(prefixComponents.count)
-                debugPrint(remainingComponents)
+//                debugPrint(remainingComponents)
                 
                 return ORKStepResult(stepIdentifier: remainingComponents.joined(separator: "."), results: stepResult.results)
                 
@@ -67,7 +67,7 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         let filteredTaskResult = ORKTaskResult(taskIdentifier: taskResult.identifier, taskRun: UUID(), outputDirectory: nil)
         filteredTaskResult.results = filteredStepResults
         
-        debugPrint(filteredTaskResult)
+//        debugPrint(filteredTaskResult)
         
 //        printAllFirstResults(taskResult: filteredTaskResult)
         

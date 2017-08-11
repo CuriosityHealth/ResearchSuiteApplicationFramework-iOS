@@ -37,7 +37,7 @@ open class RSStepTree: NSObject, ORKTask {
     
     open func step(after step: ORKStep?, with result: ORKTaskResult) -> ORKStep? {
         
-        debugPrint(step)
+//        debugPrint(step)
         //if step is nil, select first leaf node and convert to step
         let currentNode = self.node(for: step?.identifier)
         guard let nextNode = self.leafNode(after: currentNode, with: result) else {
@@ -45,7 +45,7 @@ open class RSStepTree: NSObject, ORKTask {
         }
         
         let step = nextNode.step(taskBuilder: self.taskBuilder)
-        debugPrint(step)
+//        debugPrint(step)
         return step
     }
     
@@ -67,9 +67,9 @@ open class RSStepTree: NSObject, ORKTask {
             return nil
         }
         
-        debugPrint(index)
+//        debugPrint(index)
         let previousIndex = stepResults.index(before: index)
-        debugPrint(previousIndex)
+//        debugPrint(previousIndex)
         let previousStep: ORKStep? = {
             
             if previousIndex >= stepResults.startIndex {
