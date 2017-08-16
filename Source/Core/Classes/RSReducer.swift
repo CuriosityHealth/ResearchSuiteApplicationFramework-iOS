@@ -51,6 +51,9 @@ public class RSReducer: NSObject {
                 let newActivityQueue = state.activityQueue.filter { $0.0 != dequeueActivityAction.uuid }
                 return RSState.newState(fromState: state, activityQueue: newActivityQueue)
                 
+            case _ as FlushActivityQueue:
+                return RSState.newState(fromState: state, activityQueue: [])
+                
 //            case let setPresentedActivityAction as SetPresentedActivityAction:
 //                
 //                let pair = (setPresentedActivityAction.uuid, setPresentedActivityAction.activityID)

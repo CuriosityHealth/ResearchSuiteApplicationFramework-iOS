@@ -30,7 +30,14 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutVi
         
         self.titleLabel.text = self.titleLayout.title
         self.imageView.image = self.titleLayout.image
-        self.button.setTitle(self.titleLayout.button.title, for: .normal)
+        if let button = self.titleLayout.button {
+            self.button.isHidden = false
+            self.button.setTitle(button.title, for: .normal)
+        }
+        else {
+            self.button.isHidden = true
+        }
+        
         
         self.store.subscribe(self)
         
@@ -41,9 +48,14 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutVi
     }
     
     open func newState(state: RSState) {
+        
+        guard let button = self.titleLayout.button else {
+            return
+        }
+        
         self.button.isEnabled = {
             
-            guard let predicate = self.titleLayout.button.predicate else {
+            guard let predicate = button.predicate else {
                 return true
             }
             
@@ -58,7 +70,11 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutVi
     
     @IBAction func tappedButton(_ sender: Any) {
         
-        self.titleLayout.button.onTapActions.forEach { self.processAction(action: $0) }
+        guard let button = self.titleLayout.button else {
+            return
+        }
+        
+        button.onTapActions.forEach { self.processAction(action: $0) }
         
     }
     

@@ -255,12 +255,18 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
      Convenience method for presenting a modal view controller.
      */
     open func presentViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
-        guard let rootVC = self.window?.rootViewController else { return }
+        self.topViewController()?.present(viewController, animated: animated, completion: completion)
+    }
+    
+    open func topViewController() -> UIViewController? {
+        guard let rootVC = self.window?.rootViewController else {
+            return nil
+        }
         var topViewController: UIViewController = rootVC
         while (topViewController.presentedViewController != nil) {
             topViewController = topViewController.presentedViewController!
         }
-        topViewController.present(viewController, animated: animated, completion: completion)
+        return topViewController
     }
     
     public func lockScreen() {

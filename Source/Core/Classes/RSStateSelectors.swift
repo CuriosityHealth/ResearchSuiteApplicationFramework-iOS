@@ -106,6 +106,10 @@ public class RSStateSelectors: NSObject {
         return state.activityQueue.first
     }
     
+    public static func getQueuedActivities(_ state: RSState) -> [(UUID, String)] {
+        return state.activityQueue
+    }
+    
     public static func isPresenting(_ state: RSState) -> Bool {
         return state.isPresenting
     }

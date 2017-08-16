@@ -268,6 +268,31 @@ public class RSActionCreators: NSObject {
         }
     }
     
+    //NOTE: THIS IS FOR DEVELOPMENT ONLY!!!!!!
+    public static func forceDismissActivity(flushActivityQueue: Bool) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            
+            if flushActivityQueue {
+                store.dispatch(FlushActivityQueue())
+            }
+            
+            guard !RSStateSelectors.isDismissing(state),
+                let presentedActivityPair = RSStateSelectors.presentedActivity(state),
+                let topViewController = RSApplicationDelegate.appDelegate.topViewController() else {
+                    return nil
+            }
+            
+            let dismissRequestAction = DismissActivityRequest(uuid: presentedActivityPair.0, activityID: presentedActivityPair.1)
+            store.dispatch(dismissRequestAction)
+            
+            topViewController.dismiss(animated: true, completion: {
+                let dismissSuccessAction = DismissActivitySuccess(uuid: presentedActivityPair.0, activityID: presentedActivityPair.1)
+                store.dispatch(dismissSuccessAction)
+            })
+            
+            return nil
+        }
+    }
     
     private static func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>) {
         let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions

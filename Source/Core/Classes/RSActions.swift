@@ -57,6 +57,8 @@ public struct DequeueActivityAction: Action {
     let uuid: UUID
 }
 
+public struct FlushActivityQueue: Action {}
+
 public struct SetPresentedActivityAction: Action {
     let uuid: UUID
     let activityID: String
