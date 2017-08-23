@@ -226,12 +226,43 @@ public class RSActionCreators: NSObject {
                 //process finally actions
                 RSActionCreators.processFinallyActions(activity: activity, store: store)
                 
+                //NOTE: We are wiping out the storage directory, so any results should have been copied out of here
+                
+                if let outputDirectory = taskViewController.outputDirectory {
+                    
+                    do {
+                        try FileManager.default.removeItem(at: outputDirectory)
+                    }
+                    catch let error as NSError {
+                        fatalError("The output directory for the task with UUID: \(taskViewController.taskRunUUID.uuidString) could not be removed. Error: \(error.localizedDescription)")
+                    }
+                    
+                }
+                
                 //dismiss view controller
                 store.dispatch(RSActionCreators.dismissActivity(firstActivity.0, activity: activity, viewController: viewController, activityManager: activityManager))
                 
             }
             
             let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
+            
+            do {
+                let defaultFileManager = FileManager.default
+                
+                // Identify the documents directory.
+                let documentsDirectory = try defaultFileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                
+                // Create a directory based on the `taskRunUUID` to store output from the task.
+                let outputDirectory = documentsDirectory.appendingPathComponent(taskViewController.taskRunUUID.uuidString)
+                try defaultFileManager.createDirectory(at: outputDirectory, withIntermediateDirectories: true, attributes: nil)
+                
+                debugPrint("Storing results in \(outputDirectory.absoluteString)")
+                
+                taskViewController.outputDirectory = outputDirectory
+            }
+            catch let error as NSError {
+                fatalError("The output directory for the task with UUID: \(taskViewController.taskRunUUID.uuidString) could not be created. Error: \(error.localizedDescription)")
+            }
             
             let presentRequestAction = PresentActivityRequest(uuid: firstActivity.0, activityID: firstActivity.1)
             store.dispatch(presentRequestAction)

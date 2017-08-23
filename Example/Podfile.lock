@@ -1,50 +1,54 @@
 PODS:
   - Alamofire (4.5.0)
   - Gloss (1.2.4)
-  - OhmageOMHSDK (0.3.0):
-    - OhmageOMHSDK/Core (= 0.3.0)
-  - OhmageOMHSDK/Core (0.3.0):
+  - GRMustache.swift (2.0.0)
+  - OhmageOMHSDK (0.4.0):
+    - OhmageOMHSDK/Core (= 0.4.0)
+  - OhmageOMHSDK/Core (0.4.0):
     - Alamofire (~> 4)
-    - OMHClient
+    - OMHClient (~> 0.1)
     - SecureQueue
-  - OhmageOMHSDK/RKSupport (0.3.0):
+  - OhmageOMHSDK/RKSupport (0.4.0):
     - OhmageOMHSDK/Core
     - ResearchKit (~> 1.4)
-  - OhmageOMHSDK/RSRPSupport (0.3.0):
+    - ResearchSuiteExtensions (~> 0.2)
+  - OhmageOMHSDK/RSRPSupport (0.4.0):
     - OhmageOMHSDK/Core
     - ResearchSuiteResultsProcessor
-  - OhmageOMHSDK/RSTBSupport (0.3.0):
+  - OhmageOMHSDK/RSTBSupport (0.4.0):
     - OhmageOMHSDK/Core
     - OhmageOMHSDK/RKSupport
     - ResearchSuiteTaskBuilder
   - OMHClient (0.1.0):
     - Alamofire (~> 4.0)
   - ResearchKit (1.4.1)
-  - ResearchSuiteApplicationFramework (0.1.0):
-    - ResearchSuiteApplicationFramework/Core (= 0.1.0)
-  - ResearchSuiteApplicationFramework/Core (0.1.0):
+  - ResearchSuiteApplicationFramework (0.3.0):
+    - ResearchSuiteApplicationFramework/Core (= 0.3.0)
+  - ResearchSuiteApplicationFramework/Core (0.3.0):
     - Gloss (~> 1.2)
     - ResearchKit (= 1.4.1)
     - ResearchSuiteExtensions
     - ResearchSuiteResultsProcessor (~> 0.3)
     - ResearchSuiteTaskBuilder (~> 0.5)
     - ReSwift (~> 3.0)
-  - ResearchSuiteExtensions (0.1.1):
-    - ResearchSuiteExtensions/Common (= 0.1.1)
-    - ResearchSuiteExtensions/Core (= 0.1.1)
-    - ResearchSuiteExtensions/RSTBSupport (= 0.1.1)
-  - ResearchSuiteExtensions/Common (0.1.1):
+  - ResearchSuiteExtensions (0.4.0):
+    - ResearchSuiteExtensions/Common (= 0.4.0)
+    - ResearchSuiteExtensions/Core (= 0.4.0)
+    - ResearchSuiteExtensions/RSTBSupport (= 0.4.0)
+  - ResearchSuiteExtensions/Common (0.4.0):
     - ResearchKit (~> 1.4)
-  - ResearchSuiteExtensions/Core (0.1.1):
+  - ResearchSuiteExtensions/Core (0.4.0):
     - ResearchKit (~> 1.4)
     - ResearchSuiteExtensions/Common
-  - ResearchSuiteExtensions/RSTBSupport (0.1.1):
+  - ResearchSuiteExtensions/RSTBSupport (0.4.0):
     - Gloss (~> 1)
+    - GRMustache.swift (~> 2.0)
     - ResearchSuiteExtensions/Core
     - ResearchSuiteTaskBuilder (~> 0.4)
-  - ResearchSuiteResultsProcessor (0.3.1):
-    - ResearchSuiteResultsProcessor/Core (= 0.3.1)
-  - ResearchSuiteResultsProcessor/Core (0.3.1):
+    - SwiftyMarkdown (~> 0.3)
+  - ResearchSuiteResultsProcessor (0.4.0):
+    - ResearchSuiteResultsProcessor/Core (= 0.4.0)
+  - ResearchSuiteResultsProcessor/Core (0.4.0):
     - Gloss (~> 1.1)
     - ResearchKit (~> 1.3)
   - ResearchSuiteTaskBuilder (0.7.0):
@@ -95,40 +99,46 @@ PODS:
     - ResearchSuiteTaskBuilder (~> 0.4)
     - sdlrkx/VSR
   - SecureQueue (0.0.5)
+  - SwiftyMarkdown (0.3.4)
 
 DEPENDENCIES:
   - OhmageOMHSDK
   - OhmageOMHSDK/RSRPSupport
   - OhmageOMHSDK/RSTBSupport
   - ResearchSuiteApplicationFramework (from `../`)
+  - ResearchSuiteExtensions (from `~/Developer/ResearchSuite/iOS/ResearchSuiteExtensions`)
   - ResearchSuiteResultsProcessor (from `~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios`)
   - ResearchSuiteTaskBuilder (from `~/Developer/ResearchSuite/iOS/ResearchSuiteTaskBuilder-ios`)
-  - sdlrkx (from `../../../../ResearchSuite/iOS/sdl-rkx/`)
+  - sdlrkx (from `~/Developer/ResearchSuite/iOS/sdl-rkx/`)
 
 EXTERNAL SOURCES:
   ResearchSuiteApplicationFramework:
     :path: ../
+  ResearchSuiteExtensions:
+    :path: ~/Developer/ResearchSuite/iOS/ResearchSuiteExtensions
   ResearchSuiteResultsProcessor:
     :path: ~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios
   ResearchSuiteTaskBuilder:
     :path: ~/Developer/ResearchSuite/iOS/ResearchSuiteTaskBuilder-ios
   sdlrkx:
-    :path: ../../../../ResearchSuite/iOS/sdl-rkx/
+    :path: ~/Developer/ResearchSuite/iOS/sdl-rkx/
 
 SPEC CHECKSUMS:
   Alamofire: f28cdffd29de33a7bfa022cbd63ae95a27fae140
   Gloss: 4e036074610fdb993abcb958ebcd7332588e2333
-  OhmageOMHSDK: dbf66a8b19ff1434238fd162e473ac27f8d07267
+  GRMustache.swift: 8a547c12bea16052071b2b540af83d770075f0eb
+  OhmageOMHSDK: 166e6409585f30f5bf495cba32c5706fdf01d749
   OMHClient: 0cf53a006075ccb5de616e5e870458d1e6b1ff68
   ResearchKit: 3533ea3a2270e4ed7ff830e19755dc959fdfd430
-  ResearchSuiteApplicationFramework: 073c75ee7263d901d9cfddcf64df21b01ff02574
-  ResearchSuiteExtensions: a449b73b08a4e3afc34a814fa5bdbf02931f0868
-  ResearchSuiteResultsProcessor: 2a279aff2ab7b633d1b66046a81e261b44011106
+  ResearchSuiteApplicationFramework: 64ed2e4212f38567f4ecf7e7c69507151d96633e
+  ResearchSuiteExtensions: aff1e101ae8d5f52573b29aaf0d2af325fe47f18
+  ResearchSuiteResultsProcessor: a052c0f0f06e7c8fb7c7b39ef18f88501b05c436
   ResearchSuiteTaskBuilder: 4be10150e3b5d1549b31e476cab836a41d7ab47c
   ReSwift: f0255f4b4f2dacd12c5d97d34d13fc5dad6d6371
   sdlrkx: 4e8ce9c0c440d1e187886d820d07d2f3247e7986
   SecureQueue: 3aa95a5bba534c3aa938ae634333cbcf5919060b
+  SwiftyMarkdown: e227c4f67000248358be3d566e5f51e9a020757d
 
-PODFILE CHECKSUM: 1b0112708a4fd35e24a01b7ead8e0a1eee72d75d
+PODFILE CHECKSUM: d1a5ad4a401ef44796b56bc60e238098fddc5676
 
 COCOAPODS: 1.2.1

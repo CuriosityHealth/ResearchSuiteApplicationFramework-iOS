@@ -69,6 +69,11 @@ open class RSActivityManager: NSObject {
             return nil
         }
         
+        if let predicate: RSPredicate = "predicate" <~~ jsonObject,
+            RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) == false {
+            return nil
+        }
+        
         for transformer in self.activityElementTransforms {
             if transformer.supportsType(type: type) {
                 return transformer.generateNode(

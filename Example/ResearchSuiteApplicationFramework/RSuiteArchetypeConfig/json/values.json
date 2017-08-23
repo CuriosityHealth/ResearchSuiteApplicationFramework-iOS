@@ -1,46 +1,60 @@
 {
+  "stateManagers": [
+    {
+      "identifier": "protected",
+      "type": "file",
+      "filePath": "protected",
+      "protected": true
+    },
+    {
+      "identifier": "unprotected",
+      "type": "file",
+      "filePath": "unprotected",
+      "protected": false
+    }
+  ],
   "state": [
     {
       "identifier": "baselineCompletionDate",
       "type": "Date",
       "default": null,
-      "protected": true
+      "stateManager": "protected"
     },
     {
       "identifier": "lastDailySurveyCompletion",
       "type": "Date",
       "default": null,
-      "protected": true
+      "stateManager": "protected"
     },
     {
       "identifier": "YADLActivities",
       "type": "StringArray",
       "default": null,
-      "protected": true
+      "stateManager": "protected"
     },
     {
       "identifier": "home",
       "type": "Location",
       "default": null,
-      "protected": true
+      "stateManager": "protected"
     },
     {
       "identifier": "work",
       "type": "Location",
       "default": null,
-      "protected": true
+      "stateManager": "protected"
     },
     {
       "identifier": "notificationTime",
       "type": "TimeOfDay",
       "default": "08:00",
-      "protected": true
+      "stateManager": "protected"
     },
     {
       "identifier": "isConsented",
       "type": "Boolean",
       "default": false,
-      "protected": false
+      "stateManager": "unprotected"
     }
   ],
   "constants": [

@@ -4,12 +4,13 @@ platform :ios, '9.0'
 target 'ResearchSuiteApplicationFramework_Example' do
   pod 'ResearchSuiteApplicationFramework', :path => '../'
 
-  pod "sdlrkx", :path => '../../../../ResearchSuite/iOS/sdl-rkx/'
+  pod "sdlrkx", :path => '~/Developer/ResearchSuite/iOS/sdl-rkx/'
   pod "OhmageOMHSDK"
   pod "OhmageOMHSDK/RSTBSupport"
   pod "OhmageOMHSDK/RSRPSupport"
   pod "ResearchSuiteTaskBuilder", :path => '~/Developer/ResearchSuite/iOS/ResearchSuiteTaskBuilder-ios'
   pod "ResearchSuiteResultsProcessor", :path => '~/Developer/ResearchSuite/iOS/ResearchSuiteResultsProcessor-ios'
+  pod "ResearchSuiteExtensions", :path => '~/Developer/ResearchSuite/iOS/ResearchSuiteExtensions'
 
   target 'ResearchSuiteApplicationFramework_Tests' do
     inherit! :search_paths

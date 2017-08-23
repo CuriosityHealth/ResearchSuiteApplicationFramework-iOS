@@ -55,7 +55,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSTBBooleanStepGenerator(),
             RSTBPasscodeStepGenerator(),
             RSTBScaleStepGenerator(),
-            RSTBLocationStepGenerator()
+            RSTBLocationStepGenerator(),
+            RSTBImageCaptureStepGenerator()
         ]
     }
     
@@ -82,7 +83,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSLocationStepResult.self,
             RSTimeOfDayStepResult.self,
             RSBooleanStepResult.self,
-            RSTextStepResult.self
+            RSTextStepResult.self,
+            RSSingleChoiceStepResult.self
         ]
     }
     
