@@ -84,7 +84,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSTimeOfDayStepResult.self,
             RSBooleanStepResult.self,
             RSTextStepResult.self,
-            RSSingleChoiceStepResult.self
+            RSSingleChoiceStepResult.self,
+            RSEnhancedMultipleChoiceValuesResultTransform.self
         ]
     }
     

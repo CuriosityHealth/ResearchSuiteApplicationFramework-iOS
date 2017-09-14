@@ -51,7 +51,12 @@ open class RSStepTreeResultTransformValueTransformer: RSValueTransformer {
 //                debugPrint(childIdentifierComponents)
                 let remainingComponents = stepResultIdentifierComponents.dropFirst(childIdentifierComponents.count)
 //                debugPrint(remainingComponents)
-                return ORKStepResult(stepIdentifier: remainingComponents.joined(separator: "."), results: stepResult.results)
+                //stepResult.results?.forEach { debugPrint($0) }
+                //NOTE: This copies the nested results, the Result object that inherits from
+                //ORKResult may need to override the copy method. See RSEnhancedMultipleChoiceResult in RSExtensions
+                let newStepResult = ORKStepResult(stepIdentifier: remainingComponents.joined(separator: "."), results: stepResult.results)
+                //newStepResult.results?.forEach { debugPrint($0) }
+                return newStepResult
         }
         
         //map -> step result w/ new identifier
