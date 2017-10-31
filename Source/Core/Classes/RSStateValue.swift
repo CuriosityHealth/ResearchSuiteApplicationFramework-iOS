@@ -10,7 +10,7 @@ import UIKit
 import Gloss
 import CoreLocation
 
-public class RSStateValue: Decodable {
+public class RSStateValue: Gloss.Decodable {
     
     public let identifier: String
     public let type: String

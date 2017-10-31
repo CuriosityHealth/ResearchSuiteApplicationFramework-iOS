@@ -11,7 +11,7 @@ import Gloss
 import CoreLocation
 
 //these provide bindings when state is managed by another module (e.g., login managed by SDK)
-public class RSFunctionValue: Decodable, ValueConvertible {
+public class RSFunctionValue: Gloss.Decodable, ValueConvertible {
     
     public let identifier: String
     public let type: String

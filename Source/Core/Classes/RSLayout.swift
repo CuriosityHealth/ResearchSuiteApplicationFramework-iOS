@@ -9,7 +9,7 @@
 import UIKit
 import Gloss
 
-open class RSLayout: Decodable {
+open class RSLayout: Gloss.Decodable {
 
     public let identifier: String
     public let type: String

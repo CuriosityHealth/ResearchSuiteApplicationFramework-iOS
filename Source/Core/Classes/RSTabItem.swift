@@ -9,7 +9,7 @@
 import UIKit
 import Gloss
 
-open class RSTabItem: Decodable {
+open class RSTabItem: Gloss.Decodable {
     
     public let identifier: String
     public let title: String

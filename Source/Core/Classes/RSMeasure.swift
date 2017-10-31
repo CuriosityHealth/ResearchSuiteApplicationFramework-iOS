@@ -10,7 +10,7 @@ import UIKit
 import Gloss
 import ResearchSuiteResultsProcessor
 
-public class RSMeasure: Decodable {
+public class RSMeasure: Gloss.Decodable {
     
     public let identifier: String
     public let taskElement: JSON

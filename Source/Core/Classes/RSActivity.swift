@@ -10,7 +10,7 @@ import UIKit
 import Gloss
 import ReSwift
 
-public class RSActivity: Decodable {
+public class RSActivity: Gloss.Decodable {
     
     struct OnCompletionStruct {
         //TODO: Make this better

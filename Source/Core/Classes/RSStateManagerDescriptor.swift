@@ -9,7 +9,7 @@
 import UIKit
 import Gloss
 
-open class RSStateManagerDescriptor: Decodable {
+open class RSStateManagerDescriptor: Gloss.Decodable {
     
     let identifier: String
     let type: String
