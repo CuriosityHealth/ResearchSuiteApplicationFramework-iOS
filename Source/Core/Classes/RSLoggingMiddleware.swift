@@ -11,7 +11,7 @@ import ResearchSuiteResultsProcessor
 
 open class RSLoggingMiddleware: RSMiddlewareProvider {
     
-    open static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware {
+    open static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware? {
         return { dispatch, getState in
             return { next in
                 return { action in

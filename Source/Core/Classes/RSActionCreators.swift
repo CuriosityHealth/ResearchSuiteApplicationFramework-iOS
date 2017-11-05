@@ -223,6 +223,22 @@ public class RSActionCreators: NSObject {
                     RSActionCreators.processOnFailureActions(activity: activity, store: store)
                 }
                 
+                
+                if let newState = store.state,
+                    let presentedActivityPair = RSStateSelectors.presentedActivity(newState) {
+
+                    let action = LogActivityAction(
+                        activityID: presentedActivityPair.1,
+                        uuid: taskViewController.taskRunUUID,
+                        startTime: presentedActivityPair.2,
+                        endTime: Date(),
+                        completed: reason == ORKTaskViewControllerFinishReason.completed
+                    )
+                    
+                    store.dispatch(action)
+                    
+                }
+                
                 //process finally actions
                 RSActionCreators.processFinallyActions(activity: activity, store: store)
                 
@@ -238,6 +254,8 @@ public class RSActionCreators: NSObject {
                     }
                     
                 }
+                
+                
                 
                 //dismiss view controller
                 store.dispatch(RSActionCreators.dismissActivity(firstActivity.0, activity: activity, viewController: viewController, activityManager: activityManager))
@@ -269,7 +287,7 @@ public class RSActionCreators: NSObject {
             
             viewController.present(taskViewController, animated: true, completion: {
                 
-                let presentSuccessAction = PresentActivitySuccess(uuid: firstActivity.0, activityID: firstActivity.1)
+                let presentSuccessAction = PresentActivitySuccess(uuid: firstActivity.0, activityID: firstActivity.1, presentationTime: Date())
                 store.dispatch(presentSuccessAction)
 
             })

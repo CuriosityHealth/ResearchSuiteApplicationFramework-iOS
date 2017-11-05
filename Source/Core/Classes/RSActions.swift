@@ -110,6 +110,7 @@ public struct PresentActivityRequest: Action {
 public struct PresentActivitySuccess: Action {
     let uuid: UUID
     let activityID: String
+    let presentationTime: Date
 }
 
 public struct PresentActivityFailure: Action {
@@ -184,6 +185,15 @@ public struct DismissPasscodeSuccess: Action {
 public struct DismissPasscodeFailure: Action {
     let uuid: UUID
     let passcodeViewController: ORKPasscodeViewController
+}
+
+//Analytics Stuff
+public struct LogActivityAction: Action {
+    let activityID: String
+    let uuid: UUID
+    let startTime: Date
+    let endTime: Date
+    let completed: Bool
 }
 
 

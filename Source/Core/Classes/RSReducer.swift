@@ -270,7 +270,7 @@ public class RSReducer: NSObject {
                 return RSState.newState(fromState: state, isPresenting: true)
                 
             case let action as PresentActivitySuccess:
-                let pair = (action.uuid, action.activityID)
+                let pair = (action.uuid, action.activityID, action.presentationTime)
                 let newActivityQueue = state.activityQueue.filter { $0.0 != action.uuid }
                 return RSState.newState(fromState: state, activityQueue: newActivityQueue, isPresenting: false, presentedActivity: pair)
                 
@@ -282,7 +282,7 @@ public class RSReducer: NSObject {
                 return RSState.newState(fromState: state, isDismissing: true)
                 
             case _ as DismissActivitySuccess:
-                return RSState.newState(fromState: state, isDismissing: false, presentedActivity: nil as (UUID, String)?)
+                return RSState.newState(fromState: state, isDismissing: false, presentedActivity: nil as (UUID, String, Date)?)
                 
             case _ as DismissActivityFailure:
                 return RSState.newState(fromState: state, isDismissing: false)

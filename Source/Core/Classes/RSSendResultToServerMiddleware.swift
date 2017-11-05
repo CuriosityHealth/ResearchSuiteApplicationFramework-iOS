@@ -12,13 +12,15 @@ import ResearchSuiteResultsProcessor
 
 open class RSSendResultToServerMiddleware: RSMiddlewareProvider {
     
-    open static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware {
+    open static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware? {
         return { dispatch, getState in
             return { next in
                 return { action in
                     
-                    if let sendResultAction = action as? RSSendResultToServerAction {
-                        RSSendResultToServerMiddleware.defaultResultsProcessorBackEnd.add(intermediateResult: sendResultAction.intermediateResult)
+                    if let sendResultAction = action as? RSSendResultToServerAction,
+                        let state = getState() as? RSState,
+                        let backend = RSStateSelectors.getResultsProcessorBackEnd(state, for: sendResultAction.backendIdentifier) {
+                        backend.add(intermediateResult: sendResultAction.intermediateResult)
                     }
                     
                     return next(action)

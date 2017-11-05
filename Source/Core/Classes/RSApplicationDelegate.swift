@@ -133,11 +133,13 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         #if DEBUG
             return [
                 RSLoggingMiddleware.self,
-                RSSendResultToServerMiddleware.self
+                RSSendResultToServerMiddleware.self,
+                RSAnalyticsMiddleware.self
             ]
         #else
             return [
-                RSSendResultToServerMiddleware.self
+                RSSendResultToServerMiddleware.self,
+                RSAnalyticsMiddleware.self
             ]
         #endif
         
@@ -172,7 +174,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             stateManagerGenerators: self.stateManagerGenerators
         )
         
-        let middleware: [Middleware] = self.storeMiddleware.map { $0.getMiddleware(appDelegate: self) }
+        let middleware: [Middleware] = self.storeMiddleware.flatMap { $0.getMiddleware(appDelegate: self) }
         
         self.storeManager = RSStoreManager(
             initialState: self.persistentStoreSubscriber.loadState(),

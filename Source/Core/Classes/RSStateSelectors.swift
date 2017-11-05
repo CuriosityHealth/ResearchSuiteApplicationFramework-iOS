@@ -118,7 +118,7 @@ public class RSStateSelectors: NSObject {
         return state.isDismissing
     }
     
-    public static func presentedActivity(_ state: RSState) -> (UUID, String)? {
+    public static func presentedActivity(_ state: RSState) -> (UUID, String, Date)? {
         return state.presentedActivity
     }
     

@@ -9,5 +9,5 @@
 import ReSwift
 
 public protocol RSMiddlewareProvider {
-    static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware
+    static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware?
 }

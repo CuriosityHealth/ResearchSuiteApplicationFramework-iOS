@@ -29,7 +29,7 @@ public final class RSState: NSObject, StateType {
     public let activityQueue: [(UUID, String)]
     public let isPresenting: Bool
     public let isDismissing: Bool
-    public let presentedActivity: (UUID, String)?
+    public let presentedActivity: (UUID, String, Date)?
     public let isRouting: Bool
     public let currentRoute: RSRoute?
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
@@ -53,7 +53,7 @@ public final class RSState: NSObject, StateType {
                 activityQueue:[(UUID, String)] = [],
                 isPresenting: Bool = false,
                 isDismissing: Bool = false,
-                presentedActivity: (UUID, String)? = nil,
+                presentedActivity: (UUID, String, Date)? = nil,
                 isRouting: Bool = false,
                 currentRoute: RSRoute? = nil,
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
@@ -101,7 +101,7 @@ public final class RSState: NSObject, StateType {
         activityQueue: [(UUID, String)]? = nil,
         isPresenting: Bool? = nil,
         isDismissing: Bool? = nil,
-        presentedActivity: ((UUID, String)?)? = nil,
+        presentedActivity: ((UUID, String, Date)?)? = nil,
         isRouting: Bool? = nil,
         currentRoute: RSRoute?? = nil,
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
