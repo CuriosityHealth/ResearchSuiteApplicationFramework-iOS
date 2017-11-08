@@ -11,6 +11,7 @@ import ResearchSuiteResultsProcessor
 
 public protocol RSAnalyticsMiddlewareDelegate {
     func logActivity(activityID: String, uuid: UUID, startTime: Date, endTime: Date, completed: Bool)
+    func logNotificationInteraction(notificationID: String, timestamp: Date)
 }
 
 open class RSAnalyticsMiddleware: RSMiddlewareProvider {
@@ -31,6 +32,12 @@ open class RSAnalyticsMiddleware: RSMiddlewareProvider {
                             startTime: logActivityAction.startTime,
                             endTime: logActivityAction.endTime,
                             completed: logActivityAction.completed
+                        )
+                    }
+                    else if let logNotificationAction = action as? LogNotificationAction {
+                        analyticsDelegate.logNotificationInteraction(
+                            notificationID: logNotificationAction.notificationID,
+                            timestamp: logNotificationAction.date
                         )
                     }
                     return next(action)

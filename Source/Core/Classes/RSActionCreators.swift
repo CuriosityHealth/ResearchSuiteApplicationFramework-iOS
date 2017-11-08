@@ -481,5 +481,11 @@ public class RSActionCreators: NSObject {
             return CompleteConfiguration()
         }
     }
+    
+    static public func logNotificationInteraction(notificationID: String, date: Date) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return LogNotificationAction(notificationID: notificationID, date: date)
+        }
+    }
 
 }

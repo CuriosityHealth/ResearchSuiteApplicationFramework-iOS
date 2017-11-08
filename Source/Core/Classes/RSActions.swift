@@ -196,5 +196,10 @@ public struct LogActivityAction: Action {
     let completed: Bool
 }
 
+public struct LogNotificationAction: Action {
+    let notificationID: String
+    let date: Date
+}
+
 
 
