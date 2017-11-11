@@ -52,6 +52,7 @@ class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLay
         
     }
     
+    @objc
     open func handleRefresh(_ refreshControl: UIRefreshControl) {
         self.loadData(state: state)
         self.loadFinished()
