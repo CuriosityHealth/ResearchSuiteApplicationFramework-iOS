@@ -102,6 +102,30 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
         
     }
     
+    public func clearStateManager(completion: (Bool, Error?) -> ()) {
+        
+        self.memoryQueue.sync {
+            self.map = [:]
+            
+            let map = self.map
+            
+            self.fileQueue.sync {
+                do {
+                    try RSFileStateManager.saveMap(map: map, filePath: self.filePath, fileProtection: self.fileProtection)
+                    DispatchQueue.main.sync {
+                        completion(true, nil)
+                    }
+                } catch let error as NSError {
+                    print(error.localizedDescription)
+                    DispatchQueue.main.sync {
+                        completion(false, error)
+                    }
+                }
+            }
+        }
+        
+    }
+    
     public func setValueInState(value: NSSecureCoding?, forKey: String) {
         
         self.memoryQueue.sync {

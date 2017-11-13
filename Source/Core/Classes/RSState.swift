@@ -16,16 +16,31 @@ public final class RSState: NSObject, StateType {
 //    public let protectedState: [String: NSObject]
 //    public let unprotectedState: [String: NSObject]
     public let configurationCompleted: Bool
+    
+    //the actual state data
     public let applicationState: [String: NSObject]
+    //metadata defined in the state config file
     public let stateValueMap: [String: RSStateValue]
+    //mapping as to whether the application state value has been set
+    //controls whether we use default value
     public let stateValueHasBeenSet: [String: NSObject]
+    //metadata defined in the constants config file
+    //static after config
     public let constantsMap: [String: RSConstantValue]
+    //metadata defined in the constants config file
+    //static after config
     public let functionsMap: [String: RSFunctionValue]
+    //static after config
     public let measureMap: [String: RSMeasure]
+    //static after config
     public let activityMap: [String: RSActivity]
+    //static after config
     public let layoutMap: [String: RSLayout]
+    //static after config
     public let routeMap: [String: RSRoute]
+    //static after config
     public let routeIdentifiers: [String]
+    
     public let activityQueue: [(UUID, String)]
     public let isPresenting: Bool
     public let isDismissing: Bool

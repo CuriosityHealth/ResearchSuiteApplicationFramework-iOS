@@ -1,23 +1,22 @@
 //
-//  RSListLayout.swift
-//  Pods
+//  RSSettingsLayout.swift
+//  ResearchSuiteApplicationFramework
 //
-//  Created by James Kizer on 7/4/17.
-//
+//  Created by James Kizer on 11/13/17.
 //
 
 import UIKit
 import Gloss
 
-open class RSListLayout: RSLayout {
-    
+open class RSSettingsLayout: RSLayout {
+
     public let items: [RSListItem]
     public let itemMap: [String: RSListItem]
     
     required public init?(json: JSON) {
         
         guard let items: [JSON] = "items" <~~ json else {
-                return nil
+            return nil
         }
         
         self.items = items.flatMap { RSListItem(json: $0) }
@@ -30,5 +29,5 @@ open class RSListLayout: RSLayout {
         self.itemMap = itemMap
         super.init(json: json)
     }
-
+    
 }
