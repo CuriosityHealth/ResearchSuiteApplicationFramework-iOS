@@ -15,6 +15,7 @@ open class RSRoute: Gloss.Decodable, Equatable {
     public let identifier: String
     public let layout: String
     public let predicate: RSPredicate?
+    public let parent: String?
     
     required public init?(json: JSON) {
         
@@ -26,6 +27,7 @@ open class RSRoute: Gloss.Decodable, Equatable {
         self.identifier = identifier
         self.layout = layout
         self.predicate = "predicate" <~~ json
+        self.parent = "parent" <~~ json
     }
     
     public static func ==(lhs: RSRoute, rhs: RSRoute) -> Bool {

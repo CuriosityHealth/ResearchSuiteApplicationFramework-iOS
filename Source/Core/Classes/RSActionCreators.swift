@@ -420,26 +420,31 @@ public class RSActionCreators: NSObject {
             if currentRoute == nil ||
                 currentRoute!.identifier != route.identifier {
                 
+                //I HAVE NO IDEA HOW THIS WILL WORK FOR TAB BARS!!
+                
+                //we can either set the root layout, push a layout onto the stack, or pop the layout off
+                //if we are setting the root, the selected route will not have a parent and it will not be the parent of the current route
+                
+                //if we are to push a layout onto the stack, current route will be the parent of the selected route
+                
+                //if we are to pop a layout off the stack, the selected route will the the parent of the current route
+                
+                //here, check to see that if the route has a parent
+                //its parent is the current route
+                //NOTE: In the future, we can update this to remove the constraint
+                //however, this should be fine for now
+                
+                
                 let routeRequestAction = ChangeRouteRequest(route: route)
                 store.dispatch(routeRequestAction)
                 
-                guard let layoutVC = RSActionCreators.generateLayout(for: route, state: state, store: store, layoutManager: layoutManager) else {
-                    let routeRequestAction = ChangeRouteFailure(route: route)
-                    store.dispatch(routeRequestAction)
-                    return nil
-                }
-                
-                delegate.presentLayout(viewController: layoutVC, animated: currentRoute != nil, completion: { (completed) in
+                delegate.showRoute(route: route, state: state, store: store, completion: { (completed, layoutVC) in
                     
                     if completed {
                         let routeRequestAction = ChangeRouteSuccess(route: route)
                         store.dispatch(routeRequestAction)
-                        
-                        guard let lvc = layoutVC as? RSLayoutViewControllerProtocol else {
-                            return
-                        }
-                        
-                        lvc.layoutDidLoad()
+                        assert(layoutVC != nil)
+                        layoutVC?.layoutDidLoad()
                     }
                     else {
                         let routeRequestAction = ChangeRouteFailure(route: route)
@@ -447,7 +452,6 @@ public class RSActionCreators: NSObject {
                     }
                     
                 })
-                
             }
             
             return nil

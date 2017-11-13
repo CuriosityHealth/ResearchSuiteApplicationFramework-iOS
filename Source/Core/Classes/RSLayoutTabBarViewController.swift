@@ -8,6 +8,7 @@
 
 import UIKit
 import ReSwift
+import Gloss
 
 open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RSLayoutViewControllerProtocol, UITabBarControllerDelegate {
     
@@ -34,12 +35,34 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
         super.viewDidLoad()
         
         self.delegate = self
+        
+        self.navigationItem.title = self.layout.navTitle
+        if let rightButton = self.layout.navButtonRight {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
+        }
     }
     
     deinit {
         self.store.unsubscribe(self)
     }
 
+    open func processAction(action: JSON) {
+        RSActionManager.processAction(action: action, context: [:], store: self.store)
+    }
+    
+    @objc
+    func tappedRightBarButton() {
+        guard let button = self.layout.navButtonRight else {
+            return
+        }
+        
+        button.onTapActions.forEach { self.processAction(action: $0) }
+    }
+    
+    open func backTapped() {
+        self.layout.onBackActions.forEach { self.processAction(action: $0) }
+    }
+    
     open func computeVisibleLayoutItems() -> [String] {
         return self.tabLayout.items.filter { self.shouldShowItem(item: $0) }.map { $0.identifier }
     }

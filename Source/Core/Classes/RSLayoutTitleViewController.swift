@@ -11,11 +11,11 @@ import ReSwift
 import Gloss
 import ResearchSuiteExtensions
 
-class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
+open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
     var store: Store<RSState>!
     var titleLayout: RSTitleLayout!
-    var layout: RSLayout! {
+    open var layout: RSLayout! {
         return self.titleLayout
     }
     
@@ -23,7 +23,7 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutVi
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var button: RSBorderedButton!
     
-    override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
@@ -38,6 +38,10 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutVi
             self.button.isHidden = true
         }
         
+        self.navigationItem.title = self.layout.navTitle
+        if let rightButton = self.layout.navButtonRight {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
+        }
         
         self.store.subscribe(self)
         
@@ -66,6 +70,19 @@ class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutVi
     
     open func processAction(action: JSON) {
         RSActionManager.processAction(action: action, context: [:], store: self.store)
+    }
+    
+    @objc
+    func tappedRightBarButton() {
+        guard let button = self.layout.navButtonRight else {
+            return
+        }
+        
+        button.onTapActions.forEach { self.processAction(action: $0) }
+    }
+    
+    open func backTapped() {
+        self.layout.onBackActions.forEach { self.processAction(action: $0) }
     }
     
     @IBAction func tappedButton(_ sender: Any) {

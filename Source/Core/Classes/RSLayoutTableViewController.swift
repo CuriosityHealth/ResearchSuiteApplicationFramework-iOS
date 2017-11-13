@@ -10,22 +10,27 @@ import UIKit
 import ReSwift
 import Gloss
 
-class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
+open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
     var store: Store<RSState>!
     var state: RSState!
     var listLayout: RSListLayout!
-    var layout: RSLayout! {
+    open var layout: RSLayout! {
         return self.listLayout
     }
     
     var visibleLayoutItems: [RSListItem] = []
     
-    override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         
         //process on load actions
 //        self.layout.onLoadActions.forEach { self.processAction(action: $0) }
+        
+        self.navigationItem.title = self.layout.navTitle
+        if let rightButton = self.layout.navButtonRight {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
+        }
         
         self.store.subscribe(self)
 
@@ -34,6 +39,19 @@ class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLay
     
     deinit {
         self.store.unsubscribe(self)
+    }
+    
+    @objc
+    func tappedRightBarButton() {
+        guard let button = self.layout.navButtonRight else {
+            return
+        }
+        
+        button.onTapActions.forEach { self.processAction(action: $0) }
+    }
+    
+    open func backTapped() {
+        self.layout.onBackActions.forEach { self.processAction(action: $0) }
     }
     
     open func processAction(action: JSON) {
@@ -95,24 +113,24 @@ class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLay
         return self.visibleLayoutItems[index]
     }
 
-    override func didReceiveMemoryWarning() {
+    override open func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    override open func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return self.visibleLayoutItems.count
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "activity_cell", for: indexPath)
 
         guard let item = self.itemForIndexPath(indexPath: indexPath) else {

@@ -14,6 +14,9 @@ open class RSLayout: Gloss.Decodable {
     public let identifier: String
     public let type: String
     public let onLoadActions: [JSON]
+    public let navTitle: String?
+    public let navButtonRight: RSLayoutButton?
+    public let onBackActions: [JSON]
     public let element: JSON
     
     required public init?(json: JSON) {
@@ -26,6 +29,9 @@ open class RSLayout: Gloss.Decodable {
         self.identifier = identifier
         self.type = type
         self.onLoadActions = "onLoad" <~~ json ?? []
+        self.navTitle = "navTitle" <~~ json
+        self.navButtonRight = "navButtonRight" <~~ json
+        self.onBackActions = "onBack" <~~ json ?? []
         self.element = json
     }
     

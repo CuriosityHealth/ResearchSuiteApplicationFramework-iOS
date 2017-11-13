@@ -12,5 +12,6 @@ public protocol RSLayoutViewControllerProtocol {
     
     var layout: RSLayout! { get }
     func layoutDidLoad()
+    func backTapped()
 
 }

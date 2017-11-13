@@ -147,7 +147,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     open var stateManagerGenerators: [RSStateManagerGenerator.Type] {
         return [
-            RSFileStateManager.self
+            RSFileStateManager.self,
+            RSEphemeralStateManager.self
         ]
     }
     
