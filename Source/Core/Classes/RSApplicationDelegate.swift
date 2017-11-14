@@ -426,9 +426,15 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     private func resetPasscode() {
         
+        let state: RSState = self.store.state
+        guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
+            return
+        }
+        
         self.signOut{ (signedOut, error) in
+            passcodeViewController.presentingViewController?.dismiss(animated: false, completion: nil)
             // Dismiss the view controller unanimated
-            dismissPasscodeViewController(false)
+//            dismissPasscodeViewController(false)
         }
     }
     
