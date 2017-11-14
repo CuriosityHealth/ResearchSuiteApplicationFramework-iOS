@@ -349,6 +349,9 @@ public class RSReducer: NSObject {
             case _ as CompleteConfiguration:
                 return RSState.newState(fromState: state, configurationCompleted: true)
                 
+            case _ as SignOutRequest:
+                return RSState.newState(fromState: state, signOutRequested: true)
+                
             default:
                 return state
             }

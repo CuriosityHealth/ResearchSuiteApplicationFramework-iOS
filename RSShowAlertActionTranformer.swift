@@ -61,6 +61,8 @@ open class RSAlert: Gloss.Decodable {
     
 }
 
+
+//This is pretty hacky. We should probably use the state for this
 open class RSShowAlertActionTranformer: RSActionTransformer {
     
     open static func supportsType(type: String) -> Bool {

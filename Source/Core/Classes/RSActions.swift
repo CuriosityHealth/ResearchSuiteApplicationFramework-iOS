@@ -187,6 +187,10 @@ public struct DismissPasscodeFailure: Action {
     let passcodeViewController: ORKPasscodeViewController
 }
 
+public struct SignOutRequest: Action {
+    
+}
+
 //Analytics Stuff
 public struct LogActivityAction: Action {
     let activityID: String

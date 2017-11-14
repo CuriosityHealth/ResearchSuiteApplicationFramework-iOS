@@ -15,7 +15,7 @@ import Gloss
 import ResearchSuiteExtensions
 import ResearchKit
 
-open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscodeDelegate {
+open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscodeDelegate, StoreSubscriber {
     
     public var window: UIWindow?
     private var rootNavController: RSRoutingNavigationController?
@@ -128,7 +128,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSSetValueInStateActionTransformer.self,
             RSQueueActivityActionTransformer.self,
             RSResetStateManagerActionTransformer.self,
-            RSShowAlertActionTranformer.self
+            RSShowAlertActionTranformer.self,
+            RSSignOutActionTransformer.self
         ]
     }
     
@@ -165,6 +166,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         }
         
         return jsonArray.flatMap { RSStateManagerDescriptor(json: $0) }
+    }
+    
+    open func newState(state: RSState) {
+        
+        if state.signOutRequested {
+            self.signOut(completed: { (completed, error) in
+                
+            })
+        }
+        
     }
     
     open func signOut(completed: (Bool, Error?) -> Swift.Void ) {
@@ -211,13 +222,19 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         
         //remove all subscribers
         self.storeManager.unsubscribeAll()
-        self.storeManager = nil
-        
-        self.applicationReset { (completed, error) in
-            
-            self.finishApplicationReset()
-            
+        //Even though we've unsubscribed, we're going to dispatch
+        //the SignOut action to all the listeners before the action was submitted
+        //allow the remaining subscribers to continue processing
+        DispatchQueue.main.async {
+            self.storeManager = nil
+            self.applicationReset { (completed, error) in
+                
+                self.finishApplicationReset()
+                
+            }
         }
+        
+        
         
     }
     
@@ -244,6 +261,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             initialState: self.persistentStoreSubscriber.loadState(),
             middleware: middleware
         )
+        
+        self.store.subscribe(self)
         
         self.weakStore = store
         self.printRefCount()

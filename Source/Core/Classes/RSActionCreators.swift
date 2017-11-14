@@ -491,5 +491,9 @@ public class RSActionCreators: NSObject {
             return LogNotificationAction(notificationID: notificationID, date: date)
         }
     }
+    
+    static public func signOut() -> Action? {
+        return SignOutRequest()
+    }
 
 }

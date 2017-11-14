@@ -54,6 +54,9 @@ public final class RSState: NSObject, StateType {
     public let passcodeViewController: ORKPasscodeViewController?
     public let isDismissingPasscode: Bool
     
+    //sign out
+    public let signOutRequested: Bool
+    
     public init(configurationCompleted: Bool = false,
                 applicationState: [String: NSObject] = [:],
                 stateValueMap: [String: RSStateValue] = [:],
@@ -74,7 +77,8 @@ public final class RSState: NSObject, StateType {
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
                 isPresentingPasscode: Bool = false,
                 passcodeViewController: ORKPasscodeViewController? = nil,
-                isDismissingPasscode: Bool = false
+                isDismissingPasscode: Bool = false,
+                signOutRequested: Bool = false
         ) {
         
         self.configurationCompleted = configurationCompleted
@@ -98,6 +102,7 @@ public final class RSState: NSObject, StateType {
         self.isPresentingPasscode = isPresentingPasscode
         self.passcodeViewController = passcodeViewController
         self.isDismissingPasscode = isDismissingPasscode
+        self.signOutRequested = signOutRequested
     }
     
     static func newState(
@@ -122,7 +127,8 @@ public final class RSState: NSObject, StateType {
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
         isPresentingPasscode: Bool? = nil,
         passcodeViewController: ORKPasscodeViewController?? = nil,
-        isDismissingPasscode: Bool? = nil
+        isDismissingPasscode: Bool? = nil,
+        signOutRequested: Bool? = nil
         ) -> RSState {
         
         return RSState(
@@ -146,7 +152,8 @@ public final class RSState: NSObject, StateType {
             resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap,
             isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
-            isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode    
+            isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode,
+            signOutRequested: signOutRequested ?? fromState.signOutRequested
         )
     }
     
