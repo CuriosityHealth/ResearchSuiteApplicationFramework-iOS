@@ -52,7 +52,7 @@ open class RSLayoutSettingsViewControllerTableViewController: UITableViewControl
     
     open func processAction(action: JSON) {
         if let store = self.store {
-            RSActionManager.processAction(action: action, context: [:], store: store)
+            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
         }
     }
     

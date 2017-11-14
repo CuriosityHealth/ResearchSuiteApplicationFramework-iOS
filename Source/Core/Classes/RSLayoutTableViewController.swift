@@ -48,11 +48,6 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         }
         
         button.onTapActions.forEach { self.processAction(action: $0) }
-        
-        RSApplicationDelegate.appDelegate.signOut { (completed, error) in
-            
-        }
-        
     }
     
     open func backTapped() {
@@ -61,7 +56,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     
     open func processAction(action: JSON) {
         if let store = self.store {
-            RSActionManager.processAction(action: action, context: [:], store: store)
+            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
         }
     }
     
