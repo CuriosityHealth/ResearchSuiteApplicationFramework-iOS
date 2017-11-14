@@ -49,10 +49,10 @@ open class RSEphemeralStateManager: RSStateManagerProtocol, RSStateManagerGenera
         }
     }
     
-    public func clearStateManager(completion: (Bool, Error?) -> ()) {
+    public func clearStateManager(completion: @escaping (Bool, Error?) -> ()) {
         self.memoryQueue.sync {
             self.map = [:]
-            DispatchQueue.main.sync {
+            DispatchQueue.main.async {
                 completion(true, nil)
             }
         }

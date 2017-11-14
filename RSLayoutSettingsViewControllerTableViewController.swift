@@ -11,7 +11,7 @@ import Gloss
 
 open class RSLayoutSettingsViewControllerTableViewController: UITableViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
-    var store: Store<RSState>!
+    weak var store: Store<RSState>?
     var state: RSState!
     var settingsLayout: RSSettingsLayout!
     open var layout: RSLayout! {
@@ -28,13 +28,13 @@ open class RSLayoutSettingsViewControllerTableViewController: UITableViewControl
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
         }
         
-        self.store.subscribe(self)
+        self.store?.subscribe(self)
         
         self.refreshControl?.addTarget(self, action: #selector(RSLayoutTableViewController.handleRefresh(_:)), for: .valueChanged)
     }
     
     deinit {
-        self.store.unsubscribe(self)
+        self.store?.unsubscribe(self)
     }
     
     @objc
@@ -51,7 +51,9 @@ open class RSLayoutSettingsViewControllerTableViewController: UITableViewControl
     }
     
     open func processAction(action: JSON) {
-        RSActionManager.processAction(action: action, context: [:], store: self.store)
+        if let store = self.store {
+            RSActionManager.processAction(action: action, context: [:], store: store)
+        }
     }
     
 //    open func computeVisibleLayoutItems() -> [String] {
@@ -156,7 +158,9 @@ open class RSLayoutSettingsViewControllerTableViewController: UITableViewControl
     open func layoutDidLoad() {
         
         self.layout.onLoadActions.forEach({ (action) in
-            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: self.store)
+            if let store = self.store {
+                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            }
         })
         
     }

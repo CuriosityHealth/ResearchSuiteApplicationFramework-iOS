@@ -18,7 +18,7 @@ import ResearchKit
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscodeDelegate {
     
     public var window: UIWindow?
-    private var rootNavController: RSRoutingNavigationController!
+    private var rootNavController: RSRoutingNavigationController?
     
     public var activityManager: RSActivityManager!
     
@@ -41,6 +41,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     public var store: Store<RSState>! {
         return storeManager.store
     }
+    
+    weak var weakStore: Store<RSState>?
     
     open var stepGeneratorServices: [RSTBStepGenerator] {
         return [
@@ -165,22 +167,85 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     }
     
     open func signOut(completed: (Bool, Error?) -> Swift.Void ) {
+        self.startApplicationReset()
         completed(true, nil)
     }
     
-    open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
+    open func applicationReset(completion: @escaping (Bool, Error?) -> Void) {
+        completion(true, nil)
+    }
+    
+    private func finishApplicationReset() {
+        
+        //clear persistent store subscriber
+        self.persistentStoreSubscriber.clearState { (completd, error) in
+            
+            self.persistentStoreSubscriber = nil
+            
+            self.taskBuilderStateHelper = nil
+            self.taskBuilder = nil
+            self.activityManager = nil
+            self.layoutManager = nil
+            
+//            self.window?.rootViewController = UIViewController()
+//            self.window?.makeKeyAndVisible()
+//
+//            self.rootNavController = nil
+            
+            self.openURLManager = nil
+            
+            
+            //potentially clear the documents directory as well
+            RSKeychainHelper.clearKeychain()
+            
+//            self.perform(#selector(self.printRefCount), with: nil, afterDelay: 5.0)
+            
+            self.initializeApplication(fromReset: true)
+            
+        }
+        
+    }
+    
+    private func startApplicationReset() {
+        
+        //remove all subscribers
+        self.storeManager.unsubscribeAll()
+        self.storeManager = nil
+        
+        self.applicationReset { (completed, error) in
+            
+            self.finishApplicationReset()
+            
+        }
+        
+    }
+    
+    @objc
+    public func printRefCount() {
+        if self.weakStore != nil {
+            print("store ref count: \(CFGetRetainCount(self.weakStore))")
+        }
+        else {
+            print("store ref count: 0")
+        }
+    }
+    
+    open func initializeApplication(fromReset: Bool) -> Bool {
+        
         self.persistentStoreSubscriber = RSStatePersistentStoreSubscriber(
             stateManagerDescriptors: self.stateManagerDescriptors,
             stateManagerGenerators: self.stateManagerGenerators
         )
         
         let middleware: [Middleware] = self.storeMiddleware.flatMap { $0.getMiddleware(appDelegate: self) }
-        
+
         self.storeManager = RSStoreManager(
             initialState: self.persistentStoreSubscriber.loadState(),
             middleware: middleware
         )
+        
+        self.weakStore = store
+        self.printRefCount()
         
         self.taskBuilderStateHelper = RSTaskBuilderStateHelper(store: self.store)
         self.taskBuilder = RSTBTaskBuilder(
@@ -198,19 +263,27 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             answerFormatGeneratorServices: self.answerFormatGeneratorServices
         )
         
+        
+        self.printRefCount()
+        
         self.store.subscribe(self.persistentStoreSubscriber)
         
         self.activityManager = RSActivityManager(stepTreeBuilder: self.stepTreeBuilder)
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
         
+        
+        self.printRefCount()
+        
         //set root view controller
         self.rootNavController = RSRoutingNavigationController()
-        self.rootNavController.store = self.store
-        self.rootNavController.layoutManager = self.layoutManager
-        self.rootNavController.activityManager = self.activityManager
-        self.rootNavController.viewControllers = [UIViewController()]
+        self.rootNavController?.store = self.store
+        self.rootNavController?.layoutManager = self.layoutManager
+        self.rootNavController?.activityManager = self.activityManager
+        self.rootNavController?.viewControllers = [UIViewController()]
         
-        self.window?.rootViewController = self.rootNavController
+        self.transition(toRootViewController: self.rootNavController!, animated: fromReset)
+        
+        self.printRefCount()
         
         //function bindings need to go first in case they are used by routes
         let registerFunctionAction = RSActionCreators.registerFunction(identifier: "now") {
@@ -221,7 +294,22 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         
         self.openURLManager = RSOpenURLManager(openURLDelegates: self.openURLDelegates)
         
+        
+        self.printRefCount()
+
         return true
+    }
+    
+    open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        if UserDefaults.standard.object(forKey: "FirstRun") == nil {
+            UserDefaults.standard.set("1stRun", forKey: "FirstRun")
+            UserDefaults.standard.synchronize()
+            
+            RSKeychainHelper.clearKeychain()
+        }
+        
+        return self.initializeApplication(fromReset: false)
     }
     
     //note that this is invoked after application didFinishLauchingWithOptions
@@ -276,6 +364,27 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         return topViewController
     }
     
+    open func transition(toRootViewController: UIViewController, animated: Bool) {
+        guard let window = self.window else { return }
+        if (animated) {
+            let snapshot:UIView = (self.window?.snapshotView(afterScreenUpdates: true))!
+            toRootViewController.view.addSubview(snapshot);
+            
+            self.window?.rootViewController = toRootViewController;
+            
+            UIView.animate(withDuration: 0.3, animations: {() in
+                snapshot.layer.opacity = 0;
+            }, completion: {
+                (value: Bool) in
+                snapshot.removeFromSuperview()
+            })
+        }
+        else {
+            window.rootViewController = toRootViewController
+        }
+    }
+    
+    
     public func lockScreen() {
         
         let state: RSState = self.store.state
@@ -293,7 +402,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         let uuid = UUID()
         self.store.dispatch(PresentPasscodeRequest(uuid: uuid, passcodeViewController: vc))
         
-        window?.makeKeyAndVisible()
+        self.window?.makeKeyAndVisible()
         
         presentViewController(vc, animated: false, completion: {
             self.store.dispatch(PresentPasscodeSuccess(uuid: uuid, passcodeViewController: vc))

@@ -12,7 +12,7 @@ import Gloss
 
 open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
-    var store: Store<RSState>!
+    weak var store: Store<RSState>?
     var state: RSState!
     var listLayout: RSListLayout!
     open var layout: RSLayout! {
@@ -32,13 +32,13 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
         }
         
-        self.store.subscribe(self)
+        self.store?.subscribe(self)
 
         self.refreshControl?.addTarget(self, action: #selector(RSLayoutTableViewController.handleRefresh(_:)), for: .valueChanged)
     }
     
     deinit {
-        self.store.unsubscribe(self)
+        self.store?.unsubscribe(self)
     }
     
     @objc
@@ -51,8 +51,6 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         
         RSApplicationDelegate.appDelegate.signOut { (completed, error) in
             
-            
-            
         }
         
     }
@@ -62,7 +60,9 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     }
     
     open func processAction(action: JSON) {
-        RSActionManager.processAction(action: action, context: [:], store: self.store)
+        if let store = self.store {
+            RSActionManager.processAction(action: action, context: [:], store: store)
+        }
     }
     
     open func computeVisibleLayoutItems() -> [String] {
@@ -70,11 +70,8 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     }
     
     open func newState(state: RSState) {
-        
         self.state = state
         self.loadData(state: state)
-        
-        
     }
     
     @objc
@@ -164,7 +161,9 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     open func layoutDidLoad() {
         
         self.layout.onLoadActions.forEach({ (action) in
-            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: self.store)
+            if let store = self.store {
+                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            }
         })
         
     }

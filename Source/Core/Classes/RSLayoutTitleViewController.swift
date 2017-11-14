@@ -13,7 +13,7 @@ import ResearchSuiteExtensions
 
 open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
-    var store: Store<RSState>!
+    weak var store: Store<RSState>?
     var titleLayout: RSTitleLayout!
     open var layout: RSLayout! {
         return self.titleLayout
@@ -43,12 +43,12 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLay
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
         }
         
-        self.store.subscribe(self)
+        self.store?.subscribe(self)
         
     }
     
     deinit {
-        self.store.unsubscribe(self)
+        self.store?.unsubscribe(self)
     }
     
     open func newState(state: RSState) {
@@ -69,7 +69,9 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLay
     }
     
     open func processAction(action: JSON) {
-        RSActionManager.processAction(action: action, context: [:], store: self.store)
+        if let store = self.store {
+            RSActionManager.processAction(action: action, context: [:], store: store)
+        }
     }
     
     @objc
@@ -98,7 +100,9 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSLay
     open func layoutDidLoad() {
         
         self.layout.onLoadActions.forEach({ (action) in
-            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: self.store)
+            if let store = self.store {
+                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            }
         })
         
     }

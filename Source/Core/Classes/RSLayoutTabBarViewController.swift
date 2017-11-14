@@ -17,9 +17,9 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
     //from instantiation. We moved the subscribe call method to the store set listener
     //We use layout and layoutManager in the newState method
     //therefore, layout and layoutManager MUST be set prior to setting store
-    var store: Store<RSState>! {
+    weak var store: Store<RSState>? {
         didSet {
-            store.subscribe(self)
+            store?.subscribe(self)
         }
     }
     var state: RSState!
@@ -43,11 +43,13 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
     }
     
     deinit {
-        self.store.unsubscribe(self)
+        self.store?.unsubscribe(self)
     }
 
     open func processAction(action: JSON) {
-        RSActionManager.processAction(action: action, context: [:], store: self.store)
+        if let store = self.store {
+            RSActionManager.processAction(action: action, context: [:], store: store)
+        }
     }
     
     @objc
@@ -93,7 +95,8 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
             let vcs: [UIViewController] = self.visibleLayoutItems.flatMap({ (tabItem) -> UIViewController? in
                 
                 guard let layout = RSStateSelectors.layout(state, for: tabItem.identifier),
-                    let vc = self.layoutManager.generateLayout(layout: layout, store: self.store) else {
+                    let store = self.store,
+                    let vc = self.layoutManager.generateLayout(layout: layout, store: store) else {
                         return nil
                 }
                 
@@ -125,7 +128,9 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
                     .forEach { pair in
                         pair.1.onLoadActions.forEach({ (action) in
                             debugPrint(action)
-                            RSActionManager.processAction(action: action, context: ["layoutViewController":pair.0], store: self.store)
+                            if let store = self.store {
+                                RSActionManager.processAction(action: action, context: ["layoutViewController":pair.0], store: store)
+                            }
                         })
                         
                 }
@@ -137,16 +142,19 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
     
     open func generateLayout(for layoutIdentifier: String, state: RSState) -> UIViewController? {
         
-        guard let layout = RSStateSelectors.layout(state, for: layoutIdentifier) else {
+        guard let layout = RSStateSelectors.layout(state, for: layoutIdentifier),
+            let store = self.store else {
             return nil
         }
-        return self.layoutManager.generateLayout(layout: layout, store: self.store)
+        return self.layoutManager.generateLayout(layout: layout, store: store)
     }
     
     open func layoutDidLoad() {
         
         self.layout.onLoadActions.forEach({ (action) in
-            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: self.store)
+            if let store = self.store {
+                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            }
         })
         
         guard let vcs = self.viewControllers?.flatMap({ (vc) -> RSLayoutViewControllerProtocol? in
@@ -172,7 +180,9 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
         }
         
         tabItem.onTapActions.forEach({ (action) in
-            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: self.store)
+            if let store = self.store {
+                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            }
         })
     }
 

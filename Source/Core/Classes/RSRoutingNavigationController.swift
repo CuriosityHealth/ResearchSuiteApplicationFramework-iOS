@@ -18,7 +18,7 @@ public protocol RSRouterDelegate: class {
 open class RSRoutingNavigationController: UINavigationController, StoreSubscriber, RSRouterDelegate, UINavigationControllerDelegate, UINavigationBarDelegate {
     
     
-    var store: Store<RSState>!
+    weak var store: Store<RSState>?
     var layoutManager: RSLayoutManager!
     var activityManager: RSActivityManager!
     
@@ -32,11 +32,11 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
 
         self.interactivePopGestureRecognizer?.isEnabled = false
         
-        self.store.subscribe(self)
+        self.store?.subscribe(self)
     }
     
     deinit {
-        self.store.unsubscribe(self)
+        self.store?.unsubscribe(self)
     }
     
     open func setContentHidden(contentHidden: Bool) {
@@ -197,7 +197,7 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
         
         if let firstRoute = firstRouteOpt,
             RSStateSelectors.shouldRoute(state, route: firstRoute) {
-            self.store.dispatch(RSActionCreators.setRoute(route: firstRoute, layoutManager: self.layoutManager, delegate: self))
+            self.store?.dispatch(RSActionCreators.setRoute(route: firstRoute, layoutManager: self.layoutManager, delegate: self))
             return
         }
             
@@ -207,7 +207,7 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
         }
             //otherwise, check to see if there is an activity to present
         if RSStateSelectors.shouldPresent(state) {
-            self.store.dispatch(RSActionCreators.presentActivity(on: self, activityManager: self.activityManager))
+            self.store?.dispatch(RSActionCreators.presentActivity(on: self, activityManager: self.activityManager))
         }
         
         
@@ -216,10 +216,11 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
     
     open func generateLayout(for route: RSRoute, state: RSState) -> UIViewController? {
         
-        guard let layout = RSStateSelectors.layout(state, for: route.layout) else {
+        guard let layout = RSStateSelectors.layout(state, for: route.layout),
+            let store = self.store else {
             return nil
         }
-        return self.layoutManager.generateLayout(layout: layout, store: self.store)
+        return self.layoutManager.generateLayout(layout: layout, store: store)
     }
 
 }

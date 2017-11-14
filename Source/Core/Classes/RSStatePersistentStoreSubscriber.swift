@@ -14,8 +14,10 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
     
     //note that is ok FOR NOW,
     //but this should be managed by the individual state manager
-    static let kStateValueHasBeenSet: String = "StateValueHasBeenSet"
+    static let kStateValueHasBeenSet: String = "RSStatePersistentStoreSubscriber.StateValueHasBeenSet"
     let stateValueHasBeenSet: RSPersistedValueMap
+    let stateValueHasBeenSetStorageManager: RSFileStateManager
+    
     
     //we need to have one persistent value map for each state manager
     //and one for state value has been set metadata
@@ -29,6 +31,7 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
 //    }
     
     let stateManagerMap: [String: RSPersistedValueMap]
+    let stateManagers: [RSStateManagerProtocol]
     
     static func generateStateManager(
         stateManagerDescriptor: RSStateManagerDescriptor,
@@ -54,28 +57,30 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
     ) {
         
         var stateManagerMap: [String: RSPersistedValueMap] = [:]
+        var stateManagers: [RSStateManagerProtocol] = []
         
         stateManagerDescriptors.forEach { descriptor in
             
             if let stateManager = RSStatePersistentStoreSubscriber.generateStateManager(
                 stateManagerDescriptor: descriptor,
                 stateManagerGenerators: stateManagerGenerators) {
+                stateManagers.append(stateManager)
                 let persistedValueMap = RSPersistedValueMap.init(key: descriptor.identifier, stateManager: stateManager)
                 stateManagerMap[descriptor.identifier] = persistedValueMap
             }
         }
         
         self.stateManagerMap = stateManagerMap
-        let unprotectedStorageManager =  RSFileStateManager(
-            filePath: "unprotected_state",
+        self.stateManagers = stateManagers
+        self.stateValueHasBeenSetStorageManager =  RSFileStateManager(
+            filePath: RSStatePersistentStoreSubscriber.kStateValueHasBeenSet,
             fileProtection: Data.WritingOptions.noFileProtection,
             decodingClasses: [NSDictionary.self, NSArray.self, NSNumber.self]
         )
         
-        self.stateValueHasBeenSet = RSPersistedValueMap(key: RSStatePersistentStoreSubscriber.kStateValueHasBeenSet, stateManager: unprotectedStorageManager)
+        self.stateValueHasBeenSet = RSPersistedValueMap(key: RSStatePersistentStoreSubscriber.kStateValueHasBeenSet, stateManager: self.stateValueHasBeenSetStorageManager)
         
     }
-    
     
     public func newState(state: RSState) {
         
@@ -127,6 +132,21 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
             applicationState: mergedMap,
             stateValueHasBeenSet: self.stateValueHasBeenSet.get()
         )
+    }
+    
+    public func clearState(completion: @escaping (Bool, Error?) -> ()) {
+        
+        self.stateManagerMap.values.forEach { $0.clear() }
+        self.stateValueHasBeenSet.clear()
+
+        let nestedClosure: (Bool, Error?) -> () = self.stateManagers.reduce(completion) { (accCompletion, stateManager) -> ((Bool, Error?) -> ()) in
+            return { (completed, error) in
+                stateManager.clearStateManager(completion: accCompletion)
+            }
+        }
+        
+        self.stateValueHasBeenSetStorageManager.clearStateManager(completion: nestedClosure)
+
     }
     
     

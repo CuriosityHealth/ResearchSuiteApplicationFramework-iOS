@@ -11,14 +11,14 @@ import ReSwift
 
 public class RSStoreManager: NSObject {
     
-    let store: Store<RSState>
+    let store: RSStore
     
     public init(
         initialState: RSState?,
         middleware: [Middleware]
     ) {
         
-        self.store = Store<RSState>(
+        self.store = RSStore(
             reducer: RSReducer.reducer,
             state: initialState,
             middleware: middleware
@@ -30,6 +30,10 @@ public class RSStoreManager: NSObject {
     
     deinit {
         debugPrint("\(self) deiniting")
+    }
+    
+    public func unsubscribeAll() {
+        self.store.unsubscribeAll()
     }
 
 }

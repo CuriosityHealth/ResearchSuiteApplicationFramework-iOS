@@ -12,5 +12,5 @@ import Gloss
 public protocol RSStateManagerProtocol {
     func setValueInState(value: NSSecureCoding?, forKey: String)
     func valueInState(forKey: String) -> NSSecureCoding?
-    func clearStateManager(completion: (Bool, Error?) -> ())
+    func clearStateManager(completion: @escaping (Bool, Error?) -> ())
 }

@@ -102,7 +102,7 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
         
     }
     
-    public func clearStateManager(completion: (Bool, Error?) -> ()) {
+    public func clearStateManager(completion: @escaping (Bool, Error?) -> ()) {
         
         self.memoryQueue.sync {
             self.map = [:]
@@ -111,13 +111,15 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
             
             self.fileQueue.sync {
                 do {
+                    //overwrite file, then delete it
                     try RSFileStateManager.saveMap(map: map, filePath: self.filePath, fileProtection: self.fileProtection)
-                    DispatchQueue.main.sync {
+                    try FileManager.default.removeItem(atPath: filePath)
+                    DispatchQueue.main.async {
                         completion(true, nil)
                     }
                 } catch let error as NSError {
                     print(error.localizedDescription)
-                    DispatchQueue.main.sync {
+                    DispatchQueue.main.async {
                         completion(false, error)
                     }
                 }
