@@ -19,7 +19,8 @@ open class RSValueManager: NSObject {
         RSFunctionValueTransformer.self,
         RSStepTreeResultTransformValueTransformer.self,
         RSStateValueTransformer.self,
-        RSSpecialValueTransformer.self
+        RSSpecialValueTransformer.self,
+        RSLiteralValueTransformer.self
     ]
     
     //generate values

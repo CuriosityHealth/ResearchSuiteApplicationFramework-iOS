@@ -128,14 +128,36 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         // #warning Incomplete implementation, return the number of rows
         return self.visibleLayoutItems.count
     }
+    
+    func generateString(key: String, element: JSON) -> String? {
+        
+        if let string: String = key <~~ element {
+            return string
+        }
+        else if let json: JSON = key <~~ element,
+            let valueConvertible = RSValueManager.processValue(jsonObject: json, state: self.state, context: [:]) {
+            return valueConvertible.evaluate() as? String
+        }
+        
+        return nil
+    }
 
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "activity_cell", for: indexPath)
-
+        
         guard let item = self.itemForIndexPath(indexPath: indexPath) else {
-            return cell
+            return tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
         }
-        cell.textLabel?.text = item.title
+        
+        var cell: UITableViewCell!
+        if item.onTapActions.count > 0 {
+            cell = tableView.dequeueReusableCell(withIdentifier: "activity_cell", for: indexPath)
+        }
+        else {
+            cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
+        }
+
+        cell.textLabel?.text = self.generateString(key: "title", element: item.element)
+        cell.detailTextLabel?.text = self.generateString(key: "text", element: item.element)
 
         return cell
     }
