@@ -18,6 +18,7 @@ open class RSSetValueInStateActionTransformer: RSActionTransformer {
     //this return a closure, of which state and store are injected
     open static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
+        //TODO: at some point we want to add in a new type of setValueInState where multiple values can be updated atomicly
         guard let valueJSON: JSON = "value" <~~ jsonObject,
             let identifier: String = "identifier" <~~ jsonObject else {
             return nil

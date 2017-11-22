@@ -129,7 +129,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSQueueActivityActionTransformer.self,
             RSResetStateManagerActionTransformer.self,
             RSShowAlertActionTranformer.self,
-            RSSignOutActionTransformer.self
+            RSSignOutActionTransformer.self,
+            RSGroupActionTransformer.self
         ]
     }
     
