@@ -49,6 +49,13 @@ public final class RSState: NSObject, StateType {
     public let currentRoute: RSRoute?
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
+    //notifications
+    public let pendingNotificationIdentifiers: [String]?
+    public let isFetchingNotificationIdentifiers: Bool
+    public let lastFetchTime: Date?
+    //static after config
+    public let notificationHandlers: [RSNotificationHandler]
+    
     //passcode stuff
     public let isPresentingPasscode: Bool
     public let passcodeViewController: ORKPasscodeViewController?
@@ -75,6 +82,10 @@ public final class RSState: NSObject, StateType {
                 isRouting: Bool = false,
                 currentRoute: RSRoute? = nil,
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
+                pendingNotificationIdentifiers: [String]? = nil,
+                isFetchingNotificationIdentifiers: Bool = false,
+                lastFetchTime: Date? = nil,
+                notificationHandlers: [RSNotificationHandler] = [],
                 isPresentingPasscode: Bool = false,
                 passcodeViewController: ORKPasscodeViewController? = nil,
                 isDismissingPasscode: Bool = false,
@@ -99,6 +110,10 @@ public final class RSState: NSObject, StateType {
         self.isRouting = isRouting
         self.currentRoute = currentRoute
         self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
+        self.pendingNotificationIdentifiers = pendingNotificationIdentifiers
+        self.isFetchingNotificationIdentifiers = isFetchingNotificationIdentifiers
+        self.lastFetchTime = lastFetchTime
+        self.notificationHandlers = notificationHandlers
         self.isPresentingPasscode = isPresentingPasscode
         self.passcodeViewController = passcodeViewController
         self.isDismissingPasscode = isDismissingPasscode
@@ -125,6 +140,10 @@ public final class RSState: NSObject, StateType {
         isRouting: Bool? = nil,
         currentRoute: RSRoute?? = nil,
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
+        pendingNotificationIdentifiers: ([String]?)? = nil,
+        isFetchingNotificationIdentifiers: Bool? = nil,
+        lastFetchTime: Date?? = nil,
+        notificationHandlers: [RSNotificationHandler]? = nil,
         isPresentingPasscode: Bool? = nil,
         passcodeViewController: ORKPasscodeViewController?? = nil,
         isDismissingPasscode: Bool? = nil,
@@ -150,6 +169,10 @@ public final class RSState: NSObject, StateType {
             isRouting: isRouting ?? fromState.isRouting,
             currentRoute: currentRoute ?? fromState.currentRoute,
             resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap,
+            pendingNotificationIdentifiers: pendingNotificationIdentifiers ?? fromState.pendingNotificationIdentifiers,
+            isFetchingNotificationIdentifiers: isFetchingNotificationIdentifiers ?? fromState.isFetchingNotificationIdentifiers,
+            lastFetchTime: lastFetchTime ?? fromState.lastFetchTime,
+            notificationHandlers: notificationHandlers ?? fromState.notificationHandlers,
             isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
             isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode,
@@ -168,7 +191,8 @@ public final class RSState: NSObject, StateType {
 //            "\n\tconstants: \(self.constantsMap)" +
             "\n\tactivityQueue: \(self.activityQueue)" +
         "\n\tpresentedActivity: \(self.presentedActivity)" +
-        "\n\tpresentedPasscode: \(self.passcodeViewController)"
+        "\n\tpresentedPasscode: \(self.passcodeViewController)" +
+        "\n\tpendingNotificationIdentifiers: \(self.pendingNotificationIdentifiers?.sorted())"
         
     }
     

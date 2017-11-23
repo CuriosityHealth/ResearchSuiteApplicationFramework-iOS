@@ -194,5 +194,21 @@ public class RSStateSelectors: NSObject {
     public static func passcodeViewController(_ state: RSState) -> ORKPasscodeViewController? {
         return state.passcodeViewController
     }
+    
+    public static func isFetchingNotificationIdentifiers(_ state: RSState) -> Bool {
+        return state.isFetchingNotificationIdentifiers
+    }
+    
+    public static func pendingNotificationIdentifiers(_ state: RSState) -> [String]? {
+        return state.pendingNotificationIdentifiers
+    }
+    
+    public static func lastFetchTime(_ state: RSState) -> Date? {
+        return state.lastFetchTime
+    }
+    
+    public static func notificationHandlers(_ state: RSState) -> [RSNotificationHandler] {
+        return state.notificationHandlers
+    }
 
 }

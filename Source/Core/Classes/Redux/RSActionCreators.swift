@@ -11,6 +11,7 @@ import ReSwift
 import Gloss
 import ResearchKit
 import ResearchSuiteResultsProcessor
+import UserNotifications
 
 public class RSActionCreators: NSObject {
     
@@ -496,4 +497,45 @@ public class RSActionCreators: NSObject {
         return SignOutRequest()
     }
 
+    
+    //Notifications
+    public static func fetchPendingNotificationIdentifiers() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return { state, store in
+            
+            //ignore if is fetching
+            guard !RSStateSelectors.isFetchingNotificationIdentifiers(state) else {
+                return nil
+            }
+            
+            let fetchRequestAction = FetchPendingNotificationIdentifiersRequest()
+            store.dispatch(fetchRequestAction)
+            
+            UNUserNotificationCenter.current().getPendingNotificationRequests { (pendingRequests) in
+                
+                let notificationIdentifiers = pendingRequests
+                    .map { $0.identifier }
+                
+                let fetchSuccessAction = FetchPendingNotificationIdentifiersSuccess(pendingNotificationIdentifiers: notificationIdentifiers, fetchTime: Date())
+                DispatchQueue.main.async {
+                    store.dispatch(fetchSuccessAction)
+                }
+            }
+
+            return nil
+        }
+    }
+
+    public static func addNotificationHandlersFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            selector: { "handlers" <~~ $0 },
+            flatMapFunc: { RSNotificationHandler(json: $0) },
+            mapFunc: { AddNotificationHandlerAction(notificationHandler: $0) }
+        )
+        
+    }
+    
 }

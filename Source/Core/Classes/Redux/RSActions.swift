@@ -191,6 +191,24 @@ public struct SignOutRequest: Action {
     
 }
 
+//Notifications
+public struct FetchPendingNotificationIdentifiersRequest: Action {
+    
+}
+
+public struct FetchPendingNotificationIdentifiersSuccess: Action {
+    let pendingNotificationIdentifiers: [String]
+    let fetchTime: Date
+}
+
+public struct FetchPendingNotificationIdentifiersFailure: Action {
+
+}
+
+public struct AddNotificationHandlerAction: Action {
+    let notificationHandler: RSNotificationHandler
+}
+
 //Analytics Stuff
 public struct LogActivityAction: Action {
     let activityID: String
@@ -204,6 +222,8 @@ public struct LogNotificationAction: Action {
     let notificationID: String
     let date: Date
 }
+
+
 
 
 

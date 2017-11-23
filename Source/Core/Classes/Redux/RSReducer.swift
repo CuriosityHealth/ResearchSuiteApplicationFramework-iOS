@@ -20,7 +20,8 @@ public class RSReducer: NSObject {
         RouteReducer(),
         PresentationReducer(),
         ResultsProcessorReducer(),
-        AppConfigurationReducer()
+        AppConfigurationReducer(),
+        NotificationReducer()
     ])
     
     
@@ -351,6 +352,34 @@ public class RSReducer: NSObject {
                 
             case _ as SignOutRequest:
                 return RSState.newState(fromState: state, signOutRequested: true)
+                
+            default:
+                return state
+            }
+            
+        }
+    }
+    
+    final class NotificationReducer: Reducer {
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+            case _ as FetchPendingNotificationIdentifiersRequest:
+                return RSState.newState(fromState: state, isFetchingNotificationIdentifiers: true)
+                
+            case let successAction as FetchPendingNotificationIdentifiersSuccess:
+                return RSState.newState(fromState: state, pendingNotificationIdentifiers: successAction.pendingNotificationIdentifiers, isFetchingNotificationIdentifiers: false, lastFetchTime: successAction.fetchTime)
+                
+            case _ as FetchPendingNotificationIdentifiersFailure:
+                return RSState.newState(fromState: state, isFetchingNotificationIdentifiers: false)
+                
+            case let addNotificationHandlerAction as AddNotificationHandlerAction:
+                
+                let notificationHandler = addNotificationHandlerAction.notificationHandler
+                return RSState.newState(fromState: state, notificationHandlers: state.notificationHandlers + [notificationHandler])
                 
             default:
                 return state
