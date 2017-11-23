@@ -52,31 +52,8 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         guard !RSStateSelectors.isFetchingNotificationIdentifiers(state) else {
             return
         }
-//
-//        let callback: (Bool) -> () = { shouldFetch in
-//            if shouldFetch {
-//                self.store?.dispatch(RSActionCreators.fetchPendingNotificationIdentifiers())
-//            }
-//        }
-//
-//        //each processor take a callback function, the parameter specifying that we should refetch
-//        let processRecursively:([RSNotificationProcessor], (Bool)-> Swift.Void) -> ()  = { procesors, callback in
-//
-//            if let head = procesors.first {
-//
-//            }
-//            else {
-//
-//            }
-//
-//        }
-//
-//        //if we modified any notifications, fetch again to keep pending notification ids consistent
-//        let shouldFetch = self.notificationProcessors.reduce(false) { (acc, processor) -> Bool in
-//            return acc || processor(state, lastState, self.store)
-//        }
-        
-        processRecursively(
+
+        self.processRecursively(
             processors: self.notificationProcessors,
             state: state,
             lastState: lastState,
@@ -98,7 +75,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         let tail = Array(processors.dropFirst())
         if tail.count > 0 {
             
-            processRecursively(processors: tail, state: state, lastState: lastState, store: store, callback: { (shouldFetch) in
+            self.processRecursively(processors: tail, state: state, lastState: lastState, store: store, callback: { (shouldFetch) in
                 
                 print("shouldFetch is \(shouldFetch)")
                 
