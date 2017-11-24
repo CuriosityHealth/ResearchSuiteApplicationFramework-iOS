@@ -87,7 +87,17 @@
       "identifier": "false",
       "type": "Boolean",
       "value": false
-    }
+    },
+    {
+      "identifier": "dischargeDelay",
+      "type": "TimeInterval",
+      "value": "P1DT13H24M18S"
+    },
+    {
+      "identifier": "dischargeReminderComponents",
+      "type": "DateComponents",
+      "value": "P1DT13H24M18S"
+    },
   ],
   "functions": [
     {

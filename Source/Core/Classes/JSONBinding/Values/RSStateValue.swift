@@ -32,13 +32,14 @@ public class RSStateValue: Gloss.Decodable {
     
     }
     
-    func getDefaultValue() -> ValueConvertible? {
+    static public func defaultValue(type: String, value: AnyObject?) -> ValueConvertible? {
+        
         switch type {
         case "Date":
             return RSValueConvertible(value: NSNull())
             
         case "StringArray":
-            guard let value = self.defaultValue as? [String] else {
+            guard let value = value as? [String] else {
                 return nil
             }
             
@@ -48,21 +49,51 @@ public class RSStateValue: Gloss.Decodable {
             return nil
             
         case "TimeOfDay":
-            return nil
+            //"P1DT13H24M18S"
+            guard let isoString = value as? String,
+                let dateComponents = DateComponents(ISO8601String: isoString) else {
+                    return nil
+            }
+            return RSValueConvertible(value: dateComponents as NSDateComponents)
+            
+        case "DateComponents":
+            //"P1DT13H24M18S"
+            guard let isoString = value as? String,
+                let dateComponents = DateComponents(ISO8601String: isoString) else {
+                    return nil
+            }
+            return RSValueConvertible(value: dateComponents as NSDateComponents)
+            
+        case "TimeInterval":
+            if let timeInterval = value as? TimeInterval {
+                return RSValueConvertible(value: timeInterval as NSNumber)
+            }
+            else if  let isoString = value as? String,
+                let timeInterval = TimeInterval(ISO8601String: isoString) {
+                return RSValueConvertible(value: timeInterval as NSNumber)
+            }
+            else {
+                return nil
+            }
             
         case "UUID":
             return RSValueConvertible(value: NSNull())
             
         case "Boolean":
-            guard let value = self.defaultValue as? Bool else {
+            guard let value = value as? Bool else {
                 return nil
             }
             
             return RSValueConvertible(value: value as NSNumber)
             
         default:
-            return nil
+            return RSValueConvertible(value: value)
         }
+    
+    }
+    
+    func getDefaultValue() -> ValueConvertible? {
+        return RSStateValue.defaultValue(type: self.type, value: self.defaultValue)
     }
     
 //    static func typeMatches(type: String, object: NSObject) -> Bool {
@@ -87,6 +118,12 @@ public class RSStateValue: Gloss.Decodable {
             
         case "TimeOfDay":
             return (object as? DateComponents) != nil
+            
+        case "DateComponents":
+            return (object as? DateComponents) != nil
+            
+        case "TimeInterval":
+            return (object as? TimeInterval) != nil
             
         case "Boolean":
             return (object as? Bool) != nil

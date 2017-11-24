@@ -130,7 +130,21 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSResetStateManagerActionTransformer.self,
             RSShowAlertActionTranformer.self,
             RSSignOutActionTransformer.self,
-            RSGroupActionTransformer.self
+            RSGroupActionTransformer.self,
+            RSPrintValueActionTransformer.self
+        ]
+    }
+    
+    open var valueTransforms: [RSValueTransformer.Type] {
+        return [
+            RSResultTransformValueTransformer.self,
+            RSConstantValueTransformer.self,
+            RSFunctionValueTransformer.self,
+            RSStepTreeResultTransformValueTransformer.self,
+            RSStateValueTransformer.self,
+            RSSpecialValueTransformer.self,
+            RSLiteralValueTransformer.self,
+            RSDateComponentsTransform.self
         ]
     }
     
@@ -171,7 +185,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     open func newState(state: RSState) {
         
-        if state.signOutRequested {
+        if state.signOutRequested && !RSStateSelectors.isFetchingNotificationIdentifiers(state) {
             self.signOut(completed: { (completed, error) in
                 
             })

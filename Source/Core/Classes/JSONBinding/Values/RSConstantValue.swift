@@ -20,16 +20,29 @@ public class RSConstantValue: NSObject, Gloss.Decodable, ValueConvertible {
     //TODO: Default does not work for boolean
     required public init?(json: JSON) {
         
+//        guard let identifier: String = "identifier" <~~ json,
+//            let type: String = "type" <~~ json,
+//            let value: AnyObject? = "value" <~~ json,
+//            (value is NSNull || RSStateValue.typeMatches(type: type, object: value)) else {
+//                return nil
+//        }
+        
         guard let identifier: String = "identifier" <~~ json,
             let type: String = "type" <~~ json,
-            let value: AnyObject? = "value" <~~ json,
-            (value is NSNull || RSStateValue.typeMatches(type: type, object: value)) else {
+            let rawValue: AnyObject? = "value" <~~ json else {
                 return nil
         }
         
         self.identifier = identifier
         self.type = type
-        self.value = value
+        
+        //
+        if rawValue is NSNull {
+            self.value = rawValue
+        }
+        else {
+            self.value = RSStateValue.defaultValue(type: type, value: rawValue)?.evaluate()
+        }
         
         super.init()
         
