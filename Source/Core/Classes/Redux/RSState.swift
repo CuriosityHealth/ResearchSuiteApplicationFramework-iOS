@@ -54,7 +54,7 @@ public final class RSState: NSObject, StateType {
     public let isFetchingNotificationIdentifiers: Bool
     public let lastFetchTime: Date?
     //static after config
-    public let notificationHandlers: [RSNotificationHandler]
+    public let notifications: [RSNotification]
     
     //passcode stuff
     public let isPresentingPasscode: Bool
@@ -85,7 +85,7 @@ public final class RSState: NSObject, StateType {
                 pendingNotificationIdentifiers: [String]? = nil,
                 isFetchingNotificationIdentifiers: Bool = false,
                 lastFetchTime: Date? = nil,
-                notificationHandlers: [RSNotificationHandler] = [],
+                notifications: [RSNotification] = [],
                 isPresentingPasscode: Bool = false,
                 passcodeViewController: ORKPasscodeViewController? = nil,
                 isDismissingPasscode: Bool = false,
@@ -113,7 +113,7 @@ public final class RSState: NSObject, StateType {
         self.pendingNotificationIdentifiers = pendingNotificationIdentifiers
         self.isFetchingNotificationIdentifiers = isFetchingNotificationIdentifiers
         self.lastFetchTime = lastFetchTime
-        self.notificationHandlers = notificationHandlers
+        self.notifications = notifications
         self.isPresentingPasscode = isPresentingPasscode
         self.passcodeViewController = passcodeViewController
         self.isDismissingPasscode = isDismissingPasscode
@@ -143,7 +143,7 @@ public final class RSState: NSObject, StateType {
         pendingNotificationIdentifiers: ([String]?)? = nil,
         isFetchingNotificationIdentifiers: Bool? = nil,
         lastFetchTime: Date?? = nil,
-        notificationHandlers: [RSNotificationHandler]? = nil,
+        notifications: [RSNotification]? = nil,
         isPresentingPasscode: Bool? = nil,
         passcodeViewController: ORKPasscodeViewController?? = nil,
         isDismissingPasscode: Bool? = nil,
@@ -172,7 +172,7 @@ public final class RSState: NSObject, StateType {
             pendingNotificationIdentifiers: pendingNotificationIdentifiers ?? fromState.pendingNotificationIdentifiers,
             isFetchingNotificationIdentifiers: isFetchingNotificationIdentifiers ?? fromState.isFetchingNotificationIdentifiers,
             lastFetchTime: lastFetchTime ?? fromState.lastFetchTime,
-            notificationHandlers: notificationHandlers ?? fromState.notificationHandlers,
+            notifications: notifications ?? fromState.notifications,
             isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
             isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode,

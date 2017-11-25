@@ -205,8 +205,8 @@ public struct FetchPendingNotificationIdentifiersFailure: Action {
 
 }
 
-public struct AddNotificationHandlerAction: Action {
-    let notificationHandler: RSNotificationHandler
+public struct AddNotificationAction: Action {
+    let notification: RSNotification
 }
 
 //Analytics Stuff

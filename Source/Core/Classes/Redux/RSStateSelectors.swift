@@ -207,8 +207,12 @@ public class RSStateSelectors: NSObject {
         return state.lastFetchTime
     }
     
-    public static func notificationHandlers(_ state: RSState) -> [RSNotificationHandler] {
-        return state.notificationHandlers
+//    public static func notificationHandlers(_ state: RSState) -> [RSNotificationHandler] {
+//        return state.notificationHandlers
+//    }
+    
+    public static func notifications(_ state: RSState) -> [RSNotification] {
+        return state.notifications
     }
 
 }

@@ -376,10 +376,10 @@ public class RSReducer: NSObject {
             case _ as FetchPendingNotificationIdentifiersFailure:
                 return RSState.newState(fromState: state, isFetchingNotificationIdentifiers: false)
                 
-            case let addNotificationHandlerAction as AddNotificationHandlerAction:
+            case let addNotificationAction as AddNotificationAction:
                 
-                let notificationHandler = addNotificationHandlerAction.notificationHandler
-                return RSState.newState(fromState: state, notificationHandlers: state.notificationHandlers + [notificationHandler])
+                let notification = addNotificationAction.notification
+                return RSState.newState(fromState: state, notifications: state.notifications + [notification])
                 
             default:
                 return state

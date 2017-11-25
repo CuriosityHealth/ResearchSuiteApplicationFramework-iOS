@@ -21,6 +21,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     private var rootNavController: RSRoutingNavigationController?
     
     public var activityManager: RSActivityManager!
+    public var notificationManager: RSNotificationManager!
     
     public var storeManager: RSStoreManager!
     public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
@@ -104,6 +105,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSListLayoutGenerator(),
             RSTitleLayoutGenerator(),
             RSTabLayoutGenerator()
+        ]
+    }
+    
+    open var notificationProcessors: [RSNotificationProcessor] {
+        return [
+            RSStandardNotificationProcessor()
         ]
     }
     
@@ -212,6 +219,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             self.taskBuilderStateHelper = nil
             self.taskBuilder = nil
             self.activityManager = nil
+            
+            self.notificationManager.cancelNotifications()
+            self.notificationManager = nil
             self.layoutManager = nil
             
 //            self.window?.rootViewController = UIViewController()
@@ -305,6 +315,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         
         self.activityManager = RSActivityManager(stepTreeBuilder: self.stepTreeBuilder)
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
+        
+        self.notificationManager = RSNotificationManager(store: self.store, notificationProcessors: self.notificationProcessors)
+        self.store.subscribe(self.notificationManager)
+        RSNotificationManager.printPendingNotifications()
         
         
         self.printRefCount()

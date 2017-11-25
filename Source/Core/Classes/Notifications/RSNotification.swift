@@ -14,6 +14,7 @@ open class RSNotification: Gloss.Decodable {
     public let type: String
     public let predicate: RSPredicate?
     public let handlerActions: [JSON]?
+    public let json: JSON
     
     required public init?(json: JSON) {
         
@@ -26,6 +27,7 @@ open class RSNotification: Gloss.Decodable {
         self.type = type
         self.predicate = "predicate" <~~ json
         self.handlerActions = "handlerActions" <~~ json
+        self.json = json
         
     }
 

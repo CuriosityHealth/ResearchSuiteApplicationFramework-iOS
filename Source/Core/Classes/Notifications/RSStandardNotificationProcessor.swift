@@ -1,5 +1,5 @@
 //
-//  RSStandardNotificationGenerator.swift
+//  RSStandardNotificationProcessor.swift
 //  ResearchSuiteApplicationFramework
 //
 //  Created by James Kizer on 11/23/17.
@@ -9,19 +9,27 @@ import UIKit
 import Gloss
 import UserNotifications
 
-open class RSStandardNotificationGenerator: NSObject, RSNotificationGenerator {
+open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
+    
     public func supportsType(type: String) -> Bool {
         return type == "standard"
     }
 
-    public func shouldUpdate(jsonObject: JSON, state: RSState, lastState: RSState) -> Bool {
-        guard let descriptor = RSStandardNotification(json: jsonObject) else {
+    public func shouldUpdate(notification: RSNotification, state: RSState, lastState: RSState) -> Bool {
+        guard let standardNotification = RSStandardNotification(json: notification.json),
+            let pendingNotificationIdentifiers = RSStateSelectors.pendingNotificationIdentifiers(state) else {
             return false
         }
         
-        //check monitored values to see if they changed between state and last state
-        return descriptor.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
-            return acc || RSValueManager.valueChanged(jsonObject: jsonObject, state: state, lastState: lastState, context: [:])
+        //first, check to see if notification id is in list of pending notifications
+        //if not, need to update, so return true
+        if !pendingNotificationIdentifiers.contains(notification.identifier) {
+            return true
+        }
+        
+        //otherwise, check monitored values to see if they changed between state and last state
+        return standardNotification.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
+            return acc || RSValueManager.valueChanged(jsonObject: monitoredValue, state: state, lastState: lastState, context: [:])
         }
         
     }
@@ -53,8 +61,8 @@ open class RSStandardNotificationGenerator: NSObject, RSNotificationGenerator {
     //otherwise, create time interval trigger
     
     //NOTE: Check this logic, #BallmerTime
-    public func generateNotificationRequest(jsonObject: JSON, state: RSState, lastState: RSState) -> UNNotificationRequest? {
-        guard let descriptor = RSStandardNotification(json: jsonObject) else {
+    public func generateNotificationRequest(notification: RSNotification, state: RSState, lastState: RSState) -> UNNotificationRequest? {
+        guard let descriptor = RSStandardNotification(json: notification.json) else {
             return nil
         }
         
@@ -172,11 +180,7 @@ open class RSStandardNotificationGenerator: NSObject, RSNotificationGenerator {
         return nil
     }
     
-    public func identifierFilter(jsonObject: JSON, identifiers: [String]) -> [String] {
-        guard let descriptor = RSStandardNotification(json: jsonObject) else {
-            return []
-        }
-        
-        return [descriptor.identifier]
+    public func identifierFilter(notification: RSNotification, identifiers: [String]) -> [String] {
+        return identifiers.filter { $0 == notification.identifier }
     }
 }

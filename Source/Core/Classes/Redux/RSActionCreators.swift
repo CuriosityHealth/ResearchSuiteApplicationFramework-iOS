@@ -526,14 +526,14 @@ public class RSActionCreators: NSObject {
         }
     }
 
-    public static func addNotificationHandlersFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addNotificationsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
-            selector: { "handlers" <~~ $0 },
-            flatMapFunc: { RSNotificationHandler(json: $0) },
-            mapFunc: { AddNotificationHandlerAction(notificationHandler: $0) }
+            selector: { "notifications" <~~ $0 },
+            flatMapFunc: { RSNotification(json: $0) },
+            mapFunc: { AddNotificationAction(notification: $0) }
         )
         
     }
