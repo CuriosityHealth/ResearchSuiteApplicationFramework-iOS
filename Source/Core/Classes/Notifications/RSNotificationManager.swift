@@ -95,7 +95,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         //if notifications SHOULD NOT be enabled, filter pending notifications, disable remaining notifications
         if !enabled {
             
-            let filteredIdentifiers = processor.identifierFilter(notification: notification, identifiers: pendingNotificationIdentifiers)
+            let filteredIdentifiers = pendingNotificationIdentifiers.filter(processor.identifierFilter(notification: notification))
             if filteredIdentifiers.count > 0 {
                 UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: filteredIdentifiers)
                 callback(true)
@@ -109,6 +109,12 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         }
         //if notifications SHOULD be enabled
         else {
+            var shouldRefresh = false
+            let identifiersToCancel = pendingNotificationIdentifiers.filter(processor.shouldCancelFilter(notification: notification, state: state))
+            if identifiersToCancel.count > 0 {
+                shouldRefresh = true
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+            }
             
             //check with processor to see if we should update
             //if so, generate notification request
@@ -122,7 +128,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                 
             }
             else {
-                callback(false)
+                callback(shouldRefresh)
                 return
             }
         }
@@ -168,7 +174,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                 
                 //get processor for notification and check to see if the identifier matches the notfication
                 guard let processor = self.processor(forNotification: notification),
-                    processor.identifierFilter(notification: notification, identifiers: [notificationID]).count == 1,
+                    [notificationID].filter(processor.identifierFilter(notification: notification)).count == 1,
                     let handlerActions = notification.handlerActions else {
                         return
                 }
@@ -182,29 +188,29 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         
     }
     
-//    static public func setNotification(identifier: String, components: DateComponents, title: String, body: String, completion: @escaping (Error?)->() ) {
-//        
-//        debugPrint("Setting notification: \(identifier): \(components)")
-//        
-//        let center = UNUserNotificationCenter.current()
-//        
-//        //The time components created by ResearchKit set year, month, day to 0
-//        //this results in the trigger never firing
-//        //create a new DateComponents object specifying only hour and minute
-//        let selectedComponents = DateComponents(hour: components.hour, minute: components.minute)
-//        
-//        // Enable or disable features based on authorization
-//        let content = UNMutableNotificationContent()
-//        content.title = title
-//        content.body = body
-//        content.sound = UNNotificationSound.default()
-//        
-//        let trigger = UNCalendarNotificationTrigger(dateMatching: selectedComponents, repeats: true)
-//        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-//        
-//        center.add(request, withCompletionHandler: completion)
-//        
-//    }
+    static public func setNotification(identifier: String, components: DateComponents, title: String, body: String, completion: @escaping (Error?)->() ) {
+        
+        debugPrint("Setting notification: \(identifier): \(components)")
+        
+        let center = UNUserNotificationCenter.current()
+        
+        //The time components created by ResearchKit set year, month, day to 0
+        //this results in the trigger never firing
+        //create a new DateComponents object specifying only hour and minute
+        let selectedComponents = DateComponents(hour: components.hour, minute: components.minute)
+        
+        // Enable or disable features based on authorization
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = UNNotificationSound.default()
+        
+        let trigger = UNCalendarNotificationTrigger(dateMatching: selectedComponents, repeats: true)
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        
+        center.add(request, withCompletionHandler: completion)
+        
+    }
 //    
 //    static public func cancelNotifications() {
 //        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
@@ -215,9 +221,9 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
 //        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationsToCancel)
 //    }
 //    
-//    static public func cancelNotificationWithIdentifiers(identifiers: [String]) {
-//        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
-//    }
+    static public func cancelNotificationWithIdentifiers(_ identifiers: [String]) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
+    }
     
     static public func printPendingNotifications() {
         UNUserNotificationCenter.current().getPendingNotificationRequests(completionHandler: { (notificationRequests) in

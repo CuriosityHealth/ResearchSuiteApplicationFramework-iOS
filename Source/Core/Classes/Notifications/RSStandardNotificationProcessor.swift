@@ -180,7 +180,11 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
         return nil
     }
     
-    public func identifierFilter(notification: RSNotification, identifiers: [String]) -> [String] {
-        return identifiers.filter { $0 == notification.identifier }
+    public func shouldCancelFilter(notification: RSNotification, state: RSState) -> (String) -> Bool {
+        return { _ in false }
+    }
+    
+    public func identifierFilter(notification: RSNotification) -> (String) -> Bool {
+        return { $0 == notification.identifier }
     }
 }
