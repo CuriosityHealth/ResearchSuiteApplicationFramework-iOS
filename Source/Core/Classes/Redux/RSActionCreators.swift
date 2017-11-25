@@ -245,7 +245,8 @@ public class RSActionCreators: NSObject {
                 
                 //NOTE: We are wiping out the storage directory, so any results should have been copied out of here
                 
-                if let outputDirectory = taskViewController.outputDirectory {
+                if let outputDirectory = taskViewController.outputDirectory,
+                    FileManager.default.fileExists(atPath: outputDirectory.absoluteString){
                     
                     do {
                         try FileManager.default.removeItem(at: outputDirectory)
@@ -536,6 +537,35 @@ public class RSActionCreators: NSObject {
             mapFunc: { AddNotificationAction(notification: $0) }
         )
         
+    }
+    
+    public static func requestLocationAuthorization(always: Bool) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return { state, store in
+            
+            guard RSStateSelectors.isRequestingLocationAuthorization(state) == false else {
+                return nil
+            }
+            
+            let request = UpdateAuthorizationStatusRequest(always: always)
+            store.dispatch(request)
+            
+            //the success
+            if let locationManager = RSApplicationDelegate.appDelegate.locationManager {
+                locationManager.requestLocationAuthorization(always: always)
+                return nil
+            }
+            else {
+                assertionFailure("Location Manager Not Enabled")
+                return UpdateAuthorizationStatusFailure()
+            }
+        }
+    }
+    
+    public static func completeLocationAuthorizationRequest(status: CLAuthorizationStatus) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return UpdateAuthorizationStatusSuccess(status: status)
+        }
     }
     
 }

@@ -56,6 +56,11 @@ public final class RSState: NSObject, StateType {
     //static after config
     public let notifications: [RSNotification]
     
+    //location
+    public let isRequestingLocationAuthorization: Bool
+    public let locationAuthorizationStatus: CLAuthorizationStatus
+    public let isFetchingLocation: Bool
+    
     //passcode stuff
     public let isPresentingPasscode: Bool
     public let passcodeViewController: ORKPasscodeViewController?
@@ -86,6 +91,9 @@ public final class RSState: NSObject, StateType {
                 isFetchingNotificationIdentifiers: Bool = false,
                 lastFetchTime: Date? = nil,
                 notifications: [RSNotification] = [],
+                isRequestingLocationAuthorization: Bool = false,
+                locationAuthorizationStatus: CLAuthorizationStatus = .notDetermined,
+                isFetchingLocation: Bool = false,
                 isPresentingPasscode: Bool = false,
                 passcodeViewController: ORKPasscodeViewController? = nil,
                 isDismissingPasscode: Bool = false,
@@ -114,6 +122,9 @@ public final class RSState: NSObject, StateType {
         self.isFetchingNotificationIdentifiers = isFetchingNotificationIdentifiers
         self.lastFetchTime = lastFetchTime
         self.notifications = notifications
+        self.isRequestingLocationAuthorization = isRequestingLocationAuthorization
+        self.locationAuthorizationStatus = locationAuthorizationStatus
+        self.isFetchingLocation = isFetchingLocation
         self.isPresentingPasscode = isPresentingPasscode
         self.passcodeViewController = passcodeViewController
         self.isDismissingPasscode = isDismissingPasscode
@@ -144,6 +155,9 @@ public final class RSState: NSObject, StateType {
         isFetchingNotificationIdentifiers: Bool? = nil,
         lastFetchTime: Date?? = nil,
         notifications: [RSNotification]? = nil,
+        isRequestingLocationAuthorization: Bool? = nil,
+        locationAuthorizationStatus: CLAuthorizationStatus? = nil,
+        isFetchingLocation: Bool? = nil,
         isPresentingPasscode: Bool? = nil,
         passcodeViewController: ORKPasscodeViewController?? = nil,
         isDismissingPasscode: Bool? = nil,
@@ -173,6 +187,9 @@ public final class RSState: NSObject, StateType {
             isFetchingNotificationIdentifiers: isFetchingNotificationIdentifiers ?? fromState.isFetchingNotificationIdentifiers,
             lastFetchTime: lastFetchTime ?? fromState.lastFetchTime,
             notifications: notifications ?? fromState.notifications,
+            isRequestingLocationAuthorization: isRequestingLocationAuthorization ?? fromState.isRequestingLocationAuthorization,
+            locationAuthorizationStatus: locationAuthorizationStatus ?? fromState.locationAuthorizationStatus,
+            isFetchingLocation: isFetchingLocation ?? fromState.isFetchingLocation,
             isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
             isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode,

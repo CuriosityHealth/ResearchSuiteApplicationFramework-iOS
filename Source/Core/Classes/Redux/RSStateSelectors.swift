@@ -214,5 +214,17 @@ public class RSStateSelectors: NSObject {
     public static func notifications(_ state: RSState) -> [RSNotification] {
         return state.notifications
     }
+    
+    public static func isRequestingLocationAuthorization(_ state: RSState) -> Bool {
+        return state.isRequestingLocationAuthorization
+    }
+    
+    public static func isFetchingLocation(_ state: RSState) -> Bool {
+        return state.isFetchingLocation
+    }
+    
+    public static func locationAuthorizationStatus(_ state: RSState) -> CLAuthorizationStatus {
+        return state.locationAuthorizationStatus
+    }
 
 }

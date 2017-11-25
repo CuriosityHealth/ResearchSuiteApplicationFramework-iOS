@@ -21,7 +21,8 @@ public class RSReducer: NSObject {
         PresentationReducer(),
         ResultsProcessorReducer(),
         AppConfigurationReducer(),
-        NotificationReducer()
+        NotificationReducer(),
+        LocationReducer()
     ])
     
     
@@ -380,6 +381,58 @@ public class RSReducer: NSObject {
                 
                 let notification = addNotificationAction.notification
                 return RSState.newState(fromState: state, notifications: state.notifications + [notification])
+                
+            default:
+                return state
+            }
+            
+        }
+    }
+    
+//    //Location
+//    public struct FetchCurrentLocationRequest: Action {
+//
+//    }
+//
+//    public struct FetchCurrentLocationSuccess: Action {
+//
+//    }
+//
+//    public struct FetchCurrentLocationFailure: Action {
+//
+//    }
+//
+//    public struct SetAuthorizationStatus: Action {
+//        let status: CLAuthorizationStatus
+//    }
+//
+//    public struct UpdateAuthorizationStatusRequest: Action {
+//        let always: Bool
+//    }
+//
+//    public struct UpdateAuthorizationStatusSuccess: Action {
+//        let status: CLAuthorizationStatus
+//    }
+//
+//    public struct UpdateAuthorizationStatusFailure: Action {
+//
+//    }
+    
+    final class LocationReducer: Reducer {
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+            case _ as UpdateAuthorizationStatusRequest:
+                return RSState.newState(fromState: state, isRequestingLocationAuthorization: true)
+                
+            case let action as UpdateAuthorizationStatusSuccess:
+                return RSState.newState(fromState: state, isRequestingLocationAuthorization: false, locationAuthorizationStatus: action.status)
+                
+            case _ as UpdateAuthorizationStatusFailure:
+                return RSState.newState(fromState: state, isRequestingLocationAuthorization: false)
                 
             default:
                 return state

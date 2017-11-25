@@ -209,6 +209,36 @@ public struct AddNotificationAction: Action {
     let notification: RSNotification
 }
 
+//Location
+public struct FetchCurrentLocationRequest: Action {
+    
+}
+
+public struct FetchCurrentLocationSuccess: Action {
+    
+}
+
+public struct FetchCurrentLocationFailure: Action {
+    
+}
+
+public struct SetAuthorizationStatus: Action {
+    let status: CLAuthorizationStatus
+}
+
+public struct UpdateAuthorizationStatusRequest: Action {
+    let always: Bool
+}
+
+public struct UpdateAuthorizationStatusSuccess: Action {
+    let status: CLAuthorizationStatus
+}
+
+public struct UpdateAuthorizationStatusFailure: Action {
+    
+}
+
+
 //Analytics Stuff
 public struct LogActivityAction: Action {
     let activityID: String

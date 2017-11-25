@@ -21,7 +21,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     private var rootNavController: RSRoutingNavigationController?
     
     public var activityManager: RSActivityManager!
-    public var notificationManager: RSNotificationManager!
+    public var notificationManager: RSNotificationManager?
+    public var locationManager: RSLocationManager?
     
     public var storeManager: RSStoreManager!
     public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
@@ -112,6 +113,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         return [
             RSStandardNotificationProcessor()
         ]
+    }
+    
+    open var notificationSupport: Bool {
+        return true
+    }
+    
+    open var locationSupport: Bool {
+        return true
     }
     
 //    open var persistentStoreObjectDecodingClasses: [Swift.AnyClass] {
@@ -220,8 +229,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             self.taskBuilder = nil
             self.activityManager = nil
             
-            self.notificationManager.cancelNotifications()
-            self.notificationManager = nil
+            if self.notificationSupport {
+                self.notificationManager?.cancelNotifications()
+                self.notificationManager = nil
+            }
+            
+            if self.locationSupport {
+                self.locationManager?.stopMonitoringLocations()
+                self.locationManager = nil
+            }
+            
             self.layoutManager = nil
             
 //            self.window?.rootViewController = UIViewController()
@@ -316,10 +333,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         self.activityManager = RSActivityManager(stepTreeBuilder: self.stepTreeBuilder)
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
         
-        self.notificationManager = RSNotificationManager(store: self.store, notificationProcessors: self.notificationProcessors)
-        self.store.subscribe(self.notificationManager)
-        RSNotificationManager.printPendingNotifications()
+        if notificationSupport {
+            self.notificationManager = RSNotificationManager(store: self.store, notificationProcessors: self.notificationProcessors)
+            self.store.subscribe(self.notificationManager!)
+            RSNotificationManager.printPendingNotifications()
+        }
         
+        if self.locationSupport {
+            self.locationManager = RSLocationManager(store: self.store)
+            self.store.subscribe(self.locationManager!)
+        }
         
         self.printRefCount()
         
