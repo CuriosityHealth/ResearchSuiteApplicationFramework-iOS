@@ -145,9 +145,12 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                 
                 print("shouldFetch is \(shouldFetch)")
                 
-                self.processNotification(notification: head, state: state, lastState: lastState, callback: { innerShouldFetch in
-                    callback(shouldFetch || innerShouldFetch)
-                })
+                //things that this calls must be only touched from main thread
+                DispatchQueue.main.async {
+                    self.processNotification(notification: head, state: state, lastState: lastState, callback: { innerShouldFetch in
+                        callback(shouldFetch || innerShouldFetch)
+                    })
+                }
                 
             })
         }
