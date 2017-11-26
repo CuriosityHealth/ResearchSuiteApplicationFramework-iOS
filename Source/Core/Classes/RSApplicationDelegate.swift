@@ -151,7 +151,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSShowAlertActionTranformer.self,
             RSSignOutActionTransformer.self,
             RSGroupActionTransformer.self,
-            RSPrintValueActionTransformer.self
+            RSPrintValueActionTransformer.self,
+            RSFetchCurrentLocationActionTransformer.self
         ]
     }
     
@@ -164,7 +165,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSStateValueTransformer.self,
             RSSpecialValueTransformer.self,
             RSLiteralValueTransformer.self,
-            RSDateComponentsTransform.self
+            RSDateComponentsTransform.self,
+            RSSensedLocationValueTransform.self
         ]
     }
     

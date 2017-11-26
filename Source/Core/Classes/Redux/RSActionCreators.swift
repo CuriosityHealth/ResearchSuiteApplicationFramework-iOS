@@ -577,6 +577,7 @@ public class RSActionCreators: NSObject {
     public static func fetchCurrentLocation() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
+            debugPrint("Fetching Location")
             guard !RSStateSelectors.isFetchingLocation(state) else {
                 return nil
             }

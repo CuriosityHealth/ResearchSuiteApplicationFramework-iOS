@@ -107,7 +107,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         //process onSuccess Actions
         if let locationsToProcess = locations {
             locationsToProcess.forEach { location in
-                RSActionManager.processActions(actions: actions.onSuccessActions, context: ["location": location], store: store)
+                RSActionManager.processActions(actions: actions.onSuccessActions, context: ["sensedLocation": location], store: store)
             }
         }
         else if let _ = error {

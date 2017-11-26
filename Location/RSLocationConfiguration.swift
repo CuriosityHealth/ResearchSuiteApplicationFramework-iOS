@@ -22,7 +22,7 @@ open class RSLocationConfiguration: Gloss.Decodable {
     
     public required init?(json: JSON) {
         
-        guard let onUpdate: JSON = "onUpdateActions" <~~ json,
+        guard let onUpdate: JSON = "onUpdate" <~~ json,
             let onSuccess: [JSON] = "onSuccess" <~~ onUpdate,
             let onFailure: [JSON] = "onFailure" <~~ onUpdate,
             let finally: [JSON] = "finally" <~~ onUpdate else {
