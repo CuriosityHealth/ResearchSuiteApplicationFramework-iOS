@@ -241,7 +241,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             }
             
             if self.locationSupport {
-                self.locationManager?.stopMonitoringLocations()
+                self.locationManager?.stopMonitoringRegions()
                 self.locationManager = nil
             }
             

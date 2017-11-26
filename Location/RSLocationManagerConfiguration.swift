@@ -26,11 +26,12 @@ open class RSLocationManagerConfiguration: Gloss.Decodable {
     //monitored values cause the region to get "rebuilt" and resubmitted
     //for example, if the radius could potentialy change after it's initially set,
     //we would want to monitor that value for changes. Thus, if it does change, the region will be refreshed
-//    public let regionMonitoringConfig: RSRegionMonitoringConfiguration?
+    public let regionMonitoringConfig: RSRegionMonitoringConfiguration?
     
     required public init?(json: JSON) {
         
         self.locationConfig = "location" <~~ json
+        self.regionMonitoringConfig = "regionMonitoring" <~~ json
         
     }
 
