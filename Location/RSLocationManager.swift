@@ -11,12 +11,21 @@ import ReSwift
 
 open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscriber {
     
+    enum LocationManagerError: Error {
+        case locationManagerDisabled
+    }
+    
     weak var store: Store<RSState>?
     let locationManager: CLLocationManager
+    let config: RSLocationManagerConfiguration
     
-    public init(store: Store<RSState>) {
+    public typealias FetchLocationCompletion = ([CLLocation]?, Error?) -> ()
+    var fetchLocationCompletion: FetchLocationCompletion?
+    
+    public init(store: Store<RSState>, config: RSLocationManagerConfiguration) {
         self.store = store
         self.locationManager = CLLocationManager()
+        self.config = config
         super.init()
         self.locationManager.delegate = self
     }
@@ -29,6 +38,11 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         
         self.doRegionProcessing(state: state)
         
+    }
+    
+    public func fetchCurrentLocation(completion: @escaping FetchLocationCompletion) {
+        self.fetchLocationCompletion = completion
+        self.locationManager.requestLocation()
     }
     
     public func doRegionProcessing(state: RSState) {
@@ -79,24 +93,41 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
     
     public func processLocationUpdate(_ manager: CLLocationManager, locations: [CLLocation]?, error: Error?) {
         
+        guard let actions = self.config.locationConfig?.onUpdateActions,
+            let store = self.store else {
+            return
+        }
+        
+        //completion handler should clear isFetching flag
+        if let completion = self.fetchLocationCompletion {
+            completion(locations, error)
+            self.fetchLocationCompletion = nil
+        }
+        
         //process onSuccess Actions
         if let locationsToProcess = locations {
-            
+            locationsToProcess.forEach { location in
+                RSActionManager.processActions(actions: actions.onSuccessActions, context: ["location": location], store: store)
+            }
         }
-        else if let err = error {
+        else if let _ = error {
             //process onFailure Actions
-            
+            RSActionManager.processActions(actions: actions.onFailureActions, context: [:], store: store)
         }
         
         //process finally actions
-        
-        
-        
+        RSActionManager.processActions(actions: actions.finallyActions, context: [:], store: store)
     }
     
     public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         
-        self.store?.dispatch(RSActionCreators.completeLocationAuthorizationRequest(status: status))
+        if let state = self.store?.state,
+            RSStateSelectors.isRequestingLocationAuthorization(state) {
+            self.store?.dispatch(RSActionCreators.completeLocationAuthorizationRequest(status: status))
+        }
+        else {
+            self.store?.dispatch(RSActionCreators.setLocationAuthorizationStatus(status: status))
+        }
         
     }
     

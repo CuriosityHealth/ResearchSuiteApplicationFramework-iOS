@@ -425,13 +425,22 @@ public class RSReducer: NSObject {
             
             switch action {
                 
-            case _ as UpdateAuthorizationStatusRequest:
+            case _ as FetchCurrentLocationRequest:
+                return RSState.newState(fromState: state, isFetchingLocation: true)
+                
+            case _ as FetchCurrentLocationSuccess:
+                return RSState.newState(fromState: state, isFetchingLocation: false)
+                
+            case _ as FetchCurrentLocationFailure:
+                return RSState.newState(fromState: state, isFetchingLocation: false)
+                
+            case _ as UpdateLocationAuthorizationStatusRequest:
                 return RSState.newState(fromState: state, isRequestingLocationAuthorization: true)
                 
-            case let action as UpdateAuthorizationStatusSuccess:
+            case let action as UpdateLocationAuthorizationStatusSuccess:
                 return RSState.newState(fromState: state, isRequestingLocationAuthorization: false, locationAuthorizationStatus: action.status)
                 
-            case _ as UpdateAuthorizationStatusFailure:
+            case _ as UpdateLocationAuthorizationStatusFailure:
                 return RSState.newState(fromState: state, isRequestingLocationAuthorization: false)
                 
             default:

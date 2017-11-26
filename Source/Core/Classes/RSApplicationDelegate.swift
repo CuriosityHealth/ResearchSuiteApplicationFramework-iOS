@@ -123,6 +123,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         return true
     }
     
+    open var locationManagerConfig: RSLocationManagerConfiguration? {
+        return nil
+    }
+    
 //    open var persistentStoreObjectDecodingClasses: [Swift.AnyClass] {
 //        return [
 //            NSDictionary.self,
@@ -339,8 +343,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSNotificationManager.printPendingNotifications()
         }
         
-        if self.locationSupport {
-            self.locationManager = RSLocationManager(store: self.store)
+        if self.locationSupport,
+            let config = self.locationManagerConfig {
+            
+            self.locationManager = RSLocationManager(store: self.store, config: config)
             self.store.subscribe(self.locationManager!)
         }
         

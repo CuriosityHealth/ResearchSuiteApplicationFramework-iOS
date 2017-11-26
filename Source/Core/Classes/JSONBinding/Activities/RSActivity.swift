@@ -12,7 +12,7 @@ import ReSwift
 
 public class RSActivity: Gloss.Decodable {
     
-    struct OnCompletionStruct {
+    public struct OnCompletionStruct {
         //TODO: Make this better
         let onSuccessActions: [JSON]
         let onFailureActions: [JSON]

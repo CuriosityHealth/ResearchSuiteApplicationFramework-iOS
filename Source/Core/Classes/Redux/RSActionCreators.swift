@@ -547,7 +547,7 @@ public class RSActionCreators: NSObject {
                 return nil
             }
             
-            let request = UpdateAuthorizationStatusRequest(always: always)
+            let request = UpdateLocationAuthorizationStatusRequest(always: always)
             store.dispatch(request)
             
             //the success
@@ -557,14 +557,55 @@ public class RSActionCreators: NSObject {
             }
             else {
                 assertionFailure("Location Manager Not Enabled")
-                return UpdateAuthorizationStatusFailure()
+                return UpdateLocationAuthorizationStatusFailure()
             }
         }
     }
     
     public static func completeLocationAuthorizationRequest(status: CLAuthorizationStatus) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
-            return UpdateAuthorizationStatusSuccess(status: status)
+            return UpdateLocationAuthorizationStatusSuccess(status: status)
+        }
+    }
+    
+    public static func setLocationAuthorizationStatus(status: CLAuthorizationStatus) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return SetLocationAuthorizationStatus(status: status)
+        }
+    }
+    
+    public static func fetchCurrentLocation() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            
+            guard !RSStateSelectors.isFetchingLocation(state) else {
+                return nil
+            }
+            
+            let request = FetchCurrentLocationRequest()
+            store.dispatch(request)
+            
+            if let locationManager = RSApplicationDelegate.appDelegate.locationManager {
+                locationManager.fetchCurrentLocation(completion: { (locations, error) in
+                    
+                    if let locations = locations {
+                        let action = FetchCurrentLocationSuccess(locations: locations)
+                        store.dispatch(action)
+                    }
+                    else if let error = error{
+                        let action = FetchCurrentLocationFailure(error: error)
+                        store.dispatch(action)
+                    }
+                    else {
+                        assertionFailure("Locations and Error cannot both be nil")
+                    }
+                    
+                })
+                return nil
+            }
+            else {
+                assertionFailure("Location Manager Not Enabled")
+                return FetchCurrentLocationFailure(error: RSLocationManager.LocationManagerError.locationManagerDisabled)
+            }
         }
     }
     

@@ -215,26 +215,26 @@ public struct FetchCurrentLocationRequest: Action {
 }
 
 public struct FetchCurrentLocationSuccess: Action {
-    
+    let locations: [CLLocation]
 }
 
 public struct FetchCurrentLocationFailure: Action {
-    
+    let error: Error
 }
 
-public struct SetAuthorizationStatus: Action {
+public struct SetLocationAuthorizationStatus: Action {
     let status: CLAuthorizationStatus
 }
 
-public struct UpdateAuthorizationStatusRequest: Action {
+public struct UpdateLocationAuthorizationStatusRequest: Action {
     let always: Bool
 }
 
-public struct UpdateAuthorizationStatusSuccess: Action {
+public struct UpdateLocationAuthorizationStatusSuccess: Action {
     let status: CLAuthorizationStatus
 }
 
-public struct UpdateAuthorizationStatusFailure: Action {
+public struct UpdateLocationAuthorizationStatusFailure: Action {
     
 }
 
