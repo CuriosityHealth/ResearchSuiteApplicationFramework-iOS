@@ -231,5 +231,9 @@ public class RSStateSelectors: NSObject {
     public static func locationAuthorizationStatus(_ state: RSState) -> CLAuthorizationStatus {
         return state.locationAuthorizationStatus
     }
+    
+    public static func shouldPreventSleep(_ state: RSState) -> Bool {
+        return state.preventSleep
+    }
 
 }

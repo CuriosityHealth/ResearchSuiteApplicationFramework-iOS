@@ -192,6 +192,10 @@ public struct SignOutRequest: Action {
     
 }
 
+public struct SetPreventSleep: Action {
+    let preventSleep: Bool
+}
+
 //Notifications
 public struct FetchPendingNotificationsRequest: Action {
     
@@ -238,6 +242,7 @@ public struct UpdateLocationAuthorizationStatusSuccess: Action {
 public struct UpdateLocationAuthorizationStatusFailure: Action {
     
 }
+
 
 
 //Analytics Stuff

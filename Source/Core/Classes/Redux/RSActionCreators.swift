@@ -291,6 +291,10 @@ public class RSActionCreators: NSObject {
                 
                 let presentSuccessAction = PresentActivitySuccess(uuid: firstActivity.0, activityID: firstActivity.1, presentationTime: Date())
                 store.dispatch(presentSuccessAction)
+                
+                if let onLaunchActions = activity.onLaunchActions {
+                    RSActionManager.processActions(actions: onLaunchActions, context: [:], store: store)
+                }
 
             })
             
@@ -568,6 +572,12 @@ public class RSActionCreators: NSObject {
     public static func setLocationAuthorizationStatus(status: CLAuthorizationStatus) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             return SetLocationAuthorizationStatus(status: status)
+        }
+    }
+    
+    public static func setPreventSleep(preventSleep: Bool) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return SetPreventSleep(preventSleep: preventSleep)
         }
     }
     

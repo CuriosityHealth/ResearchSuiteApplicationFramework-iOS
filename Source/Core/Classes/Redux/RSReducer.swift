@@ -354,6 +354,9 @@ public class RSReducer: NSObject {
             case _ as SignOutRequest:
                 return RSState.newState(fromState: state, signOutRequested: true)
                 
+            case let action as SetPreventSleep:
+                return RSState.newState(fromState: state, preventSleep: action.preventSleep)
+                
             default:
                 return state
             }

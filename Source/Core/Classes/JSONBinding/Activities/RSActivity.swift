@@ -21,6 +21,7 @@ public class RSActivity: Gloss.Decodable {
     
     let identifier: String
     let elements: [JSON]
+    let onLaunchActions: [JSON]?
     let onCompletion: OnCompletionStruct
     
     required public init?(json: JSON) {
@@ -36,6 +37,7 @@ public class RSActivity: Gloss.Decodable {
         
         self.identifier = identifier
         self.elements = elements
+        self.onLaunchActions = "onLaunch" <~~ json
         
         self.onCompletion = OnCompletionStruct(
             onSuccessActions: onSuccess,

@@ -70,6 +70,8 @@ public final class RSState: NSObject, StateType {
     //sign out
     public let signOutRequested: Bool
     
+    public let preventSleep: Bool
+    
     public init(configurationCompleted: Bool = false,
                 applicationState: [String: NSObject] = [:],
                 stateValueMap: [String: RSStateValue] = [:],
@@ -98,7 +100,8 @@ public final class RSState: NSObject, StateType {
                 isPresentingPasscode: Bool = false,
                 passcodeViewController: ORKPasscodeViewController? = nil,
                 isDismissingPasscode: Bool = false,
-                signOutRequested: Bool = false
+                signOutRequested: Bool = false,
+                preventSleep: Bool = false
         ) {
         
         self.configurationCompleted = configurationCompleted
@@ -130,6 +133,7 @@ public final class RSState: NSObject, StateType {
         self.passcodeViewController = passcodeViewController
         self.isDismissingPasscode = isDismissingPasscode
         self.signOutRequested = signOutRequested
+        self.preventSleep = preventSleep
     }
     
     static func newState(
@@ -162,7 +166,8 @@ public final class RSState: NSObject, StateType {
         isPresentingPasscode: Bool? = nil,
         passcodeViewController: ORKPasscodeViewController?? = nil,
         isDismissingPasscode: Bool? = nil,
-        signOutRequested: Bool? = nil
+        signOutRequested: Bool? = nil,
+        preventSleep: Bool? = nil
         ) -> RSState {
         
         return RSState(
@@ -194,7 +199,8 @@ public final class RSState: NSObject, StateType {
             isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
             isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode,
-            signOutRequested: signOutRequested ?? fromState.signOutRequested
+            signOutRequested: signOutRequested ?? fromState.signOutRequested,
+            preventSleep: preventSleep ?? fromState.preventSleep
         )
     }
     

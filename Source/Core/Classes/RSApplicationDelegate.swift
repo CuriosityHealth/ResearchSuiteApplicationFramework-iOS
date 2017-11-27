@@ -46,6 +46,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     weak var weakStore: Store<RSState>?
     
+    private var lastState: RSState?
+    
     open var stepGeneratorServices: [RSTBStepGenerator] {
         return [
             RSTBInstructionStepGenerator(),
@@ -154,7 +156,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSPrintValueActionTransformer.self,
             RSFetchCurrentLocationActionTransformer.self,
             RSPrintNotificationActionTransformer.self,
-            RSEvaluatePredicateActionTransformer.self
+            RSEvaluatePredicateActionTransformer.self,
+            RSSetPreventSleepAction.self
         ]
     }
     
@@ -209,11 +212,23 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     }
     
     open func newState(state: RSState) {
-        
+
         if state.signOutRequested && !RSStateSelectors.isFetchingNotifications(state) {
             self.signOut(completed: { (completed, error) in
                 
             })
+        }
+        
+        //check for notifications being enabled
+        guard let lastState = self.lastState else {
+            self.lastState = state
+            return
+        }
+        
+        self.lastState = state
+        
+        if RSStateSelectors.shouldPreventSleep(state) != RSStateSelectors.shouldPreventSleep(lastState) {
+            UIApplication.shared.isIdleTimerDisabled = RSStateSelectors.shouldPreventSleep(state)
         }
         
     }
