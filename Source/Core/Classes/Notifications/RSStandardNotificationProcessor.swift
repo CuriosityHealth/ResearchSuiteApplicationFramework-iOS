@@ -68,7 +68,7 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
         
         if let initialFire = descriptor.initialFire {
             
-            let afterDate: Date? = {
+            let date: Date? = {
                 guard let afterDateJSON: JSON = "afterDate" <~~ initialFire,
                     let afterDate = RSValueManager.processValue(jsonObject: afterDateJSON, state: state, context: [:])?.evaluate() as? NSDate else {
                     return nil
@@ -94,7 +94,8 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
                 return dateComponents as DateComponents
             }()
             
-            guard let delayInterval = self.generateInitialFireInterval(afterDate: afterDate, timeInterval: timeInterval, dateComopnents: dateComponents) else {
+            guard let afterDate = date,
+                let delayInterval = self.generateInitialFireInterval(afterDate: date, timeInterval: timeInterval, dateComopnents: dateComponents) else {
                 return nil
             }
             

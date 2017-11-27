@@ -500,24 +500,21 @@ public class RSActionCreators: NSObject {
 
     
     //Notifications
-    public static func fetchPendingNotificationIdentifiers() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func fetchPendingNotifications() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return { state, store in
             
             //ignore if is fetching
-            guard !RSStateSelectors.isFetchingNotificationIdentifiers(state) else {
+            guard !RSStateSelectors.isFetchingNotifications(state) else {
                 return nil
             }
             
-            let fetchRequestAction = FetchPendingNotificationIdentifiersRequest()
+            let fetchRequestAction = FetchPendingNotificationsRequest()
             store.dispatch(fetchRequestAction)
             
             UNUserNotificationCenter.current().getPendingNotificationRequests { (pendingRequests) in
                 
-                let notificationIdentifiers = pendingRequests
-                    .map { $0.identifier }
-                
-                let fetchSuccessAction = FetchPendingNotificationIdentifiersSuccess(pendingNotificationIdentifiers: notificationIdentifiers, fetchTime: Date())
+                let fetchSuccessAction = FetchPendingNotificationsSuccess(pendingNotifications: pendingRequests, fetchTime: Date())
                 DispatchQueue.main.async {
                     store.dispatch(fetchSuccessAction)
                 }

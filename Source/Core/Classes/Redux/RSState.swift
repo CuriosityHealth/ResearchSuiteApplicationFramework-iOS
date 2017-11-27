@@ -10,6 +10,7 @@ import UIKit
 import ReSwift
 import ResearchSuiteResultsProcessor
 import ResearchKit
+import UserNotifications
 
 public final class RSState: NSObject, StateType {
     
@@ -50,8 +51,8 @@ public final class RSState: NSObject, StateType {
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
     //notifications
-    public let pendingNotificationIdentifiers: [String]?
-    public let isFetchingNotificationIdentifiers: Bool
+    public let pendingNotifications: [UNNotificationRequest]?
+    public let isFetchingNotifications: Bool
     public let lastFetchTime: Date?
     //static after config
     public let notifications: [RSNotification]
@@ -87,8 +88,8 @@ public final class RSState: NSObject, StateType {
                 isRouting: Bool = false,
                 currentRoute: RSRoute? = nil,
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
-                pendingNotificationIdentifiers: [String]? = nil,
-                isFetchingNotificationIdentifiers: Bool = false,
+                pendingNotifications: [UNNotificationRequest]? = nil,
+                isFetchingNotifications: Bool = false,
                 lastFetchTime: Date? = nil,
                 notifications: [RSNotification] = [],
                 isRequestingLocationAuthorization: Bool = false,
@@ -118,8 +119,8 @@ public final class RSState: NSObject, StateType {
         self.isRouting = isRouting
         self.currentRoute = currentRoute
         self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
-        self.pendingNotificationIdentifiers = pendingNotificationIdentifiers
-        self.isFetchingNotificationIdentifiers = isFetchingNotificationIdentifiers
+        self.pendingNotifications = pendingNotifications
+        self.isFetchingNotifications = isFetchingNotifications
         self.lastFetchTime = lastFetchTime
         self.notifications = notifications
         self.isRequestingLocationAuthorization = isRequestingLocationAuthorization
@@ -151,8 +152,8 @@ public final class RSState: NSObject, StateType {
         isRouting: Bool? = nil,
         currentRoute: RSRoute?? = nil,
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
-        pendingNotificationIdentifiers: ([String]?)? = nil,
-        isFetchingNotificationIdentifiers: Bool? = nil,
+        pendingNotifications: ([UNNotificationRequest]?)? = nil,
+        isFetchingNotifications: Bool? = nil,
         lastFetchTime: Date?? = nil,
         notifications: [RSNotification]? = nil,
         isRequestingLocationAuthorization: Bool? = nil,
@@ -183,8 +184,8 @@ public final class RSState: NSObject, StateType {
             isRouting: isRouting ?? fromState.isRouting,
             currentRoute: currentRoute ?? fromState.currentRoute,
             resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap,
-            pendingNotificationIdentifiers: pendingNotificationIdentifiers ?? fromState.pendingNotificationIdentifiers,
-            isFetchingNotificationIdentifiers: isFetchingNotificationIdentifiers ?? fromState.isFetchingNotificationIdentifiers,
+            pendingNotifications: pendingNotifications ?? fromState.pendingNotifications,
+            isFetchingNotifications: isFetchingNotifications ?? fromState.isFetchingNotifications,
             lastFetchTime: lastFetchTime ?? fromState.lastFetchTime,
             notifications: notifications ?? fromState.notifications,
             isRequestingLocationAuthorization: isRequestingLocationAuthorization ?? fromState.isRequestingLocationAuthorization,
@@ -209,7 +210,7 @@ public final class RSState: NSObject, StateType {
             "\n\tactivityQueue: \(self.activityQueue)" +
         "\n\tpresentedActivity: \(self.presentedActivity)" +
         "\n\tpresentedPasscode: \(self.passcodeViewController)" +
-        "\n\tpendingNotificationIdentifiers: \(self.pendingNotificationIdentifiers?.sorted())"
+        "\n\tpendingNotifications: \(self.pendingNotifications?.map{ $0.identifier }.sorted())"
         
     }
     

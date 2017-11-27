@@ -9,6 +9,7 @@
 import UIKit
 import ResearchSuiteResultsProcessor
 import ResearchKit
+import UserNotifications
 
 public class RSStateSelectors: NSObject {
     
@@ -195,12 +196,16 @@ public class RSStateSelectors: NSObject {
         return state.passcodeViewController
     }
     
-    public static func isFetchingNotificationIdentifiers(_ state: RSState) -> Bool {
-        return state.isFetchingNotificationIdentifiers
+    public static func isFetchingNotifications(_ state: RSState) -> Bool {
+        return state.isFetchingNotifications
     }
     
     public static func pendingNotificationIdentifiers(_ state: RSState) -> [String]? {
-        return state.pendingNotificationIdentifiers
+        return state.pendingNotifications?.map { $0.identifier }
+    }
+    
+    public static func pendingNotifications(_ state: RSState) -> [UNNotificationRequest]? {
+        return state.pendingNotifications
     }
     
     public static func lastFetchTime(_ state: RSState) -> Date? {

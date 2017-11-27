@@ -368,14 +368,14 @@ public class RSReducer: NSObject {
             
             switch action {
                 
-            case _ as FetchPendingNotificationIdentifiersRequest:
-                return RSState.newState(fromState: state, isFetchingNotificationIdentifiers: true)
+            case _ as FetchPendingNotificationsRequest:
+                return RSState.newState(fromState: state, isFetchingNotifications: true)
                 
-            case let successAction as FetchPendingNotificationIdentifiersSuccess:
-                return RSState.newState(fromState: state, pendingNotificationIdentifiers: successAction.pendingNotificationIdentifiers, isFetchingNotificationIdentifiers: false, lastFetchTime: successAction.fetchTime)
+            case let successAction as FetchPendingNotificationsSuccess:
+                return RSState.newState(fromState: state, pendingNotifications: successAction.pendingNotifications, isFetchingNotifications: false, lastFetchTime: successAction.fetchTime)
                 
-            case _ as FetchPendingNotificationIdentifiersFailure:
-                return RSState.newState(fromState: state, isFetchingNotificationIdentifiers: false)
+            case _ as FetchPendingNotificationsFailure:
+                return RSState.newState(fromState: state, isFetchingNotifications: false)
                 
             case let addNotificationAction as AddNotificationAction:
                 
@@ -388,35 +388,6 @@ public class RSReducer: NSObject {
             
         }
     }
-    
-//    //Location
-//    public struct FetchCurrentLocationRequest: Action {
-//
-//    }
-//
-//    public struct FetchCurrentLocationSuccess: Action {
-//
-//    }
-//
-//    public struct FetchCurrentLocationFailure: Action {
-//
-//    }
-//
-//    public struct SetAuthorizationStatus: Action {
-//        let status: CLAuthorizationStatus
-//    }
-//
-//    public struct UpdateAuthorizationStatusRequest: Action {
-//        let always: Bool
-//    }
-//
-//    public struct UpdateAuthorizationStatusSuccess: Action {
-//        let status: CLAuthorizationStatus
-//    }
-//
-//    public struct UpdateAuthorizationStatusFailure: Action {
-//
-//    }
     
     final class LocationReducer: Reducer {
         open func handleAction(action: Action, state: RSState?) -> RSState {

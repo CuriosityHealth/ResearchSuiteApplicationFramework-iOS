@@ -10,6 +10,7 @@ import UIKit
 import ReSwift
 import ResearchSuiteResultsProcessor
 import ResearchKit
+import UserNotifications
 
 public struct AddStateValueAction: Action {
     let stateValue: RSStateValue
@@ -192,16 +193,16 @@ public struct SignOutRequest: Action {
 }
 
 //Notifications
-public struct FetchPendingNotificationIdentifiersRequest: Action {
+public struct FetchPendingNotificationsRequest: Action {
     
 }
 
-public struct FetchPendingNotificationIdentifiersSuccess: Action {
-    let pendingNotificationIdentifiers: [String]
+public struct FetchPendingNotificationsSuccess: Action {
+    let pendingNotifications: [UNNotificationRequest]
     let fetchTime: Date
 }
 
-public struct FetchPendingNotificationIdentifiersFailure: Action {
+public struct FetchPendingNotificationsFailure: Action {
 
 }
 

@@ -40,21 +40,25 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         
         self.lastState = state
         
+        guard RSStateSelectors.isConfigurationCompleted(state) else {
+            return
+        }
+        
         //if first run, maybe check to see if notifications are enabled but shouldn't be
         //note than we can probably get a list of currently enabled notifications
         //only update this list on change as well as once per n minutes
         guard let _ = RSStateSelectors.pendingNotificationIdentifiers(state),
             let lastFetchTime = RSStateSelectors.lastFetchTime(state) else {
-                self.store?.dispatch(RSActionCreators.fetchPendingNotificationIdentifiers())
+                self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
                 return
         }
         
         if lastFetchTime.addingTimeInterval(RSNotificationManager.minFetchInterval) < Date() {
-            self.store?.dispatch(RSActionCreators.fetchPendingNotificationIdentifiers())
+            self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
             return
         }
         
-        guard !RSStateSelectors.isFetchingNotificationIdentifiers(state) else {
+        guard !RSStateSelectors.isFetchingNotifications(state) else {
             return
         }
 
@@ -65,7 +69,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
             lastState: lastState) { (shouldFetch) in
                 if shouldFetch {
                     DispatchQueue.main.async {
-                        self.store?.dispatch(RSActionCreators.fetchPendingNotificationIdentifiers())
+                        self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
                     }
                 }
         }

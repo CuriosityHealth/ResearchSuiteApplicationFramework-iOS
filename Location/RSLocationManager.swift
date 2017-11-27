@@ -71,6 +71,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         }
         
         let monitoredRegions = Array(self.locationManager.monitoredRegions)
+        debugPrint("\(monitoredRegions.map { $0.identifier }) enabled regions")
         regions.forEach { self.processRegion(region: $0, state: state, lastState: lastState, monitoredRegions: monitoredRegions) }
     }
     
