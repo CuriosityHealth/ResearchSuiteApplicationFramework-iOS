@@ -63,6 +63,10 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         }
 
         let notifications = RSStateSelectors.notifications(state)
+        guard notifications.count > 0 else {
+            return
+        }
+        
         self.processRecursively(
             notifications: notifications,
             state: state,
@@ -141,6 +145,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
 
     private func processRecursively(notifications: [RSNotification], state: RSState, lastState: RSState, callback: @escaping (Bool) -> ()) {
         
+        assert(notifications.count > 0, "Notifications array must not be empty")
         let head: RSNotification = notifications.first!
         
         let tail = Array(notifications.dropFirst())
