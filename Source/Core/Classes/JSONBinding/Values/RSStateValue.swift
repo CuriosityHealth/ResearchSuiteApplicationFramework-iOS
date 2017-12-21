@@ -45,6 +45,13 @@ public class RSStateValue: Gloss.Decodable {
             
             return RSValueConvertible(value: value as NSArray)
             
+        case "IntArray":
+            guard let value = value as? [Int] else {
+                return nil
+            }
+            
+            return RSValueConvertible(value: value as NSArray)
+            
         case "Location":
             return nil
             
@@ -112,6 +119,9 @@ public class RSStateValue: Gloss.Decodable {
             
         case "StringArray":
             return (object as? [String]) != nil
+            
+        case "IntArray":
+            return (object as? [Int]) != nil
             
         case "Location":
             return (object as? CLLocation) != nil
