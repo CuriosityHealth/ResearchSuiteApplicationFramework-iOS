@@ -73,6 +73,7 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
         self.stateManagerMap = stateManagerMap
         self.stateManagers = stateManagers
         self.stateValueHasBeenSetStorageManager =  RSFileStateManager(
+            identifier: "RSStatePersistentStoreSubscriber",
             filePath: RSStatePersistentStoreSubscriber.kStateValueHasBeenSet,
             fileProtection: Data.WritingOptions.noFileProtection,
             decodingClasses: [NSDictionary.self, NSArray.self, NSNumber.self]
@@ -80,6 +81,14 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
         
         self.stateValueHasBeenSet = RSPersistedValueMap(key: RSStatePersistentStoreSubscriber.kStateValueHasBeenSet, stateManager: self.stateValueHasBeenSetStorageManager)
         
+    }
+    
+    private func stateManagerForStateValue(identifier: String, state: RSState) -> RSStateManagerProtocol? {
+        guard let stateValue = RSStateSelectors.getStateValueMetadata(state, for: identifier) else {
+            return nil
+        }
+        
+        return self.stateManagers.first(where: { $0.identifier == stateValue.stateManager})
     }
     
     public func newState(state: RSState) {
@@ -113,7 +122,20 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
             persistedValueMap.set(map: newMap)
         }
         
-        self.stateValueHasBeenSet.set(map: RSStateSelectors.getStateValueHasBeenSet(state))
+        //filter these based on whether the state manager is ephemeral
+        //only persist value has been set metadata across app launches if the state manager is NOT ephemeral
+        //ephemeral states expect that values clear and that the value has not been set at app launch
+        //note that this should not affect t
+        let stateValueHasBeenSetMap = RSStateSelectors.getStateValueHasBeenSet(state)
+        var filteredStateValueHasBeenSetMap: [String: NSObject] = [:]
+        for (stateValueIdentifier, hasBenSet) in stateValueHasBeenSetMap {
+            if let stateManager = self.stateManagerForStateValue(identifier: stateValueIdentifier, state: state),
+                stateManager.isEphemeral == false {
+                filteredStateValueHasBeenSetMap[stateValueIdentifier] = hasBenSet
+            }
+        }
+        
+        self.stateValueHasBeenSet.set(map: filteredStateValueHasBeenSetMap)
     }
     
     public func loadState() -> RSState {

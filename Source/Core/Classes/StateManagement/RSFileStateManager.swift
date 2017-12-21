@@ -18,7 +18,8 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
     
     public static func generateStateManager(jsonObject: JSON) -> RSStateManagerProtocol? {
         
-        guard let filePath: String = "filePath" <~~ jsonObject,
+        guard let identifier: String = "identifier" <~~ jsonObject,
+            let filePath: String = "filePath" <~~ jsonObject,
             let protected: Bool = "protected" <~~ jsonObject else {
                 return nil
         }
@@ -26,6 +27,7 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
         let decodingClasses = self.decodingClasses
         
         return RSFileStateManager(
+            identifier: identifier,
             filePath: filePath,
             fileProtection: [protected ? Data.WritingOptions.completeFileProtectionUnlessOpen : Data.WritingOptions.noFileProtection, Data.WritingOptions.atomic],
             decodingClasses: decodingClasses
@@ -44,6 +46,11 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
         ]
     }
     
+    public var isEphemeral: Bool {
+        return false
+    }
+    
+    public let identifier: String
     let filePath: String
     let fileProtection: NSData.WritingOptions
     
@@ -54,7 +61,9 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
     let fileQueue: DispatchQueue
     static let fileQueueIdentifier = "RSFileStateManager.FileQueue"
     
-    init(filePath: String, fileProtection: Data.WritingOptions, decodingClasses: [Swift.AnyClass]) {
+    init(identifier: String, filePath: String, fileProtection: Data.WritingOptions, decodingClasses: [Swift.AnyClass]) {
+        
+        self.identifier = identifier
         
         self.filePath = RSFileStateManager.generateFilePath(filePath: filePath)!
         print(self.filePath)

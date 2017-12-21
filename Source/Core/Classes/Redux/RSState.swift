@@ -211,7 +211,7 @@ public final class RSState: NSObject, StateType {
     open override var description: String {
         return
             "\n\tapplicationState: \(self.applicationState)" +
-//            "\n\tstateValueHasBeenSet: \(self.stateValueHasBeenSet)" +
+            "\n\tstateValueHasBeenSet: \(self.stateValueHasBeenSet)" +
 //            "\n\tconstants: \(self.constantsMap)" +
             "\n\tactivityQueue: \(self.activityQueue)" +
         "\n\tpresentedActivity: \(self.presentedActivity)" +

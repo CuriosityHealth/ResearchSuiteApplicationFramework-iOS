@@ -24,7 +24,11 @@ open class RSEphemeralStateManager: RSStateManagerProtocol, RSStateManagerGenera
         
     }
     
-    let identifier: String
+    public var isEphemeral: Bool {
+        return true
+    }
+    
+    public let identifier: String
     var map: [String: NSSecureCoding]
     let memoryQueue: DispatchQueue
     static let memoryQueueIdentifier: (String) -> String = { identifier in
