@@ -118,7 +118,8 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         //if notifications SHOULD be enabled
         else {
             var shouldRefresh = false
-            let identifiersToCancel = pendingNotificationIdentifiers.filter(processor.shouldCancelFilter(notification: notification, state: state))
+            let identifiersToCancel = pendingNotificationIdentifiers.filter(processor.identifierFilter(notification: notification))
+                .filter(processor.shouldCancelFilter(notification: notification, state: state))
             if identifiersToCancel.count > 0 {
                 shouldRefresh = true
                 UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToCancel)

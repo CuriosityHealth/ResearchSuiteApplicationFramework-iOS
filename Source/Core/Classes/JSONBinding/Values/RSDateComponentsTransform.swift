@@ -25,7 +25,7 @@ open class RSDateComponentsTransform: RSValueTransformer {
 
         let calendar = Calendar(identifier: .gregorian)
         
-        let finalDateComponents: DateComponents = objectsToMerge.reduce(DateComponents()) { (acc, json) -> DateComponents in
+        let finalDateComponentsOpt: DateComponents? = objectsToMerge.reduce(nil) { (acc, json) -> DateComponents? in
             
             guard let componentsStringArray: [String] = "components" <~~ json else {
                 return acc
@@ -37,12 +37,12 @@ open class RSDateComponentsTransform: RSValueTransformer {
             if let dateJSON: JSON = "date" <~~ json,
                 let dateConvertible = RSValueManager.processValue(jsonObject: dateJSON, state: state, context: context),
                 let date = dateConvertible.evaluate() as? Date {
-                return calendar.dateComponents(components, mergeFrom: date, mergeInto: acc)
+                return calendar.dateComponents(components, mergeFrom: date, mergeInto: acc ?? DateComponents())
             }
             else if let dateComponentsJSON: JSON = "dateComponents" <~~ json,
                 let dateComponentsConvertible = RSValueManager.processValue(jsonObject: dateComponentsJSON, state: state, context: context),
                 let dateComponents = dateComponentsConvertible.evaluate() as? DateComponents {
-                return calendar.dateComponents(components, mergeFrom: dateComponents, mergeInto: acc)
+                return calendar.dateComponents(components, mergeFrom: dateComponents, mergeInto: acc ?? DateComponents())
             }
             else {
                 return acc
@@ -50,7 +50,12 @@ open class RSDateComponentsTransform: RSValueTransformer {
             
         }
         
-        return RSValueConvertible(value: finalDateComponents as NSDateComponents)
+        if let finalDateComponents = finalDateComponentsOpt {
+            return RSValueConvertible(value: finalDateComponents as NSDateComponents)
+        }
+        else {
+            return nil
+        }
         
     }
     
