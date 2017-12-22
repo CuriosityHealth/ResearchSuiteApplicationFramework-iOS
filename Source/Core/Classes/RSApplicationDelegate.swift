@@ -113,7 +113,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     open var notificationProcessors: [RSNotificationProcessor] {
         return [
-            RSStandardNotificationProcessor()
+            RSStandardNotificationProcessor(),
+            RSDailyNotificationProcessor()
         ]
     }
     
@@ -157,7 +158,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSFetchCurrentLocationActionTransformer.self,
             RSPrintNotificationActionTransformer.self,
             RSEvaluatePredicateActionTransformer.self,
-            RSSetPreventSleepAction.self
+            RSSetPreventSleepAction.self,
+            RSActionSwitchTransformer.self
         ]
     }
     
