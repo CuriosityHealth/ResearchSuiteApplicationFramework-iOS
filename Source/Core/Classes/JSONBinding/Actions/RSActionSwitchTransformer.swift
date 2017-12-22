@@ -45,7 +45,9 @@ open class RSActionSwitchTransformer: RSActionTransformer {
                 if let predicate = switchCase.predicate {
                     return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: context)
                 }
-                else { return true }
+                else {
+                    return true
+                }
             }) {
                 RSActionManager.processAction(action: switchCase.action, context: context, store: store)
             }
