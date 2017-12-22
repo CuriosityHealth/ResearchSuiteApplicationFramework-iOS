@@ -11,16 +11,15 @@ import ReSwift
 
 open class RSActionSwitchCase: Gloss.Decodable {
     
-    let predicate: RSPredicate
+    let predicate: RSPredicate?
     let action: JSON
     
     public required init?(json: JSON) {
-        guard let action: JSON = "action" <~~ json,
-            let predicate: RSPredicate = "predicate" <~~ json else {
+        guard let action: JSON = "action" <~~ json else {
                 return nil
         }
         
-        self.predicate = predicate
+        self.predicate = "predicate" <~~ json
         self.action = action
     }
     
@@ -42,7 +41,12 @@ open class RSActionSwitchTransformer: RSActionTransformer {
         
         return { state, store in
             
-            if let switchCase = cases.first(where: { RSActivityManager.evaluatePredicate(predicate: $0.predicate, state: state, context: context) }) {
+            if let switchCase = cases.first(where: { switchCase in
+                if let predicate = switchCase.predicate {
+                    return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: context)
+                }
+                else { return true }
+            }) {
                 RSActionManager.processAction(action: switchCase.action, context: context, store: store)
             }
             
