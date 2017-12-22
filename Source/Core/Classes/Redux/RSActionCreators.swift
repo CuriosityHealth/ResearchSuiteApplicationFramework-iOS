@@ -453,6 +453,7 @@ public class RSActionCreators: NSObject {
                         layoutVC?.layoutDidLoad()
                     }
                     else {
+                        assert(layoutVC != nil, "Routing Failure: Could not generate a layout. This should NEVER occur\n\nCheck that the layout ID in the route is correct!!!")
                         let routeRequestAction = ChangeRouteFailure(route: route)
                         store.dispatch(routeRequestAction)
                     }

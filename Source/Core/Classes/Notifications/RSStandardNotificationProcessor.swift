@@ -94,8 +94,7 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
                 return dateComponents as DateComponents
             }()
             
-            guard let afterDate = date,
-                let delayInterval = self.generateInitialFireInterval(afterDate: date, timeInterval: timeInterval, dateComopnents: dateComponents) else {
+            guard let delayInterval = self.generateInitialFireInterval(afterDate: date, timeInterval: timeInterval, dateComopnents: dateComponents) else {
                 return nil
             }
             
