@@ -174,7 +174,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSLiteralValueTransformer.self,
             RSDateComponentsTransform.self,
             RSSensedLocationValueTransform.self,
-            RSDateTransform.self
+            RSDateTransform.self,
+            RSNotificationTriggerDateTransformer.self
         ]
     }
     

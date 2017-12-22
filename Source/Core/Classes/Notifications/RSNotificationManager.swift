@@ -79,6 +79,14 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         }
         
     }
+    
+    public func nextTriggerDate(notification: RSNotification, state: RSState) -> Date? {
+        guard let processor = self.processor(forNotification: notification) else {
+                return nil
+        }
+
+        return processor.nextTriggerDate(notification: notification, state: state)
+    }
 
     private func processNotification(notification: RSNotification, state: RSState, lastState: RSState, callback: @escaping (Bool) -> ()) {
         //compute predicate to see whether or not notifications SHOULD be enabled

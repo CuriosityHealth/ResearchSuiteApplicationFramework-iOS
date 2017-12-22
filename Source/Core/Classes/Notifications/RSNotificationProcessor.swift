@@ -15,4 +15,5 @@ public protocol RSNotificationProcessor {
     func generateNotificationRequest(notification: RSNotification, state: RSState, lastState: RSState) -> UNNotificationRequest?
     func identifierFilter(notification: RSNotification) -> (String) -> Bool
     func shouldCancelFilter(notification: RSNotification, state: RSState) -> (String) -> Bool
+    func nextTriggerDate(notification: RSNotification, state: RSState) -> Date?
 }

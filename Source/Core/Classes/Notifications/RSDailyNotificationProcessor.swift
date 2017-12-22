@@ -142,5 +142,28 @@ open class RSDailyNotificationProcessor: NSObject, RSNotificationProcessor {
     public func identifierFilter(notification: RSNotification) -> (String) -> Bool {
         return { $0.hasPrefix(notification.identifier) }
     }
+    
+    public func nextTriggerDate(notification: RSNotification, state: RSState) -> Date? {
+        
+        guard let notificationRequests = RSStateSelectors.pendingNotifications(state) else {
+            return nil
+        }
+        
+        let filter = identifierFilter(notification: notification)
+        let filteredNotificationRequests:[UNNotificationRequest] = notificationRequests.filter( { filter($0.identifier) } )
+        let filteredDates: [Date] = filteredNotificationRequests.flatMap { (notificationRequest) -> Date? in
+            if let trigger = notificationRequest.trigger as? UNTimeIntervalNotificationTrigger {
+                return trigger.nextTriggerDate()
+            }
+            else if let trigger = notificationRequest.trigger as? UNCalendarNotificationTrigger {
+                return trigger.nextTriggerDate()
+            }
+            else {
+                return nil
+            }
+        }
+        
+        return filteredDates.sorted().first
+    }
 
 }

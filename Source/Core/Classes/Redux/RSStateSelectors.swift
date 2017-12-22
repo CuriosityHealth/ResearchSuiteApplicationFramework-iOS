@@ -220,6 +220,10 @@ public class RSStateSelectors: NSObject {
         return state.notifications
     }
     
+    public static func notification(_ state: RSState, for identifier: String) -> RSNotification?  {
+        return state.notifications.first(where: {$0.identifier == identifier})
+    }
+    
     public static func isRequestingLocationAuthorization(_ state: RSState) -> Bool {
         return state.isRequestingLocationAuthorization
     }

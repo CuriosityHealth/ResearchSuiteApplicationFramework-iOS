@@ -20,6 +20,8 @@ open class RSDateTransform: RSValueTransformer {
     public static func generateValue(jsonObject: JSON, state: RSState, context: [String : AnyObject]) -> ValueConvertible? {
         
         //we have a list of values that should evaluate to either date or date components
+        let subtracting: Bool = "subtract" <~~ jsonObject ?? false
+        
         let date: Date = {
             guard let afterDateJSON: JSON = "date" <~~ jsonObject,
                 let afterDate = RSValueManager.processValue(jsonObject: afterDateJSON, state: state, context: [:])?.evaluate() as? NSDate else {
@@ -37,7 +39,14 @@ open class RSDateTransform: RSValueTransformer {
             return RSValueManager.processValue(jsonObject: timeIntervalJSON, state: state, context: [:])?.evaluate() as? TimeInterval
         }() ?? 0.0
         
-        return RSValueConvertible(value: date.addingTimeInterval(timeInterval) as NSDate)
+        if subtracting {
+            return RSValueConvertible(value: date.addingTimeInterval(-timeInterval) as NSDate)
+        }
+        else {
+            return RSValueConvertible(value: date.addingTimeInterval(timeInterval) as NSDate)
+        }
+        
+        
     }
     
     
