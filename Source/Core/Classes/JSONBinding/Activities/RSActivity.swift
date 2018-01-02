@@ -23,6 +23,7 @@ public class RSActivity: Gloss.Decodable {
     let elements: [JSON]
     let onLaunchActions: [JSON]?
     let onCompletion: OnCompletionStruct
+    let shouldHideCancelButton: Bool
     
     required public init?(json: JSON) {
         
@@ -44,6 +45,8 @@ public class RSActivity: Gloss.Decodable {
             onFailureActions: onFailure,
             finallyActions: finally
         )
+        
+        self.shouldHideCancelButton = "hideCancelButton" <~~ json ?? false
         
     }
     

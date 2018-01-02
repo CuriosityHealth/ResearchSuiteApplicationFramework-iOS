@@ -35,7 +35,7 @@ open class RSActivityManager: NSObject {
     
     }
     
-    public func taskForActivity(activity: RSActivity, state: RSState) -> ORKTask? {
+    public func taskForActivity(activity: RSActivity, state: RSState) -> RSTask? {
         
         let nodes = activity.elements.flatMap { (json) -> RSStepTreeNode? in
             return self.transformActivityElementIntoNode(
@@ -55,7 +55,12 @@ open class RSActivityManager: NSObject {
             resultTransforms: nil
         )
         
-        let stepTree = RSStepTree(identifier: activity.identifier, root: rootNode, taskBuilder: self.stepTreeBuilder.rstb, state: state)
+        let stepTree = RSStepTree(
+            identifier: activity.identifier,
+            root: rootNode, taskBuilder: self.stepTreeBuilder.rstb,
+            state: state,
+            shouldHideCancelButton: activity.shouldHideCancelButton
+        )
         
         debugPrint(stepTree)
         

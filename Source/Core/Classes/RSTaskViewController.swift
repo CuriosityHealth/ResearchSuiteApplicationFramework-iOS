@@ -31,7 +31,13 @@ open class RSTaskViewController: ORKTaskViewController, ORKTaskViewControllerDel
         
         self.taskFinishedHandler(taskViewController, reason, error)
         
-        
     }
     
+    override open func stepViewControllerWillAppear(_ stepViewController: ORKStepViewController) {
+        super.stepViewControllerWillAppear(stepViewController)
+        if let task = self.task as? RSTask,
+            task.shouldHideCancelButton {
+            stepViewController.cancelButtonItem = nil
+        }
+    }
 }

@@ -10,19 +10,21 @@ import UIKit
 import ResearchKit
 import ResearchSuiteTaskBuilder
 
-open class RSStepTree: NSObject, ORKTask {
+open class RSStepTree: NSObject, ORKTask, RSTask {
     
     open let identifier: String
     let root: RSStepTreeNode
     let taskBuilder: RSTBTaskBuilder
     let state: RSState
     let leafIdentifiers: [String]
-    public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSTBTaskBuilder, state: RSState) {
+    open let shouldHideCancelButton: Bool
+    public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSTBTaskBuilder, state: RSState, shouldHideCancelButton: Bool = false) {
         self.identifier = identifier
         self.root = root
         self.leafIdentifiers = self.root.leaves().map { $0.fullyQualifiedIdentifier }
         self.taskBuilder = taskBuilder
         self.state = state
+        self.shouldHideCancelButton = shouldHideCancelButton
     }
     
     open func step(withIdentifier identifier: String) -> ORKStep? {
