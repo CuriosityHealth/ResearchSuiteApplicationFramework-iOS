@@ -177,7 +177,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSSensedRegionTransitionEventTransform.self,
             RSDateTransform.self,
             RSNotificationTriggerDateTransformer.self,
-            RSGeofenceRegionValueTransformer.self
+            RSGeofenceRegionValueTransformer.self,
+            RSArrayValueTransformer.self
         ]
     }
     

@@ -6,8 +6,6 @@
 //
 
 import UIKit
-
-import UIKit
 import Gloss
 
 ///this should be able to take a list of things that evaluate to date components and merge them

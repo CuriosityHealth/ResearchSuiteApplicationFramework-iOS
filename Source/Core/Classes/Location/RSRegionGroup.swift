@@ -20,7 +20,6 @@ open class RSRegionGroup: Gloss.Decodable {
     public let region: JSON?
     public let regions: JSON?
     public let predicate: RSPredicate?
-    public let monitoredValues: [JSON]
     public let onEnterActions: [JSON]?
     public let onExitActions: [JSON]?
     public let onStateActions: [JSON]?
@@ -28,8 +27,7 @@ open class RSRegionGroup: Gloss.Decodable {
     
     required public init?(json: JSON) {
         
-        guard let identifier: String = "identifier" <~~ json,
-            let monitoredValues: [JSON] = "monitoredValues" <~~ json else {
+        guard let identifier: String = "identifier" <~~ json else {
                 return nil
         }
         
@@ -37,7 +35,6 @@ open class RSRegionGroup: Gloss.Decodable {
         self.region = "region" <~~ json
         self.regions = "regions" <~~ json
         self.predicate = "predicate" <~~ json
-        self.monitoredValues = monitoredValues
         self.onExitActions = "onExit" <~~ json
         self.onEnterActions = "onEnter" <~~ json
         self.onStateActions = "onState" <~~ json
