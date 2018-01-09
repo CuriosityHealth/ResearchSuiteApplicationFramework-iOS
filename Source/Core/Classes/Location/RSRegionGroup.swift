@@ -1,5 +1,5 @@
 //
-//  RSRegion.swift
+//  RSRegionGroup.swift
 //  ResearchSuiteApplicationFramework
 //
 //  Created by James Kizer on 11/26/17.
@@ -8,7 +8,7 @@
 import UIKit
 import Gloss
 
-open class RSRegion: Gloss.Decodable {
+open class RSRegionGroup: Gloss.Decodable {
     
     //each region has an identifier and bound to a location and radius
     //similar to notifications, each region has a predicate, monitored values, and handler actions
@@ -17,32 +17,30 @@ open class RSRegion: Gloss.Decodable {
     //we would want to monitor that value for changes. Thus, if it does change, the region will be refreshed
     
     public let identifier: String
-    public let location: JSON
-    public let radius: JSON
+    public let region: JSON?
+    public let regions: JSON?
     public let predicate: RSPredicate?
     public let monitoredValues: [JSON]
     public let onEnterActions: [JSON]?
     public let onExitActions: [JSON]?
-    public let initialStateActions: [JSON]?
+    public let onStateActions: [JSON]?
     public let json: JSON
     
     required public init?(json: JSON) {
         
         guard let identifier: String = "identifier" <~~ json,
-            let location: JSON = "location" <~~ json,
-            let radius: JSON = "radius" <~~ json,
             let monitoredValues: [JSON] = "monitoredValues" <~~ json else {
                 return nil
         }
         
         self.identifier = identifier
-        self.location = location
-        self.radius = radius
+        self.region = "region" <~~ json
+        self.regions = "regions" <~~ json
         self.predicate = "predicate" <~~ json
         self.monitoredValues = monitoredValues
         self.onExitActions = "onExit" <~~ json
         self.onEnterActions = "onEnter" <~~ json
-        self.initialStateActions = "initialState" <~~ json
+        self.onStateActions = "onState" <~~ json
         self.json = json
         
     }

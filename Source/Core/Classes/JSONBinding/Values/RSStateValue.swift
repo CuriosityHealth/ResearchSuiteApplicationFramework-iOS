@@ -52,6 +52,12 @@ public class RSStateValue: Gloss.Decodable {
             
             return RSValueConvertible(value: value as NSArray)
             
+        case "GeofenceRegion":
+            return nil
+            
+        case "GeofenceRegionArray":
+            return nil
+            
         case "Location":
             return nil
             
@@ -122,6 +128,12 @@ public class RSStateValue: Gloss.Decodable {
             
         case "IntArray":
             return (object as? [Int]) != nil
+            
+        case "GeofenceRegion":
+            return (object as? CLCircularRegion) != nil
+            
+        case "GeofenceRegionArray":
+            return (object as? [CLCircularRegion]) != nil
             
         case "Location":
             return (object as? CLLocation) != nil

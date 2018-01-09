@@ -18,14 +18,14 @@ open class RSRegionMonitoringConfiguration: Gloss.Decodable {
     //for example, if the radius could potentialy change after it's initially set,
     //we would want to monitor that value for changes. Thus, if it does change, the region will be refreshed
     
-    public let regions: [RSRegion]
+    public let regionGroups: [RSRegionGroup]
     
     public required init?(json: JSON) {
-        guard let regions: [JSON] = "regions" <~~ json else {
+        guard let groups: [JSON] = "region_groups" <~~ json else {
             return nil
         }
         
-        self.regions = regions.flatMap { RSRegion(json: $0) }
+        self.regionGroups = groups.flatMap { RSRegionGroup(json: $0) }
     }
 
 }

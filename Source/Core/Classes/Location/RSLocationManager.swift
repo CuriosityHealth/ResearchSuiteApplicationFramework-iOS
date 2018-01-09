@@ -11,6 +11,7 @@ import ReSwift
 
 open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscriber {
     
+    static let kSource = "RSLocationManager"
     enum LocationManagerError: Error {
         case locationManagerDisabled
     }
@@ -66,39 +67,49 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         }
         
         //Possibly add a predicate for ALL regions
-        guard let regions = self.config.regionMonitoringConfig?.regions else {
+        guard let regionGroups = self.config.regionMonitoringConfig?.regionGroups else {
             return
         }
         
         let monitoredRegions = Array(self.locationManager.monitoredRegions)
         debugPrint("\(monitoredRegions.map { $0.identifier }) enabled regions")
-        regions.forEach { self.processRegion(region: $0, state: state, lastState: lastState, monitoredRegions: monitoredRegions) }
+        regionGroups.forEach { self.processRegionGroup(regionGroup: $0, state: state, lastState: lastState, monitoredRegions: monitoredRegions) }
     }
     
-    private func shouldUpdateRegion(region: RSRegion, state: RSState, lastState: RSState, monitoredRegions: [CLRegion]) -> Bool {
-        //we should refresh the region under two circumstances
-        //first, if it is not yet being monitored
-        //otherwise, if monitored values have changed
-        let monitoredRegionIdentifiers = monitoredRegions.map { $0.identifier }
-        if !monitoredRegionIdentifiers.contains(region.identifier) {
-            return true
-        }
-        else {
-            //otherwise, check monitored values to see if they changed between state and last state
-            return region.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
-                return acc || RSValueManager.valueChanged(jsonObject: monitoredValue, state: state, lastState: lastState, context: [:])
-            }
-        }
+//    private func shouldUpdateRegionGroup(regionGroup: RSRegionGroup, state: RSState, lastState: RSState, monitoredRegions: [CLRegion]) -> Bool {
+//        //we should refresh the region under two circumstances
+//        //first, if it is not yet being monitored
+//        //otherwise, if monitored values have changed
+//        let monitoredRegionIdentifiers = monitoredRegions.map { $0.identifier }
+//        if !monitoredRegionIdentifiers.contains(region.identifier) {
+//            return true
+//        }
+//        else {
+//            //otherwise, check monitored values to see if they changed between state and last state
+//            return region.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
+//                return acc || RSValueManager.valueChanged(jsonObject: monitoredValue, state: state, lastState: lastState, context: [:])
+//            }
+//        }
+//    }
+    
+    private func regionListToMap(regions: [CLRegion]) -> [String: CLRegion] {
+        var regionMap: [String: CLRegion] = [:]
+        regions.forEach { regionMap[$0.identifier] = $0 }
+        return regionMap
     }
     
-    private func processRegion(region: RSRegion, state: RSState, lastState: RSState, monitoredRegions: [CLRegion]) {
+    private func prefixFor(regionGroup: RSRegionGroup) -> String {
+        return "\(regionGroup.identifier)."
+    }
+    
+    private func processRegionGroup(regionGroup: RSRegionGroup, state: RSState, lastState: RSState, monitoredRegions: [CLRegion]) {
         
-        let enabledRegionIdentifiers: [String] = monitoredRegions.map { $0.identifier }
+        let monitoredRegionsMap = self.regionListToMap(regions: monitoredRegions)
         
-        let enabled: Bool = {
+        let groupEnabled: Bool = {
             //check for predicate and evaluate
             //if predicate exists and evaluates false, do not execute action
-            if let predicate = region.predicate {
+            if let predicate = regionGroup.predicate {
                 debugPrint(predicate)
                 if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
                     return true
@@ -113,56 +124,149 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             
         }()
         
-        //if region SHOULD NOT be enabled, find the region and stop monitoring
-        if !enabled {
-            if enabledRegionIdentifiers.contains(region.identifier),
-                let cl_region = monitoredRegions.first(where: { $0.identifier == region.identifier }) {
-                
-                self.locationManager.stopMonitoring(for: cl_region)
-                return
+        //if region SHOULD NOT be enabled, disable all regions in the group
+        if !groupEnabled {
+            
+            let enabledGroupRegions:[String] = monitoredRegionsMap.keys.filter { $0.starts(with: self.prefixFor(regionGroup: regionGroup)) }
+            enabledGroupRegions.forEach { regionID in
+                guard let region = monitoredRegionsMap[regionID] else {
+                    return
+                }
+                self.locationManager.stopMonitoring(for: region)
             }
-            else {
-                return
-            }
+            
+            return
             
         }
         else {
-            //if region SHOULD be enabled,
-            if self.shouldUpdateRegion(region: region, state: state, lastState: lastState, monitoredRegions: monitoredRegions),
-                let cl_region = self.CLRegionForRegion(region: region, state: state) {
-                self.locationManager.startMonitoring(for: cl_region)
-                self.fetchState(region: cl_region, completion: { (region, state) in
-                    
-                    debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
-                    
-                })
+            
+            let regions: [CLRegion] = {
+                
+                if let regions = regionGroup.regions {
+                    return RSValueManager.processValue(jsonObject: regions, state: state, context: [:])?.evaluate() as? [CLRegion] ?? []
+                }
+                else if let region = regionGroup.region {
+                    return [RSValueManager.processValue(jsonObject: region, state: state, context: [:])?.evaluate() as? CLRegion].flatMap { $0 }
+                }
+                else {
+                    return []
+                }
+                
+            }()
+            
+            let expectedRegions: [CLRegion] = regions.flatMap { region in
+                
+                if let circularRegion = region as? CLCircularRegion {
+                    return CLCircularRegion(center: circularRegion.center, radius: circularRegion.radius, identifier: "\(self.prefixFor(regionGroup: regionGroup))\(circularRegion.identifier)")
+                }
+                else if let _ = region as? CLBeaconRegion {
+                    assertionFailure("Beacons not yet supported")
+                    return nil
+                }
+                else {
+                    return nil
+                }
+                
             }
             
+            let expectedRegionsMap = self.regionListToMap(regions: expectedRegions)
             
+            //if group is enabled, we need to determine if there are any regions in the group that:
+            // should start being monitored
+            // should stop being monitored
+            // should be updated
+            
+            let regionsToStopMonitoring = self.regionsToStopMonitoring(monitoredRegionsMap: monitoredRegionsMap, expectedRegionsMap: expectedRegionsMap)
+            let regionsToStartMonitoringOrUpdate = self.regionsToStartMonitoring(monitoredRegionsMap: monitoredRegionsMap, expectedRegionsMap: expectedRegionsMap)
+                .union(self.regionsToUpdateMonitoring(monitoredRegionsMap: monitoredRegionsMap, expectedRegionsMap: expectedRegionsMap))
+            
+            regionsToStopMonitoring.forEach { region in
+                self.locationManager.stopMonitoring(for: region)
+            }
+            
+            regionsToStartMonitoringOrUpdate.forEach { region in
+                debugPrint("starting to monitor region: \(region.identifier)")
+                self.locationManager.startMonitoring(for: region)
+                self.fetchState(region: region, completion: { (region, state) in
+                    debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
+                })
+            }
         }
         
     }
+    
+    private func regionsToStartMonitoring(monitoredRegionsMap: [String: CLRegion], expectedRegionsMap: [String: CLRegion]) -> Set<CLRegion> {
+        
+        let enabledSet = Set(monitoredRegionsMap.keys)
+        let shouldBeEnabledSet = Set(expectedRegionsMap.keys)
+        return Set(shouldBeEnabledSet.subtracting(enabledSet).flatMap { identifier in
+            return expectedRegionsMap[identifier]
+        })
+    }
+    
+    private func regionsToStopMonitoring(monitoredRegionsMap: [String: CLRegion], expectedRegionsMap: [String: CLRegion]) -> Set<CLRegion> {
+        
+        let enabledSet = Set(monitoredRegionsMap.keys)
+        let shouldBeEnabledSet = Set(expectedRegionsMap.keys)
+        return Set(enabledSet.subtracting(shouldBeEnabledSet).flatMap { identifier in
+            return monitoredRegionsMap[identifier]
+        })
+    }
+    
+    //by default, accurate to 5th decimal place, or 1.1 meter
+    //https://gis.stackexchange.com/questions/8650/measuring-accuracy-of-latitude-and-longitude
+    private func coordiatesEquivalent(_ coord1: CLLocationCoordinate2D, _ coord2: CLLocationCoordinate2D, epsilon: Double = 0.00001) -> Bool {
+        
+        return abs(coord1.latitude - coord2.latitude) < epsilon &&
+            abs(coord1.longitude - coord2.longitude) < epsilon
+        
+    }
+    private func regionsEqual(_ region1: CLRegion, _ region2: CLRegion) -> Bool {
+        
+        guard let circularRegion1 = region1 as? CLCircularRegion,
+            let circularRegion2 = region2 as? CLCircularRegion else {
+                assertionFailure("Beacons not yet supported")
+                return false
+        }
+        
+        return circularRegion1.identifier == circularRegion2.identifier &&
+            abs(circularRegion1.radius - circularRegion2.radius) < 1.0 &&
+            self.coordiatesEquivalent(circularRegion1.center, circularRegion2.center)
+        
+    }
+    
+    private func regionsToUpdateMonitoring(monitoredRegionsMap: [String: CLRegion], expectedRegionsMap: [String: CLRegion]) -> Set<CLRegion> {
+
+        let enabledSet = Set(monitoredRegionsMap.keys)
+        let shouldBeEnabledSet = Set(expectedRegionsMap.keys)
+        let intersetingIdentifiers = enabledSet.intersection(shouldBeEnabledSet)
+        
+        let regionsToUpdate = intersetingIdentifiers.filter { identifier in
+            
+            guard let expectedRegion = expectedRegionsMap[identifier],
+                let monitoredRegion = monitoredRegionsMap[identifier] else {
+                    return true
+            }
+            
+            return !self.regionsEqual(expectedRegion, monitoredRegion)
+            
+            }.flatMap { identifier in
+                return expectedRegionsMap[identifier]
+        }
+        
+        return Set(regionsToUpdate)
+    }
+    
     
     public func fetchCurrentLocation(completion: @escaping FetchLocationCompletion) {
         self.fetchLocationCompletion = completion
         self.locationManager.requestLocation()
     }
-    
-    public func CLRegionForRegion(region: RSRegion, state: RSState) -> CLRegion? {
-        guard let radius = RSValueManager.processValue(jsonObject: region.radius, state: state, context: [:])?.evaluate() as? Double,
-            let location = RSValueManager.processValue(jsonObject: region.location, state: state, context: [:])?.evaluate() as? CLLocation else {
-            return nil
-        }
-        
-        return CLCircularRegion(center: location.coordinate, radius: radius, identifier: region.identifier)
-    }
-    
+
     public func fetchState(region: CLRegion, completion: @escaping FetchRegionStateCompletion) {
         self.fetchRegionStateCompletionMap[region.identifier] = completion
         self.locationManager.requestState(for: region)
     }
-    
-    
     
     public func requestLocationAuthorization(always: Bool) {
         if always {
@@ -239,30 +343,52 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         
     }
     
+    private func regionGroup(forRegion: CLRegion) -> RSRegionGroup? {
+        return self.config.regionMonitoringConfig?.regionGroups.first(where: { forRegion.identifier.starts(with: self.prefixFor(regionGroup: $0)) })
+    }
+    
     public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         guard let store = self.store,
-            let suiteRegion: RSRegion = self.config.regionMonitoringConfig?.regions.first(where: { region.identifier == $0.identifier }),
-            let actions = suiteRegion.onEnterActions else {
+            let regionGroup = self.regionGroup(forRegion: region),
+            let actions = regionGroup.onEnterActions else {
                 return
         }
         
-        RSActionManager.processActions(actions: actions, context: ["CLRegion": region, "RSRegion": suiteRegion], store: store)
+        let regionTransitionEvent = RSRegionTransitionEvent(
+            regionGroup: regionGroup,
+            region: region,
+            transition: .enter,
+            source: RSLocationManager.kSource,
+            uuid: UUID(),
+            timestamp: Date()
+        )
+        
+        RSActionManager.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
     }
     
     public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         guard let store = self.store,
-            let suiteRegion: RSRegion = self.config.regionMonitoringConfig?.regions.first(where: { region.identifier == $0.identifier }),
-            let actions = suiteRegion.onExitActions else {
+            let regionGroup = self.regionGroup(forRegion: region),
+            let actions = regionGroup.onExitActions else {
                 return
         }
         
-        RSActionManager.processActions(actions: actions, context: ["CLRegion": region, "RSRegion": suiteRegion], store: store)
+        let regionTransitionEvent = RSRegionTransitionEvent(
+            regionGroup: regionGroup,
+            region: region,
+            transition: .exit,
+            source: RSLocationManager.kSource,
+            uuid: UUID(),
+            timestamp: Date()
+        )
+        
+        RSActionManager.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
     }
     
     public func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
         
         guard let store = self.store,
-            let suiteRegion: RSRegion = self.config.regionMonitoringConfig?.regions.first(where: { region.identifier == $0.identifier }) else {
+            let regionGroup = self.regionGroup(forRegion: region) else {
                 return
         }
         
@@ -271,22 +397,31 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             self.fetchRegionStateCompletionMap[region.identifier] = nil
         }
         
-        guard let actions = suiteRegion.initialStateActions else {
+        guard let actions = regionGroup.onStateActions else {
             return
         }
         
-        let stateString: String = {
+        let state: RSRegionTransitionEvent.Transition = {
             switch state {
             case .inside:
-                return "inside"
+                return .startedInside
             case .outside:
-                return "outside"
+                return .startedOutside
             default:
-                return "unknown"
+                return .startedUnknown
             }
         }()
         
-        RSActionManager.processActions(actions: actions, context: ["CLRegion": region, "RSRegion": suiteRegion, "state": stateString as NSString], store: store)
+        let regionTransitionEvent = RSRegionTransitionEvent(
+            regionGroup: regionGroup,
+            region: region,
+            transition: state,
+            source: RSLocationManager.kSource,
+            uuid: UUID(),
+            timestamp: Date()
+        )
+        
+        RSActionManager.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
     }
     
     
