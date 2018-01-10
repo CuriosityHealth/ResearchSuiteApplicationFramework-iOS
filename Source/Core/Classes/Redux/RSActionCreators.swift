@@ -582,7 +582,7 @@ public class RSActionCreators: NSObject {
         }
     }
     
-    public static func fetchCurrentLocation() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func fetchCurrentLocation(onCompletion: RSPromise) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
             debugPrint("Fetching Location")
@@ -596,13 +596,31 @@ public class RSActionCreators: NSObject {
             if let locationManager = RSApplicationDelegate.appDelegate.locationManager {
                 locationManager.fetchCurrentLocation(completion: { (locations, error) in
                     
-                    if let locations = locations {
-                        let action = FetchCurrentLocationSuccess(locations: locations)
+                    
+                    if let locationsToProcess = locations {
+                        
+                        let action = FetchCurrentLocationSuccess(locations: locationsToProcess)
                         store.dispatch(action)
+                        
+                        //process onSuccess Actions
+                        if let onSuccessActions = onCompletion.onSuccessActions {
+                            locationsToProcess.forEach { location in
+                                let locationEvent = RSLocationEvent(location: location, source: "Location Request", uuid: UUID())
+                                RSActionManager.processActions(actions: onSuccessActions, context: ["sensedLocation": location, "sensedLocationEvent": locationEvent], store: store)
+                            }
+                        }
+                    
                     }
-                    else if let error = error{
+                    else if let error = error {
+                        
                         let action = FetchCurrentLocationFailure(error: error)
                         store.dispatch(action)
+                        
+                        //process onFailure Actions
+                        if let onFailureAction = onCompletion.onFailureActions {
+                            RSActionManager.processActions(actions: onFailureAction, context: ["error": error as NSError], store: store)
+                        }
+                        
                     }
                     else {
                         assertionFailure("Locations and Error cannot both be nil")
@@ -617,5 +635,12 @@ public class RSActionCreators: NSObject {
             }
         }
     }
+    
+    public static func setLocationMonitoringEnabled(enabled: Bool) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return SetLocationMonitoringEnabled(enabled: enabled)
+        }
+    }
+    
     
 }

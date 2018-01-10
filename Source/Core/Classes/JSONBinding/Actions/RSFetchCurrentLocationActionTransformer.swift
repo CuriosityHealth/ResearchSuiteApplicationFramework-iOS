@@ -18,7 +18,12 @@ open class RSFetchCurrentLocationActionTransformer: RSActionTransformer {
     open static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         return { state, store in
-            store.dispatch(RSActionCreators.fetchCurrentLocation())
+            
+            guard let onCompletion: RSPromise = "onCompletion" <~~ jsonObject else {
+                return nil
+            }
+            
+            store.dispatch(RSActionCreators.fetchCurrentLocation(onCompletion: onCompletion))
             return nil
         }
     }

@@ -243,6 +243,10 @@ public struct UpdateLocationAuthorizationStatusFailure: Action {
     
 }
 
+public struct SetLocationMonitoringEnabled: Action {
+    let enabled: Bool
+}
+
 
 
 //Analytics Stuff

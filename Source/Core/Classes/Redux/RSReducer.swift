@@ -417,6 +417,9 @@ public class RSReducer: NSObject {
             case _ as UpdateLocationAuthorizationStatusFailure:
                 return RSState.newState(fromState: state, isRequestingLocationAuthorization: false)
                 
+            case let action as SetLocationMonitoringEnabled:
+                return RSState.newState(fromState: state, isLocationMonitoringEnabled: action.enabled)
+                
             default:
                 return state
             }

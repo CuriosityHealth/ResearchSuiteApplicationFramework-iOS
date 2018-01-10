@@ -18,19 +18,16 @@ open class RSLocationConfiguration: Gloss.Decodable {
     //The config should provide a list of actions to execute when a new location is processed
     //RSSensedLocationValueTransform should support this
     public let predicate: RSPredicate?
-    public let onUpdateActions: RSActivity.OnCompletionStruct?
+    public let onUpdate: RSPromise
     
     public required init?(json: JSON) {
         
-        guard let onUpdate: JSON = "onUpdate" <~~ json,
-            let onSuccess: [JSON] = "onSuccess" <~~ onUpdate,
-            let onFailure: [JSON] = "onFailure" <~~ onUpdate,
-            let finally: [JSON] = "finally" <~~ onUpdate else {
+        guard let onUpdate: RSPromise = "onUpdate" <~~ json else {
             return nil
         }
         
         self.predicate = "predicate" <~~ json
-        self.onUpdateActions = RSActivity.OnCompletionStruct(onSuccessActions: onSuccess, onFailureActions: onFailure, finallyActions: finally)
+        self.onUpdate = onUpdate
     }
 
 }

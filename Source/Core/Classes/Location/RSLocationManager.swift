@@ -12,6 +12,7 @@ import ReSwift
 open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscriber {
     
     static let kSource = "RSLocationManager"
+    static let kGroupRegionDelimiter = "."
     enum LocationManagerError: Error {
         case locationManagerDisabled
     }
@@ -40,6 +41,25 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         self.locationManager.monitoredRegions.forEach { self.locationManager.stopMonitoring(for: $0) }
     }
     
+    private func shouldLocationMonitoringBeEnabled(state: RSState) -> Bool {
+        guard let locationConfig = config.locationConfig else {
+            return false
+        }
+        
+        if let predicate = locationConfig.predicate {
+            debugPrint(predicate)
+            if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
+                return true
+            }
+            else {
+                return false
+            }
+        }
+        else {
+            return true
+        }
+    }
+    
     public func newState(state: RSState) {
         
         //check for notifications being enabled
@@ -54,8 +74,34 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             return
         }
         
+        self.doLocationProcessing(state: state)
+
         self.doRegionProcessing(state: state, lastState: lastState)
         
+    }
+    
+    private func doLocationProcessing(state: RSState) {
+        let shouldLocationMonitoringBeEnabled = self.shouldLocationMonitoringBeEnabled(state: state)
+        if let enabled = RSStateSelectors.isLocationMonitoringEnabled(state) {
+            if shouldLocationMonitoringBeEnabled != enabled {
+                if shouldLocationMonitoringBeEnabled {
+                    self.locationManager.startMonitoringSignificantLocationChanges()
+                }
+                else {
+                    self.locationManager.stopMonitoringSignificantLocationChanges()
+                }
+                self.store?.dispatch(RSActionCreators.setLocationMonitoringEnabled(enabled: shouldLocationMonitoringBeEnabled))
+            }
+        }
+        else {
+            if shouldLocationMonitoringBeEnabled {
+                self.locationManager.startMonitoringSignificantLocationChanges()
+            }
+            else {
+                self.locationManager.stopMonitoringSignificantLocationChanges()
+            }
+            self.store?.dispatch(RSActionCreators.setLocationMonitoringEnabled(enabled: shouldLocationMonitoringBeEnabled))
+        }
     }
     
     public func doRegionProcessing(state: RSState, lastState: RSState) {
@@ -76,19 +122,20 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         regionGroups.forEach { self.processRegionGroup(regionGroup: $0, state: state, lastState: lastState, monitoredRegions: monitoredRegions) }
     }
     
-    private func regionListToMap(regions: [CLRegion]) -> [String: CLRegion] {
+    private func regionListToMap(regions: [CLRegion], filter: ((CLRegion)->(Bool))={ _ in true }) -> [String: CLRegion] {
         var regionMap: [String: CLRegion] = [:]
-        regions.forEach { regionMap[$0.identifier] = $0 }
+        regions.filter(filter).forEach { regionMap[$0.identifier] = $0 }
         return regionMap
     }
     
     private func prefixFor(regionGroup: RSRegionGroup) -> String {
-        return "\(regionGroup.identifier)."
+        return "\(regionGroup.identifier)\(RSLocationManager.kGroupRegionDelimiter)"
     }
     
     private func processRegionGroup(regionGroup: RSRegionGroup, state: RSState, lastState: RSState, monitoredRegions: [CLRegion]) {
         
-        let monitoredRegionsMap = self.regionListToMap(regions: monitoredRegions)
+//        let enabledGroupRegionIDs:[String] = monitoredRegionsMap.keys.filter { $0.starts(with: self.prefixFor(regionGroup: regionGroup)) }
+        let monitoredRegionsMap = self.regionListToMap(regions: monitoredRegions, filter: { $0.identifier.starts(with: self.prefixFor(regionGroup: regionGroup)) })
         
         let groupEnabled: Bool = {
             //check for predicate and evaluate
@@ -111,13 +158,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         //if region SHOULD NOT be enabled, disable all regions in the group
         if !groupEnabled {
             
-            let enabledGroupRegions:[String] = monitoredRegionsMap.keys.filter { $0.starts(with: self.prefixFor(regionGroup: regionGroup)) }
-            enabledGroupRegions.forEach { regionID in
-                guard let region = monitoredRegionsMap[regionID] else {
-                    return
-                }
-                self.locationManager.stopMonitoring(for: region)
-            }
+            monitoredRegionsMap.values.forEach { self.locationManager.stopMonitoring(for: $0) }
             
             return
             
@@ -168,17 +209,24 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
                 self.locationManager.stopMonitoring(for: region)
             }
             
-            regionsToStartMonitoringOrUpdate.forEach { regionToMonitor in
-                debugPrint("starting to monitor region: \(regionToMonitor.identifier)")
-                self.locationManager.stopMonitoring(for: regionToMonitor)
-                self.locationManager.startMonitoring(for: regionToMonitor)
-                self.fetchState(region: regionToMonitor, completion: { (region, state) in
-                    debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
-                    if self.regionsEqual(regionToMonitor, region) {
-                        self.handleInitialStateEvent(region: region, state: state)
-                    }
-                })
+            RSHelpers.delay(1.0) {
+                regionsToStartMonitoringOrUpdate.forEach { regionToMonitor in
+                    debugPrint("starting to monitor region: \(regionToMonitor.identifier)")
+                    self.locationManager.startMonitoring(for: regionToMonitor)
+                }
             }
+            
+            RSHelpers.delay(2.0) {
+                regionsToStartMonitoringOrUpdate.forEach { regionToMonitor in
+                    self.fetchState(region: regionToMonitor, completion: { (region, state) in
+                        debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
+                        if self.regionsEqual(regionToMonitor, region) {
+                            self.handleInitialStateEvent(region: region, state: state)
+                        }
+                    })
+                }
+            }
+            
         }
         
     }
@@ -294,30 +342,39 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
     
     public func processLocationUpdate(_ manager: CLLocationManager, locations: [CLLocation]?, error: Error?) {
         
-        guard let actions = self.config.locationConfig?.onUpdateActions,
-            let store = self.store else {
-            return
-        }
-        
         //completion handler should clear isFetching flag
         if let completion = self.fetchLocationCompletion {
             completion(locations, error)
             self.fetchLocationCompletion = nil
         }
         
+        guard let state = self.store?.state,
+            let enabled = RSStateSelectors.isLocationMonitoringEnabled(state),
+            enabled,
+            let store = self.store,
+            let onUpdate = self.config.locationConfig?.onUpdate else {
+                return
+        }
+    
         //process onSuccess Actions
-        if let locationsToProcess = locations {
+        if let locationsToProcess = locations,
+            let onSuccessActions = onUpdate.onSuccessActions {
             locationsToProcess.forEach { location in
-                RSActionManager.processActions(actions: actions.onSuccessActions, context: ["sensedLocation": location], store: store)
+                let locationEvent = RSLocationEvent(location: location, source: "Location Request", uuid: UUID())
+                RSActionManager.processActions(actions: onSuccessActions, context: ["sensedLocation": location, "sensedLocationEvent": locationEvent], store: store)
             }
         }
-        else if let _ = error {
+        else if let error = error,
+            let onFailureActions = onUpdate.onFailureActions {
             //process onFailure Actions
-            RSActionManager.processActions(actions: actions.onFailureActions, context: [:], store: store)
+            RSActionManager.processActions(actions: onFailureActions, context: ["error": error as NSError], store: store)
         }
         
         //process finally actions
-        RSActionManager.processActions(actions: actions.finallyActions, context: [:], store: store)
+        if let finallyActions = onUpdate.finallyActions {
+            RSActionManager.processActions(actions: finallyActions, context: [:], store: store)
+        }
+        
     }
     
     public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -463,17 +520,19 @@ extension RSLocationManager {
     
     public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         debugPrint("monitoring failed for \(region!.identifier) with \(error)")
-        if let r = region {
-            manager.stopMonitoring(for: r)
-            manager.startMonitoring(for: r)
-            self.fetchState(region: r, completion: { (region, state) in
-                debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
-                if self.regionsEqual(r, region) {
-                    self.handleInitialStateEvent(region: region, state: state)
-                }
-            })
-        }
-//        assertionFailure("monitoring failed for \(region!.identifier) with \(error)")
+        debugPrint(error as NSError)
+        
+//        if let r = region {
+//            manager.stopMonitoring(for: r)
+//            manager.startMonitoring(for: r)
+//            self.fetchState(region: r, completion: { (region, state) in
+//                debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
+//                if self.regionsEqual(r, region) {
+//                    self.handleInitialStateEvent(region: region, state: state)
+//                }
+//            })
+//        }
+        assertionFailure("monitoring failed for \(region!.identifier) with \(error)")
         
     }
 }

@@ -236,6 +236,10 @@ public class RSStateSelectors: NSObject {
         return state.locationAuthorizationStatus
     }
     
+    public static func isLocationMonitoringEnabled(_ state: RSState) -> Bool? {
+        return state.isLocationMonitoringEnabled
+    }
+    
     public static func shouldPreventSleep(_ state: RSState) -> Bool {
         return state.preventSleep
     }
