@@ -13,6 +13,7 @@ open class RSListLayout: RSLayout {
     
     public let items: [RSListItem]
     public let itemMap: [String: RSListItem]
+    public let monitoredValues: [JSON]
     
     required public init?(json: JSON) {
         
@@ -28,6 +29,7 @@ open class RSListLayout: RSLayout {
         }
         
         self.itemMap = itemMap
+        self.monitoredValues = "monitoredValues" <~~ json ?? []
         super.init(json: json)
     }
 

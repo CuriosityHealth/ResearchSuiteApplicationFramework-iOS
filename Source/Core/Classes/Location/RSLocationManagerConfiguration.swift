@@ -12,12 +12,13 @@ open class RSLocationManagerConfiguration: Gloss.Decodable {
     
     //location config
     //by default, we do not monitor location changes
-    //TODO: Add support for significant location changes
     //TODO: Add support for regular location changes
-    //We do provide an action to request the current location
+    //We also provide an action to request the current location
     //The config should provide a list of actions to execute when a new location is processed
     //RSSensedLocationValueTransform should support this
     public let locationConfig: RSLocationConfiguration?
+    
+    public let visitConfig: RSVisitConfiguration?
     
     //region monitoring config
     //array of regions
@@ -31,6 +32,7 @@ open class RSLocationManagerConfiguration: Gloss.Decodable {
     required public init?(json: JSON) {
         
         self.locationConfig = "location" <~~ json
+        self.visitConfig = "visit" <~~ json
         self.regionMonitoringConfig = "regionMonitoring" <~~ json
         
     }

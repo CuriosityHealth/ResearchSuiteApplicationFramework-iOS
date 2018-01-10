@@ -7,6 +7,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -60,6 +61,38 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="toggle_cell" id="xKB-GC-yat" userLabel="toggle_cell" customClass="RSToggleCell" customModule="ResearchSuiteApplicationFramework" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="148" width="375" height="60"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xKB-GC-yat" id="fhe-EQ-mlW">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="59.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kZh-0E-Eom">
+                                            <rect key="frame" x="310" y="14.5" width="51" height="31"/>
+                                            <connections>
+                                                <action selector="valueChanged:" destination="xKB-GC-yat" eventType="valueChanged" id="lmQ-MO-vZe"/>
+                                            </connections>
+                                        </switch>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9xT-co-6GL" customClass="ORKLabel">
+                                            <rect key="frame" x="16" y="19" width="34" height="21"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstAttribute="trailingMargin" secondItem="kZh-0E-Eom" secondAttribute="trailing" id="9fZ-id-sPF"/>
+                                        <constraint firstItem="9xT-co-6GL" firstAttribute="leading" secondItem="fhe-EQ-mlW" secondAttribute="leadingMargin" id="JmZ-tN-h5j"/>
+                                        <constraint firstItem="9xT-co-6GL" firstAttribute="centerY" secondItem="fhe-EQ-mlW" secondAttribute="centerY" id="OBD-5S-jbB"/>
+                                        <constraint firstItem="kZh-0E-Eom" firstAttribute="centerY" secondItem="fhe-EQ-mlW" secondAttribute="centerY" id="W4w-dz-06x"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="title" destination="9xT-co-6GL" id="RYs-UA-Js7"/>
+                                    <outlet property="toggle" destination="kZh-0E-Eom" id="qnu-UL-dHs"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

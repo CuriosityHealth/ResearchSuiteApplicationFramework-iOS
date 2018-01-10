@@ -247,6 +247,10 @@ public struct SetLocationMonitoringEnabled: Action {
     let enabled: Bool
 }
 
+public struct SetVisitMonitoringEnabled: Action {
+    let enabled: Bool
+}
+
 
 
 //Analytics Stuff

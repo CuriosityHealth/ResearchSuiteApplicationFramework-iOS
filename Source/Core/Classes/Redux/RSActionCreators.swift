@@ -642,5 +642,11 @@ public class RSActionCreators: NSObject {
         }
     }
     
+    public static func setVisitMonitoringEnabled(enabled: Bool) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return SetVisitMonitoringEnabled(enabled: enabled)
+        }
+    }
+    
     
 }

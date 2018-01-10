@@ -60,6 +60,25 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         }
     }
     
+    private func shouldVisitMonitoringBeEnabled(state: RSState) -> Bool {
+        guard let visitConfig = config.visitConfig else {
+            return false
+        }
+        
+        if let predicate = visitConfig.predicate {
+            debugPrint(predicate)
+            if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
+                return true
+            }
+            else {
+                return false
+            }
+        }
+        else {
+            return true
+        }
+    }
+    
     public func newState(state: RSState) {
         
         //check for notifications being enabled
@@ -75,6 +94,8 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         }
         
         self.doLocationProcessing(state: state)
+        
+        self.doVisitProcessing(state: state)
 
         self.doRegionProcessing(state: state, lastState: lastState)
         
@@ -101,6 +122,31 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
                 self.locationManager.stopMonitoringSignificantLocationChanges()
             }
             self.store?.dispatch(RSActionCreators.setLocationMonitoringEnabled(enabled: shouldLocationMonitoringBeEnabled))
+        }
+    }
+    
+    private func doVisitProcessing(state: RSState) {
+        
+        let shouldVisitMonitoringBeEnabled = self.shouldVisitMonitoringBeEnabled(state: state)
+        if let enabled = RSStateSelectors.isVisitMonitoringEnabled(state) {
+            if shouldVisitMonitoringBeEnabled != enabled {
+                if shouldVisitMonitoringBeEnabled {
+                    self.locationManager.startMonitoringVisits()
+                }
+                else {
+                    self.locationManager.stopMonitoringVisits()
+                }
+                self.store?.dispatch(RSActionCreators.setVisitMonitoringEnabled(enabled: shouldVisitMonitoringBeEnabled))
+            }
+        }
+        else {
+            if shouldVisitMonitoringBeEnabled {
+                self.locationManager.startMonitoringVisits()
+            }
+            else {
+                self.locationManager.stopMonitoringVisits()
+            }
+            self.store?.dispatch(RSActionCreators.setVisitMonitoringEnabled(enabled: shouldVisitMonitoringBeEnabled))
         }
     }
     
@@ -208,6 +254,13 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             regionsToStopMonitoring.forEach { region in
                 self.locationManager.stopMonitoring(for: region)
             }
+            
+            // getting weird kCLErrorDomain code 5 errors when stopping / starting / getting state of regions very close together
+            // this is kind of a hacky work around for the moment
+            // note that there are probably weird race conditions here
+            // the real fix is to add this to the state so that we can space this stuff out
+            // but we also won't attempt to update region monitoring until processing is completed
+            // i.e., have request, complete actions for processing events
             
             RSHelpers.delay(1.0) {
                 regionsToStartMonitoringOrUpdate.forEach { regionToMonitor in
@@ -360,7 +413,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         if let locationsToProcess = locations,
             let onSuccessActions = onUpdate.onSuccessActions {
             locationsToProcess.forEach { location in
-                let locationEvent = RSLocationEvent(location: location, source: "Location Request", uuid: UUID())
+                let locationEvent = RSLocationEvent(location: location, source: "Location Monitoring", uuid: UUID())
                 RSActionManager.processActions(actions: onSuccessActions, context: ["sensedLocation": location, "sensedLocationEvent": locationEvent], store: store)
             }
         }
@@ -535,4 +588,29 @@ extension RSLocationManager {
         assertionFailure("monitoring failed for \(region!.identifier) with \(error)")
         
     }
+}
+
+extension RSLocationManager {
+    
+    public func locationManager(_ manager: CLLocationManager, didVisit visit: CLVisit) {
+
+        guard let state = self.store?.state,
+            let enabled = RSStateSelectors.isVisitMonitoringEnabled(state),
+            enabled,
+            let store = self.store,
+            let onUpdate = self.config.visitConfig?.onUpdate else {
+                return
+        }
+        
+        if let onSuccessActions = onUpdate.onSuccessActions {
+            let visitEvent = RSVisitEvent(visit: visit, source: "Visit Monitoring", uuid: UUID())
+            RSActionManager.processActions(actions: onSuccessActions, context: ["sensedVisitEvent": visitEvent], store: store)
+        }
+        
+        //process finally actions
+        if let finallyActions = onUpdate.finallyActions {
+            RSActionManager.processActions(actions: finallyActions, context: [:], store: store)
+        }
+    }
+    
 }

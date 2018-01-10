@@ -62,6 +62,7 @@ public final class RSState: NSObject, StateType {
     public let locationAuthorizationStatus: CLAuthorizationStatus
     public let isFetchingLocation: Bool
     public let isLocationMonitoringEnabled: Bool?
+    public let isVisitMonitoringEnabled: Bool?
     
     //passcode stuff
     public let isPresentingPasscode: Bool
@@ -99,6 +100,7 @@ public final class RSState: NSObject, StateType {
                 locationAuthorizationStatus: CLAuthorizationStatus = .notDetermined,
                 isFetchingLocation: Bool = false,
                 isLocationMonitoringEnabled: Bool? = nil,
+                isVisitMonitoringEnabled: Bool? = nil,
                 isPresentingPasscode: Bool = false,
                 passcodeViewController: ORKPasscodeViewController? = nil,
                 isDismissingPasscode: Bool = false,
@@ -133,6 +135,7 @@ public final class RSState: NSObject, StateType {
         self.isFetchingLocation = isFetchingLocation
         self.isPresentingPasscode = isPresentingPasscode
         self.isLocationMonitoringEnabled = isLocationMonitoringEnabled
+        self.isVisitMonitoringEnabled = isVisitMonitoringEnabled
         self.passcodeViewController = passcodeViewController
         self.isDismissingPasscode = isDismissingPasscode
         self.signOutRequested = signOutRequested
@@ -168,6 +171,7 @@ public final class RSState: NSObject, StateType {
         isFetchingLocation: Bool? = nil,
         isPresentingPasscode: Bool? = nil,
         isLocationMonitoringEnabled: Bool?? = nil,
+        isVisitMonitoringEnabled: Bool?? = nil,
         passcodeViewController: ORKPasscodeViewController?? = nil,
         isDismissingPasscode: Bool? = nil,
         signOutRequested: Bool? = nil,
@@ -201,6 +205,7 @@ public final class RSState: NSObject, StateType {
             locationAuthorizationStatus: locationAuthorizationStatus ?? fromState.locationAuthorizationStatus,
             isFetchingLocation: isFetchingLocation ?? fromState.isFetchingLocation,
             isLocationMonitoringEnabled: isLocationMonitoringEnabled ?? fromState.isLocationMonitoringEnabled,
+            isVisitMonitoringEnabled: isVisitMonitoringEnabled ?? fromState.isVisitMonitoringEnabled,
             isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
             isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode,

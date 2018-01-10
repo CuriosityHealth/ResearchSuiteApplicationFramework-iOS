@@ -14,6 +14,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
 
     weak var store: Store<RSState>?
     var state: RSState!
+    var lastState: RSState!
     var listLayout: RSListLayout!
     open var layout: RSLayout! {
         return self.listLayout
@@ -65,8 +66,27 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     }
     
     open func newState(state: RSState) {
+        
+        guard let lastState = self.lastState else {
+            self.lastState = state
+            return
+        }
+        
         self.state = state
         self.loadData(state: state)
+        
+        let shouldReload = self.listLayout.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
+            return acc || RSValueManager.valueChanged(jsonObject: monitoredValue, state: state, lastState: lastState, context: [:])
+        }
+        
+        if shouldReload {
+            self.tableView.reloadData()
+        }
+        
+        self.lastState = state
+        
+        
+        
     }
     
     @objc
@@ -85,7 +105,11 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         if newVisibleLayoutItems != currentVisibleLayoutItems {
             self.visibleLayoutItems = newVisibleLayoutItems.flatMap { self.listLayout.itemMap[$0] }
             self.loadFinished()
+            return
         }
+        
+        
+        
         
     }
     
@@ -149,15 +173,61 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         }
         
         var cell: UITableViewCell!
-        if item.onTapActions.count > 0 {
+        
+        switch item.type {
+        case "tappableItem":
             cell = tableView.dequeueReusableCell(withIdentifier: "activity_cell", for: indexPath)
-        }
-        else {
+            cell.textLabel?.text = self.generateString(key: "title", element: item.element)
+            
+        case "textItem":
             cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
+            cell.textLabel?.text = self.generateString(key: "title", element: item.element)
+            cell.detailTextLabel?.text = self.generateString(key: "text", element: item.element)
+            
+        case "toggleItem":
+            guard let toggleCell = tableView.dequeueReusableCell(withIdentifier: "toggle_cell", for: indexPath) as? RSToggleCell,
+                let toggleItem = RSToggleListItem(json: item.element),
+                let metadata = RSStateSelectors.getStateValueMetadata(self.state, for: toggleItem.boundStateIdentifier),
+                metadata.type == "Boolean" else {
+                break
+            }
+            
+            toggleCell.title?.text = self.generateString(key: "title", element: item.element)
+            
+            toggleCell.onToggle = { isOn in
+                let action = RSActionCreators.setValueInState(key: toggleItem.boundStateIdentifier, value: NSNumber(booleanLiteral: isOn))
+                self.store?.dispatch(action)
+            }
+            
+            if let value = RSStateSelectors.getValueInCombinedState(state, for: toggleItem.boundStateIdentifier) as? NSNumber {
+                if toggleCell.toggle.isOn != value.boolValue {
+                    toggleCell.toggle.setOn(value.boolValue, animated: true)
+                }
+            }
+            else {
+                if toggleCell.toggle.isOn == true {
+                    toggleCell.toggle.setOn(false, animated: true)
+                }
+            }
+            
+            cell = toggleCell
+            
+        default:
+            cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
+            cell.textLabel?.text = self.generateString(key: "title", element: item.element)
         }
-
-        cell.textLabel?.text = self.generateString(key: "title", element: item.element)
-        cell.detailTextLabel?.text = self.generateString(key: "text", element: item.element)
+        
+        
+        
+//        if item.onTapActions.count > 0 {
+//            cell = tableView.dequeueReusableCell(withIdentifier: "activity_cell", for: indexPath)
+//        }
+//        else {
+//            cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
+//        }
+//
+//        cell.textLabel?.text = self.generateString(key: "title", element: item.element)
+//        cell.detailTextLabel?.text = self.generateString(key: "text", element: item.element)
 
         return cell
     }
@@ -166,12 +236,13 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let item = self.itemForIndexPath(indexPath: indexPath) else {
+        guard let item = self.itemForIndexPath(indexPath: indexPath),
+            let tappableItem = RSTappableListItem(json: item.element) else {
             return
         }
         
         //dispatch onTap actions
-        item.onTapActions.forEach { self.processAction(action: $0) }
+        tappableItem.onTapActions.forEach { self.processAction(action: $0) }
         
     }
     

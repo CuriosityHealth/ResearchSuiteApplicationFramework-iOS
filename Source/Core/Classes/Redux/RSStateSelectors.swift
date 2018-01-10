@@ -240,6 +240,10 @@ public class RSStateSelectors: NSObject {
         return state.isLocationMonitoringEnabled
     }
     
+    public static func isVisitMonitoringEnabled(_ state: RSState) -> Bool? {
+        return state.isVisitMonitoringEnabled
+    }
+    
     public static func shouldPreventSleep(_ state: RSState) -> Bool {
         return state.preventSleep
     }

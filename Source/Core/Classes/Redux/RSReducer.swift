@@ -420,6 +420,9 @@ public class RSReducer: NSObject {
             case let action as SetLocationMonitoringEnabled:
                 return RSState.newState(fromState: state, isLocationMonitoringEnabled: action.enabled)
                 
+            case let action as SetVisitMonitoringEnabled:
+                return RSState.newState(fromState: state, isVisitMonitoringEnabled: action.enabled)
+                
             default:
                 return state
             }
