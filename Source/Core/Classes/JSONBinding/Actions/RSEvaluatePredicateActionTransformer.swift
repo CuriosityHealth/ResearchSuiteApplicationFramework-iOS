@@ -25,7 +25,7 @@ open class RSEvaluatePredicateActionTransformer: RSActionTransformer {
             
             let predicateValue = RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
             
-            debugPrint(predicateValue)
+//            debugPrint(predicateValue)
             
             return nil
             

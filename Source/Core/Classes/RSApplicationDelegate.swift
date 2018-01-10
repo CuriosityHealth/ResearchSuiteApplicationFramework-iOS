@@ -176,6 +176,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSSensedLocationValueTransform.self,
             RSSensedLocationEventTransform.self,
             RSSensedRegionTransitionEventTransform.self,
+            RSSensedVisitEventTransform.self,
             RSDateTransform.self,
             RSNotificationTriggerDateTransformer.self,
             RSGeofenceRegionValueTransformer.self,
@@ -186,7 +187,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     open var storeMiddleware: [RSMiddlewareProvider.Type] {
         #if DEBUG
             return [
-                RSLoggingMiddleware.self,
+//                RSLoggingMiddleware.self,
                 RSSendResultToServerMiddleware.self,
                 RSAnalyticsMiddleware.self
             ]

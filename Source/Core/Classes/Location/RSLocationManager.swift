@@ -47,7 +47,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         }
         
         if let predicate = locationConfig.predicate {
-            debugPrint(predicate)
+//            debugPrint(predicate)
             if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
                 return true
             }
@@ -66,7 +66,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         }
         
         if let predicate = visitConfig.predicate {
-            debugPrint(predicate)
+//            debugPrint(predicate)
             if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
                 return true
             }
@@ -181,13 +181,14 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
     private func processRegionGroup(regionGroup: RSRegionGroup, state: RSState, lastState: RSState, monitoredRegions: [CLRegion]) {
         
 //        let enabledGroupRegionIDs:[String] = monitoredRegionsMap.keys.filter { $0.starts(with: self.prefixFor(regionGroup: regionGroup)) }
-        let monitoredRegionsMap = self.regionListToMap(regions: monitoredRegions, filter: { $0.identifier.starts(with: self.prefixFor(regionGroup: regionGroup)) })
+//        let monitoredRegionsMap = self.regionListToMap(regions: monitoredRegions, filter: { $0.identifier.starts(with: self.prefixFor(regionGroup: regionGroup)) })
+        let monitoredRegionsMap = self.regionListToMap(regions: monitoredRegions)
         
         let groupEnabled: Bool = {
             //check for predicate and evaluate
             //if predicate exists and evaluates false, do not execute action
             if let predicate = regionGroup.predicate {
-                debugPrint(predicate)
+//                debugPrint(predicate)
                 if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
                     return true
                 }
@@ -228,7 +229,9 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             let expectedRegions: [CLRegion] = regions.flatMap { region in
                 
                 if let circularRegion = region as? CLCircularRegion {
-                    return CLCircularRegion(center: circularRegion.center, radius: circularRegion.radius, identifier: "\(self.prefixFor(regionGroup: regionGroup))\(circularRegion.identifier)")
+//                    return CLCircularRegion(center: circularRegion.center, radius: circularRegion.radius, identifier: "\(self.prefixFor(regionGroup: regionGroup))\(circularRegion.identifier)")
+                    return CLCircularRegion(center: circularRegion.center, radius: circularRegion.radius, identifier: circularRegion.identifier)
+                    
                 }
                 else if let _ = region as? CLBeaconRegion {
                     assertionFailure("Beacons not yet supported")
@@ -443,7 +446,8 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
     }
     
     private func regionGroup(forRegion: CLRegion) -> RSRegionGroup? {
-        return self.config.regionMonitoringConfig?.regionGroups.first(where: { forRegion.identifier.starts(with: self.prefixFor(regionGroup: $0)) })
+//        return self.config.regionMonitoringConfig?.regionGroups.first(where: { forRegion.identifier.starts(with: self.prefixFor(regionGroup: $0)) })
+        return self.config.regionMonitoringConfig?.regionGroups.first
     }
     
     public func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
@@ -575,20 +579,18 @@ extension RSLocationManager {
         debugPrint("monitoring failed for \(region!.identifier) with \(error)")
         debugPrint(error as NSError)
         
-//        if let r = region {
-//            manager.stopMonitoring(for: r)
-//            manager.startMonitoring(for: r)
-//            self.fetchState(region: r, completion: { (region, state) in
-//                debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
-//                if self.regionsEqual(r, region) {
-//                    self.handleInitialStateEvent(region: region, state: state)
-//                }
-//            })
-//        }
-        assertionFailure("monitoring failed for \(region!.identifier) with \(error)")
+        if let r = region {
+            RSHelpers.delay(1.0) {
+                manager.stopMonitoring(for: r)
+            }
+            
+        }
+//        assertionFailure("monitoring failed for \(region!.identifier) with \(error)")
         
     }
 }
+
+
 
 extension RSLocationManager {
     

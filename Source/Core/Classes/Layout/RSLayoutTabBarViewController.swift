@@ -127,7 +127,7 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
                     .filter { !currentVisibleLayoutItems.contains($0.1.identifier) }
                     .forEach { pair in
                         pair.1.onLoadActions.forEach({ (action) in
-                            debugPrint(action)
+//                            debugPrint(action)
                             if let store = self.store {
                                 RSActionManager.processAction(action: action, context: ["layoutViewController":pair.0], store: store)
                             }

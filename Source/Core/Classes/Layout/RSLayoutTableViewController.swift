@@ -9,6 +9,7 @@
 import UIKit
 import ReSwift
 import Gloss
+import CoreLocation
 
 open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
@@ -235,6 +236,19 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        //this helps in testing the CLVisit pathway
+//        if let item = self.itemForIndexPath(indexPath: indexPath),
+//            item.identifier == "visit" {
+//            //simulate visit
+//            let visit = RSVisit()
+//
+//            if let locationManager = RSApplicationDelegate.appDelegate.locationManager {
+//                locationManager.locationManager(locationManager.locationManager, didVisit: visit)
+//            }
+//
+//
+//        }
         
         guard let item = self.itemForIndexPath(indexPath: indexPath),
             let tappableItem = RSTappableListItem(json: item.element) else {

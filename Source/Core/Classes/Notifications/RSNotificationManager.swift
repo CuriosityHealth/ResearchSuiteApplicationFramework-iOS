@@ -161,7 +161,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         if tail.count > 0 {
             self.processRecursively(notifications: tail, state: state, lastState: lastState, callback: { (shouldFetch) in
                 
-                print("shouldFetch is \(shouldFetch)")
+//                print("shouldFetch is \(shouldFetch)")
                 
                 //things that this calls must be only touched from main thread
                 DispatchQueue.main.async {
