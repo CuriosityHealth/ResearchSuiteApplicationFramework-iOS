@@ -12,16 +12,17 @@ open class RSVisitConfiguration: Gloss.Decodable {
     
     //visit config
     //by default, we do not monitor visits
-    public let predicate: RSPredicate?
+    public let predicate: RSPredicate
     public let onUpdate: RSPromise
     
     public required init?(json: JSON) {
         
-        guard let onUpdate: RSPromise = "onUpdate" <~~ json else {
-            return nil
+        guard let onUpdate: RSPromise = "onUpdate" <~~ json,
+            let predicate: RSPredicate = "predicate" <~~ json else {
+                return nil
         }
         
-        self.predicate = "predicate" <~~ json
+        self.predicate = predicate
         self.onUpdate = onUpdate
     }
     

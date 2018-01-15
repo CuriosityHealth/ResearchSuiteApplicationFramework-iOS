@@ -45,19 +45,8 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         guard let locationConfig = config.locationConfig else {
             return false
         }
-        
-        if let predicate = locationConfig.predicate {
-//            debugPrint(predicate)
-            if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
-                return true
-            }
-            else {
-                return false
-            }
-        }
-        else {
-            return true
-        }
+
+        return RSActivityManager.evaluatePredicate(predicate: locationConfig.predicate, state: state, context: [:])
     }
     
     private func shouldVisitMonitoringBeEnabled(state: RSState) -> Bool {
@@ -65,18 +54,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             return false
         }
         
-        if let predicate = visitConfig.predicate {
-//            debugPrint(predicate)
-            if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
-                return true
-            }
-            else {
-                return false
-            }
-        }
-        else {
-            return true
-        }
+        return RSActivityManager.evaluatePredicate(predicate: visitConfig.predicate, state: state, context: [:])
     }
     
     public func newState(state: RSState) {
@@ -90,6 +68,13 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         self.lastState = state
         
         guard RSStateSelectors.isConfigurationCompleted(state) else {
+            return
+        }
+        
+        //we should probably check that we've got authorization and
+        
+        guard CLLocationManager.authorizationStatus() == .authorizedAlways ||   CLLocationManager.authorizationStatus() == .authorizedWhenInUse,
+            CLLocationManager.locationServicesEnabled() else {
             return
         }
         
