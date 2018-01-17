@@ -30,11 +30,17 @@ open class RSPrintNotificationActionTransformer: RSActionTransformer {
             }
             
             debugPrint(pendingNotification)
-            if let trigger = pendingNotification.trigger as? UNTimeIntervalNotificationTrigger {
-                debugPrint(trigger.nextTriggerDate())
+            if let trigger = pendingNotification.trigger as? UNTimeIntervalNotificationTrigger,
+                let date = trigger.nextTriggerDate() {
+                let dateFormatter = ISO8601DateFormatter()
+                dateFormatter.timeZone = TimeZone.current
+                debugPrint(dateFormatter.string(from: date))
             }
-            else if let trigger = pendingNotification.trigger as? UNCalendarNotificationTrigger {
-                debugPrint(trigger.nextTriggerDate())
+            else if let trigger = pendingNotification.trigger as? UNCalendarNotificationTrigger,
+                let date = trigger.nextTriggerDate() {
+                let dateFormatter = ISO8601DateFormatter()
+                dateFormatter.timeZone = TimeZone.current
+                debugPrint(dateFormatter.string(from: date))
             }
             
             

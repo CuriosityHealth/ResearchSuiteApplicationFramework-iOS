@@ -14,8 +14,8 @@ import CoreLocation
 open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSLayoutViewControllerProtocol {
 
     weak var store: Store<RSState>?
-    var state: RSState!
-    var lastState: RSState!
+    var state: RSState?
+    var lastState: RSState?
     var listLayout: RSListLayout!
     open var layout: RSLayout! {
         return self.listLayout
@@ -35,6 +35,11 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         }
         
         self.store?.subscribe(self)
+        
+        if let state = self.store?.state {
+            self.visibleLayoutItems = self.listLayout.items.filter { self.shouldShowItem(item: $0, state: state) }
+            self.state = state
+        }
 
         self.refreshControl?.addTarget(self, action: #selector(RSLayoutTableViewController.handleRefresh(_:)), for: .valueChanged)
     }
@@ -62,8 +67,8 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         }
     }
     
-    open func computeVisibleLayoutItems() -> [String] {
-        return self.listLayout.items.filter { self.shouldShowItem(item: $0) }.map { $0.identifier }
+    open func computeVisibleLayoutItems(state: RSState) -> [String] {
+        return self.listLayout.items.filter { self.shouldShowItem(item: $0, state: state) }.map { $0.identifier }
     }
     
     open func newState(state: RSState) {
@@ -92,7 +97,10 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     
     @objc
     open func handleRefresh(_ refreshControl: UIRefreshControl) {
-        self.loadData(state: state)
+        if let state = self.state {
+            self.loadData(state: state)
+        }
+        
         self.loadFinished()
     }
     
@@ -101,7 +109,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         
         //we should only reload cells if values bound by list item predicates have changed
         //but this is probably a premature optimization
-        let newVisibleLayoutItems = self.computeVisibleLayoutItems()
+        let newVisibleLayoutItems = self.computeVisibleLayoutItems(state: state)
         let currentVisibleLayoutItems = self.visibleLayoutItems.map { $0.identifier }
         if newVisibleLayoutItems != currentVisibleLayoutItems {
             self.visibleLayoutItems = newVisibleLayoutItems.flatMap { self.listLayout.itemMap[$0] }
@@ -119,7 +127,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         self.tableView.reloadData()
     }
     
-    open func shouldShowItem(item: RSListItem) -> Bool {
+    open func shouldShowItem(item: RSListItem, state: RSState) -> Bool {
         guard let predicate = item.predicate else {
             return true
         }
@@ -154,13 +162,13 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         return self.visibleLayoutItems.count
     }
     
-    func generateString(key: String, element: JSON) -> String? {
+    func generateString(key: String, element: JSON, state: RSState) -> String? {
         
         if let string: String = key <~~ element {
             return string
         }
         else if let json: JSON = key <~~ element,
-            let valueConvertible = RSValueManager.processValue(jsonObject: json, state: self.state, context: [:]) {
+            let valueConvertible = RSValueManager.processValue(jsonObject: json, state: state, context: [:]) {
             return valueConvertible.evaluate() as? String
         }
         
@@ -169,7 +177,8 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
 
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard let item = self.itemForIndexPath(indexPath: indexPath) else {
+        guard let item = self.itemForIndexPath(indexPath: indexPath),
+            let state = self.state else {
             return tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
         }
         
@@ -178,22 +187,22 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         switch item.type {
         case "tappableItem":
             cell = tableView.dequeueReusableCell(withIdentifier: "activity_cell", for: indexPath)
-            cell.textLabel?.text = self.generateString(key: "title", element: item.element)
+            cell.textLabel?.text = self.generateString(key: "title", element: item.element, state: state)
             
         case "textItem":
             cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
-            cell.textLabel?.text = self.generateString(key: "title", element: item.element)
-            cell.detailTextLabel?.text = self.generateString(key: "text", element: item.element)
+            cell.textLabel?.text = self.generateString(key: "title", element: item.element, state: state)
+            cell.detailTextLabel?.text = self.generateString(key: "text", element: item.element, state: state)
             
         case "toggleItem":
             guard let toggleCell = tableView.dequeueReusableCell(withIdentifier: "toggle_cell", for: indexPath) as? RSToggleCell,
                 let toggleItem = RSToggleListItem(json: item.element),
-                let metadata = RSStateSelectors.getStateValueMetadata(self.state, for: toggleItem.boundStateIdentifier),
+                let metadata = RSStateSelectors.getStateValueMetadata(state, for: toggleItem.boundStateIdentifier),
                 metadata.type == "Boolean" else {
                 break
             }
             
-            toggleCell.title?.text = self.generateString(key: "title", element: item.element)
+            toggleCell.title?.text = self.generateString(key: "title", element: item.element, state: state)
             
             toggleCell.onToggle = { isOn in
                 let action = RSActionCreators.setValueInState(key: toggleItem.boundStateIdentifier, value: NSNumber(booleanLiteral: isOn))
@@ -215,7 +224,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
             
         default:
             cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
-            cell.textLabel?.text = self.generateString(key: "title", element: item.element)
+            cell.textLabel?.text = self.generateString(key: "title", element: item.element, state: state)
         }
         
         

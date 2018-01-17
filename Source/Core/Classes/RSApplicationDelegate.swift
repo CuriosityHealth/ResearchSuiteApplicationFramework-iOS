@@ -187,7 +187,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     open var storeMiddleware: [RSMiddlewareProvider.Type] {
         #if DEBUG
             return [
-//                RSLoggingMiddleware.self,
+                RSLoggingMiddleware.self,
                 RSSendResultToServerMiddleware.self,
                 RSAnalyticsMiddleware.self
             ]
