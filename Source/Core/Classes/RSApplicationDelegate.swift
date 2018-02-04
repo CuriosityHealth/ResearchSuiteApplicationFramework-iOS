@@ -221,9 +221,18 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     open func newState(state: RSState) {
 
-        if state.signOutRequested && !RSStateSelectors.isFetchingNotifications(state) {
+        if state.signOutRequested
+            && !RSStateSelectors.isFetchingNotifications(state)
+            && !RSStateSelectors.isPresentingPasscode(state)
+            && !RSStateSelectors.isDismissingPasscode(state)
+            && !RSStateSelectors.isPresenting(state)
+            && !RSStateSelectors.isDismissing(state)
+            && RSStateSelectors.isConfigurationCompleted(state) {
+            
+            let passcodeViewController = RSStateSelectors.passcodeViewController(state)
+
             self.signOut(completed: { (completed, error) in
-                
+                passcodeViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
             })
         }
         
@@ -380,6 +389,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         
         self.printRefCount()
         
+        if fromReset {
+            debugPrint(self.rootNavController!.viewControllers)
+            self.rootNavController!.presentingViewController?.dismiss(animated: false, completion: nil)
+        }
+        
+        
         //set root view controller
         self.rootNavController = RSRoutingNavigationController()
         self.rootNavController?.store = self.store
@@ -388,6 +403,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         self.rootNavController?.viewControllers = [UIViewController()]
         
         self.transition(toRootViewController: self.rootNavController!, animated: fromReset)
+        
+        debugPrint(self.rootNavController!.viewControllers)
         
         self.printRefCount()
         
@@ -433,20 +450,20 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     // MARK: Passcode Display Handling
     // ------------------------------------------------
     
-    private weak var passcodeViewController: UIViewController?
+//    private weak var passcodeViewController: UIViewController?
     
     /**
      Should the passcode be displayed. By default, if there isn't a catasrophic error,
      the user is registered and there is a passcode in the keychain, then show it.
      */
-    open func shouldShowPasscode() -> Bool {
-        return (self.passcodeViewController == nil) &&
-            ORKPasscodeViewController.isPasscodeStoredInKeychain()
-    }
+//    open func shouldShowPasscode() -> Bool {
+//        return (self.passcodeViewController == nil) &&
+//            ORKPasscodeViewController.isPasscodeStoredInKeychain()
+//    }
     
-    open func isPasscodePresented() -> Bool {
-        return self.passcodeViewController != nil
-    }
+//    open func isPasscodePresented() -> Bool {
+//        return self.passcodeViewController != nil
+//    }
     
     private func instantiateViewControllerForPasscode() -> UIViewController? {
         return ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
@@ -473,20 +490,22 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     open func transition(toRootViewController: UIViewController, animated: Bool) {
         guard let window = self.window else { return }
         if (animated) {
-            let snapshot:UIView = (self.window?.snapshotView(afterScreenUpdates: true))!
+            let snapshot:UIView = (window.snapshotView(afterScreenUpdates: true))!
             toRootViewController.view.addSubview(snapshot);
             
-            self.window?.rootViewController = toRootViewController;
+            window.rootViewController = toRootViewController;
             
             UIView.animate(withDuration: 0.3, animations: {() in
                 snapshot.layer.opacity = 0;
             }, completion: {
                 (value: Bool) in
                 snapshot.removeFromSuperview()
+                window.makeKeyAndVisible()
             })
         }
         else {
             window.rootViewController = toRootViewController
+            window.makeKeyAndVisible()
         }
     }
     

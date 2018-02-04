@@ -8,6 +8,7 @@
 
 import UIKit
 import ReSwift
+import ResearchKit
 
 public protocol RSRouterDelegate: class {
 //    func presentLayout(viewController: UIViewController, animated: Bool, completion: ((Bool) -> Swift.Void)?)
@@ -176,10 +177,27 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
         
     }
     
+    
+    public func passcodeViewController() -> ORKPasscodeViewController? {
+        return self.viewControllers.first(where: { viewController in
+            debugPrint(viewController)
+            if let pvc = viewController as? ORKPasscodeViewController {
+                return true
+            }
+            return false
+        }) as? ORKPasscodeViewController
+        
+    }
+    public func isPasscodePresented() -> Bool {
+        return self.passcodeViewController() != nil
+    }
+    
     open func newState(state: RSState) {
         
         //only route if the passcode view controller is NOT presented
-        guard !RSStateSelectors.isPasscodePresented(state) else {
+        //NOTE: there is a race condition on sign out where the state is cleared but the passcode view controller is actully presented
+        
+        guard !RSStateSelectors.isPasscodePresented(state) && !self.isPasscodePresented() else {
             return
         }
         
