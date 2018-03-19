@@ -15,7 +15,7 @@ public protocol ValueConvertible {
 
 open class RSValueConvertible: ValueConvertible {
     let value: AnyObject?
-    init(value: AnyObject?) {
+    public init(value: AnyObject?) {
         self.value = value
     }
     
