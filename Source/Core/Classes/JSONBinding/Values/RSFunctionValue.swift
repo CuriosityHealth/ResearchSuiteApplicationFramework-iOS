@@ -10,6 +10,9 @@ import UIKit
 import Gloss
 import CoreLocation
 
+//TODO: We can probably inject the state into here to allow functions to be a more complex view of the
+//State than simple selectors can be
+//Although, this might technically just be a selector...
 //these provide bindings when state is managed by another module (e.g., login managed by SDK)
 public class RSFunctionValue: Gloss.Decodable, ValueConvertible {
     
