@@ -8,7 +8,7 @@
 import UIKit
 import Gloss
 
-open class RSVisitConfiguration: Gloss.Decodable {
+open class RSVisitConfiguration: Gloss.JSONDecodable {
     
     //visit config
     //by default, we do not monitor visits

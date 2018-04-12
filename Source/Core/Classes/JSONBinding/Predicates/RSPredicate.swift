@@ -9,7 +9,7 @@
 import UIKit
 import Gloss
 
-public class RSPredicate: Gloss.Decodable {
+public class RSPredicate: Gloss.JSONDecodable {
     
     let format: String
     let substitutions: [String: JSON]?

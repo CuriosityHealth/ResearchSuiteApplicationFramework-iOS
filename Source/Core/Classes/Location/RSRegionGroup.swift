@@ -8,7 +8,7 @@
 import UIKit
 import Gloss
 
-open class RSRegionGroup: Gloss.Decodable {
+open class RSRegionGroup: Gloss.JSONDecodable {
     
     //each region has an identifier and bound to a location and radius
     //similar to notifications, each region has a predicate, monitored values, and handler actions

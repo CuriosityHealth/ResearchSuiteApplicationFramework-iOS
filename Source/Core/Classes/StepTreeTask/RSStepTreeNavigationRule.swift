@@ -9,7 +9,7 @@
 import UIKit
 import Gloss
 
-open class RSStepTreeNavigationRule: Gloss.Decodable {
+open class RSStepTreeNavigationRule: Gloss.JSONDecodable {
     let trigger: String
     let conditionalNavigation: [RSStepTreeConditionalNavigationRule]
     let destination: String

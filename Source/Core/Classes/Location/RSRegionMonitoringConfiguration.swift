@@ -8,7 +8,7 @@
 import UIKit
 import Gloss
 
-open class RSRegionMonitoringConfiguration: Gloss.Decodable {
+open class RSRegionMonitoringConfiguration: Gloss.JSONDecodable {
     
     //region monitoring config
     //array of regions

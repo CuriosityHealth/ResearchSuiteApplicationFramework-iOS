@@ -30,10 +30,10 @@ extension DateComponents {
                 continue
             }
             
-            guard let value = Int(nsstr.substring(with: m.rangeAt(1))) else {
+            guard let value = Int(nsstr.substring(with: m.range(at: 1))) else {
                 return nil
             }
-            let timeUnit = nsstr.substring(with: m.rangeAt(2))
+            let timeUnit = nsstr.substring(with: m.range(at: 2))
             
             switch timeUnit {
             case "Y":

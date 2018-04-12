@@ -15,7 +15,7 @@ open class RSBooleanStepResult: RSDefaultStepResult {
         return "boolean"
     }
     
-    open override func evaluate() -> AnyObject? {
+    @objc open override func evaluate() -> AnyObject? {
         guard let booleanQuestionResult = self.result as? ORKBooleanQuestionResult else {
                 return nil
         }

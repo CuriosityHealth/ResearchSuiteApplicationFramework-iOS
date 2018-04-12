@@ -84,7 +84,7 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
 }
 
 extension RSRPIntermediateResult: ValueConvertible {
-    open func evaluate() -> AnyObject? {
+    @objc open func evaluate() -> AnyObject? {
         return self
     }
 }

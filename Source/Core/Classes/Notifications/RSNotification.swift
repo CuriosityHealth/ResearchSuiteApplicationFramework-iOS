@@ -8,7 +8,7 @@
 import UIKit
 import Gloss
 
-open class RSNotification: Gloss.Decodable {
+open class RSNotification: Gloss.JSONDecodable {
     
     public let identifier: String
     public let type: String

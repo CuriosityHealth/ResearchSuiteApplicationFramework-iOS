@@ -16,7 +16,7 @@ class RSEnhancedMultipleChoiceValuesResultTransform: RSDefaultStepResult {
         return "enhancedMultipleChoiceValues"
     }
     
-    open override func evaluate() -> AnyObject? {
+    @objc open override func evaluate() -> AnyObject? {
 
         guard let result = self.result as? RSEnhancedMultipleChoiceResult,
             let choiceAnswers = result.choiceAnswers else {

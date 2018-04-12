@@ -14,7 +14,7 @@ class RSScaleStepResult: RSDefaultStepResult {
         return "scale"
     }
     
-    open override func evaluate() -> AnyObject? {
+    @objc open override func evaluate() -> AnyObject? {
         guard let scaleQuestionResult = self.result as? ORKScaleQuestionResult else {
             return nil
         }

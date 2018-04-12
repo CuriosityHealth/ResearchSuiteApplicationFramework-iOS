@@ -10,7 +10,7 @@ import UIKit
 import Gloss
 
 
-open class RSRoute: Gloss.Decodable, Equatable {
+open class RSRoute: Gloss.JSONDecodable, Equatable {
     
     public let identifier: String
     public let layout: String

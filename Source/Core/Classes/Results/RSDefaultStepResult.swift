@@ -11,7 +11,7 @@ import ResearchKit
 import ResearchSuiteResultsProcessor
 import Gloss
 
-open class RSDefaultStepResult: RSRPIntermediateResult, RSRPFrontEndTransformer {
+@objc open class RSDefaultStepResult: RSRPIntermediateResult, RSRPFrontEndTransformer {
     
     open class func type() -> String {
         return "default"

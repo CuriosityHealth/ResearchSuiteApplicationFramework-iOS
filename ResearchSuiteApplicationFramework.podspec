@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ResearchSuiteApplicationFramework'
-  s.version          = '0.14.0'
+  s.version          = '0.14.1'
   s.summary          = 'The ResearchSuite Application Framework is the easiest way to build mobile health research studies.'
 
 # This description is used to generate tags and improve search results.
@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '10.0'
-  s.swift_version = '3.2'
+  s.swift_version = '4.1'
 
   s.subspec 'Core' do |core|
     core.source_files = 'Source/Core/Classes/**/*'
@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
     core.dependency 'ResearchSuiteTaskBuilder', '~> 0.8'
     core.dependency 'ResearchSuiteResultsProcessor', '~> 0.8'
     core.dependency 'ResearchSuiteExtensions', '~> 0.12'
-    core.dependency 'Gloss', '~> 1.2'
+    core.dependency 'Gloss', '~> 2'
   end
 
   s.default_subspec = 'Core'

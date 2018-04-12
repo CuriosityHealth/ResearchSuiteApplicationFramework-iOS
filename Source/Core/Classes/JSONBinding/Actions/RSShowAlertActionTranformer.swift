@@ -9,7 +9,7 @@ import UIKit
 import Gloss
 import ReSwift
 
-open class RSAlertChoice: Gloss.Decodable {
+open class RSAlertChoice: Gloss.JSONDecodable {
     
     public let title: String
     public let style: UIAlertActionStyle
@@ -42,7 +42,7 @@ open class RSAlertChoice: Gloss.Decodable {
     }
     
 }
-open class RSAlert: Gloss.Decodable {
+open class RSAlert: Gloss.JSONDecodable {
 
     public let title: String
     public let text: String?

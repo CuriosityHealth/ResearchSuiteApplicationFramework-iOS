@@ -10,7 +10,7 @@ import UIKit
 import Gloss
 import CoreLocation
 
-public class RSConstantValue: NSObject, Gloss.Decodable, ValueConvertible {
+public class RSConstantValue: NSObject, Gloss.JSONDecodable, ValueConvertible {
     
     public let identifier: String
     public let type: String

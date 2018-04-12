@@ -18,7 +18,7 @@ open class RSLocationStepResult: RSDefaultStepResult {
         return "location"
     }
     
-    open override func evaluate() -> AnyObject? {
+    @objc open override func evaluate() -> AnyObject? {
         guard let locationResult = self.result as? ORKLocationQuestionResult,
             let coordinate = locationResult.locationAnswer?.coordinate else {
             return nil

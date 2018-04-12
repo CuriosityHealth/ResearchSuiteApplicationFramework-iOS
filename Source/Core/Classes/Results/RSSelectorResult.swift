@@ -112,7 +112,7 @@ extension RSSelectorResult {
         return nil
     }
     
-    open override func evaluate() -> AnyObject? {
+    @objc open override func evaluate() -> AnyObject? {
         if let index = self.parameters["index"] as? Int,
             let array = self.result as? NSArray {
             return array[index] as AnyObject

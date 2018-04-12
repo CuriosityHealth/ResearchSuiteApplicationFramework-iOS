@@ -15,7 +15,7 @@ open class RSSingleChoiceStepResult: RSDefaultStepResult {
         return "singleChoice"
     }
     
-    open override func evaluate() -> AnyObject? {
+    @objc open override func evaluate() -> AnyObject? {
         guard let choiceQuestionResult = self.result as? ORKChoiceQuestionResult,
                 let choice = choiceQuestionResult.choiceAnswers?.first  else {
             return nil

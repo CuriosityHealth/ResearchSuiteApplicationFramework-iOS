@@ -8,7 +8,7 @@
 import UIKit
 import Gloss
 
-public struct RSPromise: Gloss.Decodable {
+public struct RSPromise: Gloss.JSONDecodable {
     
     //TODO: Make this better
     let onSuccessActions: [JSON]?

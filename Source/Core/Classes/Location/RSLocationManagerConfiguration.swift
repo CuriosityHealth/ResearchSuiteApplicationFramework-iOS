@@ -8,7 +8,7 @@
 import UIKit
 import Gloss
 
-open class RSLocationManagerConfiguration: Gloss.Decodable {
+open class RSLocationManagerConfiguration: Gloss.JSONDecodable {
     
     //location config
     //by default, we do not monitor location changes

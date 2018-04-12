@@ -9,7 +9,7 @@ import UIKit
 import Gloss
 import ReSwift
 
-open class RSActionSwitchCase: Gloss.Decodable {
+open class RSActionSwitchCase: Gloss.JSONDecodable {
     
     let predicate: RSPredicate?
     let action: JSON

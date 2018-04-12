@@ -9,7 +9,7 @@
 import UIKit
 import Gloss
 
-open class RSListItem: Gloss.Decodable {
+open class RSListItem: Gloss.JSONDecodable {
     
     public let identifier: String
     public let type: String

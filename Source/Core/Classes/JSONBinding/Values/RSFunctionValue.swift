@@ -14,7 +14,7 @@ import CoreLocation
 //State than simple selectors can be
 //Although, this might technically just be a selector...
 //these provide bindings when state is managed by another module (e.g., login managed by SDK)
-public class RSFunctionValue: Gloss.Decodable, ValueConvertible {
+public class RSFunctionValue: Gloss.JSONDecodable, ValueConvertible {
     
     public let identifier: String
     public let type: String
