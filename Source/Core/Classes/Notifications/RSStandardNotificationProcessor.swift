@@ -199,7 +199,7 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
         
         let filter = identifierFilter(notification: notification)
         let filteredNotificationRequests:[UNNotificationRequest] = notificationRequests.filter( { filter($0.identifier) } )
-        let filteredDates: [Date] = filteredNotificationRequests.flatMap { (notificationRequest) -> Date? in
+        let filteredDates: [Date] = filteredNotificationRequests.compactMap { (notificationRequest) -> Date? in
             if let trigger = notificationRequest.trigger as? UNTimeIntervalNotificationTrigger {
                 return trigger.nextTriggerDate()
             }

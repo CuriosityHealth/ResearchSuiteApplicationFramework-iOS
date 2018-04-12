@@ -37,7 +37,7 @@ open class RSActivityManager: NSObject {
     
     public func taskForActivity(activity: RSActivity, state: RSState) -> RSTask? {
         
-        let nodes = activity.elements.flatMap { (json) -> RSStepTreeNode? in
+        let nodes = activity.elements.compactMap { (json) -> RSStepTreeNode? in
             return self.transformActivityElementIntoNode(
                 jsonObject: json,
                 stepTreeBuilder: self.stepTreeBuilder,

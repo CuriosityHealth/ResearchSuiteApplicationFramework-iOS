@@ -31,7 +31,7 @@ open class RSDateComponentsTransform: RSValueTransformer {
                 return acc
             }
             
-            let components = Set(componentsStringArray.flatMap { calendar.component(fromComponentString: $0) })
+            let components = Set(componentsStringArray.compactMap { calendar.component(fromComponentString: $0) })
             
             //this isn't going to evaluate directly into a date, we need to use valuemanager to handle this
             if let dateJSON: JSON = "date" <~~ json,

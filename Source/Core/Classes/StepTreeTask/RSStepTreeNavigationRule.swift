@@ -24,7 +24,7 @@ open class RSStepTreeNavigationRule: Gloss.JSONDecodable {
         self.trigger = trigger
         self.destination = destination
         let conditionalNavJSON: [JSON]? = "conditionalNavigation" <~~ json
-        self.conditionalNavigation = conditionalNavJSON?.flatMap { RSStepTreeConditionalNavigationRule(json: $0) } ?? []
+        self.conditionalNavigation = conditionalNavJSON?.compactMap { RSStepTreeConditionalNavigationRule(json: $0) } ?? []
         
     }
 }

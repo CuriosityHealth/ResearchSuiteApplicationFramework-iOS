@@ -20,10 +20,10 @@ open class RSElementListNodeDescriptor: RSTBElementListDescriptor {
     required public init?(json: JSON) {
         
         let navigationRulesJSON: [JSON]? = "navigationRules" <~~ json
-        self.navigationRules = navigationRulesJSON?.flatMap { RSStepTreeNavigationRule(json: $0) }
+        self.navigationRules = navigationRulesJSON?.compactMap { RSStepTreeNavigationRule(json: $0) }
         
         let resultTransformsJSON: [JSON]? = "resultTransforms" <~~ json
-        self.resultTransforms = resultTransformsJSON?.flatMap { RSResultTransform(json: $0) }
+        self.resultTransforms = resultTransformsJSON?.compactMap { RSResultTransform(json: $0) }
         
         super.init(json: json)
     }

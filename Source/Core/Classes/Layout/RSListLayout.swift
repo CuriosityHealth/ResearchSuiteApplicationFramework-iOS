@@ -21,7 +21,7 @@ open class RSListLayout: RSLayout {
                 return nil
         }
         
-        self.items = items.flatMap { RSListItem(json: $0) }
+        self.items = items.compactMap { RSListItem(json: $0) }
         var itemMap: [String: RSListItem] = [:]
         self.items.forEach { (item) in
             assert(itemMap[item.identifier] == nil, "items cannot have duplicate identifiers")

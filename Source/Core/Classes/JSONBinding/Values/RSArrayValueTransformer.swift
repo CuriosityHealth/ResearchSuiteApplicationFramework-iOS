@@ -20,7 +20,7 @@ open class RSArrayValueTransformer: RSValueTransformer {
             return nil
         }
         
-        let array: [AnyObject] = entries.flatMap { RSValueManager.processValue(jsonObject: $0, state: state, context: [:])?.evaluate() }
+        let array: [AnyObject] = entries.compactMap { RSValueManager.processValue(jsonObject: $0, state: state, context: [:])?.evaluate() }
         return RSValueConvertible(value: array as NSArray)
     }
 

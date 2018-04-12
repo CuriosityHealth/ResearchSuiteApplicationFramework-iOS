@@ -25,7 +25,7 @@ open class RSRegionMonitoringConfiguration: Gloss.JSONDecodable {
             return nil
         }
         
-        self.regionGroups = groups.flatMap { RSRegionGroup(json: $0) }
+        self.regionGroups = groups.compactMap { RSRegionGroup(json: $0) }
     }
 
 }

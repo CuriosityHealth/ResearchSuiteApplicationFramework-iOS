@@ -181,10 +181,11 @@ open class RSRoutingNavigationController: UINavigationController, StoreSubscribe
     public func passcodeViewController() -> ORKPasscodeViewController? {
         return self.viewControllers.first(where: { viewController in
             debugPrint(viewController)
-            if let pvc = viewController as? ORKPasscodeViewController {
-                return true
-            }
-            return false
+            return viewController is ORKPasscodeViewController
+//            if let pvc = viewController as? ORKPasscodeViewController {
+//                return true
+//            }
+//            return false
         }) as? ORKPasscodeViewController
         
     }

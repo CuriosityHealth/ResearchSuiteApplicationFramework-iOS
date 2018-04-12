@@ -27,7 +27,7 @@ open class RSStepTreeNodeGeneratorService: NSObject {
     
     func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String) -> RSStepTreeNode? {
         return self.nodeGenerators
-            .flatMap { $0.generateNode(jsonObject: jsonObject, stepTreeBuilder: stepTreeBuilder, identifierPrefix: identifierPrefix) }
+            .compactMap { $0.generateNode(jsonObject: jsonObject, stepTreeBuilder: stepTreeBuilder, identifierPrefix: identifierPrefix) }
             .first
     }
     

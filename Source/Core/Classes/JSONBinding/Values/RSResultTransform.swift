@@ -14,7 +14,7 @@ open class RSResultTransform: RSRPResultTransform {
     
     public let identifier: String
     
-    override public required init?(json: JSON) {
+    public required init?(json: JSON) {
         
         guard let identifier: String = "identifier" <~~ json else {
                 return nil

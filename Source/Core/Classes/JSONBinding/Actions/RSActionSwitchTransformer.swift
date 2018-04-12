@@ -37,7 +37,7 @@ open class RSActionSwitchTransformer: RSActionTransformer {
             return nil
         }
         
-        let cases: [RSActionSwitchCase] = casesJSON.flatMap { RSActionSwitchCase(json: $0) }
+        let cases: [RSActionSwitchCase] = casesJSON.compactMap { RSActionSwitchCase(json: $0) }
         
         return { state, store in
             

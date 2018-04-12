@@ -112,7 +112,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         let newVisibleLayoutItems = self.computeVisibleLayoutItems(state: state)
         let currentVisibleLayoutItems = self.visibleLayoutItems.map { $0.identifier }
         if newVisibleLayoutItems != currentVisibleLayoutItems {
-            self.visibleLayoutItems = newVisibleLayoutItems.flatMap { self.listLayout.itemMap[$0] }
+            self.visibleLayoutItems = newVisibleLayoutItems.compactMap { self.listLayout.itemMap[$0] }
             self.loadFinished()
             return
         }

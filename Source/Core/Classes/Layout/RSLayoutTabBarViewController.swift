@@ -90,9 +90,9 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
         let newVisibleLayoutItems = self.computeVisibleLayoutItems()
         let currentVisibleLayoutItems = self.visibleLayoutItems.map { $0.identifier }
         if newVisibleLayoutItems != currentVisibleLayoutItems {
-            self.visibleLayoutItems = newVisibleLayoutItems.flatMap { self.tabLayout.itemMap[$0] }
+            self.visibleLayoutItems = newVisibleLayoutItems.compactMap { self.tabLayout.itemMap[$0] }
             //we're returning pairs here because we'd like to execute actions after the VCs have been loaded
-            let vcs: [UIViewController] = self.visibleLayoutItems.flatMap({ (tabItem) -> UIViewController? in
+            let vcs: [UIViewController] = self.visibleLayoutItems.compactMap({ (tabItem) -> UIViewController? in
                 
                 guard let layout = RSStateSelectors.layout(state, for: tabItem.identifier),
                     let store = self.store,
@@ -116,7 +116,7 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
             //these will get handled by layoutDidLoad
             if currentVisibleLayoutItems.count > 0 {
                 //then execute actions for newly shown visible items
-                let pairs: [(UIViewController, RSLayout)] = vcs.flatMap { layoutVC in
+                let pairs: [(UIViewController, RSLayout)] = vcs.compactMap { layoutVC in
                     guard let lvc = layoutVC as? RSLayoutViewControllerProtocol else {
                         return nil
                     }
@@ -157,7 +157,7 @@ open class RSLayoutTabBarViewController: UITabBarController, StoreSubscriber, RS
             }
         })
         
-        guard let vcs = self.viewControllers?.flatMap({ (vc) -> RSLayoutViewControllerProtocol? in
+        guard let vcs = self.viewControllers?.compactMap({ (vc) -> RSLayoutViewControllerProtocol? in
             return vc as? RSLayoutViewControllerProtocol
         }) else {
             return

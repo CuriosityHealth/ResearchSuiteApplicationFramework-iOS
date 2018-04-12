@@ -76,7 +76,7 @@ open class RSStepTreeBuilder: NSObject {
         
         if steps.count == 1 {
             
-            let step = steps.first!
+//            let step = steps.first!
             
             let node = RSStepTreeLeafNode(
                 identifier: descriptor.identifier,

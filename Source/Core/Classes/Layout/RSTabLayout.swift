@@ -21,7 +21,7 @@ open class RSTabLayout: RSLayout {
             return nil
         }
         
-        self.items = items.flatMap { RSTabItem(json: $0) }
+        self.items = items.compactMap { RSTabItem(json: $0) }
         var itemMap: [String: RSTabItem] = [:]
         self.items.forEach { (item) in
             assert(itemMap[item.identifier] == nil, "items cannot have duplicate identifiers")

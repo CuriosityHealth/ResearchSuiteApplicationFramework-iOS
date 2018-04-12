@@ -31,7 +31,7 @@ open class RSPrintValueActionTransformer: RSActionTransformer {
                 print("the value is: \(value)")
             }
             else {
-                print(valueConvertible.evaluate())
+                print(valueConvertible.evaluate() as Any)
             }
             
             return nil

@@ -66,7 +66,7 @@ public class RSStateSelectors: NSObject {
     }
     
     public static func routes(_ state: RSState) -> [RSRoute] {
-        return state.routeIdentifiers.flatMap { state.routeMap[$0] }
+        return state.routeIdentifiers.compactMap { state.routeMap[$0] }
     }
     
     public static func getStateValueMetadata(_ state: RSState, for identifier: String) -> RSStateValue? {

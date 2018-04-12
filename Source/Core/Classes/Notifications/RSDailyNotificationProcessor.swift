@@ -17,7 +17,7 @@ open class RSDailyNotificationProcessor: NSObject, RSNotificationProcessor {
     
     static private func enabledDays(dailyNotification: RSDailyNotification, pendingNotificationIdentifiers: [String]) -> [Int] {
         let dailyNotificationIdentifiers = pendingNotificationIdentifiers.filter { $0.hasPrefix(dailyNotification.identifier) }
-        let dailyNotificationDays: [Int] = dailyNotificationIdentifiers.flatMap { identifier in
+        let dailyNotificationDays: [Int] = dailyNotificationIdentifiers.compactMap { identifier in
             let strHour = identifier.replacingOccurrences(of: dailyNotification.identifier, with: "")
             return Int(strHour)
         }
@@ -151,7 +151,7 @@ open class RSDailyNotificationProcessor: NSObject, RSNotificationProcessor {
         
         let filter = identifierFilter(notification: notification)
         let filteredNotificationRequests:[UNNotificationRequest] = notificationRequests.filter( { filter($0.identifier) } )
-        let filteredDates: [Date] = filteredNotificationRequests.flatMap { (notificationRequest) -> Date? in
+        let filteredDates: [Date] = filteredNotificationRequests.compactMap { (notificationRequest) -> Date? in
             if let trigger = notificationRequest.trigger as? UNTimeIntervalNotificationTrigger {
                 return trigger.nextTriggerDate()
             }

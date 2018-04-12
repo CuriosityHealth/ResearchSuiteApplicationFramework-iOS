@@ -23,7 +23,7 @@ open class RSEvaluatePredicateActionTransformer: RSActionTransformer {
         
         return { state, store in
             
-            let predicateValue = RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+            let _ = RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
             
 //            debugPrint(predicateValue)
             

@@ -18,7 +18,7 @@ open class RSStepTreeElementListGenerator: RSStepTreeNodeGenerator {
         }
         
         //recurse
-        let children: [RSStepTreeNode] = descriptor.elementList.flatMap { json in
+        let children: [RSStepTreeNode] = descriptor.elementList.compactMap { json in
             let child = stepTreeBuilder.node(json: json, identifierPrefix: "\(identifierPrefix).\(descriptor.identifier)")
             return child
         }
