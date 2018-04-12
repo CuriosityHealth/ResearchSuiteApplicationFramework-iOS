@@ -98,29 +98,29 @@ public class RSActionCreators: NSObject {
         
     }
     
-    public static func addLayoutsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addLayoutsFromFile(fileName: String, layoutManager: RSLayoutManager, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
             selector: { "layouts" <~~ $0 },
-            flatMapFunc: { RSLayout(json: $0) },
+            flatMapFunc: { layoutManager.generateLayout(jsonObject: $0) },
             mapFunc: { AddLayoutAction(layout: $0) }
         )
         
     }
-    
-    public static func addRoutesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
-        
-        return addArrayOfObjectsFromFile(
-            fileName: fileName,
-            inDirectory: inDirectory,
-            selector: { "routes" <~~ $0 },
-            flatMapFunc: { RSRoute(json: $0) },
-            mapFunc: { AddRouteAction(route: $0) }
-        )
-        
-    }
+//
+//    public static func addRoutesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+//        
+//        return addArrayOfObjectsFromFile(
+//            fileName: fileName,
+//            inDirectory: inDirectory,
+//            selector: { "routes" <~~ $0 },
+//            flatMapFunc: { RSRoute(json: $0) },
+//            mapFunc: { AddRouteAction(route: $0) }
+//        )
+//        
+//    }
     
     public static func queueActivity(activityID: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
@@ -190,13 +190,20 @@ public class RSActionCreators: NSObject {
         }
     }
     
+    public static func requestPathChange(path: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return ChangePathRequest(requestedPath: path)
+        }
+    }
+    
     public static func presentActivity(on viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
             //make sure we are not in the middle of routing
             //and there is a valid route
             guard !RSStateSelectors.isRouting(state),
-                RSStateSelectors.currentRoute(state) != nil else {
+//                RSStateSelectors.currentRoute(state) != nil else {
+            RSStateSelectors.currentPath(state) != nil else {
                 return nil
             }
             
@@ -332,11 +339,11 @@ public class RSActionCreators: NSObject {
             }
             
             guard !RSStateSelectors.isDismissing(state),
-                let presentedActivityPair = RSStateSelectors.presentedActivity(state),
-                let topViewController = RSApplicationDelegate.appDelegate.topViewController() else {
+                let presentedActivityPair = RSStateSelectors.presentedActivity(state) else {
                     return nil
             }
             
+            let topViewController = RSApplicationDelegate.appDelegate.rootViewController.topViewController
             let dismissRequestAction = DismissActivityRequest(uuid: presentedActivityPair.0, activityID: presentedActivityPair.1)
             store.dispatch(dismissRequestAction)
             
@@ -405,75 +412,75 @@ public class RSActionCreators: NSObject {
         
     }
     
-    public static func setRoute(route: RSRoute, layoutManager: RSLayoutManager, delegate: RSRouterDelegate) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
-        return { state, store in
-            
-            guard !RSStateSelectors.isRouting(state) else {
-                    return nil
-            }
-            
-            //also verify that we are not in the middle of presenting a task
-            guard !RSStateSelectors.isPresenting(state),
-                RSStateSelectors.presentedActivity(state) == nil,
-                !RSStateSelectors.isDismissing(state) else {
-                    return nil
-            }
-            
-            //if current route is nil, route first route
-            //if current route is not first route, route first route
-            let currentRoute = RSStateSelectors.currentRoute(state)
-            
-            if currentRoute == nil ||
-                currentRoute!.identifier != route.identifier {
-                
-                //I HAVE NO IDEA HOW THIS WILL WORK FOR TAB BARS!!
-                
-                //we can either set the root layout, push a layout onto the stack, or pop the layout off
-                //if we are setting the root, the selected route will not have a parent and it will not be the parent of the current route
-                
-                //if we are to push a layout onto the stack, current route will be the parent of the selected route
-                
-                //if we are to pop a layout off the stack, the selected route will the the parent of the current route
-                
-                //here, check to see that if the route has a parent
-                //its parent is the current route
-                //NOTE: In the future, we can update this to remove the constraint
-                //however, this should be fine for now
-                
-                
-                let routeRequestAction = ChangeRouteRequest(route: route)
-                store.dispatch(routeRequestAction)
-                
-                delegate.showRoute(route: route, state: state, store: store, completion: { (completed, layoutVC) in
-                    
-                    if completed {
-                        let routeRequestAction = ChangeRouteSuccess(route: route)
-                        store.dispatch(routeRequestAction)
-                        assert(layoutVC != nil)
-                        layoutVC?.layoutDidLoad()
-                    }
-                    else {
-                        assert(layoutVC != nil, "Routing Failure: Could not generate a layout. This should NEVER occur\n\nCheck that the layout ID in the route is correct!!!")
-                        let routeRequestAction = ChangeRouteFailure(route: route)
-                        store.dispatch(routeRequestAction)
-                    }
-                    
-                })
-            }
-            
-            return nil
-        }
-    }
-    
-    static func generateLayout(for route: RSRoute, state: RSState, store: Store<RSState>, layoutManager: RSLayoutManager ) -> UIViewController? {
-        
-        //note that if we cant generate a layout, we go into an endless loop!!
-        //TODO: Fix THIS!!!
-        guard let layout = RSStateSelectors.layout(state, for: route.layout) else {
-            return nil
-        }
-        return layoutManager.generateLayout(layout: layout, store: store)
-    }
+//    public static func setRoute(route: RSRoute, layoutManager: RSLayoutManager, delegate: RSRouterDelegate) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+//        return { state, store in
+//            
+//            guard !RSStateSelectors.isRouting(state) else {
+//                    return nil
+//            }
+//            
+//            //also verify that we are not in the middle of presenting a task
+//            guard !RSStateSelectors.isPresenting(state),
+//                RSStateSelectors.presentedActivity(state) == nil,
+//                !RSStateSelectors.isDismissing(state) else {
+//                    return nil
+//            }
+//            
+//            //if current route is nil, route first route
+//            //if current route is not first route, route first route
+//            let currentRoute = RSStateSelectors.currentRoute(state)
+//            
+//            if currentRoute == nil ||
+//                currentRoute!.identifier != route.identifier {
+//                
+//                //I HAVE NO IDEA HOW THIS WILL WORK FOR TAB BARS!!
+//                
+//                //we can either set the root layout, push a layout onto the stack, or pop the layout off
+//                //if we are setting the root, the selected route will not have a parent and it will not be the parent of the current route
+//                
+//                //if we are to push a layout onto the stack, current route will be the parent of the selected route
+//                
+//                //if we are to pop a layout off the stack, the selected route will the the parent of the current route
+//                
+//                //here, check to see that if the route has a parent
+//                //its parent is the current route
+//                //NOTE: In the future, we can update this to remove the constraint
+//                //however, this should be fine for now
+//                
+//                
+//                let routeRequestAction = ChangeRouteRequest(route: route)
+//                store.dispatch(routeRequestAction)
+//                
+//                delegate.showRoute(route: route, state: state, store: store, completion: { (completed, layoutVC) in
+//                    
+//                    if completed {
+//                        let routeRequestAction = ChangeRouteSuccess(route: route)
+//                        store.dispatch(routeRequestAction)
+//                        assert(layoutVC != nil)
+//                        layoutVC?.layoutDidLoad()
+//                    }
+//                    else {
+//                        assert(layoutVC != nil, "Routing Failure: Could not generate a layout. This should NEVER occur\n\nCheck that the layout ID in the route is correct!!!")
+//                        let routeRequestAction = ChangeRouteFailure(route: route)
+//                        store.dispatch(routeRequestAction)
+//                    }
+//                    
+//                })
+//            }
+//            
+//            return nil
+//        }
+//    }
+//    
+//    static func generateLayout(for route: RSRoute, state: RSState, store: Store<RSState>, layoutManager: RSLayoutManager ) -> UIViewController? {
+//        
+//        //note that if we cant generate a layout, we go into an endless loop!!
+//        //TODO: Fix THIS!!!
+//        guard let layout = RSStateSelectors.layout(state, for: route.layout) else {
+//            return nil
+//        }
+//        return layoutManager.generateLayout(layout: layout, store: store)
+//    }
     
     public static func registerResultsProcessorBackEnd(identifier: String, backEnd: RSRPBackEnd) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in

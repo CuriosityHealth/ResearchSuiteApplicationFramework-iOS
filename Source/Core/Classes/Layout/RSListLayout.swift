@@ -1,16 +1,23 @@
 //
 //  RSListLayout.swift
-//  Pods
+//  ResearchSuiteApplicationFramework
 //
-//  Created by James Kizer on 7/4/17.
-//
+//  Created by James Kizer on 4/12/18.
 //
 
 import UIKit
 import Gloss
 
-open class RSListLayout: RSLayout {
+open class RSListLayout: RSBaseLayout, RSLayoutGenerator {
     
+    public static func supportsType(type: String) -> Bool {
+        return type == "list"
+    }
+    
+    public static func generate(jsonObject: JSON) -> RSLayout? {
+        return RSListLayout(json: jsonObject)
+    }
+
     public let items: [RSListItem]
     public let itemMap: [String: RSListItem]
     public let monitoredValues: [JSON]
@@ -18,7 +25,7 @@ open class RSListLayout: RSLayout {
     required public init?(json: JSON) {
         
         guard let items: [JSON] = "items" <~~ json else {
-                return nil
+            return nil
         }
         
         self.items = items.compactMap { RSListItem(json: $0) }
@@ -32,5 +39,46 @@ open class RSListLayout: RSLayout {
         self.monitoredValues = "monitoredValues" <~~ json ?? []
         super.init(json: json)
     }
-
+    
+    open override func isEqualTo(_ object: Any) -> Bool {
+        
+        assertionFailure()
+        return false
+        
+    }
+    
+    open override func instantiateViewController(parent: RSLayoutViewController, matchedRoute: RSMatchedRoute) throws -> RSLayoutViewController {
+        
+//        let bundle = Bundle(for: RSTitleLayout.self)
+//        let storyboard: UIStoryboard = UIStoryboard(name: "RSViewControllers", bundle: bundle)
+//
+//        guard let titleLayoutVC = storyboard.instantiateViewController(withIdentifier: "titleLayoutViewController") as? RSLayoutTitleViewController else {
+//            throw RSLayoutError.cannotInstantiateLayout(layoutIdentifier: self.identifier)
+//        }
+//
+//        titleLayoutVC.matchedRoute = matchedRoute
+//        titleLayoutVC.parentLayoutViewController = parent
+//        //        titleLayoutVC.titleLayout = self
+//        //        titleLayoutVC.store = store
+//
+//        return titleLayoutVC
+        
+//        guard let layout = RSListLayout(json: jsonObject) else {
+//            return nil
+//        }
+        
+        let bundle = Bundle(for: RSListLayout.self)
+        let storyboard: UIStoryboard = UIStoryboard(name: "RSViewControllers", bundle: bundle)
+        
+        guard let listLayoutVC = storyboard.instantiateViewController(withIdentifier: "listLayoutViewController") as? RSLayoutTableViewController else {
+            throw RSLayoutError.cannotInstantiateLayout(layoutIdentifier: self.identifier)
+        }
+        
+        listLayoutVC.matchedRoute = matchedRoute
+        listLayoutVC.parentLayoutViewController = parent
+        
+        return listLayoutVC
+        
+    }
+    
 }

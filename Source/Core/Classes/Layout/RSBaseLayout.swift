@@ -1,0 +1,52 @@
+//
+//  RSBaseLayout.swift
+//  ResearchSuiteApplicationFramework
+//
+//  Created by James Kizer on 4/12/18.
+//
+
+import UIKit
+import Gloss
+
+open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
+    
+    open let identifier: String
+    open let type: String
+    open let onLoadActions: [JSON]
+    open var navTitle: String?
+    open var navButtonRight: RSLayoutButton?
+    open var onBackActions: [JSON]
+    open var childRoutes: [JSON]
+    open var element: JSON
+    
+    required public init?(json: JSON) {
+        
+        guard let identifier: String = "identifier" <~~ json,
+            let type: String = "type" <~~ json else {
+                return nil
+        }
+        
+        self.identifier = identifier
+        self.type = type
+        self.onLoadActions = "onLoad" <~~ json ?? []
+        self.navTitle = "navTitle" <~~ json
+        self.navButtonRight = "navButtonRight" <~~ json
+        self.onBackActions = "onBack" <~~ json ?? []
+        self.childRoutes = "childRoutes" <~~ json ?? []
+        self.element = json
+    }
+    
+//    open func generateChildRoutes(state: RSState) -> [RSRoute] {
+//        return []
+//    }
+    
+    open func isEqualTo(_ object: Any) -> Bool {
+        return false
+    }
+    
+    open func instantiateViewController(parent: RSLayoutViewController, matchedRoute: RSMatchedRoute) throws -> RSLayoutViewController {
+        throw RSError.notImplemented
+    }
+    
+
+}

@@ -1,26 +1,34 @@
 //
 //  RSTitleLayout.swift
-//  Pods
+//  ResearchSuiteApplicationFramework
 //
-//  Created by James Kizer on 7/6/17.
-//
+//  Created by James Kizer on 4/12/18.
 //
 
 import UIKit
 import Gloss
 
-open class RSTitleLayout: RSLayout {
+open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
     
-    public let title: String
-    public let image: UIImage?
-    public let button: RSLayoutButton?
+    public static func supportsType(type: String) -> Bool {
+        return type == "title"
+    }
+    
+    public static func generate(jsonObject: JSON) -> RSLayout? {
+        return RSTitleLayout(json: jsonObject)
+    }
+    
+    
+    open let title: String
+    open let image: UIImage?
+    open let button: RSLayoutButton?
     
     required public init?(json: JSON) {
         
         guard let title: String = "title" <~~ json else {
-                return nil
+            return nil
         }
-
+        
         self.title = title
         
         self.image = {
@@ -35,6 +43,33 @@ open class RSTitleLayout: RSLayout {
         self.button = "button" <~~ json
         
         super.init(json: json)
+        
+    }
+
+    
+    open override func isEqualTo(_ object: Any) -> Bool {
+        
+        assertionFailure()
+        return false
+        
     }
     
+    open override func instantiateViewController(parent: RSLayoutViewController, matchedRoute: RSMatchedRoute) throws -> RSLayoutViewController {
+        
+        let bundle = Bundle(for: RSTitleLayout.self)
+        let storyboard: UIStoryboard = UIStoryboard(name: "RSViewControllers", bundle: bundle)
+        
+        guard let titleLayoutVC = storyboard.instantiateViewController(withIdentifier: "titleLayoutViewController") as? RSLayoutTitleViewController else {
+            throw RSLayoutError.cannotInstantiateLayout(layoutIdentifier: self.identifier)
+        }
+        
+        titleLayoutVC.matchedRoute = matchedRoute
+        titleLayoutVC.parentLayoutViewController = parent
+//        titleLayoutVC.titleLayout = self
+//        titleLayoutVC.store = store
+        
+        return titleLayoutVC
+        
+    }
+
 }

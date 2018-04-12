@@ -17,7 +17,8 @@ public class RSReducer: NSObject {
         MeasureReducer(),
         StateValueReducer(),
         LayoutReducer(),
-        RouteReducer(),
+//        RouteReducer(),
+        PathReducer(),
         PresentationReducer(),
         ResultsProcessorReducer(),
         AppConfigurationReducer(),
@@ -259,6 +260,63 @@ public class RSReducer: NSObject {
             
         }
     }
+
+    
+//    public struct ChangePathRequest: Action {
+//        let requestedPath: String
+//    }
+//
+//    public struct RoutingStarted: Action {
+//        let requestedPath: String
+//    }
+//
+//    public struct ChangePathSuccess: Action {
+//        let requestedPath: String
+//        let finalPath: String
+//    }
+//
+//    public struct ChangePathFailure: Action {
+//        let requestedPath: String
+//        let finalPath: String
+//        let error: Error
+//    }
+    
+    final class PathReducer: Reducer {
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+//            case let action as AddRouteAction:
+//
+//                let route = action.route
+//                var newMap = state.routeMap
+//                newMap[route.identifier] = route
+//                let newIdentifierList = state.routeIdentifiers.filter { $0 != route.identifier}  + [route.identifier]
+//                return RSState.newState(fromState: state, routeMap: newMap, routeIdentifiers: newIdentifierList)
+//
+            case let action as ChangePathRequest:
+                return RSState.newState(fromState: state, requestedPath: action.requestedPath)
+                
+            case _ as RoutingStarted:
+                return RSState.newState(fromState: state, isRouting: true)
+                
+            case let action as ChangePathSuccess:
+                return RSState.newState(fromState: state, isRouting: false, currentPath: action.finalPath, requestedPath: nil as String?)
+                
+            case let action as ChangePathFailure:
+                debugPrint(action)
+                assertionFailure()
+                return RSState.newState(fromState: state, isRouting: false, requestedPath: nil as String?)
+                
+            default:
+                return state
+            }
+            
+        }
+    }
+    
     
     final class PresentationReducer: Reducer  {
         

@@ -64,10 +64,10 @@ public class RSStateSelectors: NSObject {
     public static func layout(_ state: RSState, for identifier: String) -> RSLayout? {
         return state.layoutMap[identifier]
     }
-    
-    public static func routes(_ state: RSState) -> [RSRoute] {
-        return state.routeIdentifiers.compactMap { state.routeMap[$0] }
-    }
+//    
+//    public static func routes(_ state: RSState) -> [RSRoute] {
+//        return state.routeIdentifiers.compactMap { state.routeMap[$0] }
+//    }
     
     public static func getStateValueMetadata(_ state: RSState, for identifier: String) -> RSStateValue? {
         return state.stateValueMap[identifier]
@@ -144,7 +144,8 @@ public class RSStateSelectors: NSObject {
             (state.presentedActivity == nil) &&
             (!state.isDismissing) &&
             (!state.isRouting) &&
-            (state.currentRoute != nil) &&
+//            (state.currentRoute != nil) &&
+            (state.currentPath != nil) &&
             (state.configurationCompleted)
     }
 
@@ -152,20 +153,28 @@ public class RSStateSelectors: NSObject {
         return state.isRouting
     }
     
-    public static func currentRoute(_ state: RSState) -> RSRoute? {
-        return state.currentRoute
+//    public static func currentRoute(_ state: RSState) -> RSRoute? {
+//        return state.currentRoute
+//    }
+
+    public static func currentPath(_ state: RSState) -> String? {
+        return state.currentPath
     }
     
-    public static func shouldRoute(_ state: RSState, route: RSRoute) -> Bool {
-        
-        let shouldRoute = !RSStateSelectors.isRouting(state) &&
-            RSStateSelectors.currentRoute(state) != route &&
-            !RSStateSelectors.isPresenting(state) &&
-            RSStateSelectors.presentedActivity(state) == nil &&
-            !RSStateSelectors.isDismissing(state)
-        
-        return shouldRoute
+    public static func requestedPath(_ state: RSState) -> String? {
+        return state.requestedPath
     }
+    
+//    public static func shouldRoute(_ state: RSState, route: RSRoute) -> Bool {
+//
+//        let shouldRoute = !RSStateSelectors.isRouting(state) &&
+//            RSStateSelectors.currentRoute(state) != route &&
+//            !RSStateSelectors.isPresenting(state) &&
+//            RSStateSelectors.presentedActivity(state) == nil &&
+//            !RSStateSelectors.isDismissing(state)
+//
+//        return shouldRoute
+//    }
     
     public static func getResultsProcessorBackEnd(_ state: RSState, for identifier: String) -> RSRPBackEnd? {
         return state.resultsProcessorBackEndMap[identifier]

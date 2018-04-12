@@ -134,6 +134,25 @@ public struct DismissActivityFailure: Action {
     let activityID: String
 }
 
+public struct ChangePathRequest: Action {
+    let requestedPath: String
+}
+
+public struct RoutingStarted: Action {
+    let requestedPath: String
+}
+
+public struct ChangePathSuccess: Action {
+    let requestedPath: String
+    let finalPath: String
+}
+
+public struct ChangePathFailure: Action {
+    let requestedPath: String
+    let finalPath: String
+    let error: Error
+}
+
 public struct ChangeRouteRequest: Action {
     let route: RSRoute
 }

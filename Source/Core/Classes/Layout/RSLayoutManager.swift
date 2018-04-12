@@ -1,33 +1,42 @@
 //
 //  RSLayoutManager.swift
-//  Pods
+//  ResearchSuiteApplicationFramework
 //
-//  Created by James Kizer on 7/1/17.
-//
+//  Created by James Kizer on 4/12/18.
 //
 
 import UIKit
-import ReSwift
+import Gloss
+
+public protocol RSLayoutGenerator {
+    static func supportsType(type: String) -> Bool
+    static func generate(jsonObject: JSON) -> RSLayout?
+}
 
 public class RSLayoutManager: NSObject {
     
-    let layoutGenerators: [RSLayoutGenerator]
+    let layoutGenerators: [RSLayoutGenerator.Type]
     
     public init(
-        layoutGenerators: [RSLayoutGenerator]?
-    ) {
+        layoutGenerators: [RSLayoutGenerator.Type]?
+        ) {
         self.layoutGenerators = layoutGenerators ?? []
         super.init()
     }
     
-    public func generateLayout(layout: RSLayout, store: Store<RSState>) -> UIViewController? {
+    public func generateLayout(jsonObject: JSON) -> RSLayout? {
+        
+        guard let type: String = "type" <~~ jsonObject else {
+            return nil
+        }
+        
         for layoutGenerator in layoutGenerators {
-            if layoutGenerator.supportsType(type: layout.type),
-                let layoutVC = layoutGenerator.generateLayout(jsonObject: layout.element, store: store, layoutManager: self),
-                let _ = layoutVC as? RSLayoutViewControllerProtocol {
-                return layoutVC
+            if layoutGenerator.supportsType(type: type),
+                let layout = layoutGenerator.generate(jsonObject: jsonObject) {
+                return layout
             }
         }
         return nil
     }
 }
+

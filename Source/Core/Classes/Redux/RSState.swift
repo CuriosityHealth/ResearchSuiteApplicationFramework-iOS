@@ -46,8 +46,13 @@ public final class RSState: NSObject, StateType {
     public let isPresenting: Bool
     public let isDismissing: Bool
     public let presentedActivity: (UUID, String, Date)?
+    
     public let isRouting: Bool
-    public let currentRoute: RSRoute?
+//    public let currentRoute: RSRoute?
+    
+    public let currentPath: String?
+    public let requestedPath: String?
+    
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
     //notifications
@@ -91,6 +96,8 @@ public final class RSState: NSObject, StateType {
                 presentedActivity: (UUID, String, Date)? = nil,
                 isRouting: Bool = false,
                 currentRoute: RSRoute? = nil,
+                currentPath: String? = nil,
+                requestedPath: String? = nil,
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
                 pendingNotifications: [UNNotificationRequest]? = nil,
                 isFetchingNotifications: Bool = false,
@@ -124,7 +131,9 @@ public final class RSState: NSObject, StateType {
         self.isDismissing = isDismissing
         self.presentedActivity = presentedActivity
         self.isRouting = isRouting
-        self.currentRoute = currentRoute
+//        self.currentRoute = currentRoute
+        self.currentPath = currentPath
+        self.requestedPath = requestedPath
         self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
         self.pendingNotifications = pendingNotifications
         self.isFetchingNotifications = isFetchingNotifications
@@ -161,6 +170,8 @@ public final class RSState: NSObject, StateType {
         presentedActivity: ((UUID, String, Date)?)? = nil,
         isRouting: Bool? = nil,
         currentRoute: RSRoute?? = nil,
+        currentPath: String?? = nil,
+        requestedPath: String?? = nil,
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
         pendingNotifications: ([UNNotificationRequest]?)? = nil,
         isFetchingNotifications: Bool? = nil,
@@ -195,7 +206,9 @@ public final class RSState: NSObject, StateType {
             isDismissing: isDismissing ?? fromState.isDismissing,
             presentedActivity: presentedActivity ?? fromState.presentedActivity,
             isRouting: isRouting ?? fromState.isRouting,
-            currentRoute: currentRoute ?? fromState.currentRoute,
+//            currentRoute: currentRoute ?? fromState.currentRoute,
+            currentPath: currentPath ?? fromState.currentPath,
+            requestedPath: requestedPath ?? fromState.requestedPath,
             resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap,
             pendingNotifications: pendingNotifications ?? fromState.pendingNotifications,
             isFetchingNotifications: isFetchingNotifications ?? fromState.isFetchingNotifications,
@@ -226,7 +239,8 @@ public final class RSState: NSObject, StateType {
             "\n\tactivityQueue: \(self.activityQueue)" +
         "\n\tpresentedActivity: \(self.presentedActivity)" +
         "\n\tpresentedPasscode: \(self.passcodeViewController)" +
-        "\n\tpendingNotifications: \(self.pendingNotifications?.map{ $0.identifier }.sorted())"
+        "\n\tpendingNotifications: \(self.pendingNotifications?.map{ $0.identifier }.sorted())" +
+        "\n\tcurrentPath: \(self.currentPath ?? "no path")"
         
     }
     

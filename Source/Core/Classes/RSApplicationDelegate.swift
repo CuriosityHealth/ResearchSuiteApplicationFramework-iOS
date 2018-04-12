@@ -15,10 +15,14 @@ import Gloss
 import ResearchSuiteExtensions
 import ResearchKit
 
-open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscodeDelegate, StoreSubscriber {
+open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubscriber {
     
     public var window: UIWindow?
-    private var rootNavController: RSRoutingNavigationController?
+    private var routingViewController: RSRoutingViewController?
+    public var rootViewController: RSRootViewController! {
+        return self.routingViewController!
+    }
+    
     
     public var activityManager: RSActivityManager!
     public var notificationManager: RSNotificationManager?
@@ -103,11 +107,34 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         ]
     }
     
-    open var layoutGenerators: [RSLayoutGenerator] {
+//    open var layoutGenerators: [RSLayoutGenerator] {
+//        return [
+//            RSListLayoutGenerator(),
+//            RSTitleLayoutGenerator(),
+//            RSTabLayoutGenerator()
+//        ]
+//    }
+    
+    open var layoutGenerators: [RSLayoutGenerator.Type] {
         return [
-            RSListLayoutGenerator(),
-            RSTitleLayoutGenerator(),
-            RSTabLayoutGenerator()
+            RSRootLayout.self,
+            RSTitleLayout.self,
+            RSListLayout.self
+        ]
+    }
+    
+    open var pathGenerators: [RSPathGenerator.Type] {
+        return [
+            RSExactPath.self,
+            RSPrefixPath.self
+        ]
+    }
+    
+    open var routeGenerators: [RSRouteGenerator.Type] {
+        return [
+            RSRoute.self,
+            RSRedirectRoute.self,
+            RSProtectedRoute.self
         ]
     }
     
@@ -159,7 +186,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             RSPrintNotificationActionTransformer.self,
             RSEvaluatePredicateActionTransformer.self,
             RSSetPreventSleepAction.self,
-            RSActionSwitchTransformer.self
+            RSActionSwitchTransformer.self,
+            RSRequestPathChangeActionTransformer.self
         ]
     }
     
@@ -282,10 +310,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             
             self.layoutManager = nil
             
-//            self.window?.rootViewController = UIViewController()
-//            self.window?.makeKeyAndVisible()
-//
-//            self.rootNavController = nil
+            self.window?.rootViewController = UIViewController()
+            self.window?.makeKeyAndVisible()
+
+            self.routingViewController = nil
             
             self.openURLManager = nil
             
@@ -391,21 +419,25 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         self.printRefCount()
         
         if fromReset {
-            debugPrint(self.rootNavController!.viewControllers)
-            self.rootNavController!.presentingViewController?.dismiss(animated: false, completion: nil)
+//            debugPrint(self.rootNavController!.viewControllers)
+//            self.rootNavController!.presentingViewController?.dismiss(animated: false, completion: nil)
         }
         
+        let pathManager = RSPathManager(pathGenerators: self.pathGenerators)
+        let routeManager = RSRouteManager(routeGenerators: self.routeGenerators, pathManager: pathManager)
         
         //set root view controller
-        self.rootNavController = RSRoutingNavigationController()
-        self.rootNavController?.store = self.store
-        self.rootNavController?.layoutManager = self.layoutManager
-        self.rootNavController?.activityManager = self.activityManager
-        self.rootNavController?.viewControllers = [UIViewController()]
-        
-        self.transition(toRootViewController: self.rootNavController!, animated: fromReset)
-        
-        debugPrint(self.rootNavController!.viewControllers)
+        self.routingViewController = RSRoutingViewController(rootLayoutIdentifier: "ROOT", routeManager: routeManager, activityManager: self.activityManager, store: self.store)
+        self.window?.rootViewController = self.routingViewController
+        self.window?.makeKeyAndVisible()
+//        self.rootNavController?.store = self.store
+////        self.rootNavController?.layoutManager = self.layoutManager
+//        self.rootNavController?.activityManager = self.activityManager
+//        self.rootNavController?.viewControllers = [UIViewController()]
+//
+//        self.transition(toRootViewController: self.rootNavController!, animated: fromReset)
+//
+//        debugPrint(self.rootNavController!.viewControllers)
         
         self.printRefCount()
         
@@ -443,7 +475,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        lockScreen()
+        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+        rootVC.lockScreen()
         return true
     }
     
@@ -465,147 +498,147 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
 //    open func isPasscodePresented() -> Bool {
 //        return self.passcodeViewController != nil
 //    }
-    
-    private func instantiateViewControllerForPasscode() -> UIViewController? {
-        return ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
-    }
-    
-    /**
-     Convenience method for presenting a modal view controller.
-     */
-    open func presentViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
-        self.topViewController()?.present(viewController, animated: animated, completion: completion)
-    }
-    
-    open func topViewController() -> UIViewController? {
-        guard let rootVC = self.window?.rootViewController else {
-            return nil
-        }
-        var topViewController: UIViewController = rootVC
-        while (topViewController.presentedViewController != nil) {
-            topViewController = topViewController.presentedViewController!
-        }
-        return topViewController
-    }
-    
-    open func transition(toRootViewController: UIViewController, animated: Bool) {
-        guard let window = self.window else { return }
-        if (animated) {
-            let snapshot:UIView = (window.snapshotView(afterScreenUpdates: true))!
-            toRootViewController.view.addSubview(snapshot);
-            
-            window.rootViewController = toRootViewController;
-            
-            UIView.animate(withDuration: 0.3, animations: {() in
-                snapshot.layer.opacity = 0;
-            }, completion: {
-                (value: Bool) in
-                snapshot.removeFromSuperview()
-                window.makeKeyAndVisible()
-            })
-        }
-        else {
-            window.rootViewController = toRootViewController
-            window.makeKeyAndVisible()
-        }
-    }
-    
-    
-    public func lockScreen() {
-        
-        let state: RSState = self.store.state
-        guard RSStateSelectors.shouldShowPasscode(state) else {
-            return
-        }
-        
-        
-        
-        let vc = ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
-        
-        vc.modalPresentationStyle = .fullScreen
-        vc.modalTransitionStyle = .coverVertical
-        
-        let uuid = UUID()
-        self.store.dispatch(PresentPasscodeRequest(uuid: uuid, passcodeViewController: vc))
-        
-        self.window?.makeKeyAndVisible()
-        
-        presentViewController(vc, animated: false, completion: {
-            self.store.dispatch(PresentPasscodeSuccess(uuid: uuid, passcodeViewController: vc))
-        })
-    }
-    
-    private func dismissPasscodeViewController(_ animated: Bool) {
-        
-        let state: RSState = self.store.state
-        guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
-            return
-        }
-        
-        let uuid = UUID()
-        self.store.dispatch(DismissPasscodeRequest(uuid: uuid, passcodeViewController: passcodeViewController))
-        passcodeViewController.presentingViewController?.dismiss(animated: animated, completion: {
-            self.store.dispatch(DismissPasscodeSuccess(uuid: uuid, passcodeViewController: passcodeViewController))
-        })
-    }
-    
-    private func resetPasscode() {
-        
-        let state: RSState = self.store.state
-        guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
-            return
-        }
-        
-        self.signOut{ (signedOut, error) in
-            passcodeViewController.presentingViewController?.dismiss(animated: false, completion: nil)
-            // Dismiss the view controller unanimated
-//            dismissPasscodeViewController(false)
-        }
-    }
-    
-    // MARK: ORKPasscodeDelegate
-    
-    open func passcodeViewControllerDidFinish(withSuccess viewController: UIViewController) {
-        dismissPasscodeViewController(true)
-    }
-    
-    open func passcodeViewControllerDidFailAuthentication(_ viewController: UIViewController) {
-        // Do nothing in default implementation
-    }
-    
-    open func passcodeViewControllerForgotPasscodeTapped(_ viewController: UIViewController) {
-        
-        let title = "Reset Passcode"
-        let message = "In order to reset your passcode, you'll need to log out of the app completely and log back in using your email and password."
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alert.addAction(cancelAction)
-        
-        let logoutAction = UIAlertAction(title: "Log Out", style: .destructive, handler: { _ in
-            self.resetPasscode()
-        })
-        alert.addAction(logoutAction)
-        
-        viewController.present(alert, animated: true, completion: nil)
-    }
-    
-    open func setContentHidden(vc: UIViewController, contentHidden: Bool) {
-        if let vc = vc.presentedViewController {
-            vc.view.isHidden = contentHidden
-        }
-        
-        vc.view.isHidden = contentHidden
-    }
+//
+//    private func instantiateViewControllerForPasscode() -> UIViewController? {
+//        return ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
+//    }
+//
+//    /**
+//     Convenience method for presenting a modal view controller.
+//     */
+//    open func presentViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
+//        self.topViewController()?.present(viewController, animated: animated, completion: completion)
+//    }
+//
+//    open func topViewController() -> UIViewController? {
+//        guard let rootVC = self.window?.rootViewController else {
+//            return nil
+//        }
+//        var topViewController: UIViewController = rootVC
+//        while (topViewController.presentedViewController != nil) {
+//            topViewController = topViewController.presentedViewController!
+//        }
+//        return topViewController
+//    }
+//
+//    open func transition(toRootViewController: UIViewController, animated: Bool) {
+//        guard let window = self.window else { return }
+//        if (animated) {
+//            let snapshot:UIView = (window.snapshotView(afterScreenUpdates: true))!
+//            toRootViewController.view.addSubview(snapshot);
+//
+//            window.rootViewController = toRootViewController;
+//
+//            UIView.animate(withDuration: 0.3, animations: {() in
+//                snapshot.layer.opacity = 0;
+//            }, completion: {
+//                (value: Bool) in
+//                snapshot.removeFromSuperview()
+//                window.makeKeyAndVisible()
+//            })
+//        }
+//        else {
+//            window.rootViewController = toRootViewController
+//            window.makeKeyAndVisible()
+//        }
+//    }
+//
+//
+//    public func lockScreen() {
+//
+////        let state: RSState = self.store.state
+////        guard RSStateSelectors.shouldShowPasscode(state) else {
+////            return
+////        }
+////
+////
+////
+////        let vc = ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
+////
+////        vc.modalPresentationStyle = .fullScreen
+////        vc.modalTransitionStyle = .coverVertical
+////
+////        let uuid = UUID()
+////        self.store.dispatch(PresentPasscodeRequest(uuid: uuid, passcodeViewController: vc))
+////
+////        self.window?.makeKeyAndVisible()
+////
+////        presentViewController(vc, animated: false, completion: {
+////            self.store.dispatch(PresentPasscodeSuccess(uuid: uuid, passcodeViewController: vc))
+////        })
+//    }
+//
+//    private func dismissPasscodeViewController(_ animated: Bool) {
+//
+//        let state: RSState = self.store.state
+//        guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
+//            return
+//        }
+//
+//        let uuid = UUID()
+//        self.store.dispatch(DismissPasscodeRequest(uuid: uuid, passcodeViewController: passcodeViewController))
+//        passcodeViewController.presentingViewController?.dismiss(animated: animated, completion: {
+//            self.store.dispatch(DismissPasscodeSuccess(uuid: uuid, passcodeViewController: passcodeViewController))
+//        })
+//    }
+//
+//    private func resetPasscode() {
+//
+//        let state: RSState = self.store.state
+//        guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
+//            return
+//        }
+//
+//        self.signOut{ (signedOut, error) in
+//            passcodeViewController.presentingViewController?.dismiss(animated: false, completion: nil)
+//            // Dismiss the view controller unanimated
+////            dismissPasscodeViewController(false)
+//        }
+//    }
+//
+//    // MARK: ORKPasscodeDelegate
+//
+//    open func passcodeViewControllerDidFinish(withSuccess viewController: UIViewController) {
+//        dismissPasscodeViewController(true)
+//    }
+//
+//    open func passcodeViewControllerDidFailAuthentication(_ viewController: UIViewController) {
+//        // Do nothing in default implementation
+//    }
+//
+//    open func passcodeViewControllerForgotPasscodeTapped(_ viewController: UIViewController) {
+//
+//        let title = "Reset Passcode"
+//        let message = "In order to reset your passcode, you'll need to log out of the app completely and log back in using your email and password."
+//        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+//        alert.addAction(cancelAction)
+//
+//        let logoutAction = UIAlertAction(title: "Log Out", style: .destructive, handler: { _ in
+//            self.resetPasscode()
+//        })
+//        alert.addAction(logoutAction)
+//
+//        viewController.present(alert, animated: true, completion: nil)
+//    }
+//
+//    open func setContentHidden(vc: UIViewController, contentHidden: Bool) {
+//        if let vc = vc.presentedViewController {
+//            vc.view.isHidden = contentHidden
+//        }
+//
+//        vc.view.isHidden = contentHidden
+//    }
     
     open func applicationWillResignActive(_ application: UIApplication) {
         
         let state: RSState = self.store.state
         if RSStateSelectors.shouldShowPasscode(state) {
             // Hide content so it doesn't appear in the app switcher.
-            if let vc = self.window?.rootViewController {
-                self.setContentHidden(vc: vc, contentHidden: true)
-            }
+
+            let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+            rootVC.setContentHidden(hidden: true)
             
         }
     }
@@ -617,15 +650,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
     
     open func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-        lockScreen()
+        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+        rootVC.lockScreen()
     }
     
     open func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         // Make sure that the content view controller is not hiding content
-        if let vc = self.window?.rootViewController {
-            self.setContentHidden(vc: vc, contentHidden: false)
-        }
+        
+        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+        rootVC.setContentHidden(hidden: false)
     }
     
     open func applicationWillTerminate(_ application: UIApplication) {
