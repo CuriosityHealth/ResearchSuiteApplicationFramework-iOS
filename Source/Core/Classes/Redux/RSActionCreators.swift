@@ -30,7 +30,7 @@ public class RSActionCreators: NSObject {
             }
             
             jsonArray
-                .flatMap(flatMapFunc)
+                .compactMap(flatMapFunc)
                 .map(mapFunc)
                 .forEach { store.dispatch($0) }
             

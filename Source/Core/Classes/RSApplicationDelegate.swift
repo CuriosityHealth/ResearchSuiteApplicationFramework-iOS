@@ -216,7 +216,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
                 return []
         }
         
-        return jsonArray.flatMap { RSStateManagerDescriptor(json: $0) }
+        return jsonArray.compactMap { RSStateManagerDescriptor(json: $0) }
     }
     
     open func newState(state: RSState) {
@@ -331,6 +331,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
         }
     }
     
+    @discardableResult
     open func initializeApplication(fromReset: Bool) -> Bool {
         
         self.persistentStoreSubscriber = RSStatePersistentStoreSubscriber(
@@ -338,7 +339,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, ORKPasscod
             stateManagerGenerators: self.stateManagerGenerators
         )
         
-        let middleware: [Middleware] = self.storeMiddleware.flatMap { $0.getMiddleware(appDelegate: self) }
+        let middleware: [Middleware] = self.storeMiddleware.compactMap { $0.getMiddleware(appDelegate: self) }
 
         self.storeManager = RSStoreManager(
             initialState: self.persistentStoreSubscriber.loadState(),

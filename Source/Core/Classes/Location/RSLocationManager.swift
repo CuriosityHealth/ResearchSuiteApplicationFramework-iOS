@@ -200,10 +200,10 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             let regions: [CLRegion] = {
                 
                 if let regions = regionGroup.regions {
-                    return (RSValueManager.processValue(jsonObject: regions, state: state, context: [:])?.evaluate() as? [AnyObject])?.flatMap { $0 as? CLRegion } ?? []
+                    return (RSValueManager.processValue(jsonObject: regions, state: state, context: [:])?.evaluate() as? [AnyObject])?.compactMap { $0 as? CLRegion } ?? []
                 }
                 else if let region = regionGroup.region {
-                    return [RSValueManager.processValue(jsonObject: region, state: state, context: [:])?.evaluate()].flatMap { $0 as? CLRegion }
+                    return [RSValueManager.processValue(jsonObject: region, state: state, context: [:])?.evaluate()].compactMap { $0 as? CLRegion }
                 }
                 else {
                     return []
@@ -211,7 +211,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
                 
             }()
             
-            let expectedRegions: [CLRegion] = regions.flatMap { region in
+            let expectedRegions: [CLRegion] = regions.compactMap { region in
                 
                 if let circularRegion = region as? CLCircularRegion {
 //                    return CLCircularRegion(center: circularRegion.center, radius: circularRegion.radius, identifier: "\(self.prefixFor(regionGroup: regionGroup))\(circularRegion.identifier)")
@@ -276,7 +276,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         
         let enabledSet = Set(monitoredRegionsMap.keys)
         let shouldBeEnabledSet = Set(expectedRegionsMap.keys)
-        return Set(shouldBeEnabledSet.subtracting(enabledSet).flatMap { identifier in
+        return Set(shouldBeEnabledSet.subtracting(enabledSet).compactMap { identifier in
             return expectedRegionsMap[identifier]
         })
     }
@@ -285,7 +285,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         
         let enabledSet = Set(monitoredRegionsMap.keys)
         let shouldBeEnabledSet = Set(expectedRegionsMap.keys)
-        return Set(enabledSet.subtracting(shouldBeEnabledSet).flatMap { identifier in
+        return Set(enabledSet.subtracting(shouldBeEnabledSet).compactMap { identifier in
             return monitoredRegionsMap[identifier]
         })
     }
@@ -328,7 +328,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             
             return !self.regionsEqual(expectedRegion, monitoredRegion)
             
-            }.flatMap { identifier in
+            }.compactMap { identifier in
                 return expectedRegionsMap[identifier]
         }
         

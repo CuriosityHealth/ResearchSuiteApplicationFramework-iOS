@@ -23,7 +23,7 @@ class RSEnhancedMultipleChoiceValuesResultTransform: RSDefaultStepResult {
             return [NSString]() as AnyObject
         }
         
-        let choices: [NSString] = choiceAnswers.flatMap { (selection) -> NSString? in
+        let choices: [NSString] = choiceAnswers.compactMap { (selection) -> NSString? in
             return selection.value as? NSString
         }
         
