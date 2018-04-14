@@ -15,19 +15,32 @@ import UserNotifications
 
 public class RSActionCreators: NSObject {
     
-    
+
     //loads json from (fileName, directory)
     //uses selector to select the array we want to process
     //converts each JSON element in array to an object
     //converts each object into an action
     //dispatches each action
-    private static func addArrayOfObjectsFromFile<T>(fileName: String, inDirectory: String? = nil, selector: @escaping (JSON) -> [JSON]?, flatMapFunc: @escaping (JSON) -> T?, mapFunc: @escaping (T) -> Action) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    private static func addArrayOfObjectsFromFile<T>(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil, selector: @escaping (JSON) -> [JSON]?, flatMapFunc: @escaping (JSON) -> T?, mapFunc: @escaping (T) -> Action) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
+            let json: JSON? = {
+                
+                let urlPath: String = inDirectory != nil ? inDirectory! + "/" + fileName : fileName
+                if  let urlBase = configJSONBaseURL,
+                    let url = URL(string: urlBase + urlPath) {
+                    
+                    return RSHelpers.getJSON(forURL: url)
+                    
+                }
+                else {
+                    return RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON
+                }
+                
+            }()
             
-            
-            guard let json = RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON,
-                let jsonArray = selector(json) else {
+            guard let jsonElement = json,
+                let jsonArray = selector(jsonElement) else {
                     return nil
             }
             
@@ -40,11 +53,12 @@ public class RSActionCreators: NSObject {
         }
     }
     
-    public static func addStateValuesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addStateValuesFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
 
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
             selector: { "state" <~~ $0 },
             flatMapFunc: { RSStateValue(json: $0) },
             mapFunc: { AddStateValueAction(stateValue: $0) }
@@ -52,11 +66,12 @@ public class RSActionCreators: NSObject {
         
     }
     
-    public static func addConstantsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addConstantsFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
             selector: { "constants" <~~ $0 },
             flatMapFunc: { RSConstantValue(json: $0) },
             mapFunc: { AddConstantValueAction(constantValue: $0) }
@@ -64,23 +79,51 @@ public class RSActionCreators: NSObject {
         
     }
     
-    public static func addFunctionsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addFunctionsFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
 
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
             selector: { "functions" <~~ $0 },
-            flatMapFunc: { RSFunctionValue(json: $0) },
+            flatMapFunc: { RSDefinedFunctionValue(json: $0) },
             mapFunc: { AddFunctionValueAction(functionValue: $0) }
         )
         
     }
     
-    public static func addMeasuresFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addPredicateFunctionsFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
+            selector: { "predicateFunctions" <~~ $0 },
+            flatMapFunc: { RSPredicateFunctionValue(json: $0) },
+            mapFunc: { AddFunctionValueAction(functionValue: $0) }
+        )
+        
+    }
+    
+    public static func addDefinedActionsFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
+            selector: { "definedActions" <~~ $0 },
+            flatMapFunc: { RSDefinedAction(json: $0) },
+            mapFunc: { AddDefinedAction(definedAction: $0) }
+        )
+        
+    }
+    
+    public static func addMeasuresFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return addArrayOfObjectsFromFile(
+            fileName: fileName,
+            inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
             selector: { "measures" <~~ $0 },
             flatMapFunc: { RSMeasure(json: $0) },
             mapFunc: { AddMeasureAction(measure: $0) }
@@ -88,11 +131,12 @@ public class RSActionCreators: NSObject {
         
     }
     
-    public static func addActivitiesFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addActivitiesFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
             selector: { "activities" <~~ $0 },
             flatMapFunc: { RSActivity(json: $0) },
             mapFunc: { AddActivityAction(activity: $0) }
@@ -100,11 +144,12 @@ public class RSActionCreators: NSObject {
         
     }
     
-    public static func addLayoutsFromFile(fileName: String, layoutManager: RSLayoutManager, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addLayoutsFromFile(fileName: String, layoutManager: RSLayoutManager, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
             selector: { "layouts" <~~ $0 },
             flatMapFunc: { layoutManager.generateLayout(jsonObject: $0) },
             mapFunc: { AddLayoutAction(layout: $0) }
@@ -180,7 +225,7 @@ public class RSActionCreators: NSObject {
     }
 
     
-    public static func registerFunction(identifier: String, function: @escaping () -> AnyObject?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func registerFunction(identifier: String, function: @escaping (RSState) -> AnyObject?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             return RegisterFunctionAction(identifier: identifier, function: function)
         }

@@ -45,11 +45,15 @@ public struct AddFunctionValueAction: Action {
 
 public struct RegisterFunctionAction: Action {
     let identifier: String
-    let function: () -> AnyObject?
+    let function: (RSState) -> AnyObject?
 }
 
 public struct UnregisterFunctionAction: Action {
     let identifier: String
+}
+
+public struct AddDefinedAction: Action {
+    let definedAction: RSDefinedAction
 }
 
 public struct AddMeasureAction: Action {

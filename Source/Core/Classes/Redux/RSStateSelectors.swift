@@ -103,6 +103,10 @@ public class RSStateSelectors: NSObject {
         return state.functionsMap[identifier]
     }
     
+    public static func getDefinedAction(_ state: RSState, for identifier: String) -> RSDefinedAction? {
+        return state.definedActionsMap[identifier]
+    }
+    
     public static func getValueInCombinedState(_ state: RSState, for identifier: String) -> AnyObject? {
         
         if let valueConvertible: ValueConvertible = RSStateSelectors.getValueInStorage(state, for: identifier) {
@@ -111,7 +115,7 @@ public class RSStateSelectors: NSObject {
         else if let valueConvertible: ValueConvertible = RSStateSelectors.getConstantValue(state, for: identifier) {
             return valueConvertible.evaluate()
         }
-        else if let valueConvertible: ValueConvertible = RSStateSelectors.getFunctionValue(state, for: identifier) {
+        else if let valueConvertible: ValueConvertible = RSStateSelectors.getFunctionValue(state, for: identifier)?.generateValueConvertible(state: state) {
             return valueConvertible.evaluate()
         }
         return nil

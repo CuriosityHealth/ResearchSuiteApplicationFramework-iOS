@@ -20,7 +20,7 @@ open class RSFunctionValueTransformer: RSValueTransformer {
                 return nil
         }
         
-        return functionValue
+        return functionValue.generateValueConvertible(state: state)
     }
     
 }

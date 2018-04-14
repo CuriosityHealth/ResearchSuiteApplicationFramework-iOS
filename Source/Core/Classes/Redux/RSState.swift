@@ -31,6 +31,7 @@ public final class RSState: NSObject, StateType {
     //metadata defined in the constants config file
     //static after config
     public let functionsMap: [String: RSFunctionValue]
+    public let definedActionsMap: [String: RSDefinedAction]
     //static after config
     public let measureMap: [String: RSMeasure]
     //static after config
@@ -86,6 +87,7 @@ public final class RSState: NSObject, StateType {
                 stateValueHasBeenSet: [String: NSObject] = [:],
                 constantsMap: [String: RSConstantValue] = [:],
                 functionsMap: [String: RSFunctionValue] = [:],
+                definedActionsMap: [String: RSDefinedAction] = [:],
                 measureMap: [String: RSMeasure] = [:],
                 activityMap: [String: RSActivity] = [:],
                 layoutMap: [String: RSLayout] = [:],
@@ -123,6 +125,7 @@ public final class RSState: NSObject, StateType {
         self.stateValueHasBeenSet = stateValueHasBeenSet
         self.constantsMap = constantsMap
         self.functionsMap = functionsMap
+        self.definedActionsMap = definedActionsMap
         self.measureMap = measureMap
         self.activityMap = activityMap
         self.layoutMap = layoutMap
@@ -162,6 +165,7 @@ public final class RSState: NSObject, StateType {
         stateValueHasBeenSet: [String: NSObject]? = nil,
         constantsMap: [String: RSConstantValue]? = nil,
         functionsMap: [String: RSFunctionValue]? = nil,
+        definedActionsMap: [String: RSDefinedAction]? = nil,
         measureMap: [String: RSMeasure]? = nil,
         activityMap: [String: RSActivity]? = nil,
         layoutMap: [String: RSLayout]? = nil,
@@ -200,6 +204,7 @@ public final class RSState: NSObject, StateType {
             stateValueHasBeenSet: stateValueHasBeenSet ?? fromState.stateValueHasBeenSet,
             constantsMap: constantsMap ?? fromState.constantsMap,
             functionsMap: functionsMap ?? fromState.functionsMap,
+            definedActionsMap: definedActionsMap ?? fromState.definedActionsMap,
             measureMap: measureMap ?? fromState.measureMap,
             activityMap: activityMap ?? fromState.activityMap,
             layoutMap: layoutMap ?? fromState.layoutMap,

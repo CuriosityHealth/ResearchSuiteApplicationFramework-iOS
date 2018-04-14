@@ -188,7 +188,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSEvaluatePredicateActionTransformer.self,
             RSSetPreventSleepAction.self,
             RSActionSwitchTransformer.self,
-            RSRequestPathChangeActionTransformer.self
+            RSRequestPathChangeActionTransformer.self,
+            RSDefinedAction.self
         ]
     }
     
@@ -443,7 +444,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.printRefCount()
         
         //function bindings need to go first in case they are used by routes
-        let registerFunctionAction = RSActionCreators.registerFunction(identifier: "now") {
+        let registerFunctionAction = RSActionCreators.registerFunction(identifier: "now") { state in
             return Date() as NSDate
         }
         

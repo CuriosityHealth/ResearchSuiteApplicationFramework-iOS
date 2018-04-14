@@ -126,6 +126,13 @@ public class RSReducer: NSObject {
                 newMap[functionValue.identifier] = functionValue
                 return RSState.newState(fromState: state, functionsMap: newMap)
                 
+            case let action as AddDefinedAction:
+                
+                let definedAction = action.definedAction
+                var newMap = state.definedActionsMap
+                newMap[definedAction.identifier] = definedAction
+                return RSState.newState(fromState: state, definedActionsMap: newMap)
+                
             case let action as SetValueInState:
                 
                 var stateDict: [String: NSObject] = state.applicationState
@@ -167,7 +174,8 @@ public class RSReducer: NSObject {
                 
             case let registerFunctionAction as RegisterFunctionAction:
                 
-                guard let functionValue = state.functionsMap[registerFunctionAction.identifier] else {
+                assert(state.functionsMap[registerFunctionAction.identifier] == nil || state.functionsMap[registerFunctionAction.identifier] is RSDefinedFunctionValue)
+                guard let functionValue = state.functionsMap[registerFunctionAction.identifier] as? RSDefinedFunctionValue else {
                     return state
                 }
 
@@ -179,7 +187,8 @@ public class RSReducer: NSObject {
                 
             case let unregisterFunctionAction as UnregisterFunctionAction:
                 
-                guard let functionValue = state.functionsMap[unregisterFunctionAction.identifier] else {
+                assert(state.functionsMap[unregisterFunctionAction.identifier] is RSDefinedFunctionValue)
+                guard let functionValue = state.functionsMap[unregisterFunctionAction.identifier] as? RSDefinedFunctionValue else {
                     return state
                 }
                 

@@ -14,11 +14,17 @@ import CoreLocation
 //State than simple selectors can be
 //Although, this might technically just be a selector...
 //these provide bindings when state is managed by another module (e.g., login managed by SDK)
-public class RSFunctionValue: Gloss.JSONDecodable, ValueConvertible {
+
+public protocol RSFunctionValue {
+    var identifier: String { get }
+    func generateValueConvertible(state: RSState) -> ValueConvertible
+}
+
+open class RSDefinedFunctionValue: Gloss.JSONDecodable, RSFunctionValue {
     
-    public let identifier: String
-    public let type: String
-    public let function: (() -> AnyObject?)?
+    open let identifier: String
+    open let type: String
+    open let function: ((RSState) -> AnyObject?)?
     
     required public init?(json: JSON) {
         
@@ -35,20 +41,20 @@ public class RSFunctionValue: Gloss.JSONDecodable, ValueConvertible {
     private init(
         identifier: String,
         type: String,
-        function: (() -> AnyObject?)?
+        function: ((RSState) -> AnyObject?)?
         ) {
         self.identifier = identifier
         self.type = type
         self.function = function
     }
     
-    public func with(function: (() -> AnyObject?)?) -> RSFunctionValue {
-        return RSFunctionValue(identifier: self.identifier, type: self.type, function: function)
+    public func with(function: ((RSState) -> AnyObject?)?) -> RSFunctionValue {
+        return RSDefinedFunctionValue(identifier: self.identifier, type: self.type, function: function)
     }
     
-    public func evaluate() -> AnyObject? {
-        assert(self.function != nil, "Function \(self.identifier) is not registered")
-        return self.function!()
+    open func generateValueConvertible(state: RSState) -> ValueConvertible {
+        let result: AnyObject? = self.function!(state)
+        return RSValueConvertible(value: result)
     }
 
 }
