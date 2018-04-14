@@ -14,7 +14,7 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
         return type == "title"
     }
     
-    public static func generate(jsonObject: JSON) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
         return RSTitleLayout(json: jsonObject)
     }
     

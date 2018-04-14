@@ -119,7 +119,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return [
             RSRootLayout.self,
             RSTitleLayout.self,
-            RSListLayout.self
+            RSListLayout.self,
+            RSLayoutFile.self
         ]
     }
     

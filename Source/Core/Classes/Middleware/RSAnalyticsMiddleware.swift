@@ -8,6 +8,7 @@
 import UIKit
 import ReSwift
 import ResearchSuiteResultsProcessor
+import Gloss
 
 public protocol RSAnalyticsMiddlewareDelegate {
     func logActivity(activityID: String, uuid: UUID, startTime: Date, endTime: Date, completed: Bool)
@@ -25,6 +26,12 @@ open class RSAnalyticsMiddleware: RSMiddlewareProvider {
         return { dispatch, getState in
             return { next in
                 return { action in
+                    
+                    if let encodableAction = action as? JSONEncodable,
+                        let json = encodableAction.toJSON() {
+                        debugPrint(json)
+                    }
+                    
                     if let logActivityAction = action as? LogActivityAction {
                         analyticsDelegate.logActivity(
                             activityID: logActivityAction.activityID,

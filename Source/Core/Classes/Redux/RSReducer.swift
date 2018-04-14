@@ -297,18 +297,18 @@ public class RSReducer: NSObject {
 //                return RSState.newState(fromState: state, routeMap: newMap, routeIdentifiers: newIdentifierList)
 //
             case let action as ChangePathRequest:
-                return RSState.newState(fromState: state, requestedPath: action.requestedPath)
+                return RSState.newState(fromState: state, requestedPath: action.requestedPath, forceReroute: action.forceReroute)
                 
             case _ as RoutingStarted:
-                return RSState.newState(fromState: state, isRouting: true)
+                return RSState.newState(fromState: state, isRouting: true, forceReroute: false)
                 
             case let action as ChangePathSuccess:
-                return RSState.newState(fromState: state, isRouting: false, currentPath: action.finalPath, requestedPath: nil as String?)
+                return RSState.newState(fromState: state, isRouting: false, currentPath: action.finalPath, requestedPath: nil as String?, forceReroute: false)
                 
             case let action as ChangePathFailure:
                 debugPrint(action)
                 assertionFailure()
-                return RSState.newState(fromState: state, isRouting: false, requestedPath: nil as String?)
+                return RSState.newState(fromState: state, isRouting: false, requestedPath: nil as String?, forceReroute: false)
                 
             default:
                 return state

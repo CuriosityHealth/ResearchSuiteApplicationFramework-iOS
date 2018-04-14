@@ -10,12 +10,19 @@ import UIKit
 import Gloss
 import CoreLocation
 
-public class RSStateValue: Gloss.JSONDecodable {
+public class RSStateValue: Glossy {
+    
+    public func toJSON() -> JSON? {
+        return self.json
+    }
+    
     
     public let identifier: String
     public let type: String
     public let defaultValue: AnyObject?
     public let stateManager: String
+    
+    public let json: JSON
     
     required public init?(json: JSON) {
         
@@ -29,6 +36,8 @@ public class RSStateValue: Gloss.JSONDecodable {
         self.type = type
         self.defaultValue = "default" <~~ json
         self.stateManager = stateManager
+        
+        self.json = json
     
     }
     

@@ -8,8 +8,24 @@
 
 import UIKit
 import ResearchSuiteTaskBuilder
+import Gloss
 
 public class RSHelpers {
+    
+    open static func getJSON(forURL url: URL) -> JSON? {
+        
+        guard let fileContent = try? Data(contentsOf: url)
+            else {
+                assertionFailure("Unable to create NSData with content of file \(url)")
+                return nil
+        }
+        
+        guard let json = (try? JSONSerialization.jsonObject(with: fileContent, options: JSONSerialization.ReadingOptions.mutableContainers)) as? JSON else {
+            return nil
+        }
+        
+        return json
+    }
     
     public static func getJson(forFilename filename: String, inBundle bundle: Bundle = Bundle.main, inDirectory: String? = nil) -> JsonElement? {
         

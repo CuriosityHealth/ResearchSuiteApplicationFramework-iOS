@@ -165,6 +165,10 @@ public class RSStateSelectors: NSObject {
         return state.requestedPath
     }
     
+    public static func forceReroute(_ state: RSState) -> Bool {
+        return state.forceReroute
+    }
+    
 //    public static func shouldRoute(_ state: RSState, route: RSRoute) -> Bool {
 //
 //        let shouldRoute = !RSStateSelectors.isRouting(state) &&

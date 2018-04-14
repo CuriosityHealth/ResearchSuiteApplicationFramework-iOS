@@ -198,13 +198,16 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
 ////        self.state = state
 //    }
     
-    
+
+    private var _visibleLayoutViewController: RSLayoutViewController? = nil
+    open var visibleLayoutViewController: RSLayoutViewController? {
+        return self._visibleLayoutViewController
+    }
     
     open func newState(state: RSState) {
-
+        
         //only route if the passcode view controller is NOT presented
         //NOTE: there is a race condition on sign out where the state is cleared but the passcode view controller is actully presented
-
         guard !RSStateSelectors.isPasscodePresented(state) && !self.isPasscodePresented() else {
             return
         }
@@ -212,7 +215,17 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         if let requestedPath = RSStateSelectors.requestedPath(state),
             !RSStateSelectors.isRouting(state) {
             
-            let hasRouted = RSStateSelectors.currentPath(state) != nil
+            if RSStateSelectors.forceReroute(state) {
+                
+                self.rootViewController.removeFromParentViewController()
+                self.rootViewController.view.removeFromSuperview()
+                self.rootViewController = nil
+                
+                self.childLayoutVCs = []
+                
+            }
+            
+            let hasRouted = self.rootViewController != nil
             //begin routing
             let beginRoutingAction = RoutingStarted(requestedPath: requestedPath)
             self.store?.dispatch(beginRoutingAction)
@@ -245,58 +258,8 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             
         }
 
-//        //first, lets check to see if there is a new layout to route
-//        let routes = RSStateSelectors.routes(state)
-//        let firstRouteOpt = routes.first { (route) -> Bool in
-//
-//            guard let predicate = route.predicate else {
-//                return true
-//            }
-//
-//            return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
-//
-//        }
-//
-//        if let firstRoute = firstRouteOpt,
-//            RSStateSelectors.shouldRoute(state, route: firstRoute) {
-//            self.store?.dispatch(RSActionCreators.setRoute(route: firstRoute, layoutManager: self.layoutManager, delegate: self))
-//            return
-//        }
-//
-//        guard !RSStateSelectors.isPresentingPasscode(state),
-//            !RSStateSelectors.isDismissingPasscode(state) else {
-//                return
-//        }
-//        //otherwise, check to see if there is an activity to present
-//        if RSStateSelectors.shouldPresent(state) {
-//            self.store?.dispatch(RSActionCreators.presentActivity(on: self, activityManager: self.activityManager))
-//        }
-
-
-
     }
-
-    
-    private var _currentPath: String = "/"
-    public var currentPath: String {
-        return _currentPath
-    }
-    
-    private var hasRouted = false
-    
-    open func setCurrentPath(path: String) {
-        
-//        self.handleRouteChange(newPath: path, completion: { currentPath in
-//            self._currentPath = currentPath
-//        })
-        
-    }
-    
-//    open func getInitialRoutes(state: RSState) -> [RSRoute] {
-//
-//        return self.rootLayoutViewController.layout.childRoutes.compactMap(  )
-//    }
-    
+ 
     private func handleRouteChange(newPath: String, animated: Bool, state: RSState, completion: @escaping ((String, Error?) -> ())) {
         do {
             
@@ -314,7 +277,6 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
                     return
                 }
                 else {
-                    self.hasRouted = true
                     completion(routingInstructions.path, nil)
                     return
                 }
@@ -349,10 +311,8 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         
         let uuid = UUID()
         self.store!.dispatch(PresentPasscodeRequest(uuid: uuid, passcodeViewController: vc))
-        
-//        self.window?.makeKeyAndVisible()
-        
-        self.present(vc, animated: false, completion: {
+
+        self.topViewController.present(vc, animated: false, completion: {
             self.store!.dispatch(PresentPasscodeSuccess(uuid: uuid, passcodeViewController: vc))
         })
     }

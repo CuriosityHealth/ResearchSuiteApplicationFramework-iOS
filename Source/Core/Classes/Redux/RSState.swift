@@ -52,6 +52,7 @@ public final class RSState: NSObject, StateType {
     
     public let currentPath: String?
     public let requestedPath: String?
+    public let forceReroute: Bool
     
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
@@ -98,6 +99,7 @@ public final class RSState: NSObject, StateType {
                 currentRoute: RSRoute? = nil,
                 currentPath: String? = nil,
                 requestedPath: String? = nil,
+                forceReroute: Bool = false,
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
                 pendingNotifications: [UNNotificationRequest]? = nil,
                 isFetchingNotifications: Bool = false,
@@ -134,6 +136,7 @@ public final class RSState: NSObject, StateType {
 //        self.currentRoute = currentRoute
         self.currentPath = currentPath
         self.requestedPath = requestedPath
+        self.forceReroute = forceReroute
         self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
         self.pendingNotifications = pendingNotifications
         self.isFetchingNotifications = isFetchingNotifications
@@ -172,6 +175,7 @@ public final class RSState: NSObject, StateType {
         currentRoute: RSRoute?? = nil,
         currentPath: String?? = nil,
         requestedPath: String?? = nil,
+        forceReroute: Bool? = nil,
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
         pendingNotifications: ([UNNotificationRequest]?)? = nil,
         isFetchingNotifications: Bool? = nil,
@@ -209,6 +213,7 @@ public final class RSState: NSObject, StateType {
 //            currentRoute: currentRoute ?? fromState.currentRoute,
             currentPath: currentPath ?? fromState.currentPath,
             requestedPath: requestedPath ?? fromState.requestedPath,
+            forceReroute: forceReroute ?? fromState.forceReroute,
             resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap,
             pendingNotifications: pendingNotifications ?? fromState.pendingNotifications,
             isFetchingNotifications: isFetchingNotifications ?? fromState.isFetchingNotifications,

@@ -11,8 +11,27 @@ import ReSwift
 import ResearchSuiteResultsProcessor
 import ResearchKit
 import UserNotifications
+import Gloss
 
-public struct AddStateValueAction: Action {
+public protocol RSAction: Action, JSONEncodable {
+    var actionType: String { get }
+}
+
+extension RSAction {
+    public var actionType: String {
+        return "\(type(of: self))"
+    }
+}
+
+public struct AddStateValueAction: RSAction {
+
+    public func toJSON() -> JSON? {
+        return jsonify([
+            "type" ~~> self.actionType,
+            "stateValue" ~~> self.stateValue
+            ])
+    }
+    
     let stateValue: RSStateValue
 }
 
@@ -136,6 +155,7 @@ public struct DismissActivityFailure: Action {
 
 public struct ChangePathRequest: Action {
     let requestedPath: String
+    let forceReroute: Bool
 }
 
 public struct RoutingStarted: Action {

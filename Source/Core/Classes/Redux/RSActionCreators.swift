@@ -24,6 +24,8 @@ public class RSActionCreators: NSObject {
     private static func addArrayOfObjectsFromFile<T>(fileName: String, inDirectory: String? = nil, selector: @escaping (JSON) -> [JSON]?, flatMapFunc: @escaping (JSON) -> T?, mapFunc: @escaping (T) -> Action) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
+            
+            
             guard let json = RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON,
                 let jsonArray = selector(json) else {
                     return nil
@@ -190,9 +192,9 @@ public class RSActionCreators: NSObject {
         }
     }
     
-    public static func requestPathChange(path: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func requestPathChange(path: String, forceReroute: Bool = false) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
-            return ChangePathRequest(requestedPath: path)
+            return ChangePathRequest(requestedPath: path, forceReroute: forceReroute)
         }
     }
     

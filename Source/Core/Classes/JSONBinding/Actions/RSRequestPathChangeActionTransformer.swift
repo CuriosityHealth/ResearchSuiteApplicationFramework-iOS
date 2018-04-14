@@ -28,7 +28,7 @@ open class RSRequestPathChangeActionTransformer: RSActionTransformer {
             }
             
             if let requestedPath = valueConvertible.evaluate() as? NSString {
-                return ChangePathRequest(requestedPath: requestedPath as String)
+                return RSActionCreators.requestPathChange(path: requestedPath as String)(state, store)
             }
             else {
                 return nil
