@@ -69,7 +69,8 @@ open class RSRouter {
                 //in layout, the child routes are stored as an array of json objects. Map over them generating the route
                 //JIT route generation
                 //This handles things like protected routes based on state
-                let childRoutes: [RSRoute]  = matchedRoute.layout.childRoutes.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
+                let childRoutes: [RSRoute] = matchedRoute.layout.childRoutes(routeManager: routeManager, state: state)
+//                let childRoutes: [RSRoute]  = matchedRoute.layout.childRoutes.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
                 guard childRoutes.count > 0 else {
                     debugPrint("Layout \(matchedRoute.layout.identifier) does not have child routes but the following path is remaining: \(remainingPath)")
                     throw RSRouterError.invalidPath
@@ -102,7 +103,9 @@ open class RSRouter {
             throw RSLayoutError.noMatchingLayout(routeIdentifier: "ROOT", layoutIdentifier: rootLayoutIdentifier)
         }
         
-        let childRoutes: [RSRoute]  = layout.childRoutes.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
+//        let childRoutes: [RSRoute]  = layout.childRoutes.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
+        
+        let childRoutes: [RSRoute] = layout.childRoutes(routeManager: routeManager, state: state)
         
         return try self.getRouteStackHelper(for: path, previousPath: "", routes: childRoutes, state: state, routeManager: routeManager)
     }

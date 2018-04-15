@@ -21,7 +21,8 @@ public protocol RSLayout: RSIsEqual {
     var navTitle: String? { get }
     var navButtonRight: RSLayoutButton? { get }
     var onBackActions: [JSON] { get }
-    var childRoutes: [JSON] { get }
+//    var childRoutes: [JSON] { get }
+    func childRoutes(routeManager: RSRouteManager, state: RSState) -> [RSRoute]
     var element: JSON { get }
     
 //    //in theory, this layout object could access determine child routes dynamically based on the state of the system

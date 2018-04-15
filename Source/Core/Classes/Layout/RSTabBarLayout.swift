@@ -39,6 +39,7 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         return RSTabBarLayout(json: jsonObject)
     }
     
+    public let tabOrderKey: String?
     public let tabs: [RSTab]
 
     required public init?(json: JSON) {
@@ -48,6 +49,7 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         }
         
         self.tabs = tabs.compactMap { RSTab(json: $0) }
+        self.tabOrderKey = "tabOrderKey" <~~ json
         
         super.init(json: json)
     }
@@ -64,9 +66,21 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         return viewController
     }
     
-    open override var childRoutes: [JSON] {
-        return self.tabs.map { $0.route }
-    }
+    
+    //we need to account for the "more" view controller
+//    open override var childRoutes: [JSON] {
+//        return []
+////        return self.tabs.map { $0.route }
+//    }
     
 
+    open override func childRoutes(routeManager: RSRouteManager, state: RSState) -> [RSRoute] {
+        
+        return self.tabs.compactMap({ (tab) -> RSRoute? in
+            return routeManager.generateRoute(jsonObject: tab.route, state: state)
+        })
+        
+//        return self.childRouteJSON.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
+    }
+    
 }

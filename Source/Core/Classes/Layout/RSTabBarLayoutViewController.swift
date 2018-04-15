@@ -33,6 +33,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         self.parentLayoutViewController = parent
         super.init(nibName: nil, bundle: nil)
         self.identifier = identifier
+        
     }
     
     var tabLayout: RSTabBarLayout! {
@@ -83,16 +84,40 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         self.navigationController!.isNavigationBarHidden = true
     }
     
+    
+    //here, we can sense that the user pressed the "more" button and reroute
     open func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-        return false
+        return !(viewController is RSNavigationController)
+    }
+    
+    open func tabBarController(_ tabBarController: UITabBarController, willEndCustomizing viewControllers: [UIViewController], changed: Bool) {
+        
+        viewControllers.forEach { (vc) in
+            
+            
+            debugPrint(vc)
+            
+        }
+        
     }
     
     open override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        
+//        self.selectedViewController = self.moreNavigationController
+//        return
         
         //get tab for tab bar item
         let layout: RSTabBarLayout = self.layout as! RSTabBarLayout
         guard let tab = layout.tabs.first(where: { $0.tabBarTitle == item.title }),
             let path = self.tabPaths[tab.identifier] else {
+                
+                
+                var swappedViewControllers = self.viewControllers!
+                let firstVC = swappedViewControllers[0]
+                swappedViewControllers[0] = swappedViewControllers[1]
+                swappedViewControllers[1] = firstVC
+                self.setViewControllers(swappedViewControllers, animated: true)
+                
                 return
         }
         
@@ -138,13 +163,14 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         let tail = Array(matchedRoutes.dropFirst())
         
         guard let tab = self.tabLayout.tabs.first(where: ({ tab in
-                
-                if let identifier: String = "identifier" <~~ tab.route {
-                    return identifier == head.route.identifier
-                }
-                else {
-                    return false
-                }
+            
+            return tab.identifier == head.route.identifier
+//                if let identifier: String = "identifier" <~~ tab.identifier {
+//                    return identifier == head.route.identifier
+//                }
+//                else {
+//                    return false
+//                }
              }) ),
             let nav = self.tabNavigationControllers[tab.identifier] else {
                 completion?(nil, nil)

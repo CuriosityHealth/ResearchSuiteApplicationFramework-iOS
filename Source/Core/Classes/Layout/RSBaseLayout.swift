@@ -16,7 +16,7 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
     open var navTitle: String?
     open var navButtonRight: RSLayoutButton?
     open var onBackActions: [JSON]
-    open private(set) var childRoutes: [JSON]
+    open var childRouteJSON: [JSON]
     open var element: JSON
     
     required public init?(json: JSON) {
@@ -32,8 +32,12 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
         self.navTitle = "navTitle" <~~ json
         self.navButtonRight = "navButtonRight" <~~ json
         self.onBackActions = "onBack" <~~ json ?? []
-        self.childRoutes = "childRoutes" <~~ json ?? []
+        self.childRouteJSON = "childRoutes" <~~ json ?? []
         self.element = json
+    }
+    
+    open func childRoutes(routeManager: RSRouteManager, state: RSState) -> [RSRoute] {
+        return self.childRouteJSON.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
     }
     
 //    open func generateChildRoutes(state: RSState) -> [RSRoute] {
