@@ -16,7 +16,7 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
     open var navTitle: String?
     open var navButtonRight: RSLayoutButton?
     open var onBackActions: [JSON]
-    open var childRoutes: [JSON]
+    open private(set) var childRoutes: [JSON]
     open var element: JSON
     
     required public init?(json: JSON) {

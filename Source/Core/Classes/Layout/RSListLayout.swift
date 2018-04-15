@@ -49,24 +49,6 @@ open class RSListLayout: RSBaseLayout, RSLayoutGenerator {
     
     open override func instantiateViewController(parent: RSLayoutViewController, matchedRoute: RSMatchedRoute) throws -> RSLayoutViewController {
         
-//        let bundle = Bundle(for: RSTitleLayout.self)
-//        let storyboard: UIStoryboard = UIStoryboard(name: "RSViewControllers", bundle: bundle)
-//
-//        guard let titleLayoutVC = storyboard.instantiateViewController(withIdentifier: "titleLayoutViewController") as? RSLayoutTitleViewController else {
-//            throw RSLayoutError.cannotInstantiateLayout(layoutIdentifier: self.identifier)
-//        }
-//
-//        titleLayoutVC.matchedRoute = matchedRoute
-//        titleLayoutVC.parentLayoutViewController = parent
-//        //        titleLayoutVC.titleLayout = self
-//        //        titleLayoutVC.store = store
-//
-//        return titleLayoutVC
-        
-//        guard let layout = RSListLayout(json: jsonObject) else {
-//            return nil
-//        }
-        
         let bundle = Bundle(for: RSListLayout.self)
         let storyboard: UIStoryboard = UIStoryboard(name: "RSViewControllers", bundle: bundle)
         

@@ -120,7 +120,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSRootLayout.self,
             RSTitleLayout.self,
             RSListLayout.self,
-            RSLayoutFile.self
+            RSLayoutFile.self,
+            RSTabBarLayout.self
         ]
     }
     
