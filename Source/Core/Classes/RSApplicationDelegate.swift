@@ -327,6 +327,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             
             self.initializeApplication(fromReset: true)
             
+            self.store?.dispatch(RSActionCreators.completeConfiguration())
+            self.onAppLoad()
+            
         }
         
     }
@@ -454,8 +457,60 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         
         self.printRefCount()
+        
+        self.storeInitialization(store: self.store!)
+        self.initializeBackends()
+        self.developmentInitialization()
+        
 
         return true
+    }
+    
+    open func developmentInitialization() {
+        
+    }
+    
+    open func storeInitialization(store: Store<RSState>) {
+        
+        self.loadState()
+        self.loadActions()
+        self.loadMeasures()
+        self.loadActivities()
+        self.loadLayouts()
+        
+        self.loadNotifications()
+    }
+    
+    open func loadState() {
+        
+    }
+    
+    open func loadActions() {
+        
+    }
+    
+    open func loadMeasures() {
+        
+    }
+    
+    open func loadActivities() {
+        
+    }
+    
+    open func loadLayouts() {
+        
+    }
+    
+    open func loadNotifications() {
+        
+    }
+    
+    open func initializeBackends() {
+        
+    }
+    
+    open func onAppLoad() {
+        
     }
     
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -467,7 +522,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSKeychainHelper.clearKeychain()
         }
         
-        return self.initializeApplication(fromReset: false)
+        let initialzed = self.initializeApplication(fromReset: false)
+        
+        self.store?.dispatch(RSActionCreators.completeConfiguration())
+        self.onAppLoad()
+        
+        return initialzed
     }
     
     //note that this is invoked after application didFinishLauchingWithOptions
