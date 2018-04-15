@@ -32,7 +32,7 @@ open class RSRouter {
     // If path remains,
     // 2) get layout for route
     // 3) generate child routes for layout
-    open class func getRouteStackHelper(for path: String, previousPath: String, routes: [RSRoute], state: RSState, routeManager: RSRouteManager) throws -> [RSMatchedRoute] {
+    open class func getRouteStackHelper(for path: String, parentMatch: RSMatchedRoute?, routes: [RSRoute], state: RSState, routeManager: RSRouteManager) throws -> [RSMatchedRoute] {
         guard path.hasPrefix("/") else {
             debugPrint("Path not prefixed by '/'")
             throw RSRouterError.invalidPath
@@ -40,6 +40,7 @@ open class RSRouter {
         
         //check to see if path is prefixed by any of the route paths
         let matchedRoutes: [RSMatchedRoute] = try routes.compactMap { route in
+            let previousPath = parentMatch?.match.path ?? ""
             guard let match = try route.match(remainingPath: path, previousPath: previousPath) else {
                 return nil
             }
@@ -69,7 +70,7 @@ open class RSRouter {
                 //in layout, the child routes are stored as an array of json objects. Map over them generating the route
                 //JIT route generation
                 //This handles things like protected routes based on state
-                let childRoutes: [RSRoute] = matchedRoute.layout.childRoutes(routeManager: routeManager, state: state)
+                let childRoutes: [RSRoute] = matchedRoute.layout.childRoutes(routeManager: routeManager, state: state, matchedRoute: matchedRoute, parentLayout: parentMatch?.layout)
 //                let childRoutes: [RSRoute]  = matchedRoute.layout.childRoutes.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
                 guard childRoutes.count > 0 else {
                     debugPrint("Layout \(matchedRoute.layout.identifier) does not have child routes but the following path is remaining: \(remainingPath)")
@@ -78,7 +79,7 @@ open class RSRouter {
                 
                 let matchedRouteStack = try self.getRouteStackHelper(
                     for: String(remainingPath),
-                    previousPath: matchedRoute.match.path,
+                    parentMatch: matchedRoute,
                     routes: childRoutes,
                     state: state,
                     routeManager: routeManager
@@ -105,9 +106,9 @@ open class RSRouter {
         
 //        let childRoutes: [RSRoute]  = layout.childRoutes.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
         
-        let childRoutes: [RSRoute] = layout.childRoutes(routeManager: routeManager, state: state)
+        let childRoutes: [RSRoute] = layout.childRoutes(routeManager: routeManager, state: state, matchedRoute: nil, parentLayout: nil)
         
-        return try self.getRouteStackHelper(for: path, previousPath: "", routes: childRoutes, state: state, routeManager: routeManager)
+        return try self.getRouteStackHelper(for: path, parentMatch: nil, routes: childRoutes, state: state, routeManager: routeManager)
     }
     
     open class func generateRoutingInstructions(path: String, rootLayoutIdentifier: String, state: RSState, routeManager: RSRouteManager) throws -> RSRoutingInstructions {

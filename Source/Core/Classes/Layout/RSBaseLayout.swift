@@ -36,7 +36,7 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
         self.element = json
     }
     
-    open func childRoutes(routeManager: RSRouteManager, state: RSState) -> [RSRoute] {
+    open func childRoutes(routeManager: RSRouteManager, state: RSState, matchedRoute: RSMatchedRoute?, parentLayout: RSLayout?) -> [RSRoute] {
         return self.childRouteJSON.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
     }
     

@@ -27,6 +27,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var activityManager: RSActivityManager!
     public var notificationManager: RSNotificationManager?
     public var locationManager: RSLocationManager?
+    public var routeManager: RSRouteManager!
     
     public var storeManager: RSStoreManager!
     public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
@@ -121,7 +122,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTitleLayout.self,
             RSListLayout.self,
             RSLayoutFile.self,
-            RSTabBarLayout.self
+            RSTabBarLayout.self,
+            RSMoreLayout.self
         ]
     }
     
@@ -431,6 +433,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         let pathManager = RSPathManager(pathGenerators: self.pathGenerators)
         let routeManager = RSRouteManager(routeGenerators: self.routeGenerators, pathManager: pathManager)
+        self.routeManager = routeManager
         
         //set root view controller
         self.routingViewController = RSRoutingViewController(rootLayoutIdentifier: "ROOT", routeManager: routeManager, activityManager: self.activityManager, store: self.store)

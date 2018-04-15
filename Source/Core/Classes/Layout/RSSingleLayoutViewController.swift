@@ -16,7 +16,7 @@ public protocol RSSingleLayoutViewController: class, RSLayoutViewController {
 
 extension RSSingleLayoutViewController {
     
-    private func dismissChildLayout(childVC: RSLayoutViewController, animated: Bool, completion: ((Error?) -> Void)?) {
+    public func dismissChildLayout(childVC: RSLayoutViewController, animated: Bool, completion: ((Error?) -> Void)?) {
         guard let nav = self.viewController.navigationController as? RSNavigationController else {
             assertionFailure("unable to get nav controller")
             completion?(nil)
@@ -29,7 +29,7 @@ extension RSSingleLayoutViewController {
         }
     }
     
-    private func presentChildLayout(matchedRoute: RSMatchedRoute, animated: Bool, state: RSState, completion: ((RSLayoutViewController?, Error?) -> Void)?) {
+    public func presentChildLayout(matchedRoute: RSMatchedRoute, animated: Bool, state: RSState, completion: ((RSLayoutViewController?, Error?) -> Void)?) {
 
         //check to see if child exists
         if let childVC = self.childLayoutVC(for: matchedRoute) {

@@ -12,18 +12,17 @@ public struct RSTab: JSONDecodable {
     
     let identifier: String
     let tabBarTitle: String
-    let route: JSON
-    
+    let layoutIdentifier: String
     public init?(json: JSON) {
         guard let identifier: String = "identifier" <~~ json,
             let tabBarTitle: String = "tabBarTitle" <~~ json,
-            let route: JSON = "route" <~~ json else {
+            let layoutIdentifier: String = "layout" <~~ json else {
                 return nil
         }
         
         self.identifier = identifier
         self.tabBarTitle = tabBarTitle
-        self.route = route
+        self.layoutIdentifier = layoutIdentifier
     }
     
     
@@ -65,22 +64,56 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         let viewController = RSTabBarLayoutViewController(identifier: matchedRoute.route.identifier, matchedRoute: matchedRoute, parent: parent)
         return viewController
     }
-    
-    
-    //we need to account for the "more" view controller
-//    open override var childRoutes: [JSON] {
-//        return []
-////        return self.tabs.map { $0.route }
-//    }
-    
 
-    open override func childRoutes(routeManager: RSRouteManager, state: RSState) -> [RSRoute] {
+    open func sortedTabs(state: RSState) -> [RSTab] {
         
-        return self.tabs.compactMap({ (tab) -> RSRoute? in
-            return routeManager.generateRoute(jsonObject: tab.route, state: state)
+        if let tabOrderKey = self.tabOrderKey,
+            let tabOrder = RSStateSelectors.getValueInCombinedState(state, for: tabOrderKey) as? [String] {
+            return self.tabs.sorted { (a, b) -> Bool in
+                
+                guard let indexOfA = tabOrder.index(of: a.identifier),
+                    let indexOfB = tabOrder.index(of: b.identifier) else {
+                        return true
+                }
+                
+                return indexOfA < indexOfB
+            }
+        }
+        else {
+            return self.tabs
+        }
+    }
+    
+    open func visibleTabs(state: RSState) -> [RSTab] {
+        return Array(self.sortedTabs(state: state).prefix(4))
+    }
+    
+    open func hiddenTabs(state: RSState) -> [RSTab] {
+        return Array(self.sortedTabs(state: state).dropFirst(4))
+    }
+    
+    open override func childRoutes(routeManager: RSRouteManager, state: RSState, matchedRoute: RSMatchedRoute?, parentLayout: RSLayout?) -> [RSRoute] {
+        
+        //only a maximum of 4 tabs are visible at a time
+        //If more tha 4 tabs are included, a more button is shown
+        
+        let visibleRoutes = self.visibleTabs(state: state).compactMap({ (tab) -> RSRoute? in
+            let path = RSPrefixPath(prefix: "/\(tab.identifier)")
+            return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
         })
         
-//        return self.childRouteJSON.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
+        let moreRoute = RSRoute(identifier: "more", path: RSPrefixPath(prefix: "/more"), layoutIdentifier: "more")
+        
+        let hiddenRoutes = self.hiddenTabs(state: state).compactMap({ (tab) -> RSRoute? in
+            let path = RSPrefixPath(prefix: "/\(tab.identifier)")
+            let rediretPath = "\(matchedRoute!.match.path)/more/\(tab.identifier)"
+            return RSRedirectRoute(identifier: tab.identifier, path: path, redirectPath: rediretPath)
+        })
+        
+        return visibleRoutes + [moreRoute] + hiddenRoutes
+        
     }
+    
+    
     
 }
