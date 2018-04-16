@@ -46,7 +46,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             return false
         }
 
-        return RSActivityManager.evaluatePredicate(predicate: locationConfig.predicate, state: state, context: [:])
+        return RSPredicateManager.evaluatePredicate(predicate: locationConfig.predicate, state: state, context: [:])
     }
     
     private func shouldVisitMonitoringBeEnabled(state: RSState) -> Bool {
@@ -54,7 +54,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             return false
         }
         
-        return RSActivityManager.evaluatePredicate(predicate: visitConfig.predicate, state: state, context: [:])
+        return RSPredicateManager.evaluatePredicate(predicate: visitConfig.predicate, state: state, context: [:])
     }
     
     public func newState(state: RSState) {
@@ -174,7 +174,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             //if predicate exists and evaluates false, do not execute action
             if let predicate = regionGroup.predicate {
 //                debugPrint(predicate)
-                if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
+                if RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
                     return true
                 }
                 else {
@@ -402,18 +402,18 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             let onSuccessActions = onUpdate.onSuccessActions {
             locationsToProcess.forEach { location in
                 let locationEvent = RSLocationEvent(location: location, source: "Location Monitoring", uuid: UUID())
-                RSActionManager.processActions(actions: onSuccessActions, context: ["sensedLocation": location, "sensedLocationEvent": locationEvent], store: store)
+                store.processActions(actions: onSuccessActions, context: ["sensedLocation": location, "sensedLocationEvent": locationEvent], store: store)
             }
         }
         else if let error = error,
             let onFailureActions = onUpdate.onFailureActions {
             //process onFailure Actions
-            RSActionManager.processActions(actions: onFailureActions, context: ["error": error as NSError], store: store)
+            store.processActions(actions: onFailureActions, context: ["error": error as NSError], store: store)
         }
         
         //process finally actions
         if let finallyActions = onUpdate.finallyActions {
-            RSActionManager.processActions(actions: finallyActions, context: [:], store: store)
+            store.processActions(actions: finallyActions, context: [:], store: store)
         }
         
     }
@@ -451,7 +451,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             timestamp: Date()
         )
         
-        RSActionManager.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
+        store.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
     }
     
     public func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
@@ -470,7 +470,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             timestamp: Date()
         )
         
-        RSActionManager.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
+        store.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
     }
     
     public func handleInitialStateEvent(region: CLRegion, state: CLRegionState) {
@@ -504,7 +504,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             timestamp: Date()
         )
         
-        RSActionManager.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
+        store.processActions(actions: actions, context: ["sensedRegionTransitionEvent": regionTransitionEvent], store: store)
         
     }
     
@@ -591,12 +591,12 @@ extension RSLocationManager {
         
         if let onSuccessActions = onUpdate.onSuccessActions {
             let visitEvent = RSVisitEvent(visit: visit, source: "Visit Monitoring", uuid: UUID())
-            RSActionManager.processActions(actions: onSuccessActions, context: ["sensedVisitEvent": visitEvent], store: store)
+            store.processActions(actions: onSuccessActions, context: ["sensedVisitEvent": visitEvent], store: store)
         }
         
         //process finally actions
         if let finallyActions = onUpdate.finallyActions {
-            RSActionManager.processActions(actions: finallyActions, context: [:], store: store)
+            store.processActions(actions: finallyActions, context: [:], store: store)
         }
     }
     

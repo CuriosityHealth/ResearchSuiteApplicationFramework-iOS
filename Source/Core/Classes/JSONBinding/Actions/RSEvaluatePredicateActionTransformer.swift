@@ -15,7 +15,7 @@ open class RSEvaluatePredicateActionTransformer: RSActionTransformer {
         return "evaluatePredicate" == type
     }
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         guard let predicate: RSPredicate = "evaluatePredicate" <~~ jsonObject else {
             return nil
@@ -23,7 +23,7 @@ open class RSEvaluatePredicateActionTransformer: RSActionTransformer {
         
         return { state, store in
             
-            let _ = RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+            let _ = RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
             
 //            debugPrint(predicateValue)
             

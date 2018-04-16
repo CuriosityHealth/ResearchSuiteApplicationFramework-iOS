@@ -89,14 +89,14 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
                 return true
             }
             
-            return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+            return RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
             
         }()
     }
     
     open func processAction(action: JSON) {
         if let store = self.store {
-            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            store.processAction(action: action, context: ["layoutViewController":self], store: store)
         }
     }
     
@@ -141,7 +141,7 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         
         self.layout.onLoadActions.forEach({ (action) in
             if let store = self.store {
-                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                store.processAction(action: action, context: ["layoutViewController":self], store: store)
             }
         })
         
@@ -152,7 +152,7 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         if initialAppearance {
             self.layout.onFirstAppearanceActions.forEach({ (action) in
                 if let store = self.store {
-                    RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                    store.processAction(action: action, context: ["layoutViewController":self], store: store)
                 }
             })
         }

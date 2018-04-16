@@ -69,7 +69,7 @@ open class RSShowAlertActionTranformer: RSActionTransformer {
         return "showAlertAction" == type
     }
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         guard let alert = RSAlert(json: jsonObject),
             let layoutVC = context["layoutViewController"] as? UIViewController else {
@@ -80,7 +80,7 @@ open class RSShowAlertActionTranformer: RSActionTransformer {
             let alertVC = UIAlertController(title: alert.title, message: alert.text, preferredStyle: .alert)
             alert.choices.forEach { choice in
                 let alertAction = UIAlertAction(title: choice.title, style: choice.style, handler: { _ in
-                    choice.onTapActions.forEach { RSActionManager.processAction(action: $0, context: ["layoutViewController":layoutVC], store: store) }
+                    choice.onTapActions.forEach { store.processAction(action: $0, context: ["layoutViewController":layoutVC], store: store) }
                 })
                 alertVC.addAction(alertAction)
             }

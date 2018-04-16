@@ -16,6 +16,6 @@ public protocol RSActionTransformer {
 
     static func supportsType(type: String) -> Bool
     //this return a closure, of which state and store are injected
-    static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)?
+    static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)?
     
 }

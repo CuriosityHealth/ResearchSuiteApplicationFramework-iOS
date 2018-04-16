@@ -31,7 +31,7 @@ open class RSActionSwitchTransformer: RSActionTransformer {
         return "switch" == type
     }
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         guard let casesJSON: [JSON] = "cases" <~~ jsonObject else {
             return nil
@@ -43,13 +43,13 @@ open class RSActionSwitchTransformer: RSActionTransformer {
             
             if let switchCase = cases.first(where: { switchCase in
                 if let predicate = switchCase.predicate {
-                    return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: context)
+                    return RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: context)
                 }
                 else {
                     return true
                 }
             }) {
-                RSActionManager.processAction(action: switchCase.action, context: context, store: store)
+                actionManager.processAction(action: switchCase.action, context: context, store: store)
             }
             
             return nil

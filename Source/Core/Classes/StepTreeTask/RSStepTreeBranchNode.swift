@@ -130,7 +130,7 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         let context: [String: AnyObject] = ["taskResult": result, "node": self as AnyObject]
         
         let successfulRuleOpt: RSStepTreeConditionalNavigationRule? = navigationRule.conditionalNavigation.first {
-            return RSActivityManager.evaluatePredicate(predicate: $0.predicate, state: state, context: context)
+            return RSPredicateManager.evaluatePredicate(predicate: $0.predicate, state: state, context: context)
         }
         
         guard let successfulRule = successfulRuleOpt else {

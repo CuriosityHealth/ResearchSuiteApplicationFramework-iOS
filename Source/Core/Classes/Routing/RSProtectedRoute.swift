@@ -24,7 +24,7 @@ open class RSProtectedRoute: RSRouteGenerator {
             return nil
         }
         
-        if RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
+        if RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:]) {
             
             guard let layoutIdentifier: String = "layout" <~~ jsonObject else {
                 return nil

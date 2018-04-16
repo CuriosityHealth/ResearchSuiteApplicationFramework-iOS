@@ -306,7 +306,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         
         self.layout.onLoadActions.forEach({ (action) in
             if let store = self.store {
-                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                store.processAction(action: action, context: ["layoutViewController":self], store: store)
             }
         })
         
@@ -317,7 +317,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         if initialAppearance {
             self.layout.onFirstAppearanceActions.forEach({ (action) in
                 if let store = self.store {
-                    RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                    store.processAction(action: action, context: ["layoutViewController":self], store: store)
                 }
             })
         }

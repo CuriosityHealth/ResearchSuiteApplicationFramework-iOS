@@ -100,7 +100,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
             //check for predicate and evaluate
             //if predicate exists and evaluates false, do not execute action
             if let predicate = notification.predicate {
-                return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+                return RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
             }
             else {
                 return true
@@ -200,7 +200,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                         return
                 }
                 
-                RSActionManager.processActions(actions: handlerActions, context: ["notification": response.notification], store: store)
+                store.processActions(actions: handlerActions, context: ["notification": response.notification], store: store)
                 
             }
         }

@@ -25,6 +25,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     
     public var activityManager: RSActivityManager!
+    public var actionManager: RSActionManager!
     public var notificationManager: RSNotificationManager?
     public var locationManager: RSLocationManager?
     public var routeManager: RSRouteManager!
@@ -302,6 +303,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             self.taskBuilderStateHelper = nil
             self.taskBuilder = nil
             self.activityManager = nil
+            self.actionManager = nil
             
             if self.notificationSupport {
                 self.notificationManager?.cancelNotifications()
@@ -410,6 +412,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         self.activityManager = RSActivityManager(stepTreeBuilder: self.stepTreeBuilder)
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
+        self.actionManager = RSActionManager(actionCreatorTransforms: self.actionCreatorTransforms)
         
         if notificationSupport {
             self.notificationManager = RSNotificationManager(store: self.store, notificationProcessors: self.notificationProcessors)
@@ -730,6 +733,25 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     open func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    
+}
+
+
+
+extension Store: RSActionManagerProvider {
+    
+    public func processAction(action: JSON, context: [String : AnyObject], store: Store<RSState>) {
+        self.actionManager.processAction(action: action, context: context, store: store)
+    }
+    
+    public func processActions(actions: [JSON], context: [String : AnyObject], store: Store<RSState>) {
+        self.actionManager.processActions(actions: actions, context: context, store: store)
+    }
+    
+    public var actionManager: RSActionManager! {
+        return RSApplicationDelegate.appDelegate.actionManager
     }
     
     

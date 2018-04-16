@@ -10,32 +10,91 @@ import UIKit
 import Gloss
 import ReSwift
 
+
+public protocol RSActionManagerProvider {
+    var actionManager: RSActionManager! { get }
+    func processAction(action: JSON, context: [String: AnyObject], store: Store<RSState>)
+    func processActions(actions: [JSON], context: [String: AnyObject], store: Store<RSState>)
+}
+
+public struct RSApplicationActionLog: JSONEncodable {
+    
+    
+    let action: JSON
+    let timestamp: Date
+    var malformedType = false
+    var predicateResult: Bool? = nil
+    var successfulTransforms: [String] = []
+    
+    public func toJSON() -> JSON? {
+        
+        return jsonify([
+            "action" ~~> self.action,
+            Gloss.Encoder.encode(dateISO8601ForKey: "timestamp")(self.timestamp),
+            "malformedType" ~~> self.malformedType,
+            "predicateResult" ~~> self.predicateResult,
+            "successfulTransforms" ~~> self.successfulTransforms
+            ])
+    }
+    
+    public init(action: JSON) {
+        self.action = action
+        self.timestamp = Date()
+    }
+    
+}
+
+public protocol RSActionManagerDelegate: class {
+    func logAction(actionLog: RSApplicationActionLog)
+}
+
+
+
 open class RSActionManager: NSObject {
     
-    open class func processAction(action: JSON, context: [String: AnyObject], store: Store<RSState>) {
+    public weak var delegate: RSActionManagerDelegate?
+    
+    let actionCreatorTransforms: [RSActionTransformer.Type]
+    
+    public init(
+        actionCreatorTransforms: [RSActionTransformer.Type]?
+        ) {
+        self.actionCreatorTransforms = actionCreatorTransforms ?? []
+        super.init()
+    }
+    
+    open func processAction(action: JSON, context: [String: AnyObject], store: Store<RSState>) {
+        
+        var actionLog = RSApplicationActionLog(action: action)
+        
+        defer {
+            self.delegate?.logAction(actionLog: actionLog)
+        }
         
         //check for predicate and evaluate
         //if predicate exists and evaluates false, do not execute action
-        if let predicate: RSPredicate = "predicate" <~~ action,
-            RSActivityManager.evaluatePredicate(predicate: predicate, state: store.state, context: context) == false {
-            return
+        if let predicate: RSPredicate = "predicate" <~~ action {
+            let predicateResult = RSPredicateManager.evaluatePredicate(predicate: predicate, state: store.state, context: context)
+            actionLog.predicateResult = predicateResult
+            if !predicateResult {
+                return
+            }
         }
         
         //if action malformed, do not execute action
-        guard let type: String = "type" <~~ action else {
+        guard let actionType: String = "type" <~~ action else {
+            actionLog.malformedType = true
             return
         }
-        
-        debugPrint(action)
 
         //TODO: I don't really like this, maybe create an action manager object?
-        let transforms = RSApplicationDelegate.appDelegate.actionCreatorTransforms
         
-        for transformer in transforms {
-            if transformer.supportsType(type: type) {
-                guard let actionClosure = transformer.generateAction(jsonObject: action, context: context) else {
-                    return
-                }
+        self.actionCreatorTransforms.forEach { transformer in
+            if transformer.supportsType(type: actionType),
+                let actionClosure = transformer.generateAction(jsonObject: action, context: context, actionManager: self) {
+                
+                let transformerString = "\(type(of: transformer))"
+                actionLog.successfulTransforms = actionLog.successfulTransforms + [transformerString]
                 
                 store.dispatch(actionClosure)
             }
@@ -43,8 +102,8 @@ open class RSActionManager: NSObject {
     
     }
     
-    open class func processActions(actions: [JSON], context: [String: AnyObject], store: Store<RSState>) {
-        actions.forEach { RSActionManager.processAction(action: $0, context: context, store: store) }
+    open func processActions(actions: [JSON], context: [String: AnyObject], store: Store<RSState>) {
+        actions.forEach { self.processAction(action: $0, context: context, store: store) }
     }
 
 }

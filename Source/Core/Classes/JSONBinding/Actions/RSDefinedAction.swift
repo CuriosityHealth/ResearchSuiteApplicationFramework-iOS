@@ -10,7 +10,7 @@ import Gloss
 import ReSwift
 
 open class RSDefinedAction: Gloss.JSONDecodable, RSActionTransformer {
-    
+
     open let identifier: String
     open let json: JSON
     public required init?(json: JSON) {
@@ -30,7 +30,7 @@ open class RSDefinedAction: Gloss.JSONDecodable, RSActionTransformer {
         return type == "definedAction"
     }
     
-    public static func generateAction(jsonObject: JSON, context: [String : AnyObject]) -> ((RSState, Store<RSState>) -> Action?)? {
+    public static func generateAction(jsonObject: JSON, context: [String : AnyObject], actionManager: RSActionManager) -> ((RSState, Store<RSState>) -> Action?)? {
         
         //this should go into the state, pull out the action specified by the identifier
         guard let identifier: String = "identifier" <~~ jsonObject else {
@@ -43,7 +43,7 @@ open class RSDefinedAction: Gloss.JSONDecodable, RSActionTransformer {
                 return nil
             }
             
-            RSActionManager.processAction(action: definedAction.json, context: context, store: store)
+            actionManager.processAction(action: definedAction.json, context: context, store: store)
             return nil
         }
         

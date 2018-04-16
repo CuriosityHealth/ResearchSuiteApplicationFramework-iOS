@@ -25,7 +25,7 @@ open class RSPredicateFunctionValue: RSFunctionValue {
     }
     
     open func generateValueConvertible(state: RSState) -> ValueConvertible {
-        let predicateValue = RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+        let predicateValue = RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
         return RSValueConvertible(value: NSNumber(booleanLiteral: predicateValue))
     }
     

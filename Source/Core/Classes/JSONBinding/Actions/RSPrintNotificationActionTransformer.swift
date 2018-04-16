@@ -16,7 +16,7 @@ open class RSPrintNotificationActionTransformer: RSActionTransformer {
         return "printNotification" == type
     }
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         guard let identifier: String = "identifier" <~~ jsonObject else {
             return nil

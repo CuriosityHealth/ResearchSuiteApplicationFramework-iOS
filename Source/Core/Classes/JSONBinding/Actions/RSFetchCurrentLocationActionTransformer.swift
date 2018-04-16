@@ -15,7 +15,7 @@ open class RSFetchCurrentLocationActionTransformer: RSActionTransformer {
         return "fetchCurrentLocation" == type
     }
     
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject]) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         return { state, store in
             

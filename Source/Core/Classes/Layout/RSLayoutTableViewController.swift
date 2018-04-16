@@ -89,7 +89,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     
     open func processAction(action: JSON) {
         if let store = self.store {
-            RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            store.processAction(action: action, context: ["layoutViewController":self], store: store)
         }
     }
     
@@ -158,7 +158,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
             return true
         }
         
-        return RSActivityManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+        return RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
     }
     
     open func itemForIndexPath(indexPath: IndexPath) -> RSListItem? {
@@ -299,7 +299,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         
         self.layout.onLoadActions.forEach({ (action) in
             if let store = self.store {
-                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                store.processAction(action: action, context: ["layoutViewController":self], store: store)
             }
         })
         
@@ -310,7 +310,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         if initialAppearance {
             self.layout.onFirstAppearanceActions.forEach({ (action) in
                 if let store = self.store {
-                    RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                    store.processAction(action: action, context: ["layoutViewController":self], store: store)
                 }
             })
         }

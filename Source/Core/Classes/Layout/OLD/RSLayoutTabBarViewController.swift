@@ -74,7 +74,7 @@ import Gloss
 //            return true
 //        }
 //        
-//        return RSActivityManager.evaluatePredicate(predicate: predicate, state: self.state, context: [:])
+//        return RSPredicateManager.evaluatePredicate(predicate: predicate, state: self.state, context: [:])
 //    }
 //    
 //    //listen to changes

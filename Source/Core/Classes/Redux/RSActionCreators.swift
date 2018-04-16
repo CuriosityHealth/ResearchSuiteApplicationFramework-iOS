@@ -347,7 +347,7 @@ public class RSActionCreators: NSObject {
                 store.dispatch(presentSuccessAction)
                 
                 if let onLaunchActions = activity.onLaunchActions {
-                    RSActionManager.processActions(actions: onLaunchActions, context: [:], store: store)
+                    store.processActions(actions: onLaunchActions, context: [:], store: store)
                 }
 
             })
@@ -406,19 +406,19 @@ public class RSActionCreators: NSObject {
     private static func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>) {
         let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
         let context: [String: AnyObject] = ["taskResult": taskResult]
-        RSActionManager.processActions(actions: onSuccessActionJSON, context: context, store: store)
+        store.processActions(actions: onSuccessActionJSON, context: context, store: store)
     }
     
     private static func processOnFailureActions(activity: RSActivity, store: Store<RSState>) {
         let onFailureActionJSON: [JSON] = activity.onCompletion.onFailureActions
         let context: [String: AnyObject] = [:]
-        RSActionManager.processActions(actions: onFailureActionJSON, context: context, store: store)
+        store.processActions(actions: onFailureActionJSON, context: context, store: store)
     }
     
     private static func processFinallyActions(activity: RSActivity, store: Store<RSState>) {
         let finallyActionJSON: [JSON] = activity.onCompletion.finallyActions
         let context: [String: AnyObject] = [:]
-        RSActionManager.processActions(actions: finallyActionJSON, context: context, store: store)
+        store.processActions(actions: finallyActionJSON, context: context, store: store)
     }
 
     public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
@@ -660,7 +660,7 @@ public class RSActionCreators: NSObject {
                         if let onSuccessActions = onCompletion.onSuccessActions {
                             locationsToProcess.forEach { location in
                                 let locationEvent = RSLocationEvent(location: location, source: "Location Request", uuid: UUID())
-                                RSActionManager.processActions(actions: onSuccessActions, context: ["sensedLocation": location, "sensedLocationEvent": locationEvent], store: store)
+                                store.processActions(actions: onSuccessActions, context: ["sensedLocation": location, "sensedLocationEvent": locationEvent], store: store)
                             }
                         }
                     
@@ -672,7 +672,7 @@ public class RSActionCreators: NSObject {
                         
                         //process onFailure Actions
                         if let onFailureAction = onCompletion.onFailureActions {
-                            RSActionManager.processActions(actions: onFailureAction, context: ["error": error as NSError], store: store)
+                            store.processActions(actions: onFailureAction, context: ["error": error as NSError], store: store)
                         }
                         
                     }
