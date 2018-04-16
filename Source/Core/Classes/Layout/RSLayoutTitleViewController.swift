@@ -39,9 +39,11 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var button: RSBorderedButton!
     
+    private var hasAppeared: Bool = false
     override open func viewDidLoad() {
         super.viewDidLoad()
 
+        debugPrint(self.layout.identifier)
         // Do any additional setup after loading the view.
         
         self.titleLabel.text = self.titleLayout.title
@@ -61,10 +63,18 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         
         self.store?.subscribe(self)
         
+        self.layoutDidLoad()
+        
     }
     
     deinit {
         self.store!.unsubscribe(self)
+    }
+    
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.layoutDidAppear(initialAppearance: !self.hasAppeared)
+        self.hasAppeared = true
     }
     
     open func newState(state: RSState) {
@@ -113,16 +123,6 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         
     }
     
-    open func layoutDidLoad() {
-        
-        self.layout.onLoadActions.forEach({ (action) in
-            if let store = self.store {
-                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
-            }
-        })
-        
-    }
-    
     public var childLayoutVCs: [RSLayoutViewController] = []
     
     public func childLayoutVC(for matchedRoute: RSMatchedRoute) -> RSLayoutViewController? {
@@ -134,6 +134,28 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     }
     
     public func updateLayout(matchedRoute: RSMatchedRoute, state: RSState) {
+        
+    }
+    
+    public func layoutDidLoad() {
+        
+        self.layout.onLoadActions.forEach({ (action) in
+            if let store = self.store {
+                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            }
+        })
+        
+    }
+    
+    public func layoutDidAppear(initialAppearance: Bool) {
+        
+        if initialAppearance {
+            self.layout.onFirstAppearanceActions.forEach({ (action) in
+                if let store = self.store {
+                    RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                }
+            })
+        }
         
     }
 

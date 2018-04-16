@@ -35,6 +35,14 @@ open class RSTabBarNavigationViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
     
     public func setPath(path: String) {
         

@@ -49,6 +49,8 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
     }
     
     var moreNavControllerDelegate: RSMoreNavigationControllerDelegate!
+    
+    var hasAppeared: Bool = false
     open override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -83,6 +85,9 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                 
                 do {
                     let vc = try layout.instantiateViewController(parent: self, matchedRoute: RSMatchedRoute(match: match, route: route, layout: layout))
+
+                    self.childLayoutVCs = self.childLayoutVCs + [vc]
+                    
                     let navController = RSNavigationController(rootViewController: vc.viewController)
                     navController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                     let tabBarNavController = RSTabBarNavigationViewController(identifier: tab.identifier, viewController: navController, parentMatchedRoute: self.matchedRoute)
@@ -112,6 +117,12 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         super.viewWillAppear(animated)
         
         self.navigationController!.isNavigationBarHidden = true
+    }
+    
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.layoutDidAppear(initialAppearance: !self.hasAppeared)
+        self.hasAppeared = true
     }
     
     
@@ -219,12 +230,15 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
             
             let moreLayoutVC: RSMoreLayoutViewController! = {
                 if let vc = self.moreLayoutVC {
+                    self.moreLayoutVC?.layoutDidAppear(initialAppearance: false)
                     return vc
                 }
                 else {
                     do {
                         let vc = try moreLayout.instantiateViewController(parent: self, matchedRoute: head) as! RSMoreLayoutViewController
                         self.moreLayoutVC = vc
+                        self.moreLayoutVC?.layoutDidLoad()
+                        self.moreLayoutVC?.layoutDidAppear(initialAppearance: true)
                         return vc
                     }
                     catch let error {
@@ -288,7 +302,25 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         
     }
     
-    public func layoutDidLoad() {
+    open func layoutDidLoad() {
+        
+        self.layout.onLoadActions.forEach({ (action) in
+            if let store = self.store {
+                RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+            }
+        })
+        
+    }
+    
+    open func layoutDidAppear(initialAppearance: Bool) {
+        
+        if initialAppearance {
+            self.layout.onFirstAppearanceActions.forEach({ (action) in
+                if let store = self.store {
+                    RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                }
+            })
+        }
         
     }
     

@@ -13,6 +13,7 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
     open let identifier: String
     open let type: String
     open let onLoadActions: [JSON]
+    open let onFirstAppearanceActions: [JSON]
     open var navTitle: String?
     open var navButtonRight: RSLayoutButton?
     open var onBackActions: [JSON]
@@ -29,6 +30,7 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
         self.identifier = identifier
         self.type = type
         self.onLoadActions = "onLoad" <~~ json ?? []
+        self.onFirstAppearanceActions = "onFirstAppearance" <~~ json ?? []
         self.navTitle = "navTitle" <~~ json
         self.navButtonRight = "navButtonRight" <~~ json
         self.onBackActions = "onBack" <~~ json ?? []

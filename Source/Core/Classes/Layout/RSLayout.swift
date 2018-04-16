@@ -17,7 +17,11 @@ public enum RSLayoutError: Error {
 public protocol RSLayout: RSIsEqual {
     var identifier: String { get }
     var type: String { get }
+    //when loaded into memory - analogous to viewDidLoad
     var onLoadActions: [JSON] { get }
+    //when the layout is on the tap of the stack for the FIRST time in its lifecycle
+    var onFirstAppearanceActions: [JSON] { get }
+    
     var navTitle: String? { get }
     var navButtonRight: RSLayoutButton? { get }
     var onBackActions: [JSON] { get }

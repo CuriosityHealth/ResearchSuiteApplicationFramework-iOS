@@ -9,7 +9,6 @@ import UIKit
 
 open class RSMoreLayoutViewController: RSLayoutViewController {
     
-    
     public init(identifier: String, matchedRoute: RSMatchedRoute, parent: RSLayoutViewController) {
         self.matchedRoute = matchedRoute
         self.parentLayoutViewController = parent
@@ -18,7 +17,7 @@ open class RSMoreLayoutViewController: RSLayoutViewController {
         self.identifier = identifier
         
     }
-    
+
     public var identifier: String!
     
     public var matchedRoute: RSMatchedRoute!
@@ -32,6 +31,10 @@ open class RSMoreLayoutViewController: RSLayoutViewController {
     public var parentLayoutViewController: RSLayoutViewController!
     
     public func layoutDidLoad() {
+        
+    }
+    
+    public func layoutDidAppear(initialAppearance: Bool) {
         
     }
     

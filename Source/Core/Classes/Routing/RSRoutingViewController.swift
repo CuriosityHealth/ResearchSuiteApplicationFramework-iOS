@@ -165,6 +165,9 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     
     public func layoutDidLoad() {
         
+    }
+    
+    public func layoutDidAppear(initialAppearance: Bool) {
         
     }
     

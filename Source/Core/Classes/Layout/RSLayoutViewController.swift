@@ -23,5 +23,7 @@ public protocol RSLayoutViewController {
     func updateLayout(matchedRoute: RSMatchedRoute, state: RSState)
     
     func layoutDidLoad()
+    func layoutDidAppear(initialAppearance: Bool)
+    
     func backTapped()
 }

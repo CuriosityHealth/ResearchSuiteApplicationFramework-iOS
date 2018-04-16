@@ -39,6 +39,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     }
     
     var visibleLayoutItems: [RSListItem] = []
+    var hasAppeared: Bool = false
     
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -59,10 +60,18 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         }
 
         self.refreshControl?.addTarget(self, action: #selector(RSLayoutTableViewController.handleRefresh(_:)), for: .valueChanged)
+        
+        self.layoutDidLoad()
     }
     
     deinit {
         self.store?.unsubscribe(self)
+    }
+    
+    open override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.layoutDidAppear(initialAppearance: !self.hasAppeared)
+        self.hasAppeared = true
     }
     
     @objc
@@ -296,6 +305,18 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         
     }
     
+    open func layoutDidAppear(initialAppearance: Bool) {
+        
+        if initialAppearance {
+            self.layout.onFirstAppearanceActions.forEach({ (action) in
+                if let store = self.store {
+                    RSActionManager.processAction(action: action, context: ["layoutViewController":self], store: store)
+                }
+            })
+        }
+        
+    }
+    
     public var childLayoutVCs: [RSLayoutViewController] = []
     
     public func childLayoutVC(for matchedRoute: RSMatchedRoute) -> RSLayoutViewController? {
@@ -309,5 +330,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     public func updateLayout(matchedRoute: RSMatchedRoute, state: RSState) {
         
     }
+    
+    
 
 }
