@@ -21,6 +21,7 @@ public struct RSApplicationActionLog: JSONEncodable {
     
     
     let action: JSON
+    let uuid: UUID
     let timestamp: Date
     var malformedType = false
     var predicateResult: Bool? = nil
@@ -30,6 +31,7 @@ public struct RSApplicationActionLog: JSONEncodable {
         
         return jsonify([
             "action" ~~> self.action,
+            "uuid" ~~> self.uuid,
             Gloss.Encoder.encode(dateISO8601ForKey: "timestamp")(self.timestamp),
             "malformedType" ~~> self.malformedType,
             "predicateResult" ~~> self.predicateResult,
@@ -39,6 +41,7 @@ public struct RSApplicationActionLog: JSONEncodable {
     
     public init(action: JSON) {
         self.action = action
+        self.uuid = UUID()
         self.timestamp = Date()
     }
     
@@ -87,8 +90,6 @@ open class RSActionManager: NSObject {
             return
         }
 
-        //TODO: I don't really like this, maybe create an action manager object?
-        
         self.actionCreatorTransforms.forEach { transformer in
             if transformer.supportsType(type: actionType),
                 let actionClosure = transformer.generateAction(jsonObject: action, context: context, actionManager: self) {
