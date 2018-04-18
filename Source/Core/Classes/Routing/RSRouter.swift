@@ -22,10 +22,25 @@ open class RSRouter {
         let routesStack: [RSMatchedRoute]
     }
     
-    public enum RSRouterError: Error {
-        case invalidPath
+    public enum RSRouterError: LocalizedError {
+        case invalidPath(path: String)
         case redirect(path: String)
-        case redirectCycle
+        case redirectCycle(path: String)
+        
+        public var errorDescription: String? {
+            switch self {
+            case .invalidPath(let path):
+                return NSLocalizedString("The path \(path) is invalid.", comment: "Invalid Path")
+                
+            case .redirect(let path):
+                return NSLocalizedString("Redirecting to \(path)", comment: "Redirect")
+                
+            case .redirectCycle(let path):
+                return NSLocalizedString("The path \(path) led to a redirect cycle.", comment: "Redirect Cycle")
+            }
+            
+            
+        }
     }
     
     // 1) finds matching routes
@@ -35,7 +50,8 @@ open class RSRouter {
     open class func getRouteStackHelper(for path: String, parentMatch: RSMatchedRoute?, routes: [RSRoute], state: RSState, routeManager: RSRouteManager) throws -> [RSMatchedRoute] {
         guard path.hasPrefix("/") else {
             debugPrint("Path not prefixed by '/'")
-            throw RSRouterError.invalidPath
+            let fullPath = parentMatch == nil ? path : (parentMatch!.match.path + path)
+            throw RSRouterError.invalidPath(path: fullPath)
         }
         
         //check to see if path is prefixed by any of the route paths
@@ -74,7 +90,8 @@ open class RSRouter {
 //                let childRoutes: [RSRoute]  = matchedRoute.layout.childRoutes.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
                 guard childRoutes.count > 0 else {
                     debugPrint("Layout \(matchedRoute.layout.identifier) does not have child routes but the following path is remaining: \(remainingPath)")
-                    throw RSRouterError.invalidPath
+                    let fullPath = parentMatch == nil ? path : (parentMatch!.match.path + path)
+                    throw RSRouterError.invalidPath(path: fullPath)
                 }
                 
                 let matchedRouteStack = try self.getRouteStackHelper(
@@ -94,7 +111,8 @@ open class RSRouter {
         }
         else {
             debugPrint("No route found")
-            throw RSRouterError.invalidPath
+            let fullPath = parentMatch == nil ? path : (parentMatch!.match.path + path)
+            throw RSRouterError.invalidPath(path: fullPath)
         }
     }
     
@@ -123,9 +141,9 @@ open class RSRouter {
             
         }
         catch RSRouterError.redirect(let redirectPath) {
-            assert(redirectPath != path, "Redirect Cycle")
+//            assert(redirectPath != path, "Redirect Cycle")
             if redirectPath == path {
-                throw RSRouterError.redirectCycle
+                throw RSRouterError.redirectCycle(path: redirectPath)
             }
             return try self.generateRoutingInstructions(path: redirectPath, rootLayoutIdentifier: rootLayoutIdentifier, state: state, routeManager: routeManager)
         }

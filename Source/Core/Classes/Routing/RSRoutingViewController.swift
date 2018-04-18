@@ -8,6 +8,7 @@
 import UIKit
 import ReSwift
 import ResearchKit
+import Gloss
 
 public protocol RSRootViewController {
     func lockScreen()
@@ -16,7 +17,63 @@ public protocol RSRootViewController {
     var topViewController: UIViewController { get }
 }
 
+public struct RSRoutingEventLog: JSONEncodable {
+    
+    let requestedPath: String
+    let finalPath: String?
+    let visbleLayout: RSLayout?
+    let error: Error?
+    
+    let screenshot: UIImage?
+    
+    let uuid: UUID = UUID()
+    let timestamp: Date = Date()
+    
+    public func toJSON() -> JSON? {
+        
+        var base64Image: String? = {
+            guard let image = self.screenshot,
+                let data: Data = UIImagePNGRepresentation(image) else {
+                return nil
+            }
+            
+            return data.base64EncodedString()
+            
+        }()
+        
+        return jsonify([
+            "requestedPath" ~~> self.requestedPath,
+            "finalPath" ~~> (self.finalPath ?? "unknown"),
+            "visibleLayout" ~~> (self.visbleLayout?.identifier ?? "unknown"),
+            "screenshot" ~~> base64Image,
+            "error" ~~> self.error?.localizedDescription,
+            "uuid" ~~> self.uuid,
+            Gloss.Encoder.encode(dateISO8601ForKey: "timestamp")(self.timestamp)
+            ])
+    }
+    
+}
+
+public protocol RSRoutingDelegate: class {
+    func logRoutingEvent(routingEventLog: RSRoutingEventLog)
+}
+
 open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutViewController, RSRootViewController, ORKPasscodeDelegate {
+    
+    open func takeScreenshot() -> UIImage? {
+        var screenshotImage :UIImage?
+        let layer = UIApplication.shared.keyWindow!.layer
+        let scale = UIScreen.main.scale
+        UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale);
+        guard let context = UIGraphicsGetCurrentContext() else {return nil}
+        layer.render(in:context)
+        screenshotImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return screenshotImage
+    }
+
+    
+    public weak var routingDelegate: RSRoutingDelegate?
     
     private var rootViewController: UIViewController! = nil
     
@@ -276,10 +333,19 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             self.present(matchedRoutes: routingInstructions.routesStack, animated: animated, state: state, completion: { (visibleVC, error) in
                 
                 if error != nil {
+                    let routingEventLog = RSRoutingEventLog(requestedPath: newPath, finalPath: routingInstructions.path, visbleLayout: visibleVC?.layout, error: error, screenshot: nil)
+                    
+                    self.routingDelegate?.logRoutingEvent(routingEventLog: routingEventLog)
                     completion(routingInstructions.path, error)
                     return
                 }
                 else {
+                    
+                    RSHelpers.delay(1.0, closure: {
+                        let routingEventLog = RSRoutingEventLog(requestedPath: newPath, finalPath: routingInstructions.path, visbleLayout: visibleVC?.layout, error: error, screenshot: self.takeScreenshot())
+                        self.routingDelegate?.logRoutingEvent(routingEventLog: routingEventLog)
+                    })
+                    
                     completion(routingInstructions.path, nil)
                     return
                 }
@@ -288,8 +354,9 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             })
         }
         catch let error {
+            let routingEventLog = RSRoutingEventLog(requestedPath: newPath, finalPath: nil, visbleLayout: nil, error: error, screenshot: nil)
+            self.routingDelegate?.logRoutingEvent(routingEventLog: routingEventLog)
             completion(newPath, error)
-            assertionFailure(error.localizedDescription)
         }
         
     }

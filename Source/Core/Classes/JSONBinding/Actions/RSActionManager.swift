@@ -23,7 +23,7 @@ public struct RSApplicationActionLog: JSONEncodable {
     let action: JSON
     let uuid: UUID
     let timestamp: Date
-    var malformedType = false
+    var malformedAction = false
     var predicateResult: Bool? = nil
     var successfulTransforms: [String] = []
     
@@ -33,7 +33,7 @@ public struct RSApplicationActionLog: JSONEncodable {
             "action" ~~> self.action,
             "uuid" ~~> self.uuid,
             Gloss.Encoder.encode(dateISO8601ForKey: "timestamp")(self.timestamp),
-            "malformedType" ~~> self.malformedType,
+            "malformedAction" ~~> self.malformedAction,
             "predicateResult" ~~> self.predicateResult,
             "successfulTransforms" ~~> self.successfulTransforms
             ])
@@ -86,7 +86,7 @@ open class RSActionManager: NSObject {
         
         //if action malformed, do not execute action
         guard let actionType: String = "type" <~~ action else {
-            actionLog.malformedType = true
+            actionLog.malformedAction = true
             return
         }
 

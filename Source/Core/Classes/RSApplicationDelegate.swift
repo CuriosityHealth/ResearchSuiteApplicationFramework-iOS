@@ -18,7 +18,7 @@ import ResearchKit
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubscriber {
     
     public var window: UIWindow?
-    private var routingViewController: RSRoutingViewController?
+    public private(set) var routingViewController: RSRoutingViewController?
     public var rootViewController: RSRootViewController! {
         return self.routingViewController!
     }

@@ -316,7 +316,7 @@ public class RSReducer: NSObject {
                 
             case let action as ChangePathFailure:
                 debugPrint(action)
-                assertionFailure()
+//                assertionFailure()
                 return RSState.newState(fromState: state, isRouting: false, requestedPath: nil as String?, forceReroute: false)
                 
             default:
