@@ -177,17 +177,17 @@ public struct ChangePathFailure: Action {
     let error: Error
 }
 
-public struct ChangeRouteRequest: Action {
-    let route: RSRoute
-}
-
-public struct ChangeRouteSuccess: Action {
-    let route: RSRoute
-}
-
-public struct ChangeRouteFailure: Action {
-    let route: RSRoute
-}
+//public struct ChangeRouteRequest: Action {
+//    let route: RSRoute
+//}
+//
+//public struct ChangeRouteSuccess: Action {
+//    let route: RSRoute
+//}
+//
+//public struct ChangeRouteFailure: Action {
+//    let route: RSRoute
+//}
 
 public struct RegisterResultsProcessorBackEndAction: Action {
     let identifier: String

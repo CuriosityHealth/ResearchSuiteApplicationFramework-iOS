@@ -239,6 +239,7 @@ public class RSActionCreators: NSObject {
     
     public static func requestPathChange(path: String, forceReroute: Bool = false) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
+            assert(RSStateSelectors.isRouting(state) == false)
             return ChangePathRequest(requestedPath: path, forceReroute: forceReroute)
         }
     }
@@ -340,6 +341,7 @@ public class RSActionCreators: NSObject {
             
             let presentRequestAction = PresentActivityRequest(uuid: firstActivity.0, activityID: firstActivity.1)
             store.dispatch(presentRequestAction)
+            taskViewController.modalPresentationStyle = .overCurrentContext
             
             viewController.present(taskViewController, animated: true, completion: {
                 

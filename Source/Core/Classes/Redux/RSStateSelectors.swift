@@ -160,6 +160,10 @@ public class RSStateSelectors: NSObject {
 //    public static func currentRoute(_ state: RSState) -> RSRoute? {
 //        return state.currentRoute
 //    }
+    
+    public static func pathHistory(_ state: RSState) -> [String] {
+        return state.pathHistory
+    }
 
     public static func currentPath(_ state: RSState) -> String? {
         return state.currentPath

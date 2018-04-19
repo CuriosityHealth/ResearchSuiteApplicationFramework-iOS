@@ -49,8 +49,8 @@ public final class RSState: NSObject, StateType {
     public let presentedActivity: (UUID, String, Date)?
     
     public let isRouting: Bool
-//    public let currentRoute: RSRoute?
     
+    public let pathHistory:[String]
     public let currentPath: String?
     public let requestedPath: String?
     public let forceReroute: Bool
@@ -98,7 +98,7 @@ public final class RSState: NSObject, StateType {
                 isDismissing: Bool = false,
                 presentedActivity: (UUID, String, Date)? = nil,
                 isRouting: Bool = false,
-                currentRoute: RSRoute? = nil,
+                pathHistory: [String] = [],
                 currentPath: String? = nil,
                 requestedPath: String? = nil,
                 forceReroute: Bool = false,
@@ -137,6 +137,7 @@ public final class RSState: NSObject, StateType {
         self.presentedActivity = presentedActivity
         self.isRouting = isRouting
 //        self.currentRoute = currentRoute
+        self.pathHistory = pathHistory
         self.currentPath = currentPath
         self.requestedPath = requestedPath
         self.forceReroute = forceReroute
@@ -176,10 +177,11 @@ public final class RSState: NSObject, StateType {
         isDismissing: Bool? = nil,
         presentedActivity: ((UUID, String, Date)?)? = nil,
         isRouting: Bool? = nil,
-        currentRoute: RSRoute?? = nil,
+        pathHistory: [String]? = nil,
         currentPath: String?? = nil,
         requestedPath: String?? = nil,
         forceReroute: Bool? = nil,
+        
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
         pendingNotifications: ([UNNotificationRequest]?)? = nil,
         isFetchingNotifications: Bool? = nil,
@@ -215,7 +217,7 @@ public final class RSState: NSObject, StateType {
             isDismissing: isDismissing ?? fromState.isDismissing,
             presentedActivity: presentedActivity ?? fromState.presentedActivity,
             isRouting: isRouting ?? fromState.isRouting,
-//            currentRoute: currentRoute ?? fromState.currentRoute,
+            pathHistory: pathHistory ?? fromState.pathHistory,
             currentPath: currentPath ?? fromState.currentPath,
             requestedPath: requestedPath ?? fromState.requestedPath,
             forceReroute: forceReroute ?? fromState.forceReroute,

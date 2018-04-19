@@ -18,6 +18,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
     }
     
     private var tabNavigationControllers: [String: RSTabBarNavigationViewController]!
+    private var lastSelectedTabNavController: RSTabBarNavigationViewController!
     
     //nil denotes that more is selected
     public var selectedTab: RSTab? {
@@ -108,6 +109,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         
         //make sure tabs are sorted based on how the user has previoulsy configured them
         self.viewControllers = self.tabLayout.sortedTabs(state: state).compactMap { self.tabNavigationControllers[$0.identifier] }
+        self.lastSelectedTabNavController = self.viewControllers!.first as! RSTabBarNavigationViewController
         self.viewControllers?.forEach({ (viewController) in
             assert(viewController is RSTabBarNavigationViewController)
         })
@@ -236,8 +238,26 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         
 //        debugPrint(matchedRoute)
         
+        
+        //check to see if we match the tab controller directly
+        //if so, redirect to the previous tab path
+        //if none, redirect to first tab
+        if matchedRoutes.count == 0 {
+
+            let path = self.lastSelectedTabNavController.getPath(incudeMore: false)
+            let pathChangeAction = RSActionCreators.requestPathChange(path: path)
+            completion?(self, nil)
+            
+            //NOTE: This must go after completion block
+            self.store?.dispatch(pathChangeAction)
+            return
+            
+        }
+        
         guard let head = matchedRoutes.first,
             let last = matchedRoutes.last else {
+                
+                
                 assertionFailure("Cannot match a tab bar layout. Must match one of its children.")
                 return
         }
@@ -248,7 +268,8 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         //potentially dismiss presented layout
         if let presentedVC = self.presentedLayoutVC {
             
-            assert(self.presentedViewController! == presentedVC.viewController)
+            //the presented view controller is actually a nav controller around the presented vc
+            assert(self.presentedViewController! == presentedVC.viewController.navigationController!)
             //if this matches the route, we're done
             if presentedVC.matchedRoute.route.identifier == head.route.identifier {
                 presentedVC.updateLayout(matchedRoute: head, state: state)
@@ -261,7 +282,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                 presentedVC.viewController.dismiss(animated: animated) {
                     
                     self.presentedLayoutVC = nil
-                    assert(self.presentedViewController == nil)
+                    assert(self.presentedViewController == nil, "Cannot reroute while presenting a modal route as well as a RK Task")
                     self.present(matchedRoutes: matchedRoutes, animated: animated, state: state, completion: completion)
                     
                 }
@@ -299,8 +320,9 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
             moreLayoutVC.present(matchedRoutes: tail, animated: false, state: state) { (layoutVC, error) in
                 
                 //setting the selected tab to nil will set the "More" VC to the selected view controller
-                self.selectedTab = nil
+                
                 completion?(layoutVC, error)
+                self.selectedTab = nil
                 
             }
 
@@ -315,6 +337,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
             }
             
             let animated = self.selectedViewController == nav && self.tabLayoutVCs.count > 0
+            self.lastSelectedTabNavController = nav
             
             //if the child exists, set the nav controller for this tab to the selected
             if let childVC = self.tabLayoutVC(for: head) {
@@ -352,8 +375,11 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
             do {
                 let presentAnimated = tail.count == 0 && animated
                 let childVC = try head.layout.instantiateViewController(parent: self, matchedRoute: head)
+                let nav = RSNavigationController(rootViewController: childVC.viewController)
+//                childVC.viewController.modalTransitionStyle = .coverVertical
+                nav.modalPresentationStyle = .overCurrentContext
                 self.presentedLayoutVC = childVC
-                self.viewController.present(childVC.viewController, animated: presentAnimated) {
+                self.viewController.present(nav, animated: presentAnimated) {
                     childVC.present(matchedRoutes: tail, animated: animated, state: state, completion: completion)
                 }
             }

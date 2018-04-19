@@ -254,14 +254,14 @@ public class RSReducer: NSObject {
                 let newIdentifierList = state.routeIdentifiers.filter { $0 != route.identifier}  + [route.identifier]
                 return RSState.newState(fromState: state, routeMap: newMap, routeIdentifiers: newIdentifierList)
                 
-            case _ as ChangeRouteRequest:
-                return RSState.newState(fromState: state, isRouting: true)
-                
-            case let action as ChangeRouteSuccess:
-                return RSState.newState(fromState: state, isRouting: false, currentRoute: action.route)
-                
-            case _ as ChangeRouteFailure:
-                return RSState.newState(fromState: state, isRouting: false)
+//            case _ as ChangeRouteRequest:
+//                return RSState.newState(fromState: state, isRouting: true)
+//
+//            case let action as ChangeRouteSuccess:
+//                return RSState.newState(fromState: state, isRouting: false, currentRoute: action.route)
+//
+//            case _ as ChangeRouteFailure:
+//                return RSState.newState(fromState: state, isRouting: false)
                 
             default:
                 return state
@@ -312,7 +312,8 @@ public class RSReducer: NSObject {
                 return RSState.newState(fromState: state, isRouting: true, forceReroute: false)
                 
             case let action as ChangePathSuccess:
-                return RSState.newState(fromState: state, isRouting: false, currentPath: action.finalPath, requestedPath: nil as String?, forceReroute: false)
+                let pathHistory = state.pathHistory + [ action.finalPath]
+                return RSState.newState(fromState: state, isRouting: false, pathHistory: pathHistory, currentPath: action.finalPath, requestedPath: nil as String?, forceReroute: false)
                 
             case let action as ChangePathFailure:
                 debugPrint(action)
