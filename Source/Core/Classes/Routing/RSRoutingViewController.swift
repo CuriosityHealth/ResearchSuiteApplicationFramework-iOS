@@ -272,10 +272,11 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             return
         }
         
-        if let requestedPath = RSStateSelectors.requestedPath(state),
+        if let pathChangeRequest = RSStateSelectors.pathChangeRequest(state),
             !RSStateSelectors.isRouting(state) {
             
-            if RSStateSelectors.forceReroute(state) {
+            let forceReroute = pathChangeRequest.2
+            if forceReroute {
                 
                 self.rootViewController.removeFromParentViewController()
                 self.rootViewController.view.removeFromSuperview()
@@ -287,17 +288,17 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             
             let hasRouted = self.rootViewController != nil
             //begin routing
-            let beginRoutingAction = RoutingStarted(requestedPath: requestedPath)
+            let beginRoutingAction = RoutingStarted(uuid: pathChangeRequest.0)
             self.store?.dispatch(beginRoutingAction)
             
-            self.handleRouteChange(newPath: requestedPath, animated: hasRouted, state: state) { (finalPath, error) in
+            self.handleRouteChange(newPath: pathChangeRequest.1, animated: hasRouted, state: state) { (finalPath, error) in
                 
                 if let error = error {
-                    let failureAction = ChangePathFailure(requestedPath: requestedPath, finalPath: finalPath, error: error)
+                    let failureAction = ChangePathFailure(uuid: pathChangeRequest.0, requestedPath: pathChangeRequest.1, finalPath: finalPath, error: error)
                     self.store?.dispatch(failureAction)
                 }
                 else {
-                    let successAction = ChangePathSuccess(requestedPath: requestedPath, finalPath: finalPath)
+                    let successAction = ChangePathSuccess(uuid: pathChangeRequest.0, requestedPath: pathChangeRequest.1, finalPath: finalPath)
                     self.store?.dispatch(successAction)
                 }
                 

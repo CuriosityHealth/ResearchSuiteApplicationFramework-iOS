@@ -306,19 +306,22 @@ public class RSReducer: NSObject {
 //                return RSState.newState(fromState: state, routeMap: newMap, routeIdentifiers: newIdentifierList)
 //
             case let action as ChangePathRequest:
-                return RSState.newState(fromState: state, requestedPath: action.requestedPath, forceReroute: action.forceReroute)
+                let queue = state.pathChangeRequestQueue + [ (action.uuid, action.requestedPath, action.forceReroute) ]
+                return RSState.newState(fromState: state, pathChangeRequestQueue: queue)
                 
             case _ as RoutingStarted:
-                return RSState.newState(fromState: state, isRouting: true, forceReroute: false)
+                return RSState.newState(fromState: state, isRouting: true)
                 
             case let action as ChangePathSuccess:
                 let pathHistory = state.pathHistory + [ action.finalPath]
-                return RSState.newState(fromState: state, isRouting: false, pathHistory: pathHistory, currentPath: action.finalPath, requestedPath: nil as String?, forceReroute: false)
+                let queue = state.pathChangeRequestQueue.filter { $0.0 != action.uuid }
+                return RSState.newState(fromState: state, isRouting: false, pathHistory: pathHistory, currentPath: action.finalPath, pathChangeRequestQueue: queue)
                 
             case let action as ChangePathFailure:
                 debugPrint(action)
 //                assertionFailure()
-                return RSState.newState(fromState: state, isRouting: false, requestedPath: nil as String?, forceReroute: false)
+                let queue = state.pathChangeRequestQueue.filter { $0.0 != action.uuid }
+                return RSState.newState(fromState: state, isRouting: false, pathChangeRequestQueue: queue)
                 
             default:
                 return state

@@ -158,20 +158,23 @@ public struct DismissActivityFailure: Action {
 }
 
 public struct ChangePathRequest: Action {
+    let uuid: UUID
     let requestedPath: String
     let forceReroute: Bool
 }
 
 public struct RoutingStarted: Action {
-    let requestedPath: String
+    let uuid: UUID
 }
 
 public struct ChangePathSuccess: Action {
+    let uuid: UUID
     let requestedPath: String
     let finalPath: String
 }
 
 public struct ChangePathFailure: Action {
+    let uuid: UUID
     let requestedPath: String
     let finalPath: String
     let error: Error

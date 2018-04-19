@@ -320,9 +320,9 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
             moreLayoutVC.present(matchedRoutes: tail, animated: false, state: state) { (layoutVC, error) in
                 
                 //setting the selected tab to nil will set the "More" VC to the selected view controller
-                
-                completion?(layoutVC, error)
                 self.selectedTab = nil
+                completion?(layoutVC, error)
+                
                 
             }
 

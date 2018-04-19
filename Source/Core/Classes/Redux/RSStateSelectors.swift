@@ -169,13 +169,17 @@ public class RSStateSelectors: NSObject {
         return state.currentPath
     }
     
-    public static func requestedPath(_ state: RSState) -> String? {
-        return state.requestedPath
+    public static func pathChangeRequest(_ state: RSState) -> (UUID, String, Bool)? {
+        return state.pathChangeRequestQueue.first
     }
     
-    public static func forceReroute(_ state: RSState) -> Bool {
-        return state.forceReroute
-    }
+//    public static func requestedPath(_ state: RSState) -> String? {
+//        return state.requestedPath
+//    }
+//    
+//    public static func forceReroute(_ state: RSState) -> Bool {
+//        return state.forceReroute
+//    }
     
 //    public static func shouldRoute(_ state: RSState, route: RSRoute) -> Bool {
 //

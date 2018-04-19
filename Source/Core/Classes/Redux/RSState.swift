@@ -52,8 +52,9 @@ public final class RSState: NSObject, StateType {
     
     public let pathHistory:[String]
     public let currentPath: String?
-    public let requestedPath: String?
-    public let forceReroute: Bool
+    public let pathChangeRequestQueue: [(UUID, String, Bool)]
+//    public let requestedPath: String?
+//    public let forceReroute: Bool
     
     public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
     
@@ -100,8 +101,7 @@ public final class RSState: NSObject, StateType {
                 isRouting: Bool = false,
                 pathHistory: [String] = [],
                 currentPath: String? = nil,
-                requestedPath: String? = nil,
-                forceReroute: Bool = false,
+                pathChangeRequestQueue: [(UUID, String, Bool)] = [],
                 resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
                 pendingNotifications: [UNNotificationRequest]? = nil,
                 isFetchingNotifications: Bool = false,
@@ -139,8 +139,7 @@ public final class RSState: NSObject, StateType {
 //        self.currentRoute = currentRoute
         self.pathHistory = pathHistory
         self.currentPath = currentPath
-        self.requestedPath = requestedPath
-        self.forceReroute = forceReroute
+        self.pathChangeRequestQueue = pathChangeRequestQueue
         self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
         self.pendingNotifications = pendingNotifications
         self.isFetchingNotifications = isFetchingNotifications
@@ -179,8 +178,7 @@ public final class RSState: NSObject, StateType {
         isRouting: Bool? = nil,
         pathHistory: [String]? = nil,
         currentPath: String?? = nil,
-        requestedPath: String?? = nil,
-        forceReroute: Bool? = nil,
+        pathChangeRequestQueue: [(UUID, String, Bool)]? = nil,
         
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
         pendingNotifications: ([UNNotificationRequest]?)? = nil,
@@ -219,8 +217,7 @@ public final class RSState: NSObject, StateType {
             isRouting: isRouting ?? fromState.isRouting,
             pathHistory: pathHistory ?? fromState.pathHistory,
             currentPath: currentPath ?? fromState.currentPath,
-            requestedPath: requestedPath ?? fromState.requestedPath,
-            forceReroute: forceReroute ?? fromState.forceReroute,
+            pathChangeRequestQueue: pathChangeRequestQueue ?? fromState.pathChangeRequestQueue,
             resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap,
             pendingNotifications: pendingNotifications ?? fromState.pendingNotifications,
             isFetchingNotifications: isFetchingNotifications ?? fromState.isFetchingNotifications,

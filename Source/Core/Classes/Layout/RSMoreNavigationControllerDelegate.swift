@@ -10,10 +10,11 @@ import UIKit
 open class RSMoreNavigationControllerDelegate: NSObject, UINavigationControllerDelegate {
     
     func dueToTap(vc: RSTabBarNavigationViewController) -> Bool {
-        return true
+        return self.listWasLast
     }
     
     let tabBarLayoutVC: RSTabBarLayoutViewController
+    var listWasLast: Bool = false
     public init(tabBarLayoutVC: RSTabBarLayoutViewController) {
         self.tabBarLayoutVC = tabBarLayoutVC
         super.init()
@@ -21,6 +22,8 @@ open class RSMoreNavigationControllerDelegate: NSObject, UINavigationControllerD
     
     public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         
+        let listWasLast = self.listWasLast
+        self.listWasLast = false
         if let layoutVC = viewController as? RSLayoutViewController {
             debugPrint(layoutVC.identifier)
         }
@@ -28,7 +31,7 @@ open class RSMoreNavigationControllerDelegate: NSObject, UINavigationControllerD
             
             //if it was due to a tap, set the route to tab bar path
             //FOR NOW, assume that there is no harm done by always doing this
-            if self.dueToTap(vc: navController) {
+            if listWasLast {
                 let absolutePath = navController.getPath(incudeMore: false)
                 let action = RSActionCreators.requestPathChange(path: absolutePath)
                 self.tabBarLayoutVC.store?.dispatch(action)
@@ -45,6 +48,7 @@ open class RSMoreNavigationControllerDelegate: NSObject, UINavigationControllerD
             let className = NSStringFromClass(type(of: viewController))
             //FOR NOW, assume that there is no harm done by always doing this
             if className == "UIMoreListController" {
+                self.listWasLast = true
                 self.tabBarLayoutVC.redirectToMorePath()
             }
         }
