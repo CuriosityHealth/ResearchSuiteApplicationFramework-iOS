@@ -40,6 +40,7 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
     
     public let tabOrderKey: String?
     public let tabs: [RSTab]
+    public let presentedRouteJSON: [JSON]
 
     required public init?(json: JSON) {
         
@@ -49,6 +50,8 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         
         self.tabs = tabs.compactMap { RSTab(json: $0) }
         self.tabOrderKey = "tabOrderKey" <~~ json
+        
+        self.presentedRouteJSON = "presentedRoutes" <~~ json ?? []
         
         super.init(json: json)
     }
@@ -84,12 +87,31 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         }
     }
     
-    open func visibleTabs(state: RSState) -> [RSTab] {
-        return Array(self.sortedTabs(state: state).prefix(4))
+    open func visibleTabs(sortedTabs: [RSTab]) -> [RSTab] {
+        
+        if sortedTabs.count > 5 {
+            return Array(sortedTabs.prefix(4))
+        }
+        else {
+            return sortedTabs
+        }
+    }
+    
+    open func hiddenTabs(sortedTabs: [RSTab]) -> [RSTab] {
+        
+        if sortedTabs.count > 5 {
+            return Array(sortedTabs.dropFirst(4))
+        }
+        else {
+            return []
+        }
+        
     }
     
     open func hiddenTabs(state: RSState) -> [RSTab] {
-        return Array(self.sortedTabs(state: state).dropFirst(4))
+        
+        return self.hiddenTabs(sortedTabs: self.sortedTabs(state: state))
+        
     }
     
     open override func childRoutes(routeManager: RSRouteManager, state: RSState, matchedRoute: RSMatchedRoute?, parentLayout: RSLayout?) -> [RSRoute] {
@@ -97,20 +119,45 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         //only a maximum of 4 tabs are visible at a time
         //If more tha 4 tabs are included, a more button is shown
         
-        let visibleRoutes = self.visibleTabs(state: state).compactMap({ (tab) -> RSRoute? in
-            let path = RSPrefixPath(prefix: "/\(tab.identifier)")
-            return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
-        })
+        let sortedTabs = self.sortedTabs(state: state)
         
-        let moreRoute = RSRoute(identifier: "more", path: RSPrefixPath(prefix: "/more"), layoutIdentifier: "more")
+        let visibleTabs = self.visibleTabs(sortedTabs: sortedTabs)
         
-        let hiddenRoutes = self.hiddenTabs(state: state).compactMap({ (tab) -> RSRoute? in
-            let path = RSPrefixPath(prefix: "/\(tab.identifier)")
-            let rediretPath = "\(matchedRoute!.match.path)/more/\(tab.identifier)"
-            return RSRedirectRoute(identifier: tab.identifier, path: path, redirectPath: rediretPath)
-        })
+        let tabRoutes: [RSRoute] = {
+            
+            let visibleTabRoutes = visibleTabs.compactMap({ (tab) -> RSRoute? in
+                let path = RSPrefixPath(prefix: "/\(tab.identifier)")
+                return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
+            })
+            
+            let hiddenTabs = self.hiddenTabs(sortedTabs: sortedTabs)
+            
+            if hiddenTabs.count > 0 {
+                
+                let moreTabRoute = RSRoute(identifier: "more", path: RSPrefixPath(prefix: "/more"), layoutIdentifier: "more")
+                
+                let hiddenTabRoutes = hiddenTabs.compactMap({ (tab) -> RSRoute? in
+                    let path = RSPrefixPath(prefix: "/\(tab.identifier)")
+                    let rediretPath = "\(matchedRoute!.match.path)/more/\(tab.identifier)"
+                    return RSRedirectRoute(identifier: tab.identifier, path: path, redirectPath: rediretPath)
+                })
+                
+                return visibleTabRoutes + [moreTabRoute] + hiddenTabRoutes
+                
+            }
+            else {
+                
+                return visibleTabRoutes
+                
+            }
+            
+        }()
         
-        return visibleRoutes + [moreRoute] + hiddenRoutes
+        let presentationRoutes = self.presentedRouteJSON.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
+        
+        
+        return tabRoutes + presentationRoutes
+        
         
     }
     

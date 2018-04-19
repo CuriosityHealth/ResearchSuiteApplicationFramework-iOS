@@ -86,7 +86,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                 do {
                     let vc = try layout.instantiateViewController(parent: self, matchedRoute: RSMatchedRoute(match: match, route: route, layout: layout))
 
-                    self.childLayoutVCs = self.childLayoutVCs + [vc]
+                    self.tabLayoutVCs = self.tabLayoutVCs + [vc]
                     
                     let navController = RSNavigationController(rootViewController: vc.viewController)
                     navController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -205,13 +205,31 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
     
     public var parentLayoutViewController: RSLayoutViewController!
     
-    private var childLayoutVCs: [RSLayoutViewController] = []
+    private var tabLayoutVCs: [RSLayoutViewController] = []
     private var moreLayoutVC: RSMoreLayoutViewController?
+    private var presentedLayoutVCs: [RSLayoutViewController] = []
+    private var presentedLayoutVC: RSLayoutViewController?
     
-    private func childLayoutVC(for matchedRoute: RSMatchedRoute) -> RSLayoutViewController? {
-        return childLayoutVCs.first(where: { (lvc) -> Bool in
+    private func tabLayoutVC(for matchedRoute: RSMatchedRoute) -> RSLayoutViewController? {
+        return tabLayoutVCs.first(where: { (lvc) -> Bool in
             return lvc.matchedRoute.route.identifier == matchedRoute.route.identifier
         })
+    }
+    
+    private func presentedLayoutVC(for matchedRoute: RSMatchedRoute) -> RSLayoutViewController? {
+        return presentedLayoutVCs.first(where: { (lvc) -> Bool in
+            return lvc.matchedRoute.route.identifier == matchedRoute.route.identifier
+        })
+    }
+    
+    private func isTabRoute(matchedRoute: RSMatchedRoute) -> Bool {
+        
+        if matchedRoute.layout is RSMoreLayout {
+            return true
+        }
+    
+        return self.tabLayoutVC(for: matchedRoute) != nil
+        
     }
     
     public func present(matchedRoutes: [RSMatchedRoute], animated: Bool, state: RSState, completion: ((RSLayoutViewController?, Error?) -> Void)?) {
@@ -225,6 +243,36 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         }
         
         let tail = Array(matchedRoutes.dropFirst())
+        
+        
+        //potentially dismiss presented layout
+        if let presentedVC = self.presentedLayoutVC {
+            
+            assert(self.presentedViewController! == presentedVC.viewController)
+            //if this matches the route, we're done
+            if presentedVC.matchedRoute.route.identifier == head.route.identifier {
+                presentedVC.updateLayout(matchedRoute: head, state: state)
+                presentedVC.present(matchedRoutes: tail, animated: animated, state: state, completion: completion)
+                return
+            }
+            else {
+                //else we need to dismiss
+                //we should just be able to recurse here
+                presentedVC.viewController.dismiss(animated: animated) {
+                    
+                    self.presentedLayoutVC = nil
+                    assert(self.presentedViewController == nil)
+                    self.present(matchedRoutes: matchedRoutes, animated: animated, state: state, completion: completion)
+                    
+                }
+                return
+                
+            }
+            return
+
+        }
+        
+        assert(self.presentedLayoutVC == nil)
         
         if let moreLayout = head.layout as? RSMoreLayout {
             
@@ -259,36 +307,55 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
             return
         }
         
-        guard let tab = self.tabLayout.tabs.first(where: ({ $0.identifier == head.route.identifier })),
-            let nav = self.tabNavigationControllers[tab.identifier] else {
-                completion?(nil, nil)
-                return
-        }
-        
-        let animated = self.selectedViewController == nav && self.childLayoutVCs.count > 0
-        
-        //if the child exists, set the nav controller for this tab to the selected
-        if let childVC = self.childLayoutVC(for: head) {
-            childVC.updateLayout(matchedRoute: head, state: state)
+        if let tab = self.tabLayout.tabs.first(where: ({ $0.identifier == head.route.identifier })) {
             
-            //update the stored path in the nav controller
-            nav.setPath(path: last.match.path)
-            self.selectedTab = tab
-            childVC.present(matchedRoutes: tail, animated: animated, state: state, completion: completion)
-            return
-        }
-        else {
+            guard let nav = self.tabNavigationControllers[tab.identifier] else {
+                    completion?(nil, nil)
+                    return
+            }
             
-            do {
-                let childVC = try head.layout.instantiateViewController(parent: self, matchedRoute: head)
-                childVC.viewController.title = tab.tabBarTitle
-                self.childLayoutVCs = self.childLayoutVCs + [childVC]
-                let rootNav = nav.rootViewController as! RSNavigationController
-                rootNav.viewControllers = [childVC.viewController]
+            let animated = self.selectedViewController == nav && self.tabLayoutVCs.count > 0
+            
+            //if the child exists, set the nav controller for this tab to the selected
+            if let childVC = self.tabLayoutVC(for: head) {
+                childVC.updateLayout(matchedRoute: head, state: state)
+                
                 //update the stored path in the nav controller
                 nav.setPath(path: last.match.path)
                 self.selectedTab = tab
                 childVC.present(matchedRoutes: tail, animated: animated, state: state, completion: completion)
+                return
+            }
+            else {
+                
+                do {
+                    let childVC = try head.layout.instantiateViewController(parent: self, matchedRoute: head)
+                    childVC.viewController.title = tab.tabBarTitle
+                    self.tabLayoutVCs = self.tabLayoutVCs + [childVC]
+                    let rootNav = nav.rootViewController as! RSNavigationController
+                    rootNav.viewControllers = [childVC.viewController]
+                    //update the stored path in the nav controller
+                    nav.setPath(path: last.match.path)
+                    self.selectedTab = tab
+                    childVC.present(matchedRoutes: tail, animated: animated, state: state, completion: completion)
+                }
+                catch let error {
+                    completion?(nil, error)
+                }
+                
+            }
+        }
+        else {
+            
+            assert(self.presentedLayoutVC == nil)
+            
+            do {
+                let presentAnimated = tail.count == 0 && animated
+                let childVC = try head.layout.instantiateViewController(parent: self, matchedRoute: head)
+                self.presentedLayoutVC = childVC
+                self.viewController.present(childVC.viewController, animated: presentAnimated) {
+                    childVC.present(matchedRoutes: tail, animated: animated, state: state, completion: completion)
+                }
             }
             catch let error {
                 completion?(nil, error)
