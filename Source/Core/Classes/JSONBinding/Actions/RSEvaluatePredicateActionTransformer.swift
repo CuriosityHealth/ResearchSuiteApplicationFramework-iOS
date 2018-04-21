@@ -37,9 +37,9 @@ open class RSEvaluatePredicateActionTransformer: RSActionTransformer {
         
         return { state, store in
             
-            let _ = RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+            let predicateValue = RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
             
-//            debugPrint(predicateValue)
+            debugPrint(predicateValue)
             
             return nil
             

@@ -63,7 +63,7 @@ open class RSRouter {
     // 3) generate child routes for layout
     open class func getRouteStackHelper(for path: String, parentMatch: RSMatchedRoute?, routes: [RSRoute], state: RSState, routeManager: RSRouteManager) throws -> [RSMatchedRoute] {
         guard path.hasPrefix("/") else {
-            debugPrint("Path not prefixed by '/'")
+//            debugPrint("Path not prefixed by '/'")
             let fullPath = parentMatch == nil ? path : (parentMatch!.match.path + path)
             throw RSRouterError.invalidPath(path: fullPath)
         }
@@ -86,10 +86,7 @@ open class RSRouter {
         
         // if a route matched
         if let matchedRoute = matchedRoutes.first {
-            
-            //            debugPrint(matchedRoute)
-            //            let layout = matchedRoute.route.layout
-            
+
             let remainingPath = matchedRoute.route.path.remainder(path: path)
             // check to see if there is still path remaining
             //if so, recurse
@@ -103,7 +100,7 @@ open class RSRouter {
                 let childRoutes: [RSRoute] = matchedRoute.layout.childRoutes(routeManager: routeManager, state: state, matchedRoute: matchedRoute, parentLayout: parentMatch?.layout)
 //                let childRoutes: [RSRoute]  = matchedRoute.layout.childRoutes.compactMap { routeManager.generateRoute(jsonObject: $0, state: state) }
                 guard childRoutes.count > 0 else {
-                    debugPrint("Layout \(matchedRoute.layout.identifier) does not have child routes but the following path is remaining: \(remainingPath)")
+//                    debugPrint("Layout \(matchedRoute.layout.identifier) does not have child routes but the following path is remaining: \(remainingPath)")
                     let fullPath = parentMatch == nil ? path : (parentMatch!.match.path + path)
                     throw RSRouterError.invalidPath(path: fullPath)
                 }
@@ -124,7 +121,7 @@ open class RSRouter {
             
         }
         else {
-            debugPrint("No route found")
+//            debugPrint("No route found")
             let fullPath = parentMatch == nil ? path : (parentMatch!.match.path + path)
             throw RSRouterError.invalidPath(path: fullPath)
         }
@@ -144,7 +141,6 @@ open class RSRouter {
     }
     
     open class func generateRoutingInstructions(path: String, rootLayoutIdentifier: String, state: RSState, routeManager: RSRouteManager) throws -> RSRoutingInstructions {
-        debugPrint("***************************************")
         
         do {
             
@@ -161,9 +157,6 @@ open class RSRouter {
             }
             return try self.generateRoutingInstructions(path: redirectPath, rootLayoutIdentifier: rootLayoutIdentifier, state: state, routeManager: routeManager)
         }
-        
-        debugPrint("***************************************")
-        print("\n\n\n")
     }
     
 }

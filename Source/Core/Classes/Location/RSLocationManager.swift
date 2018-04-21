@@ -163,7 +163,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
         }
         
         let monitoredRegions = Array(self.locationManager.monitoredRegions)
-        debugPrint("\(monitoredRegions.map { $0.identifier }) enabled regions")
+//        debugPrint("\(monitoredRegions.map { $0.identifier }) enabled regions")
         regionGroups.forEach { self.processRegionGroup(regionGroup: $0, state: state, lastState: lastState, monitoredRegions: monitoredRegions) }
     }
     
@@ -266,7 +266,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             
             RSHelpers.delay(1.0) {
                 regionsToStartMonitoringOrUpdate.forEach { regionToMonitor in
-                    debugPrint("starting to monitor region: \(regionToMonitor.identifier)")
+//                    debugPrint("starting to monitor region: \(regionToMonitor.identifier)")
                     self.locationManager.startMonitoring(for: regionToMonitor)
                 }
             }
@@ -274,7 +274,7 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
             RSHelpers.delay(2.0) {
                 regionsToStartMonitoringOrUpdate.forEach { regionToMonitor in
                     self.fetchState(region: regionToMonitor, completion: { (region, state) in
-                        debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
+//                        debugPrint("\(region.identifier): \(region): initially in \(state.rawValue)")
                         if self.regionsEqual(regionToMonitor, region) {
                             self.handleInitialStateEvent(region: region, state: state)
                         }
@@ -570,13 +570,13 @@ open class RSLocationManager: NSObject, CLLocationManagerDelegate, StoreSubscrib
 extension RSLocationManager {
     public func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
         
-        debugPrint("started monitoring \(region.identifier)")
+//        debugPrint("started monitoring \(region.identifier)")
         
     }
     
     public func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        debugPrint("monitoring failed for \(region!.identifier) with \(error)")
-        debugPrint(error as NSError)
+//        debugPrint("monitoring failed for \(region!.identifier) with \(error)")
+//        debugPrint(error as NSError)
         
         if let r = region {
             RSHelpers.delay(1.0) {

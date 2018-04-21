@@ -331,7 +331,6 @@ public class RSReducer: NSObject {
                 return RSState.newState(fromState: state, isRouting: false, pathHistory: pathHistory, currentPath: action.finalPath, pathChangeRequestQueue: queue)
                 
             case let action as ChangePathFailure:
-                debugPrint(action)
 //                assertionFailure()
                 let queue = state.pathChangeRequestQueue.filter { $0.0 != action.uuid }
                 return RSState.newState(fromState: state, isRouting: false, pathChangeRequestQueue: queue)

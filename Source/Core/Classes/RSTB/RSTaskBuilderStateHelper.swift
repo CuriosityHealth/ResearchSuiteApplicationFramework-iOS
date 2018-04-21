@@ -48,7 +48,6 @@ public class RSTaskBuilderStateHelper: NSObject, RSTBStateHelper, StoreSubscribe
     }
     
     deinit {
-        debugPrint("\(self) deiniting")
         self.store?.unsubscribe(self)
     }
     

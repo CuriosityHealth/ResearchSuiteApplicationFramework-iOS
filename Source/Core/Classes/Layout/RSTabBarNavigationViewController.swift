@@ -66,7 +66,7 @@ open class RSTabBarNavigationViewController: UIViewController {
         if relativePath.hasPrefix("/more/") {
             relativePath = String(relativePath.dropFirst("/more".count))
         }
-        debugPrint(relativePath)
+        
         self.tabPath = relativePath
         
     }
@@ -82,7 +82,6 @@ open class RSTabBarNavigationViewController: UIViewController {
             }
         }()
         
-        debugPrint(absolutePath)
         return absolutePath
     }
     

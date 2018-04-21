@@ -56,7 +56,6 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     override open func viewDidLoad() {
         super.viewDidLoad()
 
-        debugPrint(self.layout.identifier)
         // Do any additional setup after loading the view.
         
         self.titleLabel.text = self.titleLayout.title

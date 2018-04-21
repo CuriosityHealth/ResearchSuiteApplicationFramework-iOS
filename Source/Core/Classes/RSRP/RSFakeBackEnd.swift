@@ -29,7 +29,7 @@ public class RSFakeBackEnd: RSRPBackEnd {
     public func add(intermediateResult: RSRPIntermediateResult) {
         
         debugPrint("we would be sending this result to the server!!!")
-        debugPrint(intermediateResult)
+//        debugPrint(intermediateResult)
         
     }
     

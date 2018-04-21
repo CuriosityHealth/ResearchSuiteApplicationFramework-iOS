@@ -375,12 +375,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     @objc
     public func printRefCount() {
+        #if DEBUG
         if self.weakStore != nil {
             print("store ref count: \(CFGetRetainCount(self.weakStore))")
         }
         else {
             print("store ref count: 0")
         }
+        #endif
     }
     
     @discardableResult
@@ -443,11 +445,6 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         self.printRefCount()
         
-        if fromReset {
-//            debugPrint(self.rootNavController!.viewControllers)
-//            self.rootNavController!.presentingViewController?.dismiss(animated: false, completion: nil)
-        }
-        
         let pathManager = RSPathManager(pathGenerators: self.pathGenerators)
         let routeManager = RSRouteManager(routeGenerators: self.routeGenerators, pathManager: pathManager)
         self.routeManager = routeManager
@@ -456,14 +453,6 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.routingViewController = RSRoutingViewController(rootLayoutIdentifier: "ROOT", routeManager: routeManager, activityManager: self.activityManager, store: self.store)
         self.window?.rootViewController = self.routingViewController
         self.window?.makeKeyAndVisible()
-//        self.rootNavController?.store = self.store
-////        self.rootNavController?.layoutManager = self.layoutManager
-//        self.rootNavController?.activityManager = self.activityManager
-//        self.rootNavController?.viewControllers = [UIViewController()]
-//
-//        self.transition(toRootViewController: self.rootNavController!, animated: fromReset)
-//
-//        debugPrint(self.rootNavController!.viewControllers)
         
         self.printRefCount()
         
@@ -475,7 +464,6 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.store.dispatch(registerFunctionAction)
         
         self.openURLManager = RSOpenURLManager(openURLDelegates: self.openURLDelegates)
-        
         
         self.printRefCount()
         

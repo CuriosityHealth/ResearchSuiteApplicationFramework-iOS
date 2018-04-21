@@ -174,8 +174,6 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         if tail.count > 0 {
             self.processRecursively(notifications: tail, state: state, lastState: lastState, callback: { (shouldFetch) in
                 
-//                print("shouldFetch is \(shouldFetch)")
-                
                 //things that this calls must be only touched from main thread
                 DispatchQueue.main.async {
                     self.processNotification(notification: head, state: state, lastState: lastState, callback: { innerShouldFetch in
@@ -224,7 +222,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
     
     static public func setNotification(identifier: String, components: DateComponents, title: String, body: String, completion: @escaping (Error?)->() ) {
         
-        debugPrint("Setting notification: \(identifier): \(components)")
+//        debugPrint("Setting notification: \(identifier): \(components)")
         
         let center = UNUserNotificationCenter.current()
         

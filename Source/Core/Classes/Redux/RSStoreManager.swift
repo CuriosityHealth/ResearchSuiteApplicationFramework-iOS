@@ -41,10 +41,6 @@ public class RSStoreManager: NSObject {
         
     }
     
-    deinit {
-        debugPrint("\(self) deiniting")
-    }
-    
     public func unsubscribeAll() {
         self.store.unsubscribeAll()
     }

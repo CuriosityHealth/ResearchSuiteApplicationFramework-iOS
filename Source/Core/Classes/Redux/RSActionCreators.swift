@@ -344,7 +344,7 @@ public class RSActionCreators: NSObject {
                 let outputDirectory = documentsDirectory.appendingPathComponent(taskViewController.taskRunUUID.uuidString)
                 try defaultFileManager.createDirectory(at: outputDirectory, withIntermediateDirectories: true, attributes: nil)
                 
-                debugPrint("Storing results in \(outputDirectory.absoluteString)")
+//                debugPrint("Storing results in \(outputDirectory.absoluteString)")
                 
                 taskViewController.outputDirectory = outputDirectory
             }
@@ -654,7 +654,6 @@ public class RSActionCreators: NSObject {
     public static func fetchCurrentLocation(onCompletion: RSPromise) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
-            debugPrint("Fetching Location")
             guard !RSStateSelectors.isFetchingLocation(state) else {
                 return nil
             }

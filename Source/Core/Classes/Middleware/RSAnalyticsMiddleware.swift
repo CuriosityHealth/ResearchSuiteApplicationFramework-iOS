@@ -41,11 +41,6 @@ open class RSAnalyticsMiddleware: RSMiddlewareProvider {
             return { next in
                 return { action in
                     
-                    if let encodableAction = action as? JSONEncodable,
-                        let json = encodableAction.toJSON() {
-                        debugPrint(json)
-                    }
-                    
                     if let logActivityAction = action as? LogActivityAction {
                         analyticsDelegate.logActivity(
                             activityID: logActivityAction.activityID,

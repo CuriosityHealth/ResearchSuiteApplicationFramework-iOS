@@ -38,10 +38,7 @@ open class RSMoreNavigationControllerDelegate: NSObject, UINavigationControllerD
         
         let listWasLast = self.listWasLast
         self.listWasLast = false
-        if let layoutVC = viewController as? RSLayoutViewController {
-            debugPrint(layoutVC.identifier)
-        }
-        else if let navController = viewController as? RSTabBarNavigationViewController {
+        if let navController = viewController as? RSTabBarNavigationViewController {
             
             //if it was due to a tap, set the route to tab bar path
             //FOR NOW, assume that there is no harm done by always doing this
@@ -51,13 +48,8 @@ open class RSMoreNavigationControllerDelegate: NSObject, UINavigationControllerD
                 self.tabBarLayoutVC.store?.dispatch(action)
             }
             
-            debugPrint(navController)
-        }
-        else if let navController = viewController as? RSNavigationController {
-            debugPrint(navController)
         }
         else {
-            debugPrint(viewController)
             //set path to more
             let className = NSStringFromClass(type(of: viewController))
             //FOR NOW, assume that there is no harm done by always doing this

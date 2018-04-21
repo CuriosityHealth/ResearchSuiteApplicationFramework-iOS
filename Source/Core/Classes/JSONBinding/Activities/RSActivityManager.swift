@@ -75,8 +75,6 @@ open class RSActivityManager: NSObject {
             shouldHideCancelButton: activity.shouldHideCancelButton
         )
         
-//        debugPrint(stepTree)
-        
         return stepTree
         
     }

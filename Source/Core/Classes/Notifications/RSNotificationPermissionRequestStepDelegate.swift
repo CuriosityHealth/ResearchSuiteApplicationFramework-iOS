@@ -40,7 +40,7 @@ open class RSNotificationPermissionRequestStepDelegate: RSPermissionRequestStepD
         
         let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
             (result : UIAlertAction) -> Void in
-            print("OK")
+            
         }
         
         alertController.addAction(okAction)

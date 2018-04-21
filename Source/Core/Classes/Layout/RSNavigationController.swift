@@ -48,11 +48,7 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
         coordinator.animate(alongsideTransition: nil) {
             _ in completion()
         }
-        
-        coordinator.notifyWhenInteractionChanges { (context) in
-            
-            debugPrint(context)
-        }
+
     }
     
     open override func popViewController(animated: Bool) -> UIViewController? {
@@ -68,7 +64,6 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
                                   completion: @escaping (UIViewController?) -> Void) {
         
         
-        debugPrint((self.visibleViewController as! RSLayoutViewController).identifier)
         guard let lvc = self.visibleViewController as? RSLayoutViewController else{
             completion(nil)
             return
@@ -91,17 +86,11 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
         coordinator.animate(alongsideTransition: nil) { _ in
             completion(viewController)
         }
-        
-        //        coordinator.notifyWhenInteractionChanges { (context) in
-        //
-        //            debugPrint(context)
-        //        }
+
     }
     
     public func navigationBar(_ navigationBar: UINavigationBar,
                               shouldPop item: UINavigationItem) -> Bool {
-        
-        //        debugPrint((self.visibleViewController as! RSLayoutViewController).identifier)
         
         //during a reroute request, the parent will be the visible view controller
         //in the case of back being touched, this will be the actual vc
@@ -129,12 +118,5 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
         }
         
     }
-    
-    //    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-    //        debugPrint(viewController)
-    //    }
-    //
-    //    public func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-    //        debugPrint(viewController)
-    //    }
+
 }

@@ -79,14 +79,12 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
         self.identifier = identifier
         
         self.filePath = RSFileStateManager.generateFilePath(filePath: filePath)!
-        print(self.filePath)
         
         self.fileProtection = fileProtection
     
         do {
             self.map = try RSFileStateManager.loadMap(filePath: filePath, decodingClasses: decodingClasses)
         } catch let error as NSError {
-            print(error.localizedDescription)
             self.map = [:]
         }
         
@@ -140,7 +138,6 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
                         completion(true, nil)
                     }
                 } catch let error as NSError {
-                    print(error.localizedDescription)
                     DispatchQueue.main.async {
                         completion(false, error)
                     }
@@ -161,7 +158,7 @@ open class RSFileStateManager: RSStateManagerProtocol, RSStateManagerGenerator {
                 do {
                     try RSFileStateManager.saveMap(map: map, filePath: self.filePath, fileProtection: self.fileProtection)
                 } catch let error as NSError {
-                    print(error.localizedDescription)
+                    //TODO: Figure out what to do in this case!!
                 }
             }
         }

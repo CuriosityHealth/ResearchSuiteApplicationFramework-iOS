@@ -165,7 +165,6 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                 
             }
             
-            debugPrint(tabOrder)
             self.store?.dispatch(RSActionCreators.setValueInState(key: tabOrderKey, value: tabOrder as NSArray))
             
         }
@@ -249,9 +248,6 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
     }
     
     public func present(matchedRoutes: [RSMatchedRoute], animated: Bool, state: RSState, completion: ((RSLayoutViewController?, Error?) -> Void)?) {
-        
-//        debugPrint(matchedRoute)
-        
         
         //check to see if we match the tab controller directly
         //if so, redirect to the previous tab path

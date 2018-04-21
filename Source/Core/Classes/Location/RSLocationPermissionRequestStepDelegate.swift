@@ -81,7 +81,7 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                
             }
             
             alertController.addAction(okAction)
@@ -93,7 +93,7 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                
             }
             
             alertController.addAction(okAction)
@@ -105,7 +105,7 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                
             }
             
             alertController.addAction(okAction)
@@ -118,7 +118,7 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
             let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
                 (result : UIAlertAction) -> Void in
-                print("OK")
+                
             }
             
             alertController.addAction(okAction)
