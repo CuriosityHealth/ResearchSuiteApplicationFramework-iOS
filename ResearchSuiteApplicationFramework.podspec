@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ResearchSuiteApplicationFramework'
-  s.version          = '0.15.0'
+  s.version          = '0.16.0'
   s.summary          = 'The ResearchSuite Application Framework is the easiest way to build mobile health research studies.'
 
 # This description is used to generate tags and improve search results.
@@ -41,6 +41,14 @@ Pod::Spec.new do |s|
     core.dependency 'ResearchSuiteResultsProcessor', '~> 0.8'
     core.dependency 'ResearchSuiteExtensions', '~> 0.12'
     core.dependency 'Gloss', '~> 2'
+  end
+
+  s.subspec 'Development' do |dev|
+    dev.source_files = 'Source/Development/Classes/**/*'
+    dev.dependency 'ResearchSuiteApplicationFramework/Core'
+    dev.dependency 'Starscream', '~> 2.0'
+    dev.dependency 'ReSwift', '~> 3.0'
+    dev.dependency 'Gloss', '~> 2'
   end
 
   s.default_subspec = 'Core'
