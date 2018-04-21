@@ -1,9 +1,10 @@
 //
 //  CHSocketManager.swift
-//  TEAMWork
+//  ResearchSuiteApplicationFramework
 //
 //  Created by James Kizer on 4/14/18.
-//  Copyright © 2018 James Kizer. All rights reserved.
+//
+//  Copyright Curiosity Health Company. All rights reserved.
 //
 
 import UIKit
