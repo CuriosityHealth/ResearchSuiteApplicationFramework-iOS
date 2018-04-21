@@ -30,21 +30,28 @@ open class RSPathTransformer: RSValueTransformer {
     
     public static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
         
-        guard let value: String = "value" <~~ jsonObject else {
+        guard let path_type: String = "path_type" <~~ jsonObject else {
             return nil
         }
         
-        if value == "parent",
+        if path_type == "parent",
             let layoutVC = context["layoutViewController"] as? RSLayoutViewController {
             let parentPath = layoutVC.parentLayoutViewController.matchedRoute.match.path
             return RSValueConvertible(value: parentPath as NSString)
         }
-        else if value == "back",
+        else if path_type == "back",
             let previousPath = RSStateSelectors.pathHistory(state).dropLast().last {
             
             return RSValueConvertible(value: previousPath as NSString)
             
         }
+        else if path_type == "append",
+            let layoutVC = context["layoutViewController"] as? RSLayoutViewController,
+            let append: String = "path" <~~ jsonObject {
+            let path = layoutVC.matchedRoute.match.path + append
+            return RSValueConvertible(value: path as NSString)
+        }
+        
         else {
             return nil
         }
