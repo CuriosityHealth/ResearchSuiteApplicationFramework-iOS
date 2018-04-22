@@ -72,7 +72,7 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
     func topLeftCenter(windowSize: CGSize, imageSize: CGSize) -> CGPoint {
         
         let xOffset = imageSize.width/2 + 20.0
-        let yOffset = imageSize.height/2 + 20.0
+        let yOffset = imageSize.height/2 + 40.0
         
         return CGPoint(x: xOffset, y: yOffset)
         
@@ -80,21 +80,21 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
     
     func topRightCenter(windowSize: CGSize, imageSize: CGSize) -> CGPoint {
         let xOffset = (windowSize.width - imageSize.width/2) - 20.0
-        let yOffset = imageSize.height/2 + 20.0
+        let yOffset = imageSize.height/2 + 40.0
         
         return CGPoint(x: xOffset, y: yOffset)
     }
     
     func bottomLeftCenter(windowSize: CGSize, imageSize: CGSize) -> CGPoint {
         let xOffset = imageSize.width/2 + 20.0
-        let yOffset = (windowSize.height - imageSize.height/2) - 20.0
+        let yOffset = (windowSize.height - imageSize.height/2) - 80.0
         
         return CGPoint(x: xOffset, y: yOffset)
     }
     
     func bottomRightCenter(windowSize: CGSize, imageSize: CGSize) -> CGPoint {
         let xOffset = (windowSize.width - imageSize.width/2) - 20.0
-        let yOffset = (windowSize.height - imageSize.height/2) - 20.0
+        let yOffset = (windowSize.height - imageSize.height/2) - 80.0
         
         return CGPoint(x: xOffset, y: yOffset)
     }
@@ -141,7 +141,8 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
         super.init()
         
         let bundle = Bundle(for: RSFeedbackViewController.self)
-        if let feedbackImage =  UIImage(named: "feedback", in: bundle, compatibleWith: nil) {
+        if let feedbackImage =  UIImage(named: "feedback", in: bundle, compatibleWith: nil),
+            MFMailComposeViewController.canSendMail() {
             let feedbackButton = UIImageView(image: feedbackImage)
             
             feedbackButton.contentMode = .scaleAspectFit
@@ -173,7 +174,7 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
     
     func presentTextInputWindow() {
         
-        let alertController = UIAlertController(title: "Add feedback", message: "You can add feedback here. It will be stored locally until you are ready to submit it by tripple clicking on the icon.", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Add feedback", message: "You can add feedback here. It will be stored locally until you are ready to submit it by triple clicking on the icon.", preferredStyle: .alert)
         alertController.addTextField { (textField : UITextField!) -> Void in
 //            textField.placeholder = "Enter Second Name"
 //            textField.lin

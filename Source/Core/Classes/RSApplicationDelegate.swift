@@ -16,6 +16,15 @@ import Gloss
 import ResearchSuiteExtensions
 import ResearchKit
 
+public enum RSConfiguration: String {
+    
+    case development = "development"
+    case testing = "testing"
+    case staging = "staging"
+    case production = "production"
+    
+}
+
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubscriber {
     
     public var window: UIWindow?
@@ -23,6 +32,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var rootViewController: RSRootViewController! {
         return self.routingViewController!
     }
+    
+    public var chConfig: RSConfiguration!
     
     public var feedbackViewController: RSFeedbackViewController?
     
@@ -521,6 +532,11 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
     }
     
+    open func initConfiguration() -> RSConfiguration {
+        return .development
+    }
+    
+    
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
         if UserDefaults.standard.object(forKey: "FirstRun") == nil {
@@ -529,6 +545,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             
             RSKeychainHelper.clearKeychain()
         }
+        
+        self.chConfig = self.initConfiguration()
         
         let initialzed = self.initializeApplication(fromReset: false)
         
