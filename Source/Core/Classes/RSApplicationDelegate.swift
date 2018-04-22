@@ -24,6 +24,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return self.routingViewController!
     }
     
+    public var feedbackViewController: RSFeedbackViewController?
     
     public var activityManager: RSActivityManager!
     public var actionManager: RSActionManager!
@@ -439,8 +440,15 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         //set root view controller
         self.routingViewController = RSRoutingViewController(rootLayoutIdentifier: "ROOT", routeManager: routeManager, activityManager: self.activityManager, store: self.store)
+//        self.routingViewController?.feedbackEnabled = self.feedbackEnabled()
         self.window?.rootViewController = self.routingViewController
         self.window?.makeKeyAndVisible()
+        
+        if self.feedbackEnabled() {
+            
+            self.feedbackViewController = RSFeedbackViewController(window: self.window!)
+
+        }
         
         self.printRefCount()
         
@@ -465,6 +473,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     open func developmentInitialization() {
         
+    }
+    
+    open func feedbackEnabled() -> Bool {
+        return false
     }
     
     open func storeInitialization(store: Store<RSState>) {

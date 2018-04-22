@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
 
   s.subspec 'Core' do |core|
     core.source_files = 'Source/Core/Classes/**/*'
-    core.resources = 'Source/Core/Storyboards/**/*'
+    core.resources = 'Source/Core/Storyboards/**/*', 'source/Core/Assets/Media.xcassets'
     core.dependency 'ResearchKit', '~> 1.4'
     core.dependency 'ReSwift', '~> 3.0'
     core.dependency 'ResearchSuiteTaskBuilder', '~> 0.8'
