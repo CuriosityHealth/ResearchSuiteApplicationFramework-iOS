@@ -40,6 +40,7 @@ Pod::Spec.new do |s|
     core.dependency 'ResearchSuiteResultsProcessor', '~> 0.8'
     core.dependency 'ResearchSuiteExtensions', '~> 0.12'
     core.dependency 'Gloss', '~> 2'
+    core.dependency 'SimplePDF', '~> 3'
   end
 
   s.subspec 'Development' do |dev|

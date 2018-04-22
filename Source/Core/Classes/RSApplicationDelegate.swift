@@ -441,14 +441,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         //set root view controller
         self.routingViewController = RSRoutingViewController(rootLayoutIdentifier: "ROOT", routeManager: routeManager, activityManager: self.activityManager, store: self.store)
 //        self.routingViewController?.feedbackEnabled = self.feedbackEnabled()
-        self.window?.rootViewController = self.routingViewController
-        self.window?.makeKeyAndVisible()
+        self.window!.rootViewController = self.routingViewController
+        self.window!.makeKeyAndVisible()
         
-        if self.feedbackEnabled() {
-            
-            self.feedbackViewController = RSFeedbackViewController(window: self.window!)
-
-        }
+//        if self.feedbackEnabled() {
+//            
+//            self.feedbackViewController = RSFeedbackViewController(window: self.window!)
+//
+//        }
         
         self.printRefCount()
         
@@ -546,7 +546,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+        let window: UIWindow = self.window!
+        let rootVC: RSRootViewController = window.rootViewController as! RSRootViewController
         rootVC.lockScreen()
         return true
     }
