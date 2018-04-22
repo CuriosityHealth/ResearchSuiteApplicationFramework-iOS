@@ -194,8 +194,9 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
         let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {
             (action : UIAlertAction!) -> Void in })
         
-        alertController.addAction(saveAction)
+        
         alertController.addAction(cancelAction)
+        alertController.addAction(saveAction)
 
         if let routingViewController = self.window.rootViewController as? RSRoutingViewController {
             routingViewController.topViewController.present(alertController, animated: true, completion: nil)
@@ -203,114 +204,116 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
 
     }
     
-//    func presentSubmitFeedbackWindow() {
-//
-//        let alertController = UIAlertController(title: "Email Feedback", message: "Would you like to email your feedback?", preferredStyle: .alert)
-//        let emailAction = UIAlertAction(title: "Email", style: .default, handler: { alert -> Void in
-//
-//            do {
-//
-//                //generate pdf data
-//                guard let pdfData = try self.generatePDF() else {
-//                    return
-//                }
-//
-//                //generate email
-//                if MFMailComposeViewController.canSendMail() {
-//                    let composeVC = MFMailComposeViewController()
-//                    composeVC.mailComposeDelegate = self
-//
-//                    // Configure the fields of the interface.
-//                    //                composeVC.setToRecipients(emailStep.recipientAddreses)
-//                    let subject = "App Feedback"
-//                    composeVC.setSubject(subject)
-//                    composeVC.addAttachmentData(pdfData, mimeType: "application/pdf", fileName: "feedback-\(UUID()).pdf")
-//
-//                    // Present the view controller modally.
-//                    if let routingViewController = self.window.rootViewController as? RSRoutingViewController {
-//                        routingViewController.topViewController.present(composeVC, animated: true, completion: nil)
-//                    }
-//
-//                }
-//                //ask if they want to clear the queue
-//
-//
-//            }
-//            catch let error {
-//                debugPrint(error)
-//            }
-//
-//        })
-//
-//
-//        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {
-//            (action : UIAlertAction!) -> Void in })
-//
-//        alertController.addAction(emailAction)
-//        alertController.addAction(cancelAction)
-//
-//        if let routingViewController = self.window.rootViewController as? RSRoutingViewController {
-//            routingViewController.topViewController.present(alertController, animated: true, completion: nil)
-//        }
-//    }
-//
-//    open func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-//
-//        let alertController = UIAlertController(title: "Clear Feedback?", message: "Would you like to delete all your feedback?", preferredStyle: .alert)
-//        let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
-//
-//            do {
-//                try self.feedbackQueue.clear()
-//            }
-//            catch let error {
-//                debugPrint(error)
-//            }
-//
-//        })
-//
-//        let noAction = UIAlertAction(title: "No", style: .default, handler: {
-//            (action : UIAlertAction!) -> Void in })
-//
-//        alertController.addAction(yesAction)
-//        alertController.addAction(noAction)
-//
-//        if let routingViewController = self.window.rootViewController as? RSRoutingViewController {
-//            routingViewController.topViewController.present(alertController, animated: true, completion: nil)
-//        }
-//
-//    }
-//
-//    open func generatePDF() throws -> Data? {
-//
-//        let letterSize = CGSize(width: 612, height: 792)
-//        let pdf = SimplePDF(pageSize: letterSize)
-//
-//        let feedbackItems: [RSFeedbackItem] = try self.feedbackQueue.getGlossyElements().map { $0.element }
-//
-//        if feedbackItems.count > 0 {
-//
-//            pdf.addText("Feedback")
-//
-//            feedbackItems.forEach { feedbackItem in
-//
-//                pdf.beginNewPage()
-//                pdf.addText(feedbackItem.feedback)
-//
-//                if let base64String = feedbackItem.screenshotBase64,
-//                    let data = Data(base64Encoded: base64String),
-//                    let image = UIImage(data: data) {
-//                    pdf.addImage(image)
-//                }
-//            }
-//
-//            return pdf.generatePDFdata()
-//
-//        }
-//        else {
-//            return nil
-//        }
-//
-//    }
+    func presentSubmitFeedbackWindow() {
+
+        let alertController = UIAlertController(title: "Email Feedback", message: "Would you like to email your feedback?", preferredStyle: .alert)
+        let emailAction = UIAlertAction(title: "Email", style: .default, handler: { alert -> Void in
+
+            do {
+
+                //generate pdf data
+                guard let pdfData = try self.generatePDF() else {
+                    return
+                }
+
+                //generate email
+                if MFMailComposeViewController.canSendMail() {
+                    let composeVC = MFMailComposeViewController()
+                    composeVC.mailComposeDelegate = self
+
+                    // Configure the fields of the interface.
+                    //                composeVC.setToRecipients(emailStep.recipientAddreses)
+                    let subject = "App Feedback"
+                    composeVC.setSubject(subject)
+                    composeVC.addAttachmentData(pdfData, mimeType: "application/pdf", fileName: "feedback-\(UUID()).pdf")
+
+                    // Present the view controller modally.
+                    if let routingViewController = self.window.rootViewController as? RSRoutingViewController {
+                        routingViewController.topViewController.present(composeVC, animated: true, completion: nil)
+                    }
+
+                }
+                //ask if they want to clear the queue
+
+
+            }
+            catch let error {
+                debugPrint(error)
+            }
+
+        })
+
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: {
+            (action : UIAlertAction!) -> Void in })
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(emailAction)
+
+        if let routingViewController = self.window.rootViewController as? RSRoutingViewController {
+            routingViewController.topViewController.present(alertController, animated: true, completion: nil)
+        }
+    }
+
+    open func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+
+        let alertController = UIAlertController(title: "Clear Feedback?", message: "Would you like to delete all your feedback?", preferredStyle: .alert)
+        let yesAction = UIAlertAction(title: "Yes", style: .destructive, handler: { alert -> Void in
+
+            do {
+                try self.feedbackQueue.clear()
+            }
+            catch let error {
+                debugPrint(error)
+            }
+
+        })
+
+        let noAction = UIAlertAction(title: "No", style: .default, handler: {
+            (action : UIAlertAction!) -> Void in })
+
+        alertController.addAction(noAction)
+        alertController.addAction(yesAction)
+
+        controller.dismiss(animated: true) {
+            if let routingViewController = self.window.rootViewController as? RSRoutingViewController {
+                routingViewController.topViewController.present(alertController, animated: true, completion: nil)
+            }
+        }
+
+    }
+
+    open func generatePDF() throws -> Data? {
+
+        let letterSize = CGSize(width: 612, height: 792)
+        let pdf = SimplePDF(pageSize: letterSize)
+
+        let feedbackItems: [RSFeedbackItem] = try self.feedbackQueue.getGlossyElements().map { $0.element }
+
+        if feedbackItems.count > 0 {
+
+            pdf.addText("Feedback")
+
+            feedbackItems.forEach { feedbackItem in
+
+                pdf.beginNewPage()
+                pdf.addText(feedbackItem.feedback)
+
+                if let base64String = feedbackItem.screenshotBase64,
+                    let data = Data(base64Encoded: base64String),
+                    let image = UIImage(data: data) {
+                    pdf.addImage(image)
+                }
+            }
+
+            return pdf.generatePDFdata()
+
+        }
+        else {
+            return nil
+        }
+
+    }
     
     open func flushQueue() {
         do {
@@ -357,7 +360,7 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
         debugPrint(sender)
         if sender.state == .ended {
             
-//            self.presentSubmitFeedbackWindow()
+            self.presentSubmitFeedbackWindow()
             
         }
     }

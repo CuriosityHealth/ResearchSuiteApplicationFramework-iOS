@@ -440,15 +440,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         //set root view controller
         self.routingViewController = RSRoutingViewController(rootLayoutIdentifier: "ROOT", routeManager: routeManager, activityManager: self.activityManager, store: self.store)
-//        self.routingViewController?.feedbackEnabled = self.feedbackEnabled()
         self.window!.rootViewController = self.routingViewController
         self.window!.makeKeyAndVisible()
         
-//        if self.feedbackEnabled() {
-//            
-//            self.feedbackViewController = RSFeedbackViewController(window: self.window!)
-//
-//        }
+        if self.feedbackEnabled() {
+            
+            self.feedbackViewController = RSFeedbackViewController(window: self.window!)
+
+        }
         
         self.printRefCount()
         
