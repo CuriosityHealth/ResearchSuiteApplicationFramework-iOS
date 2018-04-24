@@ -13,7 +13,7 @@ import ResearchKit
 import Gloss
 
 public class RSInstructionActivityElementTransformer: RSActivityElementTransformer {
-    public static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, state: RSState, identifierPrefix: String) -> RSStepTreeNode? {
+    public static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, state: RSState, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
         
         guard let instructionDescriptor = RSTBInstructionStepDescriptor(json: jsonObject) else {
             return nil
@@ -23,6 +23,7 @@ public class RSInstructionActivityElementTransformer: RSActivityElementTransform
             identifier: instructionDescriptor.identifier,
             identifierPrefix: identifierPrefix,
             type: instructionDescriptor.type,
+            parent: parent,
             stepGenerator: { (taskBuilder, identifierPrefix) -> ORKStep? in
 //                return taskBuilder.steps(forElement: jsonObject as JsonElement)?.first
                 guard let descriptor = RSTBElementDescriptor(json: jsonObject) else {

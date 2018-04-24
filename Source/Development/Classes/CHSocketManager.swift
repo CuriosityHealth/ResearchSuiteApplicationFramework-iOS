@@ -235,6 +235,15 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
             
         }
         
+        else if type == "reloadActivities",
+            let state = self.store?.state {
+            
+            self.store?.dispatch(RSActionCreators.forceDismissActivity(flushActivityQueue: true))
+            RSApplicationDelegate.appDelegate.loadMeasures()
+            RSApplicationDelegate.appDelegate.loadActivities()
+            
+        }
+        
         //        else if  let message = LoadActivityMessage(json: statusJson) {
         //
         //            print("decoding worked!! \n\(message)")

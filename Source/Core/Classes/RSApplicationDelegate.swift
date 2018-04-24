@@ -111,12 +111,15 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTextStepResult.self,
             RSSingleChoiceStepResult.self,
             RSEnhancedMultipleChoiceValuesResultTransform.self,
+            RSJSONCollectionResultTransformer.self,
+            RSEnhancedMultipleChoiceResultTransform.self,
             RSScaleStepResult.self
         ]
     }
     
     open var stepTreeNodeGenerators: [RSStepTreeNodeGenerator.Type] {
         return [
+            RSStepTreeTemplatedNodeGenerator.self,
             RSStepTreeElementListGenerator.self,
             RSStepTreeElementFileGenerator.self
         ]
@@ -466,8 +469,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         let registerFunctionAction = RSActionCreators.registerFunction(identifier: "now") { state in
             return Date() as NSDate
         }
-        
+
         self.store.dispatch(registerFunctionAction)
+        
+        self.store.dispatch(RSActionCreators.registerFunction(identifier: "config") { state in
+            return self.chConfig?.rawValue as NSString?
+        })
         
         self.openURLManager = RSOpenURLManager(openURLDelegates: self.openURLDelegates)
         
@@ -568,158 +575,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         rootVC.lockScreen()
         return true
     }
-    
-    // ------------------------------------------------
-    // MARK: Passcode Display Handling
-    // ------------------------------------------------
-    
-//    private weak var passcodeViewController: UIViewController?
-    
-    /**
-     Should the passcode be displayed. By default, if there isn't a catasrophic error,
-     the user is registered and there is a passcode in the keychain, then show it.
-     */
-//    open func shouldShowPasscode() -> Bool {
-//        return (self.passcodeViewController == nil) &&
-//            ORKPasscodeViewController.isPasscodeStoredInKeychain()
-//    }
-    
-//    open func isPasscodePresented() -> Bool {
-//        return self.passcodeViewController != nil
-//    }
-//
-//    private func instantiateViewControllerForPasscode() -> UIViewController? {
-//        return ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
-//    }
-//
-//    /**
-//     Convenience method for presenting a modal view controller.
-//     */
-//    open func presentViewController(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)?) {
-//        self.topViewController()?.present(viewController, animated: animated, completion: completion)
-//    }
-//
-//    open func topViewController() -> UIViewController? {
-//        guard let rootVC = self.window?.rootViewController else {
-//            return nil
-//        }
-//        var topViewController: UIViewController = rootVC
-//        while (topViewController.presentedViewController != nil) {
-//            topViewController = topViewController.presentedViewController!
-//        }
-//        return topViewController
-//    }
-//
-//    open func transition(toRootViewController: UIViewController, animated: Bool) {
-//        guard let window = self.window else { return }
-//        if (animated) {
-//            let snapshot:UIView = (window.snapshotView(afterScreenUpdates: true))!
-//            toRootViewController.view.addSubview(snapshot);
-//
-//            window.rootViewController = toRootViewController;
-//
-//            UIView.animate(withDuration: 0.3, animations: {() in
-//                snapshot.layer.opacity = 0;
-//            }, completion: {
-//                (value: Bool) in
-//                snapshot.removeFromSuperview()
-//                window.makeKeyAndVisible()
-//            })
-//        }
-//        else {
-//            window.rootViewController = toRootViewController
-//            window.makeKeyAndVisible()
-//        }
-//    }
-//
-//
-//    public func lockScreen() {
-//
-////        let state: RSState = self.store.state
-////        guard RSStateSelectors.shouldShowPasscode(state) else {
-////            return
-////        }
-////
-////
-////
-////        let vc = ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
-////
-////        vc.modalPresentationStyle = .fullScreen
-////        vc.modalTransitionStyle = .coverVertical
-////
-////        let uuid = UUID()
-////        self.store.dispatch(PresentPasscodeRequest(uuid: uuid, passcodeViewController: vc))
-////
-////        self.window?.makeKeyAndVisible()
-////
-////        presentViewController(vc, animated: false, completion: {
-////            self.store.dispatch(PresentPasscodeSuccess(uuid: uuid, passcodeViewController: vc))
-////        })
-//    }
-//
-//    private func dismissPasscodeViewController(_ animated: Bool) {
-//
-//        let state: RSState = self.store.state
-//        guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
-//            return
-//        }
-//
-//        let uuid = UUID()
-//        self.store.dispatch(DismissPasscodeRequest(uuid: uuid, passcodeViewController: passcodeViewController))
-//        passcodeViewController.presentingViewController?.dismiss(animated: animated, completion: {
-//            self.store.dispatch(DismissPasscodeSuccess(uuid: uuid, passcodeViewController: passcodeViewController))
-//        })
-//    }
-//
-//    private func resetPasscode() {
-//
-//        let state: RSState = self.store.state
-//        guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
-//            return
-//        }
-//
-//        self.signOut{ (signedOut, error) in
-//            passcodeViewController.presentingViewController?.dismiss(animated: false, completion: nil)
-//            // Dismiss the view controller unanimated
-////            dismissPasscodeViewController(false)
-//        }
-//    }
-//
-//    // MARK: ORKPasscodeDelegate
-//
-//    open func passcodeViewControllerDidFinish(withSuccess viewController: UIViewController) {
-//        dismissPasscodeViewController(true)
-//    }
-//
-//    open func passcodeViewControllerDidFailAuthentication(_ viewController: UIViewController) {
-//        // Do nothing in default implementation
-//    }
-//
-//    open func passcodeViewControllerForgotPasscodeTapped(_ viewController: UIViewController) {
-//
-//        let title = "Reset Passcode"
-//        let message = "In order to reset your passcode, you'll need to log out of the app completely and log back in using your email and password."
-//        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//
-//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-//        alert.addAction(cancelAction)
-//
-//        let logoutAction = UIAlertAction(title: "Log Out", style: .destructive, handler: { _ in
-//            self.resetPasscode()
-//        })
-//        alert.addAction(logoutAction)
-//
-//        viewController.present(alert, animated: true, completion: nil)
-//    }
-//
-//    open func setContentHidden(vc: UIViewController, contentHidden: Bool) {
-//        if let vc = vc.presentedViewController {
-//            vc.view.isHidden = contentHidden
-//        }
-//
-//        vc.view.isHidden = contentHidden
-//    }
-    
+
     open func applicationWillResignActive(_ application: UIApplication) {
         
         let state: RSState = self.store.state

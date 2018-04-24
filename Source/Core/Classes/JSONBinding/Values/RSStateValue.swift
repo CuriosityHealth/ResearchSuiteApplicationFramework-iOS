@@ -62,6 +62,13 @@ public class RSStateValue: Glossy {
             
             return RSValueConvertible(value: value as NSArray)
             
+        case "JSONArray":
+            guard let value = value as? [JSON] else {
+                return nil
+            }
+            
+            return RSValueConvertible(value: value as NSArray)
+            
         case "GeofenceRegion":
             return nil
             
@@ -135,6 +142,9 @@ public class RSStateValue: Glossy {
             
         case "StringArray":
             return (object as? [String]) != nil
+            
+        case "JSONArray":
+            return (object as? [JSON]) != nil
             
         case "IntArray":
             return (object as? [Int]) != nil

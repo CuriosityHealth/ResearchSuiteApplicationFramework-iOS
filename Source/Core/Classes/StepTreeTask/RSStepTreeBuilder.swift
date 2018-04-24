@@ -45,7 +45,7 @@ open class RSStepTreeBuilder: NSObject {
     
     public func stepTree(json: JSON, identifierPrefix: String, state: RSState) -> RSStepTree? {
         
-        guard let rootNode = self.node(json: json, identifierPrefix: "") else {
+        guard let rootNode = self.node(json: json, identifierPrefix: "", parent: nil) else {
             return nil
         }
         
@@ -62,10 +62,10 @@ open class RSStepTreeBuilder: NSObject {
         
     }
     
-    public func node(json: JSON, identifierPrefix: String) -> RSStepTreeNode? {
+    public func node(json: JSON, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
         
         //first try node generator service
-        if let node = self.nodeGeneratorService.generateNode(jsonObject: json, stepTreeBuilder: self, identifierPrefix: identifierPrefix) {
+        if let node = self.nodeGeneratorService.generateNode(jsonObject: json, stepTreeBuilder: self, identifierPrefix: identifierPrefix, parent: parent) {
             return node
         }
         
@@ -83,6 +83,7 @@ open class RSStepTreeBuilder: NSObject {
                 identifier: descriptor.identifier,
                 identifierPrefix: identifierPrefix,
                 type: descriptor.type,
+                parent: parent,
                 stepGenerator: { (rstb, identifierPrefix) -> ORKStep? in
                     return rstb.createSteps(forType: descriptor.type, withJsonObject: json as JsonObject, identifierPrefix: identifierPrefix)?.first
             })

@@ -8,17 +8,20 @@
 //
 
 import UIKit
+import ResearchKit
 
 open class RSStepTreeNode: NSObject {
     
     let identifier: String
     let identifierPrefix: String
     let type: String
+    let parent: RSStepTreeNode?
     
-    init(identifier: String, identifierPrefix: String, type: String) {
+    init(identifier: String, identifierPrefix: String, type: String, parent: RSStepTreeNode?) {
         self.identifier = identifier
         self.identifierPrefix = identifierPrefix
         self.type = type
+        self.parent = parent
         super.init()
     }
     
@@ -32,9 +35,13 @@ open class RSStepTreeNode: NSObject {
         return "\(self.identifierPrefix).\(self.identifier)"
     }
     
-    open func leaves() -> [RSStepTreeLeafNode] {
-        return []
+    open func firstLeaf(with result: ORKTaskResult, state: RSState) -> RSStepTreeLeafNode? {
+        return nil
     }
+    
+//    open func leaves() -> [RSStepTreeLeafNode] {
+//        return []
+//    }
     
     open func child(with identifier: String) -> RSStepTreeNode? {
         return nil

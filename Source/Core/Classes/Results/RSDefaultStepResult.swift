@@ -12,7 +12,7 @@ import ResearchKit
 import ResearchSuiteResultsProcessor
 import Gloss
 
-@objc open class RSDefaultStepResult: RSRPIntermediateResult, RSRPFrontEndTransformer {
+@objc open class RSDefaultStepResult: RSRPIntermediateResult, RSRPFrontEndTransformer, JSONEncodable {
     
     open class func type() -> String {
         return "default"
@@ -69,6 +69,10 @@ import Gloss
             taskIdentifier: taskIdentifier,
             taskRunUUID: taskRunUUID
         )
+    }
+    
+    public func toJSON() -> JSON? {
+        return nil
     }
     
 }

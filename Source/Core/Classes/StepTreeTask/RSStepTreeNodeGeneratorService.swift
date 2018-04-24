@@ -26,9 +26,21 @@ open class RSStepTreeNodeGeneratorService: NSObject {
         super.init()
     }
     
-    func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String) -> RSStepTreeNode? {
+    func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
+        guard let type: String = "type" <~~ jsonObject else {
+            return nil
+        }
+        
         return self.nodeGenerators
-            .compactMap { $0.generateNode(jsonObject: jsonObject, stepTreeBuilder: stepTreeBuilder, identifierPrefix: identifierPrefix) }
+            .compactMap { generator in
+                if generator.supportsType(type: type) {
+                    
+                    return generator.generateNode(jsonObject: jsonObject, stepTreeBuilder: stepTreeBuilder, identifierPrefix: identifierPrefix, parent: parent)
+                }
+                else {
+                    return nil
+                }
+            }
             .first
     }
     

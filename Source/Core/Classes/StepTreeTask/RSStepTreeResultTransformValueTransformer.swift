@@ -38,6 +38,9 @@ open class RSStepTreeResultTransformValueTransformer: RSValueTransformer {
 //        debugPrint(stepResults)
         
 //        let fullyQualifiedChildIdentifier = child.fullyQualifiedIdentifier
+        
+        
+        
         //filter
         let filteredStepResults = stepResults
             .filter { stepResult in

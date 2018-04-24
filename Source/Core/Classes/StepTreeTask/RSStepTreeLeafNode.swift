@@ -19,19 +19,24 @@ open class RSStepTreeLeafNode: RSStepTreeNode {
         identifier: String,
         identifierPrefix: String,
         type: String,
+        parent: RSStepTreeNode?,
         stepGenerator: @escaping (RSTBTaskBuilder, String) -> ORKStep?
         ) {
         self.stepGenerator = stepGenerator
-        super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type)
+        super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type, parent: parent)
     }
     
     open func step(taskBuilder: RSTBTaskBuilder) -> ORKStep? {
         return self.stepGenerator(taskBuilder, self.identifierPrefix)
     }
     
-    open override func leaves() -> [RSStepTreeLeafNode] {
-        return [self]
+    open override func firstLeaf(with result: ORKTaskResult, state: RSState) -> RSStepTreeLeafNode? {
+        return self
     }
+    
+//    open override func leaves() -> [RSStepTreeLeafNode] {
+//        return [self]
+//    }
     
 //    open override var description: String {
 //        

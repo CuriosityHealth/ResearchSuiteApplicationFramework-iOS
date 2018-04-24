@@ -45,24 +45,28 @@ open class RSStepTreeElementFileGenerator: RSStepTreeNodeGenerator {
         }
     }
     
-    open static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String) -> RSStepTreeNode? {
+    open static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
         guard let descriptor = RSStepTreeElementFileDescriptor(json: jsonObject),
             let jsonElement = RSStepTreeElementFileGenerator.loadJSONElement(descriptor: descriptor, stepTreeBuilder: stepTreeBuilder) else {
             return nil
         }
         
-        //recurse
-        let child = stepTreeBuilder.node(json: jsonElement, identifierPrefix: "\(identifierPrefix).\(descriptor.identifier)")
-        let children: [RSStepTreeNode] = (child != nil) ? [child!] : []
-        
         let node = RSStepTreeBranchNode(
             identifier: descriptor.identifier,
             identifierPrefix: identifierPrefix,
             type: descriptor.type,
-            children: children,
+            children: [],
+            parent: parent,
             navigationRules: nil,
             resultTransforms: nil
         )
+        
+        //recurse
+        guard let child = stepTreeBuilder.node(json: jsonElement, identifierPrefix: "\(identifierPrefix).\(descriptor.identifier)", parent: node) else {
+            return nil
+        }
+        
+        node.setChildren(children: [child])
         
         return node
     }

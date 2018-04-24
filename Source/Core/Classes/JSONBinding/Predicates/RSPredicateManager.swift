@@ -12,13 +12,11 @@ import Gloss
 
 open class RSPredicateManager: NSObject {
     
-    public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
-        //construct substitution dictionary
-        
+    public static func generatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> NSPredicate? {
         let nsPredicate = NSPredicate.init(format: predicate.format)
         
         guard let substitutionsJSON = predicate.substitutions else {
-            return nsPredicate.evaluate(with: nil)
+            return nsPredicate
         }
         
         var substitutions: [String: Any] = [:]
@@ -43,10 +41,39 @@ open class RSPredicateManager: NSObject {
         })
         
         guard substitutions.count == substitutionsJSON.count else {
-            return false
+            return nil
         }
         
-        return nsPredicate.evaluate(with: nil, substitutionVariables: substitutions)
+        return nsPredicate.withSubstitutionVariables(substitutions)
+    }
+    
+    public static func apply(predicate: RSPredicate, to array: [AnyObject], state: RSState, context: [String: AnyObject]) -> [AnyObject] {
+        
+        guard let predicate = self.generatePredicate(predicate: predicate, state: state, context: context) else {
+            return []
+        }
+        
+        
+        
+        debugPrint(array)
+        
+        array.forEach { (element) in
+            debugPrint(element)
+        }
+        
+        
+        let arrayToApplyTo = array as NSArray
+        return arrayToApplyTo.filtered(using: predicate) as [AnyObject]
+    }
+    
+    public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
+        //construct substitution dictionary
+        
+        guard let predicate = self.generatePredicate(predicate: predicate, state: state, context: context) else {
+                return false
+        }
+        
+        return predicate.evaluate(with: nil)
         
     }
 

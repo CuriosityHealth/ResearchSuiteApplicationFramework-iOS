@@ -12,26 +12,33 @@ import Gloss
 
 open class RSStepTreeElementListGenerator: RSStepTreeNodeGenerator {
 
-    open static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String) -> RSStepTreeNode? {
+    open static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
 //        debugPrint(jsonObject)
         guard let descriptor = RSElementListNodeDescriptor(json: jsonObject) else {
             return nil
-        }
-        
-        //recurse
-        let children: [RSStepTreeNode] = descriptor.elementList.compactMap { json in
-            let child = stepTreeBuilder.node(json: json, identifierPrefix: "\(identifierPrefix).\(descriptor.identifier)")
-            return child
         }
         
         let node = RSStepTreeBranchNode(
             identifier: descriptor.identifier,
             identifierPrefix: identifierPrefix,
             type: descriptor.type,
-            children: children,
+            children: [],
+            parent: parent,
             navigationRules: descriptor.navigationRules,
             resultTransforms: descriptor.resultTransforms
         )
+        
+        //recurse
+        let children: [RSStepTreeNode] = descriptor.elementList.compactMap { json in
+            let child = stepTreeBuilder.node(json: json, identifierPrefix: "\(identifierPrefix).\(descriptor.identifier)", parent: node)
+            return child
+        }
+        
+        if children.count == 0 {
+            return nil
+        }
+        
+        node.setChildren(children: children)
         
         return node
     }

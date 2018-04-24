@@ -14,7 +14,7 @@ import Gloss
 
 public protocol RSStepTreeNodeGenerator {
     
-    static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String) -> RSStepTreeNode?
+    static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode?
     static func supportsType(type: String) -> Bool
     
 }

@@ -24,23 +24,35 @@ public class RSMeasureActivityElementTransformer: RSActivityElementTransformer {
         return taskBuilder.steps(forElement: measure.taskElement as JsonElement)
     }
     
-    public static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, state: RSState, identifierPrefix: String) -> RSStepTreeNode? {
+    public static func generateNode(
+        jsonObject: JSON,
+        stepTreeBuilder: RSStepTreeBuilder,
+        state: RSState,
+        identifierPrefix: String,
+        parent: RSStepTreeNode?
+        ) -> RSStepTreeNode? {
         guard let measureID: String = "measureID" <~~ jsonObject,
             let measure = RSStateSelectors.measure(state, for: measureID) else {
                 return nil
         }
         
-        let child = stepTreeBuilder.node(json: measure.taskElement, identifierPrefix: "\(identifierPrefix).\(measure.identifier)")
-        let children = (child != nil) ? [child!] : []
-        
-        return RSStepTreeBranchNode(
+        let branchNode = RSStepTreeBranchNode(
             identifier: measure.identifier,
             identifierPrefix: identifierPrefix,
             type: "measure",
-            children: children,
+            children: [],
+            parent: parent,
             navigationRules: nil,
             resultTransforms: nil
         )
+        
+        guard let child = stepTreeBuilder.node(json: measure.taskElement, identifierPrefix: "\(identifierPrefix).\(measure.identifier)", parent: branchNode) else {
+            return nil
+        }
+        
+        branchNode.setChildren(children: [child])
+        
+        return branchNode
     }
     
     public static func supportsType(type: String) -> Bool {

@@ -70,7 +70,7 @@ open class RSSelectorResult: RSRPIntermediateResult, RSRPFrontEndTransformer {
 
 extension RSSelectorResult {
     
-    open func recursivelyExtractValue(path: [AnyObject], collection: AnyObject) -> AnyObject? {
+    open static func recursivelyExtractValue(path: [AnyObject], collection: AnyObject) -> AnyObject? {
         
         guard let head = path.first else {
             return nil
@@ -124,7 +124,7 @@ extension RSSelectorResult {
             return dict[key] as AnyObject
         }
         else if let path = self.parameters["path"] as? [AnyObject] {
-            return self.recursivelyExtractValue(path: path, collection: self.result)
+            return RSSelectorResult.recursivelyExtractValue(path: path, collection: self.result)
         }
         
         else {

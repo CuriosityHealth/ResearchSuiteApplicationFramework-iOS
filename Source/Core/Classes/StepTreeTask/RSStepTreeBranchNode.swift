@@ -12,30 +12,21 @@ import ResearchKit
 
 open class RSStepTreeBranchNode: RSStepTreeNode {
     
-    let children: [RSStepTreeNode]
-    let childMap: [String: RSStepTreeNode]
-    let navigationRules: [String: RSStepTreeNavigationRule]
-    let resultTransforms: [String: RSResultTransform]
+    private var children: [RSStepTreeNode] = []
+    private var childMap: [String: RSStepTreeNode] = [:]
+    
+    private let navigationRules: [String: RSStepTreeNavigationRule]
+    open let resultTransforms: [String: RSResultTransform]
     
     public init(
         identifier: String,
         identifierPrefix: String,
         type: String,
         children: [RSStepTreeNode],
+        parent: RSStepTreeNode?,
         navigationRules: [RSStepTreeNavigationRule]?,
         resultTransforms: [RSResultTransform]?
         ) {
-        assert(children.count > 0, "branch nodes must have children")
-        self.children = children
-        var childMap: [String: RSStepTreeNode] = [:]
-        self.children.forEach { (child) in
-            
-            assert(childMap[child.identifier] == nil, "children cannot have duplicate names: \(child.identifier)")
-            childMap[child.identifier] = child
-            
-        }
-        
-        self.childMap = childMap
         var navRulesMap: [String: RSStepTreeNavigationRule] = [:]
         navigationRules?.forEach { (rule) in
             assert(navRulesMap[rule.trigger] == nil, "rules cannot have duplicate triggers")
@@ -50,7 +41,22 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         })
         
         self.resultTransforms = resultTransformMap
-        super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type)
+        super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type, parent: parent)
+        
+        self.setChildren(children: children)
+    }
+    
+    public func setChildren(children: [RSStepTreeNode]) {
+        self.children = children
+        var childMap: [String: RSStepTreeNode] = [:]
+        self.children.forEach { (child) in
+            
+            assert(childMap[child.identifier] == nil, "children cannot have duplicate names: \(child.identifier)")
+            childMap[child.identifier] = child
+            
+        }
+        
+        self.childMap = childMap
     }
     
     open override var description: String {
@@ -61,9 +67,21 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         
     }
     
-    open override func leaves() -> [RSStepTreeLeafNode] {
-        return Array(self.children.map { $0.leaves() }.joined())
+    open override func firstLeaf(with result: ORKTaskResult, state: RSState) -> RSStepTreeLeafNode? {
+        
+        assert(children.count > 0, "branch nodes must have children")
+        
+        for child in self.children {
+            if let leaf = child.firstLeaf(with: result, state: state) {
+                return leaf
+            }
+        }
+        return nil
     }
+    
+//    open override func leaves() -> [RSStepTreeLeafNode] {
+//        return Array(self.children.map { $0.leaves() }.joined())
+//    }
     
     open override func child(with identifier: String) -> RSStepTreeNode? {
         let child = self.childMap[identifier]

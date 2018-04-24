@@ -17,12 +17,12 @@ open class RSStepTree: NSObject, ORKTask, RSTask {
     let root: RSStepTreeNode
     let taskBuilder: RSTBTaskBuilder
     let state: RSState
-    let leafIdentifiers: [String]
+//    let leafIdentifiers: [String]
     open let shouldHideCancelButton: Bool
     public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSTBTaskBuilder, state: RSState, shouldHideCancelButton: Bool = false) {
         self.identifier = identifier
         self.root = root
-        self.leafIdentifiers = self.root.leaves().map { $0.fullyQualifiedIdentifier }
+//        self.leafIdentifiers = self.root.leaves().map { $0.fullyQualifiedIdentifier }
         self.taskBuilder = taskBuilder
         self.state = state
         self.shouldHideCancelButton = shouldHideCancelButton
@@ -88,11 +88,13 @@ open class RSStepTree: NSObject, ORKTask, RSTask {
     
     open func progress(ofCurrentStep step: ORKStep, with result: ORKTaskResult) -> ORKTaskProgress {
         
-        guard let index = self.leafIdentifiers.index(of: step.identifier) else {
-            return ORKTaskProgressMake(0, 0)
-        }
+//        guard let index = self.leafIdentifiers.index(of: step.identifier) else {
+//            return ORKTaskProgressMake(0, 0)
+//        }
+//
+//        return ORKTaskProgressMake(UInt(index), UInt(self.leafIdentifiers.count))
         
-        return ORKTaskProgressMake(UInt(index), UInt(self.leafIdentifiers.count))
+        return ORKTaskProgressMake(0, 0)
     }
     
     open override var description: String {
@@ -141,37 +143,38 @@ open class RSStepTree: NSObject, ORKTask, RSTask {
     
     open func leafNode(after node: RSStepTreeNode?, with result: ORKTaskResult) -> RSStepTreeLeafNode? {
         
-        guard let node = node else {
-            return self.root.leaves().first
-        }
-        
-        //get parent
-        guard let parent = self.node(for: node.identifierPrefix) as? RSStepTreeBranchNode else {
-            return nil
-        }
-
-        
-        //ask for its next child based on result
-        //if the next child is a leaf, simply return it
-        //otherwise, get the first leaf of the branch node and return that
-        //COMMENTARY: we scope navigation rules to the same level,
-        //i.e., we don't want children to have knowledge of the result of other parts of the tree
-        //therefore, we should be able to select the first leaf below the branch
-        if let nextChild = parent.child(after: node, with: result, state: self.state) {
-            switch nextChild {
-            case let leaf as RSStepTreeLeafNode:
-                return leaf
-            case let branch as RSStepTreeBranchNode:
-                return branch.leaves().first
-            default:
+        if let node = node {
+            
+            //get parent
+            guard let parent = self.node(for: node.identifierPrefix) as? RSStepTreeBranchNode else {
                 return nil
             }
+            
+            //ask for its next child based on result
+            //if the next child is a leaf, simply return it
+            //otherwise, get the first leaf of the branch node and return that
+            //COMMENTARY: we scope navigation rules to the same level,
+            //i.e., we don't want children to have knowledge of the result of other parts of the tree
+            //therefore, we should be able to select the first leaf below the branch
+            if let nextChild = parent.child(after: node, with: result, state: self.state) {
+                switch nextChild {
+                case let leaf as RSStepTreeLeafNode:
+                    return leaf
+                case let branch as RSStepTreeBranchNode:
+                    return branch.firstLeaf(with: result, state: self.state)
+                default:
+                    return nil
+                }
+            }
+            else {
+                //if this parent doesn't have a next child, go up the tree
+                return self.leafNode(after: parent, with: result)
+            }
+            
         }
         else {
-            //if this parent doesn't have a next child, go up the tree
-            return self.leafNode(after: parent, with: result)
+            return self.root.firstLeaf(with: result, state: self.state)
         }
-    
         
     }
 

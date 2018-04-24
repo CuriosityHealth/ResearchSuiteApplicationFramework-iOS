@@ -38,27 +38,41 @@ open class RSActivityManager: NSObject {
     
     public func taskForActivity(activity: RSActivity, state: RSState) -> RSTask? {
         
+        let rootNode = RSStepTreeBranchNode(
+            identifier: activity.identifier,
+            identifierPrefix: "",
+            type: "activity",
+            children: [],
+            parent: nil,
+            navigationRules: nil,
+            resultTransforms: nil
+        )
+        
         let nodes = activity.elements.compactMap { (json) -> RSStepTreeNode? in
             return self.transformActivityElementIntoNode(
                 jsonObject: json,
                 stepTreeBuilder: self.stepTreeBuilder,
                 state: state,
-                identifierPrefix: activity.identifier
+                identifierPrefix: activity.identifier,
+                parent: rootNode
             )
         }
         
-        let rootNode = RSStepTreeBranchNode(
-            identifier: activity.identifier,
-            identifierPrefix: "",
-            type: "activity",
-            children: nodes,
-            navigationRules: nil,
-            resultTransforms: nil
-        )
+        rootNode.setChildren(children: nodes)
+        
+//        let rootNode = RSStepTreeBranchNode(
+//            identifier: activity.identifier,
+//            identifierPrefix: "",
+//            type: "activity",
+//            children: nodes,
+//            navigationRules: nil,
+//            resultTransforms: nil
+//        )
         
         let stepTree = RSStepTree(
             identifier: activity.identifier,
-            root: rootNode, taskBuilder: self.stepTreeBuilder.rstb,
+            root: rootNode,
+            taskBuilder: self.stepTreeBuilder.rstb,
             state: state,
             shouldHideCancelButton: activity.shouldHideCancelButton
         )
@@ -67,7 +81,7 @@ open class RSActivityManager: NSObject {
         
     }
 
-    private func transformActivityElementIntoNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, state: RSState, identifierPrefix: String) -> RSStepTreeNode? {
+    private func transformActivityElementIntoNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, state: RSState, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
         
         guard let type: String = "type" <~~ jsonObject else {
             return nil
@@ -84,7 +98,8 @@ open class RSActivityManager: NSObject {
                     jsonObject: jsonObject,
                     stepTreeBuilder: stepTreeBuilder,
                     state: state,
-                    identifierPrefix: identifierPrefix
+                    identifierPrefix: identifierPrefix,
+                    parent: parent
                 )
             }
         }

@@ -9,31 +9,34 @@
 
 import ResearchSuiteExtensions
 import ResearchSuiteResultsProcessor
+import Gloss
 
-extension RSEnahncedMultipleChoiceSelection {
-    func toDictionary() -> NSDictionary {
-        
-        if let auxResult = self.auxiliaryResult as? RSRPDefaultValueTransformer {
-            let dictionary = [
-                "value": self.value,
-                "auxValue": auxResult.defaultValue
-            ]
-            return dictionary as NSDictionary
-        }
-        else {
-            let dictionary = [
-                "value": self.value
-            ]
-            return dictionary as NSDictionary
-        }
-        
-    }
-}
+//extension RSEnahncedMultipleChoiceSelection: JSONEncodable {
+//    func toDictionary() -> NSDictionary {
+//
+//        if let auxResult = self.auxiliaryResult as? RSRPDefaultValueTransformer {
+//            let dictionary = [
+//                "value": self.value,
+//                "auxValue": auxResult.defaultValue
+//            ]
+//            return dictionary as NSDictionary
+//        }
+//        else {
+//            let dictionary = [
+//                "value": self.value
+//            ]
+//            return dictionary as NSDictionary
+//        }
+//
+//    }
+//
+//
+//}
 
 extension RSEnhancedMultipleChoiceResult: RSRPDefaultValueTransformer {
     public var defaultValue: AnyObject? {
         if let answers = self.choiceAnswers {
-            let dictAnswers = answers.map { $0.toDictionary() }
+            let dictAnswers = answers.compactMap { $0.toJSON() }
             return dictAnswers as NSArray
         }
         return nil

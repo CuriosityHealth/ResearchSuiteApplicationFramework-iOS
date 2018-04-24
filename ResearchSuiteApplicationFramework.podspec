@@ -41,6 +41,7 @@ Pod::Spec.new do |s|
     core.dependency 'ResearchSuiteExtensions', '~> 0.12'
     core.dependency 'Gloss', '~> 2'
     core.dependency 'SimplePDF', '~> 3'
+    core.dependency 'GRMustache.swift', '~> 2.1'
   end
 
   s.subspec 'Development' do |dev|
