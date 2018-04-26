@@ -56,7 +56,7 @@ public struct RSFeedbackItem: Glossy {
 open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelegate {
     
 
-    var feedbackButtonImageView: UIImageView!
+    var feedbackButtonImageView: UIView!
     var tapGesture: UITapGestureRecognizer!
 //    var feedbackInputView
     var inputView: RSFeedbackInputView?
@@ -140,15 +140,21 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
         
         super.init()
         
-        let bundle = Bundle(for: RSFeedbackViewController.self)
-        if let feedbackImage =  UIImage(named: "feedback", in: bundle, compatibleWith: nil),
-            MFMailComposeViewController.canSendMail() {
-            let feedbackButton = UIImageView(image: feedbackImage)
+//        let bundle = Bundle(for: RSFeedbackViewController.self)
+        
+        
+        
+        if MFMailComposeViewController.canSendMail() {
+            let buttonSize = CGSize(width: 60.0, height: 60.0)
+            let feedbackButton = UIView()
+            feedbackButton.backgroundColor = UIColor(red: 12.0/255.0, green: 76.0/255.0, blue: 194.0/255.0, alpha: 0.3)
+            feedbackButton.layer.cornerRadius = 5;
+            feedbackButton.layer.masksToBounds = true;
             
-            feedbackButton.contentMode = .scaleAspectFit
-            feedbackButton.sizeToFit()
-            feedbackButton.frame = CGRect(origin: CGPoint.zero, size: feedbackImage.size)
-            feedbackButton.center = self.defaultCenter(windowSize: window.frame.size, imageSize: feedbackImage.size)
+//            feedbackButton.contentMode = .scaleAspectFit
+//            feedbackButton.sizeToFit()
+            feedbackButton.frame = CGRect(origin: CGPoint.zero, size: buttonSize)
+            feedbackButton.center = self.defaultCenter(windowSize: window.frame.size, imageSize: buttonSize)
             debugPrint(feedbackButton)
 
             feedbackButton.isUserInteractionEnabled = true
