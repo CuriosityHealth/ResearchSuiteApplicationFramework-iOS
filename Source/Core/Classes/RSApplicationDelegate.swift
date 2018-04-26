@@ -91,7 +91,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBIntegerStepGenerator(),
             RSTBTimePickerStepGenerator(),
             RSTBDatePickerStepGenerator(),
-            RSTBScaleStepGenerator()
+            RSTBScaleStepGenerator(),
+            RSTBTextScaleStepGenerator(),
+            RSEnhancedTextScaleStepGenerator()
         ]
     }
     
