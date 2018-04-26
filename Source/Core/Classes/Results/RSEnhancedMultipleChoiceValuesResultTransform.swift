@@ -46,7 +46,7 @@ extension RSEnahncedMultipleChoiceSelection: Glossy {
     public func toJSON() -> JSON? {
         return jsonify([
             "value" ~~> self.value,
-            "auxValue" ~~> (self.auxiliaryResult as? RSRPDefaultValueTransformer)?.defaultValue
+            "auxValue" ~~> (self.auxiliaryResult as? RSRPDefaultValueTransformer)?.defaultSerializedValue
             ])
     }
     
