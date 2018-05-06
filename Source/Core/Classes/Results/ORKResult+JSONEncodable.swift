@@ -8,6 +8,7 @@
 import Foundation
 import ResearchKit
 import Gloss
+import ResearchSuiteExtensions
 
 class RSJSONHelpers {
     
