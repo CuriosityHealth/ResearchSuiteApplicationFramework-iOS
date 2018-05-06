@@ -67,6 +67,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     private var lastState: RSState?
     
+    open var cellControllerGenerators: [RSEnhancedMultipleChoiceCellControllerGenerator.Type] = [
+        RSEnhancedMultipleChoiceCellWithTextScaleAccessoryController.self,
+        RSEnhancedMultipleChoiceCellWithNumericScaleAccessoryController.self,
+        RSEnhancedMultipleChoiceCellWithTextFieldAccessoryController.self,
+        //THis is a catchall and MUST go last
+        RSEnhancedMultipleChoiceBaseCellController.self
+    ]
+    
     open var stepGeneratorServices: [RSTBStepGenerator] {
         return [
             RSTBInstructionStepGenerator(),
@@ -81,7 +89,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBPasscodeStepGenerator(),
             RSTBScaleStepGenerator(),
             RSTBLocationStepGenerator(),
-            RSTBImageCaptureStepGenerator()
+            RSTBImageCaptureStepGenerator(),
+            RSEnhancedSingleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
+            RSEnhancedMultipleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
         ]
     }
     
@@ -93,7 +103,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBDatePickerStepGenerator(),
             RSTBScaleStepGenerator(),
             RSTBTextScaleStepGenerator(),
-            RSEnhancedTextScaleStepGenerator()
+            RSEnhancedTextScaleStepGenerator(),
+            RSEnhancedScaleStepGenerator()
         ]
     }
     
