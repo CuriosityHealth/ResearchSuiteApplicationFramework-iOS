@@ -20,9 +20,9 @@ open class RSGeofenceRegionValueTransformer: RSValueTransformer {
     public static func generateValue(jsonObject: JSON, state: RSState, context: [String : AnyObject]) -> ValueConvertible? {
         
         guard let radiusJSON: JSON = "radius" <~~ jsonObject,
-            let radius = RSValueManager.processValue(jsonObject: radiusJSON, state: state, context: [:])?.evaluate() as? Double,
+            let radius = RSValueManager.processValue(jsonObject: radiusJSON, state: state, context: context)?.evaluate() as? Double,
             let locationJSON: JSON = "location" <~~ jsonObject,
-            let location = RSValueManager.processValue(jsonObject: locationJSON, state: state, context: [:])?.evaluate() as? CLLocation,
+            let location = RSValueManager.processValue(jsonObject: locationJSON, state: state, context: context)?.evaluate() as? CLLocation,
             let identifier: String = "identifier" <~~ jsonObject else {
                 return nil
         }

@@ -51,7 +51,7 @@ open class RSValueManager: NSObject {
     
     public static func valueChanged(jsonObject: JSON, state: RSState, lastState: RSState, context: [String: AnyObject]) -> Bool {
         guard let currentValueConvertible = RSValueManager.processValue(jsonObject: jsonObject, state: state, context: context),
-            let lastValueConvertible = RSValueManager.processValue(jsonObject: jsonObject, state: lastState, context: [:]) else {
+            let lastValueConvertible = RSValueManager.processValue(jsonObject: jsonObject, state: lastState, context: context) else {
                 return false
         }
         

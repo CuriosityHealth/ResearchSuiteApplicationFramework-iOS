@@ -14,7 +14,7 @@ public struct RSMatch: Equatable {
         return lhs.path == rhs.path
     }
     
-    let params: [String: AnyObject]
+    let params: [String: Any]
     let isExact: Bool
     //this should be the path UP TO THIS POINT!
     //e.g., if we match against /settings, but the entire path is /home/settings/extra

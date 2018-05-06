@@ -8,6 +8,7 @@
 //
 
 import UIKit
+import Gloss
 
 public protocol RSSingleLayoutViewController: class, RSLayoutViewController {
     
@@ -135,5 +136,18 @@ extension RSSingleLayoutViewController {
 
         }
 
+    }
+    
+    public func generateString(key: String, element: JSON, state: RSState) -> String? {
+        
+        if let string: String = key <~~ element {
+            return string
+        }
+        else if let json: JSON = key <~~ element,
+            let valueConvertible = RSValueManager.processValue(jsonObject: json, state: state, context: ["match":self.matchedRoute.match as AnyObject]) {
+            return valueConvertible.evaluate() as? String
+        }
+        
+        return nil
     }
 }

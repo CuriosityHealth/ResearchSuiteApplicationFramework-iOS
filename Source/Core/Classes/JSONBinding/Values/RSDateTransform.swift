@@ -24,7 +24,7 @@ open class RSDateTransform: RSValueTransformer {
         
         let date: Date = {
             guard let afterDateJSON: JSON = "date" <~~ jsonObject,
-                let afterDate = RSValueManager.processValue(jsonObject: afterDateJSON, state: state, context: [:])?.evaluate() as? NSDate else {
+                let afterDate = RSValueManager.processValue(jsonObject: afterDateJSON, state: state, context: context)?.evaluate() as? NSDate else {
                     return nil
             }
             
@@ -36,7 +36,7 @@ open class RSDateTransform: RSValueTransformer {
                 return nil
             }
             
-            return RSValueManager.processValue(jsonObject: timeIntervalJSON, state: state, context: [:])?.evaluate() as? TimeInterval
+            return RSValueManager.processValue(jsonObject: timeIntervalJSON, state: state, context: context)?.evaluate() as? TimeInterval
         }() ?? 0.0
         
         if subtracting {

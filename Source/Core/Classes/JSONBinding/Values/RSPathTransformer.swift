@@ -34,10 +34,22 @@ open class RSPathTransformer: RSValueTransformer {
             
         }
         else if path_type == "append",
-            let layoutVC = context["layoutViewController"] as? RSLayoutViewController,
-            let append: String = "path" <~~ jsonObject {
-            let path = layoutVC.matchedRoute.match.path + append
-            return RSValueConvertible(value: path as NSString)
+            let layoutVC = context["layoutViewController"] as? RSLayoutViewController {
+            
+            if let append: String = "path" <~~ jsonObject {
+                let path = layoutVC.matchedRoute.match.path + append
+                return RSValueConvertible(value: path as NSString)
+            }
+            else if let appendJSON: JSON = "path" <~~ jsonObject,
+                let append: String =  RSValueManager.processValue(jsonObject: appendJSON, state: state, context: context)?.evaluate() as? String {
+                let path = layoutVC.matchedRoute.match.path + append
+                return RSValueConvertible(value: path as NSString)
+            }
+            else {
+                return nil
+            }
+            
+            
         }
         
         else {

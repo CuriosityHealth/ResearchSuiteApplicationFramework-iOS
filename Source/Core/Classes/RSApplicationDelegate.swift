@@ -160,7 +160,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     open var pathGenerators: [RSPathGenerator.Type] {
         return [
             RSExactPath.self,
-            RSPrefixPath.self
+            RSPrefixPath.self,
+            RSParamPath.self
         ]
     }
     
