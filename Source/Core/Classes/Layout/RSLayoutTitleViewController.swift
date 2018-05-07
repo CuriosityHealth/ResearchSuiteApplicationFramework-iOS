@@ -41,12 +41,17 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     @IBOutlet weak var button: RSBorderedButton!
     
     private var hasAppeared: Bool = false
-    override open func viewDidLoad() {
-        super.viewDidLoad()
+    
+    open func updateUI(state: RSState) {
 
-        // Do any additional setup after loading the view.
+        if let title = self.titleLayout.title {
+            self.titleLabel.text = title
+        }
+        else if let titleJSON = self.titleLayout.titleJSON,
+            let title = RSValueManager.processValue(jsonObject: titleJSON, state: state, context: self.context())?.evaluate() as? String {
+            self.titleLabel.text = title
+        }
         
-        self.titleLabel.text = self.titleLayout.title
         self.imageView.image = self.titleLayout.image
         if let button = self.titleLayout.button {
             self.button.isHidden = false
@@ -61,6 +66,16 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
         }
         
+    }
+    
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+        if let state = self.store?.state {
+            self.updateUI(state: state)
+        }
+
         self.store?.subscribe(self)
         
         self.layoutDidLoad()
@@ -89,14 +104,14 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
                 return true
             }
             
-            return RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+            return RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: self.context())
             
         }()
     }
     
     open func processAction(action: JSON) {
         if let store = self.store {
-            store.processAction(action: action, context: ["layoutViewController":self], store: store)
+            store.processAction(action: action, context: self.context(), store: store)
         }
     }
     
@@ -134,14 +149,15 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     }
     
     public func updateLayout(matchedRoute: RSMatchedRoute, state: RSState) {
-        
+        self.matchedRoute = matchedRoute
+        self.updateUI(state: state)
     }
     
     public func layoutDidLoad() {
         
         self.layout.onLoadActions.forEach({ (action) in
             if let store = self.store {
-                store.processAction(action: action, context: ["layoutViewController":self], store: store)
+                store.processAction(action: action, context: self.context(), store: store)
             }
         })
         
@@ -152,7 +168,7 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         if initialAppearance {
             self.layout.onFirstAppearanceActions.forEach({ (action) in
                 if let store = self.store {
-                    store.processAction(action: action, context: ["layoutViewController":self], store: store)
+                    store.processAction(action: action, context: self.context(), store: store)
                 }
             })
         }

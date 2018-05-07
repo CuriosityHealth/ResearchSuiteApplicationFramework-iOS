@@ -29,3 +29,19 @@ public protocol RSLayoutViewController {
     
     func backTapped()
 }
+
+public extension RSLayoutViewController {
+    
+    public func context(extraContext: [String: AnyObject]? = nil) -> [String: AnyObject] {
+        var baseContext: [String: AnyObject] = ["layoutViewController":self as AnyObject]
+        baseContext["match"] = self.matchedRoute.match.toJSON() as AnyObject
+        
+        let extra: [String: AnyObject] = extraContext ?? [:]
+        return baseContext.merging(extra, uniquingKeysWith: { (contextObject, extraObject) -> AnyObject in
+            return extraObject
+        })
+    }
+    
+    
+    
+}

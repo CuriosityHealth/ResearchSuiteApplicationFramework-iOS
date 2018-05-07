@@ -52,7 +52,7 @@ open class RSExactPath: RSPath, RSPathGenerator {
     
     let path: String
     public init(path: String) {
-        self.path = path
+        self.path = path.lowercased()
     }
     
     public var description: String {
@@ -93,7 +93,7 @@ open class RSPrefixPath: RSPath, RSPathGenerator {
     
     let prefix: String
     public init(prefix: String) {
-        self.prefix = prefix
+        self.prefix = prefix.lowercased()
     }
     
     public var description: String {
@@ -264,7 +264,7 @@ open class RSParamPath: RSPath, RSPathGenerator {
         
         let finalPattern = "^" + pattern + "(/|$)"
         
-        let regex = try NSRegularExpression(pattern: finalPattern, options: [])
+        let regex = try NSRegularExpression(pattern: finalPattern, options: [.caseInsensitive])
         return regex
     }
     

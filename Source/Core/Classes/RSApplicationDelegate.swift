@@ -245,7 +245,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSNotificationTriggerDateTransformer.self,
             RSGeofenceRegionValueTransformer.self,
             RSArrayValueTransformer.self,
-            RSPathTransformer.self
+            RSPathTransformer.self,
+            RSTemplatedStringValueTransformer.self,
+            RSContextValueTransformer.self,
+            RSDateFormatterValueTransform.self
         ]
     }
     

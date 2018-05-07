@@ -21,17 +21,24 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
     }
     
     
-    open let title: String
+    open let title: String?
+    open let titleJSON: JSON?
     open let image: UIImage?
     open let button: RSLayoutButton?
     
     required public init?(json: JSON) {
-        
-        guard let title: String = "title" <~~ json else {
+
+        if let title: String = "title" <~~ json {
+            self.title = title
+            self.titleJSON = nil
+        }
+        else if let title: JSON = "title" <~~ json {
+            self.titleJSON = title
+            self.title = nil
+        }
+        else {
             return nil
         }
-        
-        self.title = title
         
         self.image = {
             if let imageTitle: String = "image" <~~ json {

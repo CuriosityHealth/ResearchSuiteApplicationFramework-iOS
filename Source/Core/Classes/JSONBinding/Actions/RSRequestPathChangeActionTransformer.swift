@@ -30,7 +30,7 @@ open class RSRequestPathChangeActionTransformer: RSActionTransformer {
             }
             
             if let requestedPath = valueConvertible.evaluate() as? NSString {
-                return RSActionCreators.requestPathChange(path: requestedPath as String)(state, store)
+                return RSActionCreators.requestPathChange(path: requestedPath.lowercased as String)(state, store)
             }
             else {
                 return nil
