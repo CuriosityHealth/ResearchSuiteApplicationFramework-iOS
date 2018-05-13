@@ -27,6 +27,8 @@ public enum RSConfiguration: String {
 
 open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubscriber {
     
+    static let TAG = "RSApplicationDelegate"
+    
     public var window: UIWindow?
     public private(set) var routingViewController: RSRoutingViewController?
     public var rootViewController: RSRootViewController! {
@@ -66,6 +68,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     weak var weakStore: Store<RSState>?
     
     private var lastState: RSState?
+    
+    open var logger: RSLogger?
     
     open var cellControllerGenerators: [RSEnhancedMultipleChoiceCellControllerGenerator.Type] = [
         RSEnhancedMultipleChoiceCellWithTextScaleAccessoryController.self,
@@ -563,6 +567,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "willFinishLaunchingWithOptions")
+        
         if UserDefaults.standard.object(forKey: "FirstRun") == nil {
             UserDefaults.standard.set("1stRun", forKey: "FirstRun")
             UserDefaults.standard.synchronize()
@@ -587,6 +593,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "didFinishLaunchingWithOptions")
+        
         let window: UIWindow = self.window!
         let rootVC: RSRootViewController = window.rootViewController as! RSRootViewController
         rootVC.lockScreen()
@@ -594,6 +603,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     }
 
     open func applicationWillResignActive(_ application: UIApplication) {
+        
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillResignActive")
         
         let state: RSState = self.store.state
         if RSStateSelectors.shouldShowPasscode(state) {
@@ -606,17 +617,26 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     }
     
     open func applicationDidEnterBackground(_ application: UIApplication) {
+        
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationDidEnterBackground")
+        
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
     
     open func applicationWillEnterForeground(_ application: UIApplication) {
+        
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillEnterForeground")
+        
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
         let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
         rootVC.lockScreen()
     }
     
     open func applicationDidBecomeActive(_ application: UIApplication) {
+        
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationDidBecomeActive")
+        
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         // Make sure that the content view controller is not hiding content
         
@@ -625,6 +645,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     }
     
     open func applicationWillTerminate(_ application: UIApplication) {
+        
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillTerminate")
+        
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     

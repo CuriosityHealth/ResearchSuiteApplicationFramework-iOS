@@ -203,6 +203,8 @@ public class RSStateSelectors: NSObject {
     
     public static func shouldShowPasscode(_ state: RSState) -> Bool {
         return !RSStateSelectors.isPasscodePresented(state) &&
+            !RSStateSelectors.isPresentingPasscode(state) &&
+            !RSStateSelectors.isDismissingPasscode(state) &&
             ORKPasscodeViewController.isPasscodeStoredInKeychain()
     }
     

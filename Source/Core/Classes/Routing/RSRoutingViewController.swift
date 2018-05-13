@@ -62,6 +62,8 @@ public protocol RSRoutingDelegate: class {
 
 open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutViewController, RSRootViewController, ORKPasscodeDelegate {
     
+    static let TAG = "RSRoutingViewController"
+    
     open func takeScreenshot() -> UIImage? {
         var screenshotImage :UIImage?
         let layer = UIApplication.shared.keyWindow!.layer
@@ -242,6 +244,11 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     open let routeManager: RSRouteManager
     open let activityManager: RSActivityManager
     weak var store: Store<RSState>?
+    
+//    var overlayView: UIView?
+    var hiddenViewControllers: [UIViewController] = []
+    var hiddenViewControllerImageViews: [UIImageView] = []
+    
     public init(rootLayoutIdentifier: String, routeManager: RSRouteManager, activityManager: RSActivityManager, store: Store<RSState>) {
         self.rootLayoutIdentifier = rootLayoutIdentifier
         self.routeManager = routeManager
@@ -384,8 +391,11 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         
         let uuid = UUID()
         self.store!.dispatch(PresentPasscodeRequest(uuid: uuid, passcodeViewController: vc))
+        
+        RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Presenting Passcode View")
 
         self.topViewController.present(vc, animated: false, completion: {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Passcode View Presented")
             self.store!.dispatch(PresentPasscodeSuccess(uuid: uuid, passcodeViewController: vc))
         })
     }
@@ -399,7 +409,9 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         
         let uuid = UUID()
         self.store!.dispatch(DismissPasscodeRequest(uuid: uuid, passcodeViewController: passcodeViewController))
+        RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissing Passcode View")
         passcodeViewController.presentingViewController?.dismiss(animated: animated, completion: {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Passcode View Dismissed")
             self.store!.dispatch(DismissPasscodeSuccess(uuid: uuid, passcodeViewController: passcodeViewController))
         })
     }
@@ -451,12 +463,72 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     
     open func setContentHidden(hidden: Bool) {
         
+        RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Setting contents hidden to \(hidden)")
         
+        if let infoDict = Bundle.main.infoDictionary,
+            let launchStoryboardName = infoDict["UILaunchStoryboardName"] as? String,
+            let viewController = UIStoryboard(name: launchStoryboardName, bundle: nil).instantiateInitialViewController() {
+            
+            if hidden {
+                
+                let vc = self.topViewController
+                vc.present(viewController, animated: false) {
+                    
+                    var screenshotImage:UIImage?
+                    let layer = UIApplication.shared.keyWindow!.layer
+                    let scale = UIScreen.main.scale
+                    UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale)
+                    
+                    if let context = UIGraphicsGetCurrentContext() {
+                        layer.render(in:context)
+                        screenshotImage = UIGraphicsGetImageFromCurrentImageContext()
+                        UIGraphicsEndImageContext()
+                        
+                        if let image = screenshotImage {
+                            
+                            let imageView = UIImageView(frame: vc.view.bounds)
+                            imageView.image = image
+                            imageView.contentMode = .scaleToFill
+                            vc.view.addSubview(imageView)
+                            
+                            self.hiddenViewControllers = self.hiddenViewControllers + [vc]
+                            self.hiddenViewControllerImageViews = self.hiddenViewControllerImageViews + [imageView]
+                            
+                            viewController.dismiss(animated: false, completion: nil)
+                            return
+                        }
+                    }
+                    
+                    vc.view.isHidden = hidden
+                    self.hiddenViewControllers = self.hiddenViewControllers + [vc]
+                    viewController.dismiss(animated: false, completion: nil)
+                    return
+
+                }
+                
+            }
+            else {
+                self.hiddenViewControllers.forEach({ $0.view.isHidden = false })
+                self.hiddenViewControllerImageViews.forEach({ $0.removeFromSuperview() })
+            }
+        }
+        else {
+            if hidden {
+                let vc = self.topViewController
+                debugPrint(hidden)
+                vc.view.isHidden = hidden
+                self.hiddenViewControllers = self.hiddenViewControllers + [vc]
+            }
+            else {
+                self.hiddenViewControllers.forEach({ $0.view.isHidden = false })
+            }
+        }
     }
     
     open var topViewController: UIViewController {
         var topViewController: UIViewController = self
-        while (topViewController.presentedViewController != nil) {
+        while (topViewController.presentedViewController != nil &&
+            topViewController.presentedViewController != self.passcodeViewController ) {
             topViewController = topViewController.presentedViewController!
         }
         return topViewController
