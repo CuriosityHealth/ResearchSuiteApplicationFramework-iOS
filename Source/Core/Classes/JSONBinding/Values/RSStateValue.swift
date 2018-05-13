@@ -10,6 +10,7 @@
 import UIKit
 import Gloss
 import CoreLocation
+import ResearchSuiteExtensions
 
 public class RSStateValue: Glossy {
     
@@ -115,6 +116,14 @@ public class RSStateValue: Glossy {
             }
             
             return RSValueConvertible(value: value as NSNumber)
+            
+        case "Color":
+            guard let value = value as? String else {
+                return nil
+            }
+            
+            let color = UIColor(hexString: value)
+            return RSValueConvertible(value: color)
             
         default:
             return RSValueConvertible(value: value)
