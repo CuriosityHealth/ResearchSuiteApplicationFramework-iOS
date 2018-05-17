@@ -45,20 +45,20 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     open func updateUI(state: RSState) {
 
         if let title = self.titleLayout.title {
-            self.titleLabel.text = title
+            self.titleLabel?.text = title
         }
         else if let titleJSON = self.titleLayout.titleJSON,
             let title = RSValueManager.processValue(jsonObject: titleJSON, state: state, context: self.context())?.evaluate() as? String {
-            self.titleLabel.text = title
+            self.titleLabel?.text = title
         }
         
-        self.imageView.image = self.titleLayout.image
+        self.imageView?.image = self.titleLayout.image
         if let button = self.titleLayout.button {
-            self.button.isHidden = false
-            self.button.setTitle(button.title, for: .normal)
+            self.button?.isHidden = false
+            self.button?.setTitle(button.title, for: .normal)
         }
         else {
-            self.button.isHidden = true
+            self.button?.isHidden = true
         }
         
         self.navigationItem.title = self.layout.navTitle

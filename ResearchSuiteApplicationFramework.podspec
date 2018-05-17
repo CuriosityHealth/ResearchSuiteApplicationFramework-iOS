@@ -42,6 +42,8 @@ Pod::Spec.new do |s|
     core.dependency 'Gloss', '~> 2'
     core.dependency 'SimplePDF', '~> 3'
     core.dependency 'GRMustache.swift', '~> 2.1'
+    core.dependency 'FSCalendar'
+    core.dependency 'SnapKit'
   end
 
   s.subspec 'Development' do |dev|
