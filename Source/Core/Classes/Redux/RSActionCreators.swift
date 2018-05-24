@@ -533,14 +533,43 @@ public class RSActionCreators: NSObject {
 //    }
     
     public static func registerResultsProcessorBackEnd(identifier: String, backEnd: RSRPBackEnd) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
         return { state, store in
-            return RegisterResultsProcessorBackEndAction(identifier: identifier, backEnd: backEnd)
+            guard let dataSink = backEnd as? RSDataSink else {
+                assertionFailure("Back end not convertible to data sink.")
+                return nil
+            }
+            return RegisterDataSinkAction(identifier: identifier, dataSink: dataSink)
         }
     }
     
     public static func unregisterResultsProcessorBackEnd(identifier: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
-            return UnregisterResultsProcessorBackEndAction(identifier: identifier)
+            return UnregisterDataSinkAction(identifier: identifier)
+        }
+    }
+    
+    public static func registerDataSink(identifier: String, dataSink: RSDataSink) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return RegisterDataSinkAction(identifier: identifier, dataSink: dataSink)
+        }
+    }
+    
+    public static func unregisterDataSink(identifier: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return UnregisterDataSinkAction(identifier: identifier)
+        }
+    }
+    
+    public static func registerDataSource(identifier: String, dataSource: RSDataSource) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return RegisterDataSourceAction(identifier: identifier, dataSource: dataSource)
+        }
+    }
+    
+    public static func unregisterDataSource(identifier: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return UnregisterDataSourceAction(identifier: identifier)
         }
     }
     
@@ -595,6 +624,30 @@ public class RSActionCreators: NSObject {
             flatMapFunc: { RSNotification(json: $0) },
             mapFunc: { AddNotificationAction(notification: $0) }
         )
+        
+    }
+    
+    public static func addNotification(notification: RSNotification) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return { state, store in
+            return AddNotificationAction(notification: notification)
+        }
+        
+    }
+    
+    public static func updateNotification(notification: RSNotification) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return { state, store in
+            return UpdateNotificationAction(notification: notification)
+        }
+        
+    }
+    
+    public static func removeNotification(notification: RSNotification) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        
+        return { state, store in
+            return RemoveNotificationAction(notificationIdentifier: notification.identifier)
+        }
         
     }
     

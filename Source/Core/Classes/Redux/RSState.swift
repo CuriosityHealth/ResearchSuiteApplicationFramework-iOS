@@ -57,7 +57,9 @@ public final class RSState: NSObject, StateType {
 //    public let requestedPath: String?
 //    public let forceReroute: Bool
     
-    public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
+//    public let resultsProcessorBackEndMap: [String: RSRPBackEnd]
+    public let dataSourceMap: [String: RSDataSource]
+    public let dataSinkMap: [String: RSDataSink]
     
     //notifications
     public let pendingNotifications: [UNNotificationRequest]?
@@ -103,7 +105,8 @@ public final class RSState: NSObject, StateType {
                 pathHistory: [String] = [],
                 currentPath: String? = nil,
                 pathChangeRequestQueue: [(UUID, String, Bool)] = [],
-                resultsProcessorBackEndMap: [String: RSRPBackEnd] = [:],
+                dataSourceMap: [String: RSDataSource] = [:],
+                dataSinkMap: [String: RSDataSink] = [:],
                 pendingNotifications: [UNNotificationRequest]? = nil,
                 isFetchingNotifications: Bool = false,
                 lastFetchTime: Date? = nil,
@@ -141,7 +144,9 @@ public final class RSState: NSObject, StateType {
         self.pathHistory = pathHistory
         self.currentPath = currentPath
         self.pathChangeRequestQueue = pathChangeRequestQueue
-        self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
+//        self.resultsProcessorBackEndMap = resultsProcessorBackEndMap
+        self.dataSourceMap = dataSourceMap
+        self.dataSinkMap = dataSinkMap
         self.pendingNotifications = pendingNotifications
         self.isFetchingNotifications = isFetchingNotifications
         self.lastFetchTime = lastFetchTime
@@ -182,6 +187,8 @@ public final class RSState: NSObject, StateType {
         pathChangeRequestQueue: [(UUID, String, Bool)]? = nil,
         
         resultsProcessorBackEndMap: [String: RSRPBackEnd]? = nil,
+        dataSourceMap: [String: RSDataSource]? = nil,
+        dataSinkMap: [String: RSDataSink]? = nil,
         pendingNotifications: ([UNNotificationRequest]?)? = nil,
         isFetchingNotifications: Bool? = nil,
         lastFetchTime: Date?? = nil,
@@ -219,7 +226,8 @@ public final class RSState: NSObject, StateType {
             pathHistory: pathHistory ?? fromState.pathHistory,
             currentPath: currentPath ?? fromState.currentPath,
             pathChangeRequestQueue: pathChangeRequestQueue ?? fromState.pathChangeRequestQueue,
-            resultsProcessorBackEndMap: resultsProcessorBackEndMap ?? fromState.resultsProcessorBackEndMap,
+            dataSourceMap: dataSourceMap ?? fromState.dataSourceMap,
+            dataSinkMap: dataSinkMap ?? fromState.dataSinkMap,
             pendingNotifications: pendingNotifications ?? fromState.pendingNotifications,
             isFetchingNotifications: isFetchingNotifications ?? fromState.isFetchingNotifications,
             lastFetchTime: lastFetchTime ?? fromState.lastFetchTime,

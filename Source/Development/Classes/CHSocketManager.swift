@@ -63,6 +63,7 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
     weak var store: Store<RSState>?
     
     var state: RSState?
+    open var onConnectCallback: ((CHSocketManager) -> ())?
     
     public init(socketServerURL: URL, store: Store<RSState>) {
         
@@ -83,6 +84,8 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
         print("websocket is connected")
         //launch
         //        self.store.dispatch(RSActionCreators.queueActivity(activityID: "devActivity"))
+        
+        self.onConnectCallback?(self)
     }
     
     open func websocketDidDisconnect(socket: WebSocket, error: NSError?) {
@@ -194,6 +197,38 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
                 }
             }
             
+        }
+        
+    }
+    
+    public func setApplicationLogDirectory(logDirectory: String) {
+        
+        let message: JSON = [
+            "type": "setApplicationLogDirectory",
+            "logDirectory": logDirectory
+        ]
+        
+        if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
+            //                debugPrint(log)
+            self.socket.write(data: data) {
+                
+            }
+        }
+        
+    }
+    
+    public func setDataseFile(databaseFile: String) {
+        
+        let message: JSON = [
+            "type": "setDatabaseFile",
+            "file": databaseFile
+        ]
+        
+        if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
+            //                debugPrint(log)
+            self.socket.write(data: data) {
+                
+            }
         }
         
     }

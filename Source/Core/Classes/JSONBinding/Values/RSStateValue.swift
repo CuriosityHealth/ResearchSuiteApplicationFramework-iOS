@@ -70,6 +70,9 @@ public class RSStateValue: Glossy {
             
             return RSValueConvertible(value: value as NSArray)
             
+        case "StateObjectArray":
+            return nil
+            
         case "GeofenceRegion":
             return nil
             
@@ -157,6 +160,9 @@ public class RSStateValue: Glossy {
             
         case "IntArray":
             return (object as? [Int]) != nil
+            
+        case "StateObjectArray":
+            return (object as? [RSStateObject]) != nil
             
         case "GeofenceRegion":
             return (object as? CLCircularRegion) != nil

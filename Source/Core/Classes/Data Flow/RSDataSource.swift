@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import LS2SDK
 
 //Does this protocol define something like a database instance and HealthKit (and even possibly a server in the future)?
 //Or maybe this is a query result?
@@ -39,11 +39,11 @@ import UIKit
 //the query results will cache data in memory
 //The update handler will include maps of added and deleted points. Maps specify the index of the datapoint in the collection
 
-
-
-
 public protocol RSDataSource  {
     
-    //
+    func getCollectionDataSource(predicates: [NSPredicate], sortSettings: RSSortSettings?) -> RSCollectionDataSource?
+    func getCollectionDataSource(predicates: [NSPredicate], sortSettings: RSSortSettings?, readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ())) -> RSCollectionDataSource?
+    
+    
 
 }

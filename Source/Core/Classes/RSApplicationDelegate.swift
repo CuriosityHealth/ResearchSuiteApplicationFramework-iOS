@@ -44,6 +44,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var notificationManager: RSNotificationManager?
     public var locationManager: RSLocationManager?
     public var routeManager: RSRouteManager!
+    public var collectionViewCellManager: RSCollectionViewCellManager!
+    public var stateObjectManager: RSStateObjectManager!
     
     public var storeManager: RSStoreManager!
     public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
@@ -157,7 +159,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSListLayout.self,
             RSLayoutFile.self,
             RSTabBarLayout.self,
-            RSMoreLayout.self
+            RSMoreLayout.self,
+            RSCollectionLayout.self,
+            RSCalendarLayout.self
         ]
     }
     
@@ -213,6 +217,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     open var actionCreatorTransforms: [RSActionTransformer.Type] {
         return [
+            RSSinkDatapointActionTransformer.self,
             RSSendResultToServerActionTransformer.self,
             RSSetValueInStateActionTransformer.self,
             RSQueueActivityActionTransformer.self,
@@ -252,7 +257,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSPathTransformer.self,
             RSTemplatedStringValueTransformer.self,
             RSContextValueTransformer.self,
-            RSDateFormatterValueTransform.self
+            RSDateFormatterValueTransform.self,
+            RSPrettyPrintJSONTransformer.self
+        ]
+    }
+    
+    open var collectionViewCellGenerators: [RSCollectionViewCellGenerator.Type] {
+        return [
+            RSBasicCollectionViewCell.self
         ]
     }
     
@@ -277,6 +289,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSFileStateManager.self,
             RSEphemeralStateManager.self
         ]
+    }
+    
+    open var stateObjectTypes: [RSStateObject.Type] {
+        return []
     }
     
     open var stateManagersFileName: String = "state"
@@ -342,6 +358,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             self.taskBuilder = nil
             self.activityManager = nil
             self.actionManager = nil
+            self.stateObjectManager = nil
             
             if self.notificationSupport {
                 self.notificationManager?.cancelNotifications()
@@ -453,6 +470,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.activityManager = RSActivityManager(stepTreeBuilder: self.stepTreeBuilder)
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
         self.actionManager = RSActionManager(actionCreatorTransforms: self.actionCreatorTransforms)
+        self.stateObjectManager = RSStateObjectManager(stateObjectTypes: self.stateObjectTypes)
+        self.collectionViewCellManager = RSCollectionViewCellManager(cellGenerators: self.collectionViewCellGenerators)
         
         if notificationSupport {
             self.notificationManager = RSNotificationManager(store: self.store, notificationProcessors: self.notificationProcessors)

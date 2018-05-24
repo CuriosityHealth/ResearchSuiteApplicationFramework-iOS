@@ -32,5 +32,13 @@ open class RSNotification: Gloss.JSONDecodable {
         self.json = json
         
     }
+    
+    public init(identifier: String, type: String, predicate: RSPredicate?, handlerActions: [JSON]?, json: JSON) {
+        self.identifier = identifier
+        self.type = type
+        self.predicate = predicate
+        self.handlerActions = handlerActions
+        self.json = json
+    }
 
 }

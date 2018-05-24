@@ -54,5 +54,13 @@ Pod::Spec.new do |s|
     dev.dependency 'Gloss', '~> 2'
   end
 
+  s.subspec 'Database' do |db|
+    db.source_files = 'Source/Database/**/*'
+    db.dependency 'ResearchSuiteApplicationFramework/Core'
+    db.dependency 'RealmSwift'
+    db.dependency 'LS2SDK/Common'
+    db.dependency 'LS2SDK/Database'
+  end
+
   s.default_subspec = 'Core'
 end

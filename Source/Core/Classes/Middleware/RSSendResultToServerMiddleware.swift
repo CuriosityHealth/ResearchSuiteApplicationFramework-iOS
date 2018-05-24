@@ -24,6 +24,12 @@ open class RSSendResultToServerMiddleware: RSMiddlewareProvider {
                         backend.add(intermediateResult: sendResultAction.intermediateResult)
                     }
                     
+                    if let sinkDatapointAction = action as? RSSinkDatapointAction,
+                        let state = getState() as? RSState,
+                        let dataSink = RSStateSelectors.getDataSink(state, for: sinkDatapointAction.dataSinkIdentifier) {
+                        dataSink.add(datapoint: sinkDatapointAction.datapoint)
+                    }
+                    
                     return next(action)
                     
                 }

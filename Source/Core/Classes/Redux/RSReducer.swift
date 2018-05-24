@@ -21,7 +21,7 @@ public class RSReducer: NSObject {
 //        RouteReducer(),
         PathReducer(),
         PresentationReducer(),
-        ResultsProcessorReducer(),
+        DataFlowReducer(),
         AppConfigurationReducer(),
         NotificationReducer(),
         LocationReducer()
@@ -386,24 +386,48 @@ public class RSReducer: NSObject {
         
     }
     
-    final class ResultsProcessorReducer: Reducer {
+    final class DataFlowReducer: Reducer {
         open func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
             switch action {
                 
-            case let action as RegisterResultsProcessorBackEndAction:
-
-                var newMap = state.resultsProcessorBackEndMap
-                newMap[action.identifier] = action.backEnd
-                return RSState.newState(fromState: state, resultsProcessorBackEndMap: newMap)
+            case let action as RegisterDataSourceAction:
                 
-            case let action as UnregisterResultsProcessorBackEndAction:
+                var newMap = state.dataSourceMap
+                newMap[action.identifier] = action.dataSource
+                return RSState.newState(fromState: state, dataSourceMap: newMap)
                 
-                var newMap = state.resultsProcessorBackEndMap
+            case let action as UnregisterDataSourceAction:
+                
+                var newMap = state.dataSourceMap
                 newMap.removeValue(forKey: action.identifier)
-                return RSState.newState(fromState: state, resultsProcessorBackEndMap: newMap)
+                return RSState.newState(fromState: state, dataSourceMap: newMap)
+                
+            case let action as RegisterDataSinkAction:
+                
+                var newMap = state.dataSinkMap
+                newMap[action.identifier] = action.dataSink
+                return RSState.newState(fromState: state, dataSinkMap: newMap)
+                
+            case let action as UnregisterDataSourceAction:
+                
+                var newMap = state.dataSinkMap
+                newMap.removeValue(forKey: action.identifier)
+                return RSState.newState(fromState: state, dataSinkMap: newMap)
+                
+//            case let action as RegisterResultsProcessorBackEndAction:
+//
+//                var newMap = state.resultsProcessorBackEndMap
+//                newMap[action.identifier] = action.backEnd
+//                return RSState.newState(fromState: state, resultsProcessorBackEndMap: newMap)
+//
+//            case let action as UnregisterResultsProcessorBackEndAction:
+//
+//                var newMap = state.resultsProcessorBackEndMap
+//                newMap.removeValue(forKey: action.identifier)
+//                return RSState.newState(fromState: state, resultsProcessorBackEndMap: newMap)
                 
             default:
                 return state
@@ -455,6 +479,16 @@ public class RSReducer: NSObject {
                 
                 let notification = addNotificationAction.notification
                 return RSState.newState(fromState: state, notifications: state.notifications + [notification])
+                
+            case let removeNotificationAction as RemoveNotificationAction:
+                
+                let notifications = state.notifications.filter { removeNotificationAction.notificationIdentifier != $0.identifier }
+                return RSState.newState(fromState: state, notifications: notifications)
+                
+            case let updateNotificationAction as UpdateNotificationAction:
+                
+                let notifications = state.notifications.filter { updateNotificationAction.notification.identifier != $0.identifier } + [updateNotificationAction.notification]
+                return RSState.newState(fromState: state, notifications: notifications)
                 
             default:
                 return state

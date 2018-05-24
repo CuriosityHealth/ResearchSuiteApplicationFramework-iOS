@@ -51,6 +51,7 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
         
         
         do {
+            
             let template = try Template(string: template)
             let renderedString = try template.render(substitutions)
             

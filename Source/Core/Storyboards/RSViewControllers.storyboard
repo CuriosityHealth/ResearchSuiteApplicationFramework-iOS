@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -165,6 +166,82 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OzM-3p-ezM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1690.4000000000001" y="663.41829085457277"/>
+        </scene>
+        <!--Calendar Layout View Controller-->
+        <scene sceneID="vW8-cO-Fz5">
+            <objects>
+                <viewController storyboardIdentifier="calendarLayoutViewController" id="6XL-w4-Hjq" customClass="RSCalendarLayoutViewController" customModule="ResearchSuiteApplicationFramework" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="uI3-nA-KnP">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="tmJ-yI-521">
+                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" verticalHuggingPriority="800" translatesAutoresizingMaskIntoConstraints="NO" id="x3X-sz-0o4" customClass="FSCalendar">
+                                        <rect key="frame" x="0.0" y="0.0" width="375" height="323.5"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="323.5" id="gEV-GW-wng"/>
+                                        </constraints>
+                                    </view>
+                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="jR2-gc-HEl">
+                                        <rect key="frame" x="0.0" y="339.5" width="375" height="307.5"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ZGX-HQ-359">
+                                            <size key="itemSize" width="375" height="60"/>
+                                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        </collectionViewFlowLayout>
+                                        <cells/>
+                                    </collectionView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="tmJ-yI-521" firstAttribute="width" secondItem="2vm-Wu-lm3" secondAttribute="width" id="QYF-Ev-K2G"/>
+                            <constraint firstItem="tmJ-yI-521" firstAttribute="height" secondItem="2vm-Wu-lm3" secondAttribute="height" id="Tm3-FJ-qK9"/>
+                            <constraint firstItem="tmJ-yI-521" firstAttribute="centerX" secondItem="2vm-Wu-lm3" secondAttribute="centerX" id="VFy-V7-NYy"/>
+                            <constraint firstItem="tmJ-yI-521" firstAttribute="centerY" secondItem="2vm-Wu-lm3" secondAttribute="centerY" id="o8O-fm-OBE"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="2vm-Wu-lm3"/>
+                    </view>
+                    <connections>
+                        <outlet property="calendarHeightConstraint" destination="gEV-GW-wng" id="MJp-zZ-dMb"/>
+                        <outlet property="calendarView" destination="x3X-sz-0o4" id="i1y-j6-ZDe"/>
+                        <outlet property="collectionView" destination="jR2-gc-HEl" id="JeK-Xo-Ov4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Tt5-Bz-gRq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-140" y="-81"/>
+        </scene>
+        <!--Collection Layout View Controller-->
+        <scene sceneID="FPy-9p-oRc">
+            <objects>
+                <collectionViewController storyboardIdentifier="collectionLayoutViewController" id="tDU-lf-huk" customClass="RSCollectionLayoutViewController" customModule="ResearchSuiteApplicationFramework" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="SNV-j5-PYF">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="TyB-EO-abT">
+                            <size key="itemSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells/>
+                        <connections>
+                            <outlet property="dataSource" destination="tDU-lf-huk" id="3Cb-gz-jnr"/>
+                            <outlet property="delegate" destination="tDU-lf-huk" id="bMH-Aq-MYh"/>
+                        </connections>
+                    </collectionView>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XBd-V6-J5Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-193" y="660"/>
         </scene>
     </scenes>
 </document>

@@ -194,7 +194,18 @@ public class RSStateSelectors: NSObject {
 //    }
     
     public static func getResultsProcessorBackEnd(_ state: RSState, for identifier: String) -> RSRPBackEnd? {
-        return state.resultsProcessorBackEndMap[identifier]
+//        return state.resultsProcessorBackEndMap[identifier]
+        return state.dataSinkMap[identifier] as? RSRPBackEnd
+    }
+    
+    public static func getDataSink(_ state: RSState, for identifier: String) -> RSDataSink? {
+        //        return state.resultsProcessorBackEndMap[identifier]
+        return state.dataSinkMap[identifier]
+    }
+    
+    public static func getDataSource(_ state: RSState, for identifier: String) -> RSDataSource? {
+        //        return state.resultsProcessorBackEndMap[identifier]
+        return state.dataSourceMap[identifier]
     }
     
     public static func isConfigurationCompleted(_ state: RSState) -> Bool {

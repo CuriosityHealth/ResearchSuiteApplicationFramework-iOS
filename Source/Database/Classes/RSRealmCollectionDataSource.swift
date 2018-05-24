@@ -1,0 +1,137 @@
+//
+//  RSRealmCollectionDataSource.swift
+//  Pods
+//
+//  Created by James Kizer on 5/17/18.
+//
+
+import UIKit
+import LS2SDK
+import RealmSwift
+
+public protocol RSRealmDataSource: RSDataSource {
+    func getRealm() -> Realm
+}
+
+open class RSRealmCollectionDataSource: RSCollectionDataSource {
+    
+//    public typealias Element = LS2Datapoint
+    var results: Results<LS2RealmDatapoint>? = nil
+    var notificationToken: NotificationToken? = nil
+    
+    public init?(databaseManager: LS2DatabaseManager, predicates: [NSPredicate], sortSettings: RSSortSettings?) {
+        
+        guard let realm = databaseManager.getRealm(),
+            let objects = realm.objects(LS2RealmDatapoint.self) else {
+                return nil
+        }
+        
+        
+        let filteredObjects = predicates.reduce(objects, { (accObjects, predicate) -> Results<LS2RealmDatapoint> in
+            return accObjects.filter(predicate)
+        })
+        
+        let sortedObjects: Results<LS2RealmDatapoint> = {
+            if let settings = sortSettings {
+                return filteredObjects.sorted(byKeyPath: settings.keyPath, ascending: settings.ascending)
+            }
+            else {
+                return filteredObjects
+            }
+        }()
+        
+        self.results = sortedObjects
+        
+    }
+    
+    public init?(databaseManager: LS2DatabaseManager, predicates: [NSPredicate], sortSettings: RSSortSettings?, readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ())) {
+           
+        guard let realm = databaseManager.getRealm(),
+            let objects = realm.objects(LS2RealmDatapoint.self) else {
+                return nil
+        }
+
+        
+        let filteredObjects = predicates.reduce(objects, { (accObjects, predicate) -> Results<LS2RealmDatapoint> in
+            return accObjects.filter(predicate)
+        })
+        
+        let sortedObjects: Results<LS2RealmDatapoint> = {
+            if let settings = sortSettings {
+                return filteredObjects.sorted(byKeyPath: settings.keyPath, ascending: settings.ascending)
+            }
+            else {
+                return filteredObjects
+            }
+        }()
+        
+        
+        self.notificationToken = sortedObjects.observe { (changes: RealmCollectionChange) in
+            switch changes {
+            case .initial:
+                // Results are now populated and can be accessed without blocking the UI
+                readyCallback(self)
+            case .update(_, let deletions, let insertions, let modifications):
+                // Query results have changed, so apply them to the UITableView
+                updateCallback(self, deletions, insertions, modifications)
+            case .error(let error):
+                // An error occurred while opening the Realm file on the background worker thread
+                fatalError("\(error)")
+            }
+        }
+        
+        self.results = sortedObjects
+        
+    }
+    
+    deinit {
+        self.notificationToken?.invalidate()
+    }
+    
+    open var count: Int? {
+        
+        guard let results = self.results,
+            !results.isInvalidated else {
+                return nil
+        }
+        
+        return results.count
+    }
+    
+    open var updateCallback: ((Int, Int, Int) -> ())?
+    
+    open func get(for index: Int) -> LS2Datapoint? {
+        guard let results = self.results,
+            !results.isInvalidated else {
+                return nil
+        }
+        
+        return results[index]
+    }
+    
+    open func toArray() -> [LS2Datapoint]? {
+        guard let results = self.results,
+            !results.isInvalidated else {
+                return nil
+        }
+        
+        return Array(results)
+    }
+    
+    open func generateDictionary() -> [Int : LS2Datapoint]? {
+        
+        guard let results = self.results,
+            !results.isInvalidated else {
+                return nil
+        }
+        
+        var returnDict: [Int : LS2Datapoint] = [:]
+        (0..<results.count).forEach { (index) in
+            returnDict[index] = results[index]
+        }
+        
+        return returnDict
+        
+    }
+    
+}

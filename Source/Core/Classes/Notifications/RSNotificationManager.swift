@@ -48,7 +48,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         //if first run, maybe check to see if notifications are enabled but shouldn't be
         //note than we can probably get a list of currently enabled notifications
         //only update this list on change as well as once per n minutes
-        guard let _ = RSStateSelectors.pendingNotificationIdentifiers(state),
+        guard let pendingNotificationIdentifiers = RSStateSelectors.pendingNotificationIdentifiers(state),
             let lastFetchTime = RSStateSelectors.lastFetchTime(state) else {
                 self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
                 return
@@ -64,6 +64,26 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         }
 
         let notifications = RSStateSelectors.notifications(state)
+        
+        //we should proabbly prune orphaned notifications here
+        //i.e., to account for the case where there are enabled notifications but no RSNotification in the store
+        //take all pending notification identifiers, filter by all configured notifications
+        
+        //how might we delay this until the data source has a chance to load?
+        let identifiersToCancel: [String] = notifications.reduce(pendingNotificationIdentifiers) { (remainingPendingNotificationIdentifiers, notification) -> [String] in
+            let processor = self.processor(forNotification: notification)!
+            let filterfunction = processor.identifierFilter(notification: notification)
+            return remainingPendingNotificationIdentifiers.filter({ (identifier) -> Bool in
+                return !filterfunction(identifier)
+            })
+            
+        }
+        
+        if identifiersToCancel.count > 0 {
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+        }
+        
+        
         guard notifications.count > 0 else {
             return
         }
@@ -78,7 +98,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                     }
                 }
         }
-        
+
     }
     
     public func nextTriggerDate(notification: RSNotification, state: RSState) -> Date? {

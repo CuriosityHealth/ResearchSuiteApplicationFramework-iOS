@@ -96,6 +96,11 @@ public struct RSSendResultToServerAction: Action {
     let intermediateResult: RSRPIntermediateResult
 }
 
+public struct RSSinkDatapointAction: Action {
+    let dataSinkIdentifier: String
+    let datapoint: RSDatapoint
+}
+
 public struct SetValueInState: Action {
     let key: String
     let value: NSObject?
@@ -193,12 +198,30 @@ public struct ChangePathFailure: Action {
 //    let route: RSRoute
 //}
 
-public struct RegisterResultsProcessorBackEndAction: Action {
+//public struct RegisterResultsProcessorBackEndAction: Action {
+//    let identifier: String
+//    let backEnd: RSRPBackEnd
+//}
+
+//public struct UnregisterResultsProcessorBackEndAction: Action {
+//    let identifier: String
+//}
+
+public struct RegisterDataSourceAction: Action {
     let identifier: String
-    let backEnd: RSRPBackEnd
+    let dataSource: RSDataSource
 }
 
-public struct UnregisterResultsProcessorBackEndAction: Action {
+public struct UnregisterDataSourceAction: Action {
+    let identifier: String
+}
+
+public struct RegisterDataSinkAction: Action {
+    let identifier: String
+    let dataSink: RSDataSink
+}
+
+public struct UnregisterDataSinkAction: Action {
     let identifier: String
 }
 
@@ -259,6 +282,14 @@ public struct FetchPendingNotificationsFailure: Action {
 
 public struct AddNotificationAction: Action {
     let notification: RSNotification
+}
+
+public struct UpdateNotificationAction: Action {
+    let notification: RSNotification
+}
+
+public struct RemoveNotificationAction: Action {
+    let notificationIdentifier: String
 }
 
 //Location
