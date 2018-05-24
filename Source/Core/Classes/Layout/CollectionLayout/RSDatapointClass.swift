@@ -7,6 +7,7 @@
 
 import UIKit
 import Gloss
+import LS2SDK
 
 open class RSDatapointClass: JSONDecodable, Hashable, Equatable {
     public var hashValue: Int {
@@ -23,6 +24,7 @@ open class RSDatapointClass: JSONDecodable, Hashable, Equatable {
     public let cellIdentifier: String
     public let cellMapping: [String: JSON]
     public let onTapActions: [JSON]
+    public let dateSelector: ((LS2Datapoint) -> Date?)
     
     public required init?(json: JSON) {
         guard let identifier: String = "identifier" <~~ json,
@@ -37,6 +39,23 @@ open class RSDatapointClass: JSONDecodable, Hashable, Equatable {
         self.cellIdentifier = cellIdentifier
         self.cellMapping = cellMapping
         self.onTapActions = "onTap" <~~ json ?? []
+        
+        if let dateSelectorPath: String = "dateSelectorPath" <~~ json {
+            self.dateSelector = { datapoint in
+                if let datapointJSON = datapoint.toJSON(),
+                    let dateString: String = dateSelectorPath <~~ datapointJSON {
+                    return ISO8601DateFormatter().date(from: dateString)
+                }
+                else {
+                    return nil
+                }
+            }
+        }
+        else {
+            self.dateSelector = { datapoint in
+                return datapoint.header?.acquisitionProvenance.sourceCreationDateTime
+            }
+        }
         
     }
     

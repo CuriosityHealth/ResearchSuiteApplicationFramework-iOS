@@ -50,7 +50,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     var datapointClassifier: RSDatapointClassifier!
     var calendar: Calendar!
     
-    var tableViewDataSource: RSCollectionDataSource?
+//    var tableViewDataSource: RSCollectionDataSource?
+    var tableViewDatapoints: [LS2Datapoint]?
     
     @IBOutlet weak var calendarView: FSCalendar!
     @IBOutlet weak var calendarHeightConstraint: NSLayoutConstraint!
@@ -180,16 +181,33 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         }
     }
     
+    func date(for datapoint: LS2Datapoint) -> Date? {
+        //first classify datapoint
+        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) else {
+            return nil
+        }
+        
+        return datapointClass.dateSelector(datapoint)
+    }
+    
     func groupDatapointsByDate(datasource: RSCollectionDataSource) -> [Date: [LS2Datapoint]]? {
         
         guard let array = datasource.toArray() else {
             return nil
         }
         
+        
+        //not all datapoints shoudl use the same date
+        //i.e., some datapoints might use the provenance date for calendar ./ sorting,
+        //but other dates
         let dateMap: [Date: [LS2Datapoint]] = Dictionary.init(grouping: array, by: { (datapoint) -> Date in
             
-            let creationDate = datapoint.header!.acquisitionProvenance.sourceCreationDateTime
-            return self.calendar.startOfDay(for: creationDate)
+            guard let date = self.date(for: datapoint) else {
+                assertionFailure("Could not generate date. What can we do here?")
+                return Date.distantPast
+            }
+            
+            return self.calendar.startOfDay(for: date)
             
         })
         
@@ -250,47 +268,70 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     
     func updateTableViewDataSource(date: Date) {
         
-        self.tableViewDataSource = nil
+//        self.tableViewDataSource = nil
         
-        //dont remove these here
-        //        self.mapView.removeAnnotations(self.annotations.compactMap({$0}))
+        //we will want to sort these based on class specific date selector
         
-        let sortSettings = self.calendarLayout.dataSource.sortSettings
-        guard let rsPredicate = self.calendarLayout.dataSource.predicate,
-            let state = self.store?.state,
-            let dataSource = RSStateSelectors.getDataSource(state, for: self.calendarLayout.dataSource.dataSourceIdentifier),
-            let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: self.context()) else {
-                return
-        }
-        
-        let startingDate = date
-        let endingDate = date.addingTimeInterval(24.0 * 60.0 * 60.0)
-        
-        let substitutions: [String: Any] = [
-            "startingDate": startingDate,
-            "endingDate": endingDate
-        ]
-        
-        let datePredicate = NSPredicate(format: "apSourceCreationDateTime >= $startingDate AND apSourceCreationDateTime <= $endingDate").withSubstitutionVariables(substitutions)
-        
-        let readyCallback: (RSCollectionDataSource) -> () = { [unowned self] collectionDataSource in
+        let datapoints: [LS2Datapoint] = self.datapointsByDate?[date] ?? []
+
+        let pairs: [(LS2Datapoint, Date)] = datapoints.compactMap { (datapoint) -> (LS2Datapoint, Date)? in
+            guard let date = self.date(for: datapoint) else {
+                return nil
+            }
             
-            self.collectionView.reloadData()
-            
+            return (datapoint, date)
         }
         
-        let updateCallback: (RSCollectionDataSource, [Int], [Int], [Int]) -> () = { [unowned self] collectionDataSource, deletions, insertions, modifications in
-            self.collectionView.reloadData()
-        }
+        let ascending = true
+
+        let sortedDatapoints: [LS2Datapoint] = pairs.sorted(by: { (pairA, pairB) -> Bool in
+            return ascending ? pairA.1 < pairB.1 : pairA.1 > pairB.1
+        }).map { $0.0 }
         
-        let predicates: [NSPredicate] = [predicate, datePredicate]
+        self.tableViewDatapoints = sortedDatapoints
         
-        self.tableViewDataSource = dataSource.getCollectionDataSource(
-            predicates: predicates,
-            sortSettings: sortSettings,
-            readyCallback: readyCallback,
-            updateCallback: updateCallback
-        )
+        
+        self.collectionView.reloadData()
+//
+//        //dont remove these here
+//        //        self.mapView.removeAnnotations(self.annotations.compactMap({$0}))
+//
+//        let sortSettings = self.calendarLayout.dataSource.sortSettings
+//        guard let rsPredicate = self.calendarLayout.dataSource.predicate,
+//            let state = self.store?.state,
+//            let dataSource = RSStateSelectors.getDataSource(state, for: self.calendarLayout.dataSource.dataSourceIdentifier),
+//            let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: self.context()) else {
+//                return
+//        }
+//
+//        let startingDate = date
+//        let endingDate = date.addingTimeInterval(24.0 * 60.0 * 60.0)
+//
+//        let substitutions: [String: Any] = [
+//            "startingDate": startingDate,
+//            "endingDate": endingDate
+//        ]
+//
+//        let datePredicate = NSPredicate(format: "apSourceCreationDateTime >= $startingDate AND apSourceCreationDateTime <= $endingDate").withSubstitutionVariables(substitutions)
+//
+//        let readyCallback: (RSCollectionDataSource) -> () = { [unowned self] collectionDataSource in
+//
+//            self.collectionView.reloadData()
+//
+//        }
+//
+//        let updateCallback: (RSCollectionDataSource, [Int], [Int], [Int]) -> () = { [unowned self] collectionDataSource, deletions, insertions, modifications in
+//            self.collectionView.reloadData()
+//        }
+//
+//        let predicates: [NSPredicate] = [predicate, datePredicate]
+//
+//        self.tableViewDataSource = dataSource.getCollectionDataSource(
+//            predicates: predicates,
+//            sortSettings: sortSettings,
+//            readyCallback: readyCallback,
+//            updateCallback: updateCallback
+//        )
         
 //        self.tableViewDataSource = RSRealmCollectionLayoutViewControllerDataSource(
 //            predicates: predicates,
@@ -327,12 +368,9 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
             
             self.calendarView.reloadData()
             
-            guard let selectedDate = self.calendarView.selectedDate else {
-                return
+            if let selectedDate: Date = self.calendarView.selectedDate ?? self.calendarView.today {
+                self.updateTableViewDataSource(date: selectedDate)
             }
-            
-            self.updateTableViewDataSource(date: selectedDate)
-            
         }
         
         let updateCallback: (RSCollectionDataSource, [Int], [Int], [Int]) -> () = { [unowned self] collectionDataSource, deletions, insertions, modifications in
@@ -345,11 +383,9 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
             
             self.calendarView.reloadData()
             
-            guard let selectedDate = self.calendarView.selectedDate else {
-                return
+            if let selectedDate: Date = self.calendarView.selectedDate ?? self.calendarView.today {
+                self.updateTableViewDataSource(date: selectedDate)
             }
-            
-            self.updateTableViewDataSource(date: selectedDate)
             
         }
         
@@ -493,9 +529,13 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         //        collectionView.deselectRow(at: indexPath, animated: true)
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        guard let dataSource = self.tableViewDataSource,
-            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
-                return
+//        guard let dataSource = self.tableViewDataSource,
+//            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
+//                return
+//        }
+        
+        guard let datapoints = self.tableViewDatapoints else {
+            return
         }
         
         //note that we need to filter datapoints prior to indexing into the array
@@ -566,11 +606,17 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         //                return cell
         //        }
         
-        guard let dataSource = self.tableViewDataSource,
-            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
-                let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-                cell.setCellWidth(width: collectionView.bounds.width)
-                return cell
+//        guard let dataSource = self.tableViewDataSource,
+//            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
+//                let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
+//                cell.setCellWidth(width: collectionView.bounds.width)
+//                return cell
+//        }
+        
+        guard let datapoints = self.tableViewDatapoints else {
+            let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
+            cell.setCellWidth(width: collectionView.bounds.width)
+            return cell
         }
         
         let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
@@ -603,9 +649,13 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         // #warning Incomplete implementation, return the number of rows
         //        return self.visibleLayoutItems.count
         
-        guard let dataSource = self.tableViewDataSource,
-            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
-                return 0
+//        guard let dataSource = self.tableViewDataSource,
+//            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
+//                return 0
+//        }
+        
+        guard let datapoints = self.tableViewDatapoints else {
+            return 0
         }
         
         let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
