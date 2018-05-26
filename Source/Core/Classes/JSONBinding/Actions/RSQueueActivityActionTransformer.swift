@@ -11,7 +11,7 @@ import UIKit
 import ReSwift
 import Gloss
 
-open class RSQueueActivityActionTransformer: RSActionTransformer {
+open class RSQueueActivityActionTransformer: RSActionTransformer, RSURLToJSONActionConverter {
     
     open static func supportsType(type: String) -> Bool {
         return "queueActivity" == type
@@ -30,6 +30,28 @@ open class RSQueueActivityActionTransformer: RSActionTransformer {
             return nil
             
         }
+    }
+    
+    open static func supportsURLType(type: String) -> Bool {
+        return "queue_activity" == type
+    }
+    
+    open static func convertURLToJSONAction(queryParams: [String : String], context: [String : AnyObject], store: Store<RSState>) -> JSON? {
+        
+        guard let activityIdentifier: String = queryParams["activity_id"] else {
+            return nil
+        }
+        
+        return [
+            "type": "queueActivity",
+            "activityID": activityIdentifier
+        ]
+        
+//        {
+//        "type": "queueActivity",
+//        "activityID": "initialSurvey"
+//        }
+        
     }
 
 }

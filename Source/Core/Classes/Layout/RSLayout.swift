@@ -25,7 +25,9 @@ public protocol RSLayout: RSIsEqual {
     var onFirstAppearanceActions: [JSON] { get }
     
     var navTitle: String? { get }
+    //deprecated
     var navButtonRight: RSLayoutButton? { get }
+    var rightNavButtons: [RSLayoutButton]? { get }
     var onBackActions: [JSON] { get }
 //    var childRoutes: [JSON] { get }
     func childRoutes(routeManager: RSRouteManager, state: RSState, matchedRoute: RSMatchedRoute?, parentLayout: RSLayout?) -> [RSRoute]

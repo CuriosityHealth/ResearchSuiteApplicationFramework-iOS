@@ -161,7 +161,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTabBarLayout.self,
             RSMoreLayout.self,
             RSCollectionLayout.self,
-            RSCalendarLayout.self
+            RSCalendarLayout.self,
+            RSWebLayout.self
         ]
     }
     
@@ -212,7 +213,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
 //    }
     
     open var openURLDelegates: [RSOpenURLDelegate] {
-        return []
+        return [self.actionManager]
     }
     
     open var actionCreatorTransforms: [RSActionTransformer.Type] {
@@ -264,7 +265,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     open var collectionViewCellGenerators: [RSCollectionViewCellGenerator.Type] {
         return [
-            RSBasicCollectionViewCell.self
+            RSBasicCollectionViewCell.self,
+//            RSCardCollectionViewCell.self
+            RSTextCardCollectionViewCell.self
         ]
     }
     

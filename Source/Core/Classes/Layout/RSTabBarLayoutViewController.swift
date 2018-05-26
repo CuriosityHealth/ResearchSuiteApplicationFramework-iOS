@@ -96,7 +96,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                     let tabBarNavController = RSTabBarNavigationViewController(identifier: tab.identifier, viewController: navController, parentMatchedRoute: self.matchedRoute)
                     tabBarNavController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                     tabBarNavController.title = tab.tabBarTitle
-                    tabBarNavController.tabBarItem = UITabBarItem(title: tab.tabBarTitle, image: nil, selectedImage: nil)
+                    tabBarNavController.tabBarItem = UITabBarItem(title: tab.tabBarTitle, image: tab.image, selectedImage: nil)
                     tabBarNavController.setPath(path: initialPath)
                     navControllerMap[tab.identifier] = tabBarNavController
                 }

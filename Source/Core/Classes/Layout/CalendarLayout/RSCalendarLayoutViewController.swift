@@ -75,8 +75,18 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         // Do any additional setup after loading the view.
         
         self.navigationItem.title = self.layout.navTitle
-        if let rightButton = self.layout.navButtonRight {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
+        if let rightButtons = self.layout.rightNavButtons {
+            
+            let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
+                button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
+            }
+            
+            let rightBarButtons = rightButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
+                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
+            }
+            
+            self.navigationItem.rightBarButtonItems = rightBarButtons
+
         }
         
         self.store?.subscribe(self)
@@ -109,12 +119,14 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         border.frame = CGRect(x: 0, y: 0, width: self.collectionView.frame.width, height: 1.0)
         
         self.collectionView.layer.addSublayer(border)
+        self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
         
         self.collectionViewCellManager = RSApplicationDelegate.appDelegate.collectionViewCellManager
         self.collectionViewCellManager.registerCellsFor(collectionView: self.collectionView!)
         
-        if let flowLayout = self.collectionView?.collectionViewLayout as? UICollectionViewFlowLayout {
-            flowLayout.estimatedItemSize = CGSize(width: 1, height: 1)
+        if let flowLayout = self.collectionView?.collectionViewLayout as? UICollectionViewFlowLayout,
+            let window = UIApplication.shared.windows.first {
+            flowLayout.estimatedItemSize = CGSize(width: window.frame.size.width, height: window.frame.size.width)
         }
         
         //        self.updateDataSource(firstTime: true, filterWindow: nil)
@@ -159,15 +171,6 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         super.viewDidAppear(animated)
         self.layoutDidAppear(initialAppearance: !self.hasAppeared)
         self.hasAppeared = true
-    }
-    
-    @objc
-    func tappedRightBarButton() {
-        guard let button = self.layout.navButtonRight else {
-            return
-        }
-        
-        button.onTapActions.forEach { self.processAction(action: $0) }
     }
     
     open func backTapped() {

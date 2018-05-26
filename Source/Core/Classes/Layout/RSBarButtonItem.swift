@@ -1,0 +1,44 @@
+//
+//  RSBarButtonItem.swift
+//  Pods
+//
+//  Created by James Kizer on 5/25/18.
+//
+
+import UIKit
+
+open class RSBarButtonItem: UIBarButtonItem {
+    
+    open let layoutButton: RSLayoutButton
+    open let onTap: ((RSBarButtonItem) -> ())?
+    
+    init?(layoutButton: RSLayoutButton, onTap: ((RSBarButtonItem) -> ())?) {
+        
+        self.layoutButton = layoutButton
+        self.onTap = onTap
+        super.init()
+        self.style = .plain
+        self.target = self
+        self.action = #selector(tappedButton)
+        if let image = layoutButton.image {
+            self.image = image
+        }
+        else if let title = layoutButton.title {
+            self.title = title
+        }
+        else {
+            return nil
+        }
+        
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc
+    func tappedButton() {
+        self.onTap?(self)
+    }
+
+}

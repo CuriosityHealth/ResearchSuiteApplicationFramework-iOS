@@ -61,8 +61,16 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         // self.clearsSelectionOnViewWillAppear = false
         
         self.navigationItem.title = self.layout.navTitle
-        if let rightButton = self.layout.navButtonRight {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
+        if let rightButtons = self.layout.rightNavButtons {
+            let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
+                button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
+            }
+            
+            let rightBarButtons = rightButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
+                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
+            }
+            
+            self.navigationItem.rightBarButtonItems = rightBarButtons
         }
         
         self.store?.subscribe(self)
@@ -78,6 +86,8 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             //estimate square items
             flowLayout.estimatedItemSize = CGSize(width: window.frame.size.width, height: window.frame.size.width)
         }
+        
+        self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
         
         //        self.collectionView!.backgroundColor = UIColor.blue
         
@@ -164,15 +174,6 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         super.viewDidAppear(animated)
         self.layoutDidAppear(initialAppearance: !self.hasAppeared)
         self.hasAppeared = true
-    }
-    
-    @objc
-    func tappedRightBarButton() {
-        guard let button = self.layout.navButtonRight else {
-            return
-        }
-        
-        button.onTapActions.forEach { self.processAction(action: $0) }
     }
     
     open func backTapped() {

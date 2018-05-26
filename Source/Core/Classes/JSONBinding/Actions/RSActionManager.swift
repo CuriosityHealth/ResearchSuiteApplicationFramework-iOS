@@ -10,6 +10,7 @@
 import UIKit
 import Gloss
 import ReSwift
+import ResearchSuiteExtensions
 
 
 public protocol RSActionManagerProvider {
@@ -54,7 +55,27 @@ public protocol RSActionManagerDelegate: class {
 
 
 
-open class RSActionManager: NSObject {
+extension URL {
+    var queryDictionary: [String: String]? {
+        guard let query = URLComponents(string: self.absoluteString)?.query else { return nil}
+        
+        var queryStrings = [String: String]()
+        for pair in query.components(separatedBy: "&") {
+            
+            let key = pair.components(separatedBy: "=")[0]
+            
+            let value = pair
+                .components(separatedBy:"=")[1]
+                .replacingOccurrences(of: "+", with: " ")
+                .removingPercentEncoding ?? ""
+            
+            queryStrings[key] = value
+        }
+        return queryStrings
+    }
+}
+
+open class RSActionManager: NSObject, RSOpenURLDelegate {
     
     public weak var delegate: RSActionManagerDelegate?
     
@@ -65,6 +86,32 @@ open class RSActionManager: NSObject {
         ) {
         self.actionCreatorTransforms = actionCreatorTransforms ?? []
         super.init()
+    }
+    
+    open func handleURL(app: UIApplication, url: URL, options: [UIApplicationOpenURLOptionsKey : Any], context: [String: AnyObject]) -> Bool {
+        
+        guard let store = context["store"] as? Store<RSState>,
+            let actionType = url.host,
+            let queryParams = url.queryDictionary else {
+            return false
+        }
+ 
+        let action: JSON = [:]
+        for actionTransformer in self.actionCreatorTransforms {
+            
+            if let urlToJSONTransformer = actionTransformer as? RSURLToJSONActionConverter.Type,
+                urlToJSONTransformer.supportsURLType(type: actionType),
+                let action = urlToJSONTransformer.convertURLToJSONAction(queryParams: queryParams, context: context, store: store) {
+                
+                self.processAction(action: action, context: context, store: store)
+                
+                return true
+                
+            }
+            
+        }
+        
+        return false
     }
     
     open func processAction(action: JSON, context: [String: AnyObject], store: Store<RSState>) {
@@ -107,5 +154,7 @@ open class RSActionManager: NSObject {
     open func processActions(actions: [JSON], context: [String: AnyObject], store: Store<RSState>) {
         actions.forEach { self.processAction(action: $0, context: context, store: store) }
     }
+    
+    
 
 }

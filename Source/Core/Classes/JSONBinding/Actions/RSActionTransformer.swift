@@ -20,3 +20,8 @@ public protocol RSActionTransformer {
     static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)?
     
 }
+
+public protocol RSURLToJSONActionConverter {
+    static func supportsURLType(type: String) -> Bool
+    static func convertURLToJSONAction(queryParams: [String: String], context: [String: AnyObject], store: Store<RSState>) -> JSON?
+}

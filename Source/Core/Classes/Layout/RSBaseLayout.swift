@@ -18,6 +18,7 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
     open let onFirstAppearanceActions: [JSON]
     open var navTitle: String?
     open var navButtonRight: RSLayoutButton?
+    open var rightNavButtons: [RSLayoutButton]?
     open var onBackActions: [JSON]
     open var childRouteJSON: [JSON]
     open var element: JSON
@@ -35,6 +36,11 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
         self.onFirstAppearanceActions = "onFirstAppearance" <~~ json ?? []
         self.navTitle = "navTitle" <~~ json
         self.navButtonRight = "navButtonRight" <~~ json
+    
+        if let rightNavButtonsJSON: [JSON] = "rightNavButtons" <~~ json {
+            self.rightNavButtons = rightNavButtonsJSON.compactMap{ RSLayoutButton(json: $0) }
+        }
+        
         self.onBackActions = "onBack" <~~ json ?? []
         self.childRouteJSON = "childRoutes" <~~ json ?? []
         self.element = json
