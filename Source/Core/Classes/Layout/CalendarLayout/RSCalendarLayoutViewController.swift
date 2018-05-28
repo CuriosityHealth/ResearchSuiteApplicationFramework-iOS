@@ -53,6 +53,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
 //    var tableViewDataSource: RSCollectionDataSource?
     var tableViewDatapoints: [LS2Datapoint]?
     
+    var filteredDatapointClasses: [String]!
+    
     @IBOutlet weak var calendarView: FSCalendar!
     @IBOutlet weak var calendarHeightConstraint: NSLayoutConstraint!
     
@@ -75,6 +77,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         // Do any additional setup after loading the view.
         
         self.navigationItem.title = self.layout.navTitle
+        
+        var rightBarButtonItems: [UIBarButtonItem] = []
         if let rightButtons = self.layout.rightNavButtons {
             
             let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
@@ -85,9 +89,36 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
                 return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
             }
             
-            self.navigationItem.rightBarButtonItems = rightBarButtons
-
+            rightBarButtonItems = rightBarButtonItems + rightBarButtons
         }
+        
+        if self.calendarLayout.datapointClasses.count > 1,
+            let filterOptionsJSON = self.calendarLayout.filterOptions {
+            
+            let filterButton: UIBarButtonItem = {
+                
+                if let image: UIImage = {
+                    guard let imageString: String = "image" <~~ filterOptionsJSON else {
+                        return nil
+                    }
+                    
+                    return UIImage(named: imageString)
+                    }() {
+                    return UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(self.filterClicked(_:)))
+                }
+                else {
+                    return UIBarButtonItem(title: "Filter", style: .plain, target: self, action:  #selector(self.filterClicked(_:)))
+                }
+                
+            }()
+            
+            rightBarButtonItems = rightBarButtonItems + [filterButton]
+            
+        }
+        
+        self.navigationItem.rightBarButtonItems = rightBarButtonItems
+        
+        
         
         self.store?.subscribe(self)
         
@@ -126,7 +157,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         if let flowLayout = self.collectionView?.collectionViewLayout as? UICollectionViewFlowLayout,
             let window = UIApplication.shared.windows.first {
-            flowLayout.estimatedItemSize = CGSize(width: window.frame.size.width, height: window.frame.size.width)
+            let cellWidth = window.frame.size.width - (flowLayout.sectionInset.right + flowLayout.sectionInset.left)
+            flowLayout.estimatedItemSize = CGSize(width: cellWidth, height: cellWidth)
         }
         
         //        self.updateDataSource(firstTime: true, filterWindow: nil)
@@ -159,7 +191,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         super.viewWillAppear(animated)
         
         if self.calendarDataSource == nil {
-            self.updateCalendarDataSource(firstTime: true)
+            self.filteredDatapointClasses = self.calendarLayout.datapointClasses.map {  $0.identifier  }
+            self.updateCalendarDataSource(firstTime: true, includedDatapointClasses: self.filteredDatapointClasses)
             if let today = self.calendarView.today {
                 self.updateTableViewDataSource(date: today)
             }
@@ -171,6 +204,34 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         super.viewDidAppear(animated)
         self.layoutDidAppear(initialAppearance: !self.hasAppeared)
         self.hasAppeared = true
+    }
+    
+    @objc func filterClicked(_ sender: UIBarButtonItem) {
+        
+        let vc = RSFilterPopoverTableViewController()
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .fullScreen
+        
+        let items: [(RSFilterPopoverItem, Bool)] = self.calendarLayout.datapointClasses.map { datapointClass in
+            let included = self.filteredDatapointClasses.contains(datapointClass.identifier)
+            return (RSFilterPopoverItem(identifier: datapointClass.identifier, prompt: datapointClass.filterPrompt), included)
+        }
+        
+        let onDismiss: ([(RSFilterPopoverItem, Bool)]?) -> () = { pairs in
+            
+            if let pairs = pairs {
+                self.filteredDatapointClasses = pairs.filter { $0.1 }.map { $0.0.identifier }
+                self.updateCalendarDataSource(firstTime: false, includedDatapointClasses: self.filteredDatapointClasses)
+            }
+            
+            nav.dismiss(animated: true, completion: nil)
+        }
+        
+        vc.onDismiss = onDismiss
+        vc.update(items: items)
+        
+        present(nav, animated: true, completion: nil)
+        
     }
     
     open func backTapped() {
@@ -344,20 +405,28 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
 //        )
     }
     
-    func updateCalendarDataSource(firstTime: Bool) {
+    func updateCalendarDataSource(firstTime: Bool, includedDatapointClasses: [String]) {
         
         self.calendarDataSource = nil
         
         //dont remove these here
         //        self.mapView.removeAnnotations(self.annotations.compactMap({$0}))
         
-        let sortSettings = self.calendarLayout.dataSource.sortSettings
-        guard let rsPredicate = self.calendarLayout.dataSource.predicate,
-            let state = self.store?.state,
-            let dataSource = RSStateSelectors.getDataSource(state, for: self.calendarLayout.dataSource.dataSourceIdentifier),
-            let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: self.context()) else {
-                return
+        
+        //take all the calsses
+        let datapointClasses = self.calendarLayout.datapointClasses.filter( { includedDatapointClasses.contains($0.identifier) } )
+        let dataSourceDescriptors: [RSCollectionDataSourceDescriptor] = datapointClasses.map { $0.dataSource }
+        guard let state = self.store?.state else {
+            return
         }
+        
+//        let sortSettings = self.calendarLayout.dataSource.sortSettings
+//        guard let rsPredicate = self.calendarLayout.dataSource.predicate,
+//            let state = self.store?.state,
+//            let dataSource = RSStateSelectors.getDataSource(state, for: self.calendarLayout.dataSource.dataSourceIdentifier),
+//            let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: self.context()) else {
+//                return
+//        }
         
         self.datapointClassifier = RSDatapointClassifier.createClassifier(datapointClasses: self.calendarLayout.datapointClasses, state: state, context: self.context())
         
@@ -392,14 +461,17 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
             
         }
         
-//        let predicates: [NSPredicate] = [predicate].compactMap({ $0 })
+        self.calendarDataSource = RSCompositeCollectionDataSource(identifier: self.calendarLayout.identifier, childDataSourceDescriptors: dataSourceDescriptors, readyCallback: readyCallback, updateCallback: updateCallback, state: state, context: self.context())
         
-        self.calendarDataSource = dataSource.getCollectionDataSource(
-            predicates: [predicate],
-            sortSettings: sortSettings,
-            readyCallback: readyCallback,
-            updateCallback: updateCallback
-        )
+//        let predicates: [NSPredicate] = [predicate].compactMap({ $0 })
+//
+//        self.calendarDataSource = dataSource.getCollectionDataSource(
+//            identifier: self.calendarLayout.dataSource.identifier,
+//            predicates: [predicate],
+//            sortSettings: sortSettings,
+//            readyCallback: readyCallback,
+//            updateCallback: updateCallback
+//        )
         
 //        self.calendarDataSource = RSRealmCollectionLayoutViewControllerDataSource(
 //            predicates: predicates,
@@ -445,22 +517,22 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         self.matchedRoute = matchedRoute
     }
     
-    func classMapForDate(date: Date) -> [RSCalendarDatapointClass: [LS2Datapoint]] {
+    func classMapForDate(date: Date) -> [RSDatapointClass: [LS2Datapoint]] {
         
         guard let datapointsForDate = self.datapointsByDate?[date] else {
             return [:]
         }
         
-        let classifiedDatapoints: [(LS2Datapoint, RSCalendarDatapointClass)] = datapointsForDate.compactMap { (datapoint) -> (LS2Datapoint, RSCalendarDatapointClass)? in
+        let classifiedDatapoints: [(LS2Datapoint, RSDatapointClass)] = datapointsForDate.compactMap { (datapoint) -> (LS2Datapoint, RSDatapointClass)? in
             
-            guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) as? RSCalendarDatapointClass else {
+            guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) as? RSDatapointClass else {
                 return nil
             }
             
             return (datapoint, datapointClass)
         }
         
-        let classMap: [RSCalendarDatapointClass: [(LS2Datapoint, RSCalendarDatapointClass)]] = Dictionary.init(grouping: classifiedDatapoints) { (pair) -> RSCalendarDatapointClass in
+        let classMap: [RSDatapointClass: [(LS2Datapoint, RSDatapointClass)]] = Dictionary.init(grouping: classifiedDatapoints) { (pair) -> RSDatapointClass in
             return pair.1
         }
         
@@ -488,9 +560,9 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         let classColors = classes.compactMap { (datapointClass) -> UIColor? in
             
-            guard let colorJSON: JSON = "eventColor" <~~ datapointClass.calendarAppearance,
+            guard let cellTintJSON: JSON = datapointClass.cellTint,
                 let state = self.state,
-                let color: UIColor = RSValueManager.processValue(jsonObject: colorJSON, state: state, context: self.context())?.evaluate() as? UIColor else {
+                let color: UIColor = RSValueManager.processValue(jsonObject: cellTintJSON, state: state, context: self.context())?.evaluate() as? UIColor else {
                     return nil
             }
             
@@ -546,7 +618,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
         
-        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) as? RSCalendarDatapointClass,
+        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) as? RSDatapointClass,
             let datapointJSON = datapoint.toJSON()  else {
                 return
         }
@@ -581,44 +653,16 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         
-        //        let cell = tableView.dequeueReusableCell(withIdentifier: "default", for: indexPath)
-        
-        
-        //        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "basicCollectionViewCell", for: indexPath) as! RSBasicCollectionViewCell
-        //        cell.setCellWidth(width: collectionView.bounds.width)
-        
-        //        guard let dataSource = self.tableViewDataSource,
-        //            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
-        //                return self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-        //        }
-        //
-        //        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
-        //
-        //        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
-        //
-        //        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) as? RSCalendarDatapointClass,
-        //            let cell = self.collectionViewCellManager.cell(cellIdentifier: datapointClass.cellIdentifier, collectionView: collectionView, indexPath: indexPath) else {
-        //            return self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-        //        }
-        //
-        //        let cellIdentifier = datapointClass.cellIdentifier
-        //
-        //        guard let datapointJSON = datapoint.toJSON(),
-        //            let state = self.state,
-        //            let paramMap = self.createParameterMap(datapoint: datapoint, mapping: datapointClass.cellMapping) else {
-        //                return cell
-        //        }
-        
-//        guard let dataSource = self.tableViewDataSource,
-//            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
-//                let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-//                cell.setCellWidth(width: collectionView.bounds.width)
-//                return cell
-//        }
-        
-        guard let datapoints = self.tableViewDatapoints else {
+        guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else {
             let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
             cell.setCellWidth(width: collectionView.bounds.width)
+            return cell
+        }
+        
+        let cellWidth = collectionView.bounds.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right)
+        guard let datapoints = self.tableViewDatapoints else {
+            let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
+            cell.setCellWidth(width: cellWidth)
             return cell
         }
         
@@ -629,17 +673,23 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint),
             let cell = self.collectionViewCellManager.cell(cellIdentifier: datapointClass.cellIdentifier, collectionView: collectionView, indexPath: indexPath) else {
                 let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-                cell.setCellWidth(width: collectionView.bounds.width)
+                cell.setCellWidth(width: cellWidth)
                 return cell
         }
         
-        cell.setCellWidth(width: collectionView.bounds.width)
+        cell.setCellWidth(width: cellWidth)
         
         guard let paramMap = self.createParameterMap(datapoint: datapoint, mapping: datapointClass.cellMapping) else {
             return cell
         }
         
         cell.configure(paramMap: paramMap)
+        
+        if let cellTintJSON: JSON = datapointClass.cellTint,
+            let state = self.state,
+            let color: UIColor = RSValueManager.processValue(jsonObject: cellTintJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+            cell.setCellTint(color: color)
+        }
         
         return cell
     }

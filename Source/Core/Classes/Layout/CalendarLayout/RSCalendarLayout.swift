@@ -8,22 +8,22 @@
 import UIKit
 import Gloss
 
-open class RSCalendarDatapointClass: RSDatapointClass {
-    
-    open let calendarAppearance: JSON
-    
-    public required init?(json: JSON) {
-        
-        guard let calendarAppearance: JSON = "calendarAppearance" <~~ json else {
-            return nil
-        }
-        
-        self.calendarAppearance = calendarAppearance
-        super.init(json: json)
-        
-    }
-    
-}
+//open class RSCalendarDatapointClass: RSDatapointClass {
+//
+//    open let calendarAppearance: JSON
+//
+//    public required init?(json: JSON) {
+//
+//        guard let calendarAppearance: JSON = "calendarAppearance" <~~ json else {
+//            return nil
+//        }
+//
+//        self.calendarAppearance = calendarAppearance
+//        super.init(json: json)
+//
+//    }
+//
+//}
 
 open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
     
@@ -35,18 +35,19 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
         return RSCalendarLayout(json: jsonObject)
     }
     
-    open let dataSource: RSCollectionDataSourceDescriptor
-    open let datapointClasses: [RSCalendarDatapointClass]
+//    open let dataSource: RSCollectionDataSourceDescriptor
+    open let filterOptions: JSON?
+    open let datapointClasses: [RSDatapointClass]
     
     required public init?(json: JSON) {
         
-        guard let dataSource: RSCollectionDataSourceDescriptor = "collectionDataSource" <~~ json,
-            let datapointClassesJSON: [JSON] = "datapointClasses" <~~ json else {
+        guard let datapointClassesJSON: [JSON] = "datapointClasses" <~~ json else {
                 return nil
         }
         
-        self.dataSource = dataSource
-        self.datapointClasses = datapointClassesJSON.compactMap({ RSCalendarDatapointClass(json: $0) })
+//        self.dataSource = dataSource
+        self.datapointClasses = datapointClassesJSON.compactMap({ RSDatapointClass(json: $0) })
+        self.filterOptions = "filterOptions" <~~ json
         
         super.init(json: json)
     }

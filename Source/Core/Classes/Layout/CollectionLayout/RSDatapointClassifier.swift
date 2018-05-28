@@ -21,7 +21,7 @@ open class RSDatapointClassifier: NSObject {
         
         let mappingFunc: (RSDatapointClass) -> (RSDatapointClass, NSPredicate)? = { datapointClass in
             
-            if let rsPredicate = datapointClass.predicate {
+            if let rsPredicate = datapointClass.dataSource.predicate {
                 guard let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: context) else {
                     return nil
                 }

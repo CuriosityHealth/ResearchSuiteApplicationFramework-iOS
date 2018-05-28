@@ -18,17 +18,16 @@ open class RSCollectionLayout: RSBaseLayout, RSLayoutGenerator {
         return RSCollectionLayout(json: jsonObject)
     }
     
-    open let dataSource: RSCollectionDataSourceDescriptor
+//    open let dataSource: RSCollectionDataSourceDescriptor
     open let datapointClasses: [RSDatapointClass]
     
     required public init?(json: JSON) {
         
-        guard let dataSource: RSCollectionDataSourceDescriptor = "collectionDataSource" <~~ json,
-            let datapointClassesJSON: [JSON] = "datapointClasses" <~~ json else {
+        guard let datapointClassesJSON: [JSON] = "datapointClasses" <~~ json else {
                 return nil
         }
         
-        self.dataSource = dataSource
+//        self.dataSource = dataSource
         self.datapointClasses = datapointClassesJSON.compactMap({ RSDatapointClass(json: $0) })
         
         super.init(json: json)

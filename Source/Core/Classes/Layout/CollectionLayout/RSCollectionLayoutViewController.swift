@@ -79,12 +79,11 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         self.collectionViewCellManager = RSApplicationDelegate.appDelegate.collectionViewCellManager
         self.collectionViewCellManager.registerCellsFor(collectionView: self.collectionView!)
         self.collectionView?.isPrefetchingEnabled = false
-        
+
         if let flowLayout = self.collectionView?.collectionViewLayout as? UICollectionViewFlowLayout,
             let window = UIApplication.shared.windows.first {
-            
-            //estimate square items
-            flowLayout.estimatedItemSize = CGSize(width: window.frame.size.width, height: window.frame.size.width)
+            let cellWidth = window.frame.size.width - (flowLayout.sectionInset.right + flowLayout.sectionInset.left)
+            flowLayout.estimatedItemSize = CGSize(width: cellWidth, height: cellWidth)
         }
         
         self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
@@ -116,13 +115,19 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         
         self.collectionDataSource = nil
         
-        let sortSettings = self.collectionLayout.dataSource.sortSettings
-        guard let rsPredicate = self.collectionLayout.dataSource.predicate,
-            let state = self.store?.state,
-            let dataSource = RSStateSelectors.getDataSource(state, for: self.collectionLayout.dataSource.dataSourceIdentifier),
-            let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: self.context()) else {
-                return
+        let datapointClasses = self.collectionLayout.datapointClasses
+        let dataSourceDescriptors: [RSCollectionDataSourceDescriptor] = datapointClasses.map { $0.dataSource }
+        guard let state = self.store?.state else {
+            return
         }
+        
+//        let sortSettings = self.collectionLayout.dataSource.sortSettings
+//        guard let rsPredicate = self.collectionLayout.dataSource.predicate,
+//            let state = self.store?.state,
+//            let dataSource = RSStateSelectors.getDataSource(state, for: self.collectionLayout.dataSource.dataSourceIdentifier),
+//            let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: self.context()) else {
+//                return
+//        }
         
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "updateDataSource - creating classifier")
         self.datapointClassifier = RSDatapointClassifier.createClassifier(datapointClasses: self.collectionLayout.datapointClasses, state: state, context: self.context())
@@ -152,12 +157,22 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             //            self.collectionView!.endUpdates()
         }
         
-        self.collectionDataSource = dataSource.getCollectionDataSource(
-            predicates: [predicate],
-            sortSettings: sortSettings,
+        self.collectionDataSource = RSCompositeCollectionDataSource(
+            identifier: self.collectionLayout.identifier,
+            childDataSourceDescriptors: dataSourceDescriptors,
             readyCallback: readyCallback,
-            updateCallback: updateCallback
+            updateCallback: updateCallback,
+            state: state,
+            context: self.context()
         )
+        
+//        self.collectionDataSource = dataSource.getCollectionDataSource(
+//            identifier: self.collectionLayout.dataSource.identifier,
+//            predicates: [predicate],
+//            sortSettings: sortSettings,
+//            readyCallback: readyCallback,
+//            updateCallback: updateCallback
+//        )
         
     }
     
@@ -238,12 +253,21 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
     
     override open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
+        
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "getting cell at indexPath \(indexPath)")
+        
+        guard let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else {
+            let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
+            cell.setCellWidth(width: collectionView.bounds.width)
+            return cell
+        }
+        
+        let cellWidth = collectionView.bounds.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right)
         
         guard let dataSource = self.collectionDataSource,
             let datapoints: [LS2Datapoint] = dataSource.toArray() else {
                 let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-                cell.setCellWidth(width: collectionView.bounds.width)
+                cell.setCellWidth(width: cellWidth)
                 return cell
         }
         
@@ -258,11 +282,11 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint),
             let cell = self.collectionViewCellManager.cell(cellIdentifier: datapointClass.cellIdentifier, collectionView: collectionView, indexPath: indexPath) else {
                 let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-                cell.setCellWidth(width: collectionView.bounds.width)
+                cell.setCellWidth(width: cellWidth)
                 return cell
         }
         
-        cell.setCellWidth(width: collectionView.bounds.width)
+        cell.setCellWidth(width: cellWidth)
         
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "Generating param map")
         guard let paramMap = self.createParameterMap(datapoint: datapoint, mapping: datapointClass.cellMapping) else {
@@ -272,6 +296,12 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "configuring cell")
         cell.configure(paramMap: paramMap)
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "cell configured")
+        
+        if let cellTintJSON: JSON = datapointClass.cellTint,
+            let state = self.state,
+            let color: UIColor = RSValueManager.processValue(jsonObject: cellTintJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+            cell.setCellTint(color: color)
+        }
         
         return cell
     }

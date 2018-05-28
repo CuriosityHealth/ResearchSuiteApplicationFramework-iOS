@@ -19,24 +19,33 @@ open class RSDatapointClass: JSONDecodable, Hashable, Equatable {
     }
     
     public let identifier: String
+    public let filterPrompt: String
     public let order: Int
-    public let predicate: RSPredicate?
+    open let dataSource: RSCollectionDataSourceDescriptor
     public let cellIdentifier: String
+    public let cellTint: JSON?
     public let cellMapping: [String: JSON]
     public let onTapActions: [JSON]
     public let dateSelector: ((LS2Datapoint) -> Date?)
     
     public required init?(json: JSON) {
+        
+        debugPrint(json)
+        
         guard let identifier: String = "identifier" <~~ json,
+            let collectionDataSourceJSON: JSON = "collectionDataSource" <~~ json,
+            let dataSource = RSCollectionDataSourceDescriptor(json: collectionDataSourceJSON),
             let cellIdentifier: String = "cellIdentifier" <~~ json,
             let cellMapping: [String: JSON] = "cellMapping" <~~ json else {
                 return nil
         }
         
         self.identifier = identifier
+        self.filterPrompt = "filterPrompt" <~~ json ?? identifier
         self.order = "order" <~~ json ?? 0
-        self.predicate = "predicate" <~~ json
+        self.dataSource = dataSource
         self.cellIdentifier = cellIdentifier
+        self.cellTint = "cellTint" <~~ json
         self.cellMapping = cellMapping
         self.onTapActions = "onTap" <~~ json ?? []
         

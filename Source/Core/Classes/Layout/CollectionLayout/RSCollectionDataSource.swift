@@ -11,15 +11,18 @@ import LS2SDK
 
 open class RSCollectionDataSourceDescriptor: JSONDecodable {
 
-    let dataSourceIdentifier: String
-    let predicate: RSPredicate?
-    let sortSettings: RSSortSettings?
+    open let identifier: String
+    open let dataSourceIdentifier: String
+    open let predicate: RSPredicate?
+    open let sortSettings: RSSortSettings?
     
     required public init?(json: JSON) {
-        guard let dataSourceIdentifier: String = "dataSourceIdentifier" <~~ json else {
+        guard let identifier: String = "identifier" <~~ json,
+            let dataSourceIdentifier: String = "dataSourceIdentifier" <~~ json else {
             return nil
         }
         
+        self.identifier = identifier
         self.dataSourceIdentifier = dataSourceIdentifier
         self.predicate = "predicate" <~~ json
         self.sortSettings = "sort" <~~ json
@@ -41,6 +44,7 @@ open class RSCollectionDataSourceDescriptor: JSONDecodable {
 
 public protocol RSCollectionDataSource {
     
+    var identifier: String { get }
     var count: Int? { get }
     //    var updateCallback: ((Int, Int, Int) -> ())? { get set }
     func get(for index: Int) -> LS2Datapoint?

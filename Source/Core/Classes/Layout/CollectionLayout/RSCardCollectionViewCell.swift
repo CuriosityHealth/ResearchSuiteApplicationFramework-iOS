@@ -33,8 +33,7 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         let containerView = UIView()
         self.contentView.addSubview(containerView)
         containerView.snp.makeConstraints { (make) in
-            make.width.equalToSuperview().offset(-40)
-            make.height.equalToSuperview().offset(-20)
+            make.width.height.equalToSuperview()
             make.center.equalToSuperview()
         }
         
@@ -97,87 +96,6 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
         verticalStackView.addArrangedSubview(RSBasicCollectionViewCell.spacingView(axis: .vertical))
         
-//        let contentStackView = UIStackView()
-//        verticalStackView.addArrangedSubview(contentStackView)
-//
-//        contentStackView.axis = .horizontal
-//        contentStackView.spacing = 8.0
-//
-//        contentStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
-//        contentStackView.addArrangedSubview(self.contentStackView)
-//        contentStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
-        
-        
-        //        self.textLabel = UILabel()
-        //        self.textLabel.numberOfLines = 0
-        //        self.detailTextLabel = UILabel()
-        //        self.detailTextLabel.numberOfLines = 0
-        
-        
-        
-        //        verticalStackView.addArrangedSubview(RSBasicCollectionViewCell.spacingView(axis: .vertical))
-        //
-        //        let headerStackView = UIStackView()
-        //        verticalStackView.addArrangedSubview(headerStackView)
-        //
-        //        headerStackView.axis = .horizontal
-        //        headerStackView.spacing = 8.0
-        //
-        //        headerStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
-        //
-        //        self.headerLabel = RSLabel()
-        //        self.headerLabel.numberOfLines = 0
-        //        headerStackView.addArrangedSubview(self.headerLabel)
-        //
-        //        headerStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
-        //
-        //        self.combinedMapImageView = UIView()
-        //        self.combinedMapImageView.snp.makeConstraints { (make) in
-        //            make.height.equalTo(self.combinedMapImageView.snp.width)
-        //        }
-        //
-        //        verticalStackView.addArrangedSubview(self.combinedMapImageView)
-        //
-        //
-        //
-        //        let mapView = MKMapView(frame: CGRect.zero)
-        //        self.combinedMapImageView.addSubview(mapView)
-        //        mapView.snp.makeConstraints { (make) in
-        //            make.height.width.equalToSuperview()
-        //            make.center.equalToSuperview()
-        //        }
-        //
-        //        mapView.delegate = self
-        //        mapView.isUserInteractionEnabled = false
-        //        //        verticalStackView.addArrangedSubview(mapView)
-        //
-        //        self.mapView = mapView
-        //
-        //        let imageView = UIImageView()
-        //        self.combinedMapImageView.addSubview(imageView)
-        //        imageView.snp.makeConstraints { (make) in
-        //            make.height.width.equalToSuperview()
-        //            make.center.equalToSuperview()
-        //        }
-        //
-        //        self.mapImageView = imageView
-        //
-        //        let detailStackView = UIStackView()
-        //        verticalStackView.addArrangedSubview(detailStackView)
-        //
-        //        detailStackView.axis = .vertical
-        //        detailStackView.spacing = 8.0
-        //
-        //        self.titleLabel = RSTitleLabel()
-        //        self.titleLabel.numberOfLines = 0
-        //        detailStackView.addArrangedSubview(self.titleLabel)
-        //
-        //        self.subtitleLabel = RSTextLabel()
-        //        self.subtitleLabel.numberOfLines = 0
-        //        detailStackView.addArrangedSubview(self.subtitleLabel)
-        //
-        //        verticalStackView.addArrangedSubview(RSBasicCollectionViewCell.spacingView(axis: .vertical))
-        
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -189,6 +107,7 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         self.titleLabel.text = nil
         self.subtitleLabel.text = nil
         self.iconImageView.image = nil
+        self.iconImageView.tintColor = nil
         
         super.prepareForReuse()
         
@@ -200,7 +119,7 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
         if let iconString = paramMap["icon"] as? String,
             let icon = UIImage(named: iconString) {
-            self.iconImageView.image = icon
+            self.iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
         }
         
         if let title = paramMap["title"] as? String {
@@ -211,6 +130,10 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
             self.subtitleLabel.text = subtitle
         }
         
+    }
+    
+    override open func setCellTint(color: UIColor) {
+        self.iconImageView.tintColor = color
     }
     
 }

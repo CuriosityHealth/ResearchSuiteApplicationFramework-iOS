@@ -15,17 +15,19 @@ public protocol RSRealmDataSource: RSDataSource {
 
 open class RSRealmCollectionDataSource: RSCollectionDataSource {
     
+    open let identifier: String
 //    public typealias Element = LS2Datapoint
     var results: Results<LS2RealmDatapoint>? = nil
     var notificationToken: NotificationToken? = nil
     
-    public init?(databaseManager: LS2DatabaseManager, predicates: [NSPredicate], sortSettings: RSSortSettings?) {
+    public init?(identifier: String, databaseManager: LS2DatabaseManager, predicates: [NSPredicate], sortSettings: RSSortSettings?) {
         
         guard let realm = databaseManager.getRealm(),
             let objects = realm.objects(LS2RealmDatapoint.self) else {
                 return nil
         }
         
+        self.identifier = identifier
         
         let filteredObjects = predicates.reduce(objects, { (accObjects, predicate) -> Results<LS2RealmDatapoint> in
             return accObjects.filter(predicate)
@@ -44,13 +46,14 @@ open class RSRealmCollectionDataSource: RSCollectionDataSource {
         
     }
     
-    public init?(databaseManager: LS2DatabaseManager, predicates: [NSPredicate], sortSettings: RSSortSettings?, readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ())) {
-           
+    public init?(identifier: String, databaseManager: LS2DatabaseManager, predicates: [NSPredicate], sortSettings: RSSortSettings?, readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ())) {
+        
         guard let realm = databaseManager.getRealm(),
             let objects = realm.objects(LS2RealmDatapoint.self) else {
                 return nil
         }
 
+        self.identifier = identifier
         
         let filteredObjects = predicates.reduce(objects, { (accObjects, predicate) -> Results<LS2RealmDatapoint> in
             return accObjects.filter(predicate)

@@ -41,8 +41,8 @@ import LS2SDK
 
 public protocol RSDataSource  {
     
-    func getCollectionDataSource(predicates: [NSPredicate], sortSettings: RSSortSettings?) -> RSCollectionDataSource?
-    func getCollectionDataSource(predicates: [NSPredicate], sortSettings: RSSortSettings?, readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ())) -> RSCollectionDataSource?
+    func getCollectionDataSource(identifier: String, predicates: [NSPredicate], sortSettings: RSSortSettings?) -> RSCollectionDataSource?
+    func getCollectionDataSource(identifier: String, predicates: [NSPredicate], sortSettings: RSSortSettings?, readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ())) -> RSCollectionDataSource?
     
     
 
