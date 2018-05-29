@@ -1,5 +1,5 @@
 //
-//  RSDatapointClassifier.swift
+//  RSOldDatapointClassifier.swift
 //  Pods
 //
 //  Created by James Kizer on 5/18/18.
@@ -9,7 +9,13 @@ import UIKit
 import Gloss
 import LS2SDK
 
-open class RSDatapointClassifier: NSObject {
+//open class RSDatapointClassifier: NSObject {
+//    
+//    static func createClassifier
+//    
+//}
+
+open class RSOldDatapointClassifier: NSObject {
     
     private let classToPredicateMap: [RSDatapointClass: NSPredicate]
     
@@ -17,21 +23,24 @@ open class RSDatapointClassifier: NSObject {
     // it doesn;t have to be classified again
     private var datapointToClassMap: [UUID: RSDatapointClass]
     
-    static func createClassifier(datapointClasses: [RSDatapointClass], state: RSState, context: [String : AnyObject]) -> RSDatapointClassifier {
+    static func createClassifier(datapointClasses: [RSDatapointClass], state: RSState, context: [String : AnyObject]) -> RSOldDatapointClassifier {
         
         let mappingFunc: (RSDatapointClass) -> (RSDatapointClass, NSPredicate)? = { datapointClass in
             
-            if let rsPredicate = datapointClass.dataSource.predicate {
-                guard let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: context) else {
-                    return nil
-                }
-                
-                return (datapointClass, predicate)
-            }
-            else {
-                let predicate = NSPredicate(value: true)
-                return (datapointClass, predicate)
-            }
+//            if let rsPredicate = datapointClass.dataSource.predicate {
+//                guard let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: context) else {
+//                    return nil
+//                }
+//                
+//                return (datapointClass, predicate)
+//            }
+//            else {
+//                let predicate = NSPredicate(value: true)
+//                return (datapointClass, predicate)
+//            }
+            
+            let predicate = NSPredicate(value: true)
+            return (datapointClass, predicate)
             
         }
         
@@ -39,7 +48,7 @@ open class RSDatapointClassifier: NSObject {
         let pairs: [(RSDatapointClass, NSPredicate)] = datapointClasses.compactMap { mappingFunc($0) }
         let classToPredicateMap: [RSDatapointClass: NSPredicate] = Dictionary(uniqueKeysWithValues: pairs)
         
-        return RSDatapointClassifier(classToPredicateMap: classToPredicateMap)
+        return RSOldDatapointClassifier(classToPredicateMap: classToPredicateMap)
     }
     
     init(classToPredicateMap: [RSDatapointClass: NSPredicate]) {

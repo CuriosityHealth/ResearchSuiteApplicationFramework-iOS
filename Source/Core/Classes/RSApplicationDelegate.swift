@@ -46,6 +46,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var routeManager: RSRouteManager!
     public var collectionViewCellManager: RSCollectionViewCellManager!
     public var stateObjectManager: RSStateObjectManager!
+    public var collectionDataSourceManager: RSCollectionDataSourceManager!
     
     public var storeManager: RSStoreManager!
     public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
@@ -271,6 +272,13 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         ]
     }
     
+    open var collectionDataSourceGenerators: [RSCollectionDataSourceGenerator.Type] {
+        return [
+            RSCompositeCollectionDataSource.self,
+            RSDatabaseCollectionDataSourceGenerator.self
+        ]
+    }
+    
     open var storeMiddleware: [RSMiddlewareProvider.Type] {
         #if DEBUG
             return [
@@ -475,6 +483,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.actionManager = RSActionManager(actionCreatorTransforms: self.actionCreatorTransforms)
         self.stateObjectManager = RSStateObjectManager(stateObjectTypes: self.stateObjectTypes)
         self.collectionViewCellManager = RSCollectionViewCellManager(cellGenerators: self.collectionViewCellGenerators)
+        self.collectionDataSourceManager = RSCollectionDataSourceManager(collectionDataSourceGenerators: self.collectionDataSourceGenerators)
         
         if notificationSupport {
             self.notificationManager = RSNotificationManager(store: self.store, notificationProcessors: self.notificationProcessors)

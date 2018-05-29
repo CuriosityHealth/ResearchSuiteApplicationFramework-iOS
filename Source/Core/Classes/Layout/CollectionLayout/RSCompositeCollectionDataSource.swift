@@ -9,31 +9,59 @@ import UIKit
 import Realm
 import LS2SDK
 
-open class RSCompositeCollectionDataSource: RSCollectionDataSource {
+open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollectionDataSourceGenerator {
     
     
+    public static func supportsType(type: String) -> Bool {
+        return type == "composite"
+    }
     
-    //other data sources, ready / update methods
+    public static func generateCollectionDataSource(
+        dataSourceDescriptor: RSCollectionDataSourceDescriptor,
+        dataSourceManager: RSCollectionDataSourceManager,
+        state: RSState,
+        context: [String : AnyObject]) -> RSCollectionDataSource? {
+        
+        guard let compositeDescriptor = RSCompositeCollectionDataSourceDescriptor(json: dataSourceDescriptor.json) else {
+            return nil
+        }
+        
+        return RSCompositeCollectionDataSource(
+            identifier: compositeDescriptor.identifier,
+            childDataSourceDescriptors: compositeDescriptor.childDescriptors,
+            dataSourceManager: dataSourceManager,
+            state: state,
+            context: context,
+            readyCallback: nil,
+            updateCallback: nil
+        )
+        
+    }
     
-//    var results: Results<LS2RealmDatapoint>? = nil
-//    var notificationToken: NotificationToken? = nil
-    
-    //composite locator = datasource + index
-    //map index onto composite locator
-    
-//    public static func generateDataSource(dataSourceDescriptors: [RSCollectionDataSourceDescriptor], readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ()), state: RSState) -> RSCompositeCollectionDataSource? {
-//
-//        let readyCallback
-//
-//        let dateSources = dataSourceDescriptors.compactMap { (dataSourceDescriptor) -> RSCollectionDataSource? in
-//
-//
-//
-//        }
-//
-//        return RSCompositeCollectionDataSource(dataSourceDescriptors: <#T##[RSCollectionDataSource]#>)
-//
-//    }
+    public static func generateCollectionDataSource(
+        dataSourceDescriptor: RSCollectionDataSourceDescriptor,
+        dataSourceManager: RSCollectionDataSourceManager,
+        state: RSState,
+        context: [String : AnyObject],
+        readyCallback: @escaping (RSCollectionDataSource) -> (),
+        updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ())) -> RSCollectionDataSource? {
+        
+        
+        guard let compositeDescriptor = RSCompositeCollectionDataSourceDescriptor(json: dataSourceDescriptor.json) else {
+            return nil
+        }
+
+        return RSCompositeCollectionDataSource(
+            identifier: compositeDescriptor.identifier,
+            childDataSourceDescriptors: compositeDescriptor.childDescriptors,
+            dataSourceManager: dataSourceManager,
+            state: state,
+            context: context,
+            readyCallback: readyCallback,
+            updateCallback: updateCallback
+        )
+        
+    }
     
     open let identifier: String
     //
@@ -54,12 +82,16 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource {
     var memoizedResults: [LS2Datapoint]?
     var resultDatapoints: [Int: [LS2Datapoint]]?
     
-    
-    
-    
     //update callback propagates all updates from child data sources to caller
     
-    public init?(identifier: String, childDataSourceDescriptors: [RSCollectionDataSourceDescriptor], readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ()), state: RSState, context: [String: AnyObject]) {
+    public init?(
+        identifier: String,
+        childDataSourceDescriptors: [RSCollectionDataSourceDescriptor],
+        dataSourceManager: RSCollectionDataSourceManager,
+        state: RSState,
+        context: [String: AnyObject],
+        readyCallback: ((RSCollectionDataSource)->())?,
+        updateCallback: (((RSCollectionDataSource, [Int], [Int], [Int]) -> ()))?) {
         
         let readyCallbackQueue = DispatchQueue(label: UUID().uuidString)
         
@@ -92,7 +124,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource {
             if allReady {
                 
                 self.initializeResults()
-                compositeReadyCallback(self)
+                compositeReadyCallback?(self)
             }
             
         }
@@ -109,7 +141,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource {
             
             if allReady {
                 if let updates = self.updateResults(collectionDataSource: collectionDataSource, deletions: deletions, insertions: insertions, modifications: modifications) {
-                    compositeUpdateCallback(collectionDataSource, updates.0, updates.1, updates.2)
+                    compositeUpdateCallback?(collectionDataSource, updates.0, updates.1, updates.2)
                 }
                 
             }
@@ -120,20 +152,13 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource {
         
         let dataSources: [RSCollectionDataSource] = childDataSourceDescriptors.compactMap { (dataSourceDescriptor) -> RSCollectionDataSource? in
             
-            let sortSettings = dataSourceDescriptor.sortSettings
-            guard let rsPredicate = dataSourceDescriptor.predicate,
-                let dataSource = RSStateSelectors.getDataSource(state, for: dataSourceDescriptor.dataSourceIdentifier),
-                let predicate = RSPredicateManager.generatePredicate(predicate: rsPredicate, state: state, context: context) else {
-                    assertionFailure("What to do here!!???")
-                    return nil
-            }
-            
-            guard let collectionDataSource = dataSource.getCollectionDataSource(identifier: dataSourceDescriptor.identifier, predicates: [predicate], sortSettings: sortSettings, readyCallback: collectionReadyCallback, updateCallback: collectionUpdateCallback) else {
-                assertionFailure("What to do here!!???")
-                return nil
-            }
-            
-            return collectionDataSource
+            return dataSourceManager.generateCollectionDataSource(
+                dataSourceDescriptor: dataSourceDescriptor,
+                state: state,
+                context: context,
+                readyCallback: collectionReadyCallback,
+                updateCallback: collectionUpdateCallback
+            )
             
         }
         
@@ -281,6 +306,14 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource {
             self.memoizedResults = memoizedResults
             return memoizedResults
         }
+    }
+    
+    open func dataSource(for index: Int) -> RSCollectionDataSource? {
+        guard let path = self.resultPaths?[index] else {
+            return nil
+        }
+        
+        return self.collectionDataSources[path.section]
     }
 
 }

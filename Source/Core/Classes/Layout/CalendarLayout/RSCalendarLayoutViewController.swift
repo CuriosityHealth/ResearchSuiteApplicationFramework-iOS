@@ -42,16 +42,18 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     
     var hasAppeared: Bool = false
     
-    var calendarDataSource: RSCollectionDataSource?
+    var calendarDataSource: RSCompositeCollectionDataSource?
     
-    var datapointsByDate: [Date: [LS2Datapoint]]? = nil
+//    var datapointsByDate: [Date: [LS2Datapoint]]? = nil
+    var datapointIndicesByDate: [Date: [Int]]? = nil
     //    var classifiedDatapoints: [UUID: RSCalendarDatapointClass]? = nil
     //    var datapointsByClassAndDate: [Date: [RSCalendarDatapointClass: [LS2Datapoint]]]? = nil
-    var datapointClassifier: RSDatapointClassifier!
+//    var datapointClassifier: RSOldDatapointClassifier!
     var calendar: Calendar!
     
 //    var tableViewDataSource: RSCollectionDataSource?
-    var tableViewDatapoints: [LS2Datapoint]?
+//    var tableViewDatapoints: [LS2Datapoint]?
+    var tableViewDatapointIndices: [Int]?
     
     var filteredDatapointClasses: [String]!
     
@@ -245,28 +247,79 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         }
     }
     
-    func date(for datapoint: LS2Datapoint) -> Date? {
-        //first classify datapoint
-        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) else {
+//    func date(for datapoint: LS2Datapoint) -> Date? {
+//        //first classify datapoint
+//        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) else {
+//            return nil
+//        }
+//
+//        return datapointClass.dateSelector(datapoint)
+//    }
+    
+    func datapointClass(for index: Int) -> RSDatapointClass? {
+        guard let compositeDataSource = self.calendarDataSource,
+            let childDataSource = compositeDataSource.dataSource(for: index) else {
+                return nil
+        }
+        
+        return self.calendarLayout.datapointClasses.first(where: { (datapointClass) -> Bool in
+            return datapointClass.dataSource.identifier == childDataSource.identifier
+        })
+    }
+    
+    func date(for datapointIndex: Int) -> Date? {
+        guard let compositeDataSource = self.calendarDataSource,
+            let datapoint = compositeDataSource.get(for: datapointIndex),
+            let datapointClass = self.datapointClass(for: datapointIndex) else {
             return nil
         }
         
         return datapointClass.dateSelector(datapoint)
     }
     
-    func groupDatapointsByDate(datasource: RSCollectionDataSource) -> [Date: [LS2Datapoint]]? {
+//    func groupDatapointsByDate(datasource: RSCollectionDataSource) -> [Date: [LS2Datapoint]]? {
+//
+//        guard let array = datasource.toArray() else {
+//            return nil
+//        }
+//
+//
+//        //not all datapoints shoudl use the same date
+//        //i.e., some datapoints might use the provenance date for calendar ./ sorting,
+//        //but other dates
+//        let dateMap: [Date: [LS2Datapoint]] = Dictionary.init(grouping: array, by: { (datapoint) -> Date in
+//
+//            guard let date = self.date(for: datapoint) else {
+//                assertionFailure("Could not generate date. What can we do here?")
+//                return Date.distantPast
+//            }
+//
+//            return self.calendar.startOfDay(for: date)
+//
+//        })
+//
+//
+//        return dateMap
+//    }
+    
+    func groupIndicesByDate(datasource: RSCollectionDataSource) -> [Date: [Int]]? {
         
-        guard let array = datasource.toArray() else {
+//        guard let array = datasource.toArray() else {
+//            return nil
+//        }
+        
+        guard let count = datasource.count else {
             return nil
         }
         
-        
+        let range = 0..<count
+
         //not all datapoints shoudl use the same date
         //i.e., some datapoints might use the provenance date for calendar ./ sorting,
         //but other dates
-        let dateMap: [Date: [LS2Datapoint]] = Dictionary.init(grouping: array, by: { (datapoint) -> Date in
+        let dateMap: [Date: [Int]] = Dictionary.init(grouping: range, by: { (index) -> Date in
             
-            guard let date = self.date(for: datapoint) else {
+            guard let date = self.date(for: index) else {
                 assertionFailure("Could not generate date. What can we do here?")
                 return Date.distantPast
             }
@@ -336,24 +389,27 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         //we will want to sort these based on class specific date selector
         
-        let datapoints: [LS2Datapoint] = self.datapointsByDate?[date] ?? []
+        let indices: [Int] = self.datapointIndicesByDate?[date] ?? []
+//        let datapoints: [LS2Datapoint] = indices.compactMap({ self.calendarDataSource?.get(for: $0) })
 
-        let pairs: [(LS2Datapoint, Date)] = datapoints.compactMap { (datapoint) -> (LS2Datapoint, Date)? in
-            guard let date = self.date(for: datapoint) else {
+        let pairs: [((Int,LS2Datapoint), Date)] = indices.compactMap { (index) -> ((Int, LS2Datapoint), Date)? in
+            guard let date = self.date(for: index),
+                let datapoint = self.calendarDataSource?.get(for: index) else {
                 return nil
             }
             
-            return (datapoint, date)
+            return ( (index,datapoint), date)
         }
         
         let ascending = true
 
-        let sortedDatapoints: [LS2Datapoint] = pairs.sorted(by: { (pairA, pairB) -> Bool in
+        let sortedDatapoints: [(Int, LS2Datapoint)] = pairs.sorted(by: { (pairA, pairB) -> Bool in
             return ascending ? pairA.1 < pairB.1 : pairA.1 > pairB.1
         }).map { $0.0 }
         
-        self.tableViewDatapoints = sortedDatapoints
+//        self.tableViewDatapoints = sortedDatapoints
         
+        self.tableViewDatapointIndices  = sortedDatapoints.map { $0.0 }
         
         self.collectionView.reloadData()
 //
@@ -428,7 +484,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
 //                return
 //        }
         
-        self.datapointClassifier = RSDatapointClassifier.createClassifier(datapointClasses: self.calendarLayout.datapointClasses, state: state, context: self.context())
+//        self.datapointClassifier = RSOldDatapointClassifier.createClassifier(datapointClasses: self.calendarLayout.datapointClasses, state: state, context: self.context())
         
         let readyCallback: (RSCollectionDataSource) -> () = { [unowned self] collectionDataSource in
             
@@ -436,7 +492,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
                 return
             }
             
-            self.datapointsByDate = self.groupDatapointsByDate(datasource: calendarDataSource)
+//            self.datapointsByDate = self.groupDatapointsByDate(datasource: calendarDataSource)
+            self.datapointIndicesByDate = self.groupIndicesByDate(datasource: calendarDataSource)
             
             self.calendarView.reloadData()
             
@@ -451,7 +508,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
                 return
             }
             
-            self.datapointsByDate = self.groupDatapointsByDate(datasource: calendarDataSource)
+//            self.datapointsByDate = self.groupDatapointsByDate(datasource: calendarDataSource)
+            self.datapointIndicesByDate = self.groupIndicesByDate(datasource: calendarDataSource)
             
             self.calendarView.reloadData()
             
@@ -461,7 +519,19 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
             
         }
         
-        self.calendarDataSource = RSCompositeCollectionDataSource(identifier: self.calendarLayout.identifier, childDataSourceDescriptors: dataSourceDescriptors, readyCallback: readyCallback, updateCallback: updateCallback, state: state, context: self.context())
+//        self.calendarDataSource = RSCompositeCollectionDataSource(identifier: self.calendarLayout.identifier, childDataSourceDescriptors: dataSourceDescriptors, readyCallback: readyCallback, updateCallback: updateCallback, state: state, context: self.context())
+        
+        let dataSourceManager: RSCollectionDataSourceManager = RSApplicationDelegate.appDelegate.collectionDataSourceManager
+        
+        self.calendarDataSource = RSCompositeCollectionDataSource(
+            identifier: self.calendarLayout.identifier,
+            childDataSourceDescriptors: dataSourceDescriptors,
+            dataSourceManager: dataSourceManager,
+            state: state,
+            context: self.context(),
+            readyCallback: readyCallback,
+            updateCallback: updateCallback
+        )
         
 //        let predicates: [NSPredicate] = [predicate].compactMap({ $0 })
 //
@@ -519,26 +589,50 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     
     func classMapForDate(date: Date) -> [RSDatapointClass: [LS2Datapoint]] {
         
-        guard let datapointsForDate = self.datapointsByDate?[date] else {
+        guard let indicesForDate = self.datapointIndicesByDate?[date] else {
             return [:]
         }
         
-        let classifiedDatapoints: [(LS2Datapoint, RSDatapointClass)] = datapointsForDate.compactMap { (datapoint) -> (LS2Datapoint, RSDatapointClass)? in
+        let pairs: [(RSDatapointClass, Int)] = indicesForDate.compactMap({ index in
             
-            guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) as? RSDatapointClass else {
+            guard let datapointClass = self.datapointClass(for: index) else {
                 return nil
             }
+            return (datapointClass, index)
             
-            return (datapoint, datapointClass)
-        }
-        
-        let classMap: [RSDatapointClass: [(LS2Datapoint, RSDatapointClass)]] = Dictionary.init(grouping: classifiedDatapoints) { (pair) -> RSDatapointClass in
-            return pair.1
-        }
-        
-        return classMap.mapValues({ (pairs) -> [LS2Datapoint] in
-            return pairs.map({ $0.0 })
         })
+        
+        let classifiedIndices: [RSDatapointClass: [(RSDatapointClass, Int)]] = Dictionary.init(grouping: pairs) { $0.0 }
+
+        return classifiedIndices.mapValues({ (pairs) -> [LS2Datapoint] in
+            return pairs.compactMap({ (pair) -> LS2Datapoint? in
+                return self.calendarDataSource?.get(for: pair.1)
+            })
+        })
+        
+        
+//        guard let datapointsForDate = self.datapointsByDate?[date] else {
+//            return [:]
+//        }
+//
+//
+//
+//        let classifiedDatapoints: [(LS2Datapoint, RSDatapointClass)] = datapointsForDate.compactMap { (datapoint) -> (LS2Datapoint, RSDatapointClass)? in
+//
+//            guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) as? RSDatapointClass else {
+//                return nil
+//            }
+//
+//            return (datapoint, datapointClass)
+//        }
+//
+//        let classMap: [RSDatapointClass: [(LS2Datapoint, RSDatapointClass)]] = Dictionary.init(grouping: classifiedDatapoints) { (pair) -> RSDatapointClass in
+//            return pair.1
+//        }
+//
+//        return classMap.mapValues({ (pairs) -> [LS2Datapoint] in
+//            return pairs.map({ $0.0 })
+//        })
     }
     
     //MARK: Calendar Stuff
@@ -609,16 +703,21 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
 //                return
 //        }
         
-        guard let datapoints = self.tableViewDatapoints else {
+//        guard let datapoints = self.tableViewDatapoints else {
+//            return
+//        }
+        
+        guard let datapointIndices = self.tableViewDatapointIndices else {
             return
         }
         
         //note that we need to filter datapoints prior to indexing into the array
-        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
+//        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
+//
+//        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
         
-        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
-        
-        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) as? RSDatapointClass,
+        guard let datapointClass = self.datapointClass(for: indexPath.row),
+            let datapoint = self.calendarDataSource?.get(for: datapointIndices[indexPath.row]),
             let datapointJSON = datapoint.toJSON()  else {
                 return
         }
@@ -660,17 +759,19 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         }
         
         let cellWidth = collectionView.bounds.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right)
-        guard let datapoints = self.tableViewDatapoints else {
+        
+        guard let datapointIndices = self.tableViewDatapointIndices else {
             let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
             cell.setCellWidth(width: cellWidth)
             return cell
         }
         
-        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
+//        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
+//
+//        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
         
-        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
-        
-        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint),
+        guard let datapointClass = self.datapointClass(for: datapointIndices[indexPath.row]),
+            let datapoint = self.calendarDataSource?.get(for: datapointIndices[indexPath.row]),
             let cell = self.collectionViewCellManager.cell(cellIdentifier: datapointClass.cellIdentifier, collectionView: collectionView, indexPath: indexPath) else {
                 let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
                 cell.setCellWidth(width: cellWidth)
@@ -707,13 +808,15 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
 //                return 0
 //        }
         
-        guard let datapoints = self.tableViewDatapoints else {
-            return 0
-        }
+//        guard let datapointIndices = self.tableViewDatapointIndices else {
+//            return 0
+//        }
+//
+//        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
+//
+//        return filteredDatapoints.count
         
-        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
-        
-        return filteredDatapoints.count
+        return self.tableViewDatapointIndices?.count ?? 0
     }
     
 }

@@ -48,8 +48,8 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
     //    var notificationToken: NotificationToken? = nil
     
 //    var dataSource: RSRealmCollectionLayoutViewControllerDataSource?
-    var collectionDataSource: RSCollectionDataSource?
-    var datapointClassifier: RSDatapointClassifier!
+    var collectionDataSource: RSCompositeCollectionDataSource?
+//    var datapointClassifier: RSOldDatapointClassifier!
     
     var collectionViewCellManager: RSCollectionViewCellManager!
     var logger: RSLogger?
@@ -130,7 +130,7 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
 //        }
         
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "updateDataSource - creating classifier")
-        self.datapointClassifier = RSDatapointClassifier.createClassifier(datapointClasses: self.collectionLayout.datapointClasses, state: state, context: self.context())
+//        self.datapointClassifier = RSOldDatapointClassifier.createClassifier(datapointClasses: self.collectionLayout.datapointClasses, state: state, context: self.context())
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "updateDataSource - created classifier")
         
         let readyCallback: (RSCollectionDataSource) -> () = { collectionDataSource in
@@ -157,13 +157,16 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             //            self.collectionView!.endUpdates()
         }
         
+        let dataSourceManager: RSCollectionDataSourceManager = RSApplicationDelegate.appDelegate.collectionDataSourceManager
+        
         self.collectionDataSource = RSCompositeCollectionDataSource(
             identifier: self.collectionLayout.identifier,
             childDataSourceDescriptors: dataSourceDescriptors,
-            readyCallback: readyCallback,
-            updateCallback: updateCallback,
+            dataSourceManager: dataSourceManager,
             state: state,
-            context: self.context()
+            context: self.context(),
+            readyCallback: readyCallback,
+            updateCallback: updateCallback
         )
         
 //        self.collectionDataSource = dataSource.getCollectionDataSource(
@@ -203,6 +206,17 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
     
     open func newState(state: RSState) {
         self.state = state
+    }
+    
+    func datapointClass(for index: Int) -> RSDatapointClass? {
+        guard let compositeDataSource = self.collectionDataSource,
+            let childDataSource = compositeDataSource.dataSource(for: index) else {
+                return nil
+        }
+        
+        return self.collectionLayout.datapointClasses.first(where: { (datapointClass) -> Bool in
+            return datapointClass.dataSource.identifier == childDataSource.identifier
+        })
     }
     
     /*
@@ -264,22 +278,23 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         
         let cellWidth = collectionView.bounds.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right)
         
-        guard let dataSource = self.collectionDataSource,
-            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
-                let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-                cell.setCellWidth(width: cellWidth)
-                return cell
-        }
+//        guard let dataSource = self.collectionDataSource,
+//            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
+//                let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
+//                cell.setCellWidth(width: cellWidth)
+//                return cell
+//        }
         
         
-        self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "Filtering datapoints")
-        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
-        self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "datapoints filtered")
-        
-        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
+//        self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "Filtering datapoints")
+//        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
+//        self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "datapoints filtered")
+//
+//        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
         
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "Generating cell")
-        guard let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint),
+        guard let datapoint = self.collectionDataSource?.get(for: indexPath.row),
+            let datapointClass = self.datapointClass(for: indexPath.row),
             let cell = self.collectionViewCellManager.cell(cellIdentifier: datapointClass.cellIdentifier, collectionView: collectionView, indexPath: indexPath) else {
                 let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
                 cell.setCellWidth(width: cellWidth)
@@ -313,7 +328,7 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         guard let dataSource = self.collectionDataSource,
             let datapoint:LS2Datapoint = dataSource.get(for: indexPath.row),
             let datapointJSON = datapoint.toJSON(),
-            let datapointClass = self.datapointClassifier.classifyDatapoint(datapoint: datapoint) else {
+            let datapointClass = self.datapointClass(for: indexPath.row) else {
                 return
         }
         
