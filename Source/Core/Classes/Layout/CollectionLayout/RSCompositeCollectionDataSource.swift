@@ -141,7 +141,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
             
             if allReady {
                 if let updates = self.updateResults(collectionDataSource: collectionDataSource, deletions: deletions, insertions: insertions, modifications: modifications) {
-                    compositeUpdateCallback?(collectionDataSource, updates.0, updates.1, updates.2)
+                    compositeUpdateCallback?(self, updates.0, updates.1, updates.2)
                 }
                 
             }
@@ -173,7 +173,8 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
         
         let pairs: [(Int, [LS2Datapoint])] = self.collectionDataSources.enumerated().map { (offset, collectionDataSource) -> (Int, [LS2Datapoint]) in
             
-            return (offset, collectionDataSource.toArray()!)
+            let collectionArray: [LS2Datapoint] =  collectionDataSource.toArray() ?? []
+            return (offset, collectionArray)
             
         }
 
