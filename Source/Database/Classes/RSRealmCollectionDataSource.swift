@@ -69,7 +69,7 @@ open class RSRealmCollectionDataSource: RSCollectionDataSource {
         }()
         
         
-        self.notificationToken = sortedObjects.observe { (changes: RealmCollectionChange) in
+        self.notificationToken = sortedObjects.observe { [unowned self] (changes: RealmCollectionChange) in
             switch changes {
             case .initial:
                 // Results are now populated and can be accessed without blocking the UI
