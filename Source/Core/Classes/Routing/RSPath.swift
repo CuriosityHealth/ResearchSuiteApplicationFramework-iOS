@@ -291,3 +291,44 @@ open class RSParamPath: RSPath, RSPathGenerator {
     }
 }
 
+open class RSBrowserPath: RSPath, RSPathGenerator {
+    
+    open static func supportsType(type: String) -> Bool {
+        return type == "browser"
+    }
+    
+    open static func generate(jsonObject: JSON, state: RSState) -> RSPath? {
+        guard let prefix: String = "path" <~~ jsonObject else {
+            return nil
+        }
+        
+        return RSBrowserPath(prefix: prefix)
+    }
+    
+    public func match(remainingPath: String, previousPath: String) -> RSMatch? {
+        
+        if remainingPath.hasPrefix(self.prefix) {
+            return RSMatch(params: [:], isExact: false, path: previousPath + remainingPath)
+        }
+        
+        return nil
+    }
+    
+    public func remainder(path: String) -> String {
+        return ""
+    }
+    
+    //    public func parameters(path: String) -> [String: AnyObject]? {
+    //        return nil
+    //    }
+    
+    let prefix: String
+    public init(prefix: String) {
+        self.prefix = prefix.lowercased()
+    }
+    
+    public var description: String {
+        return "RSBrowserPath: \(self.prefix)"
+    }
+}
+

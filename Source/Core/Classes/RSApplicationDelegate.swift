@@ -171,7 +171,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return [
             RSExactPath.self,
             RSPrefixPath.self,
-            RSParamPath.self
+            RSParamPath.self,
+            RSBrowserPath.self
         ]
     }
     

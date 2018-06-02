@@ -65,6 +65,7 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
         
     }
     
+    var requestedURL: URL?
     
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -89,14 +90,11 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
             make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
         }
         
-        if let state = self.store?.state,
-            let urlBase = RSValueManager.processValue(jsonObject: self.webLayout.urlBase, state: state, context: self.context())?.evaluate() as? String,
-            let urlPath = RSValueManager.processValue(jsonObject: self.webLayout.urlPath, state: state, context: self.context())?.evaluate() as? String,
-            let url = URL(string: urlBase + urlPath) {
-            
-            let request = URLRequest(url: url)
+        if let requestedURL = self.requestedURL {
+
+            let request = URLRequest(url: requestedURL)
             self.webView.load(request)
-            
+
         }
         
         self.store?.subscribe(self)
@@ -169,6 +167,35 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
     
     public func updateLayout(matchedRoute: RSMatchedRoute, state: RSState) {
         self.matchedRoute = matchedRoute
+        
+        //add parent match path to prefix, remove everything after that
+        let parentMatchPath = self.parentLayoutViewController.matchedRoute.match.path
+        guard let browserPath = self.matchedRoute.route.path as? RSBrowserPath else {
+            return
+        }
+        
+        let browserPathPrefix = browserPath.prefix
+        
+        let prefix = parentMatchPath + browserPathPrefix
+        debugPrint(prefix)
+        
+        guard self.matchedRoute.match.path.hasPrefix(prefix) else {
+            return
+        }
+        
+        let remainder = self.matchedRoute.match.path.replacingOccurrences(of: prefix, with: "")
+        debugPrint(remainder)
+        
+        if let state = self.store?.state,
+            let urlBase = RSValueManager.processValue(jsonObject: self.webLayout.urlBase, state: state, context: self.context())?.evaluate() as? String,
+            let url = URL(string: urlBase + remainder) {
+            
+            self.requestedURL = url
+            
+            let request = URLRequest(url: url)
+            self.webView?.load(request)
+            
+        }
     }
 
 }

@@ -16,6 +16,7 @@ public struct RSTab: JSONDecodable {
     public let tabBarTitle: String
     public let image: UIImage?
     let layoutIdentifier: String
+    public let pathJSON: JSON?
     public init?(json: JSON) {
         guard let identifier: String = "identifier" <~~ json,
             let title: String = "tabBarTitle" <~~ json,
@@ -33,6 +34,7 @@ public struct RSTab: JSONDecodable {
         self.tabBarTitle = title
         self.identifier = identifier
         self.layoutIdentifier = layoutIdentifier
+        self.pathJSON = "path" <~~ json
     }
     
     
@@ -136,8 +138,15 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         let tabRoutes: [RSRoute] = {
             
             let visibleTabRoutes = visibleTabs.compactMap({ (tab) -> RSRoute? in
-                let path = RSPrefixPath(prefix: "/\(tab.identifier)")
-                return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
+                
+                if let pathJSON = tab.pathJSON,
+                    let path = routeManager.pathManager.generatePath(jsonObject: pathJSON, state: state) {
+                    return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
+                }
+                else {
+                    let path = RSPrefixPath(prefix: "/\(tab.identifier)")
+                    return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
+                }
             })
             
             let hiddenTabs = self.hiddenTabs(sortedTabs: sortedTabs)
