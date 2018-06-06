@@ -91,11 +91,11 @@ open class RSActionManager: NSObject, RSOpenURLDelegate {
     open func handleURL(app: UIApplication, url: URL, options: [UIApplicationOpenURLOptionsKey : Any], context: [String: AnyObject]) -> Bool {
         
         guard let store = context["store"] as? Store<RSState>,
-            let actionType = url.host,
-            let queryParams = url.queryDictionary else {
+            let actionType = url.host else {
             return false
         }
  
+        let queryParams: [String: String] = url.queryDictionary ?? [:]
         let action: JSON = [:]
         for actionTransformer in self.actionCreatorTransforms {
             

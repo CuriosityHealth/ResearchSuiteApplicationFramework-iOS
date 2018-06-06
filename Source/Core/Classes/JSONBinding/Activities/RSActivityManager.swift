@@ -13,6 +13,11 @@ import ResearchKit
 import ResearchSuiteTaskBuilder
 import Gloss
 
+public protocol RSActivityGenerator {
+    static func supportsType(type: String?) -> Bool
+    static func generate(jsonObject: JSON, activityManager: RSActivityManager) -> RSActivity?
+}
+
 open class RSActivityManager: NSObject {
     
     static let defaultActivityElementTransforms: [RSActivityElementTransformer.Type] = [
@@ -20,16 +25,24 @@ open class RSActivityManager: NSObject {
         RSInstructionActivityElementTransformer.self
     ]
     
+    static let defaultActivityGenerators: [RSActivityGenerator.Type] = [
+        RSActivityFileGenerator.self,
+        RSStandardActivityGenerator.self
+    ]
+    
     let activityElementTransforms: [RSActivityElementTransformer.Type]
+    let activityGenerators: [RSActivityGenerator.Type]
 
     let stepTreeBuilder: RSStepTreeBuilder
     
     init(
         stepTreeBuilder: RSStepTreeBuilder,
+        activityGenerators: [RSActivityGenerator.Type] = RSActivityManager.defaultActivityGenerators,
         activityElementTransforms: [RSActivityElementTransformer.Type] = RSActivityManager.defaultActivityElementTransforms
         ) {
 
         self.activityElementTransforms = activityElementTransforms
+        self.activityGenerators = activityGenerators
         self.stepTreeBuilder = stepTreeBuilder
         
         super.init()
@@ -106,6 +119,19 @@ open class RSActivityManager: NSObject {
         
         return nil
         
+    }
+    
+    public func generate(jsonObject: JSON) -> RSActivity? {
+        
+        let type: String? = "type" <~~ jsonObject
+        
+        for generator in self.activityGenerators {
+            if generator.supportsType(type: type),
+                let activity = generator.generate(jsonObject: jsonObject, activityManager: self) {
+                return activity
+            }
+        }
+        return nil
     }
     
 }

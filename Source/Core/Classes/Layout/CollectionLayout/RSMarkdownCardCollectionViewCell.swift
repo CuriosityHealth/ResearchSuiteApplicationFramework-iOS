@@ -1,31 +1,31 @@
 //
-//  RSTextCardCollectionViewCell.swift
+//  RSMarkdownCardCollectionViewCell.swift
 //  Pods
 //
-//  Created by James Kizer on 5/25/18.
+//  Created by James Kizer on 6/5/18.
 //
 
 import UIKit
 
-open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionViewCellGenerator {
-
+open class RSMarkdownCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionViewCellGenerator {
+    
     open class var identifier: String {
-        return "textCardCell"
+        return "markdownCardCell"
     }
     
     open class var collectionViewCellClass: AnyClass {
-        return RSTextCardCollectionViewCell.self
+        return RSMarkdownCardCollectionViewCell.self
     }
     
-    
-    open var bodyTextLabel: UILabel!
+    open var bodyTextView: UITextView!
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
         
-        
-        self.bodyTextLabel = UILabel()
-        self.bodyTextLabel.numberOfLines = 0
+        self.bodyTextView = UITextView()
+        self.bodyTextView.dataDetectorTypes = .all
+        self.bodyTextView.isEditable = false
+        self.bodyTextView.isScrollEnabled = false
         
         let bodyStackView = UIStackView()
         self.contentStackView.addArrangedSubview(bodyStackView)
@@ -34,7 +34,7 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         bodyStackView.spacing = 8.0
         
         bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
-        bodyStackView.addArrangedSubview(self.bodyTextLabel)
+        bodyStackView.addArrangedSubview(self.bodyTextView)
         bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
         
     }
@@ -45,28 +45,28 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
     
     override open func prepareForReuse() {
         
-        self.bodyTextLabel.text = nil
+        self.bodyTextView.text = nil
         
         super.prepareForReuse()
         
     }
     
 //    override open func configure(paramMap: [String : Any], onTap: ((RSCollectionViewCell)->())?) {
-//
+//        
 //        super.configure(paramMap: paramMap, onTap: onTap)
-//
-//        if let bodyText = paramMap["body"] as? String {
-//            self.bodyTextLabel.text = bodyText
+//        
+//        if let bodyText = paramMap["body"] as? NSAttributedString {
+//            self.bodyTextView.attributedText = bodyText
 //        }
-//
+//        
 //    }
     
     override open func configure(paramMap: [String : Any]) {
         
         super.configure(paramMap: paramMap)
         
-        if let bodyText = paramMap["body"] as? String {
-            self.bodyTextLabel.text = bodyText
+        if let bodyText = paramMap["body"] as? NSAttributedString {
+            self.bodyTextView.attributedText = bodyText
         }
         
     }

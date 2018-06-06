@@ -330,6 +330,21 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
 
     }
  
+    public func canRoute(newPath: String, state: RSState) -> Bool {
+        do {
+            let _ = try RSRouter.generateRoutingInstructions(
+                path: newPath,
+                rootLayoutIdentifier: self.rootLayoutIdentifier,
+                state: state,
+                routeManager: self.routeManager
+            )
+            return true
+        }
+        catch _ {
+            return false
+        }
+    }
+    
     private func handleRouteChange(newPath: String, animated: Bool, state: RSState, completion: @escaping ((String, Error?) -> ())) {
         do {
             

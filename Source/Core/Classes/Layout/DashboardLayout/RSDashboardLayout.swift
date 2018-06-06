@@ -1,36 +1,32 @@
 //
-//  RSCalendarLayout.swift
+//  RSDashboardLayout.swift
 //  Pods
 //
-//  Created by James Kizer on 5/18/18.
+//  Created by James Kizer on 6/5/18.
 //
 
 import UIKit
 import Gloss
 
-open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
+open class RSDashboardLayout: RSBaseLayout, RSLayoutGenerator  {
     
     public static func supportsType(type: String) -> Bool {
-        return type == "calendar"
+        return type == "dashboard"
     }
     
     public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
-        return RSCalendarLayout(json: jsonObject)
+        return RSDashboardLayout(json: jsonObject)
     }
     
-//    open let dataSource: RSCollectionDataSourceDescriptor
-    open let filterOptions: JSON?
-    open let datapointClasses: [RSDatapointClass]
+    public let items: [RSDashboardListItem]
     
     required public init?(json: JSON) {
         
-        guard let datapointClassesJSON: [JSON] = "datapointClasses" <~~ json else {
-                return nil
+        guard let itemsJSON: [JSON] = "items" <~~ json else {
+            return nil
         }
         
-//        self.dataSource = dataSource
-        self.datapointClasses = datapointClassesJSON.compactMap({ RSDatapointClass(json: $0) })
-        self.filterOptions = "filterOptions" <~~ json
+        self.items = itemsJSON.compactMap({ RSDashboardListItem(json: $0) })
         
         super.init(json: json)
     }
@@ -47,7 +43,7 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
         let bundle = Bundle(for: RSCalendarLayout.self)
         let storyboard: UIStoryboard = UIStoryboard(name: "RSViewControllers", bundle: bundle)
         
-        guard let layoutVC = storyboard.instantiateViewController(withIdentifier: "calendarLayoutViewController") as? RSCalendarLayoutViewController else {
+        guard let layoutVC = storyboard.instantiateViewController(withIdentifier: "dashboardLayoutViewController") as? RSDashboardLayoutViewController else {
             throw RSLayoutError.cannotInstantiateLayout(layoutIdentifier: self.identifier)
         }
         

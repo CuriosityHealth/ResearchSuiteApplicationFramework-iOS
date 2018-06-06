@@ -52,11 +52,87 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
         super.init(coder: aDecoder)
     }
     
+//    open func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+//
+//        if let url = navigationAction.request.url,
+//            url.absoluteString.hasPrefix("com.curiosityhealth.replace-with-current-app-schema"),
+//            let appURLScheme = RSApplicationDelegate.appDelegate.appURLScheme() {
+//
+//            let newURLPath = url.absoluteString.replacingOccurrences(of: "com.curiosityhealth.replace-with-current-app-schema", with: appURLScheme)
+//            if let newURL = URL(string: newURLPath) {
+//                UIApplication.shared.open(newURL, options: [:], completionHandler: nil)
+//                decisionHandler(.cancel)
+//                return
+//            }
+//        }
+//
+//        decisionHandler(.allow)
+//        return
+//    }
+    
+    //convert from http://localhost:7000/contentPath -> appURLScheme://layoutPath/contentPath
+    func generateAppRouteURL(url: URL) -> URL? {
+        
+        //add parent match path to prefix, remove everything after that
+        let parentMatchPath = self.parentLayoutViewController.matchedRoute.match.path
+        guard let browserPath = self.matchedRoute.route.path as? RSBrowserPath else {
+            return nil
+        }
+        
+        let browserPathPrefix = browserPath.prefix
+        
+        let prefix = parentMatchPath + browserPathPrefix
+        
+        
+        guard let state = self.store?.state,
+        let urlBase = RSValueManager.processValue(jsonObject: self.webLayout.urlBase, state: state, context: self.context())?.evaluate() as? String,
+            url.absoluteString.hasPrefix(urlBase),
+            let appURLScheme = RSApplicationDelegate.appDelegate.appURLScheme() else {
+                return nil
+        }
+        
+        let appURLLayoutBase: String = "\(appURLScheme)://\(prefix)"
+        
+        let newURLPath = url.absoluteString.replacingOccurrences(of: urlBase, with: appURLLayoutBase)
+        return URL(string: newURLPath)
+        
+    }
+    
     open func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
-        if let url = navigationAction.request.url,
-            url.absoluteString.hasPrefix("com.curiosityhealth.teamwork") {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        
+        //hooking into back / forward navigation trashes the stack
+        //need to find a way to record these events without necessarily messing with them
+//        if navigationAction.navigationType == .linkActivated || navigationAction.navigationType == .backForward {
+        if navigationAction.navigationType == .linkActivated {
+        
+            if let url = navigationAction.request.url {
+                //open it locally
+                if url.absoluteString.hasPrefix("com.curiosityhealth.replace-with-current-app-schema") {
+                    
+                    if let appURLScheme = RSApplicationDelegate.appDelegate.appURLScheme() {
+                        let newURLPath = url.absoluteString.replacingOccurrences(of: "com.curiosityhealth.replace-with-current-app-schema", with: appURLScheme)
+                       
+                        if let newURL = URL(string: newURLPath) {
+                            UIApplication.shared.open(newURL, options: [:], completionHandler: nil)
+                        }
+                    }
+                    
+                }
+                    //this trashes the stack
+//                else if let appURL = self.generateAppRouteURL(url: url) {
+//                    UIApplication.shared.open(appURL, options: [:], completionHandler: nil)
+////                    decisionHandler(.cancel)
+////                    return
+//                }
+                else if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url)
+                    print(url)
+                    print("Redirected to browser. No need to open it locally")
+                }
+                
+            }
+            
             decisionHandler(.cancel)
         }
         else {
@@ -73,8 +149,27 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
         // Do any additional setup after loading the view.
         
         self.navigationItem.title = self.layout.navTitle
-        if let rightButton = self.layout.navButtonRight {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
+        
+//        var rightBarButtonItems: [UIBarButtonItem] = []
+//        if let rightButtons = self.layout.rightNavButtons {
+//            
+//            let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
+//                button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
+//            }
+//            
+//            let rightBarButtons = rightButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
+//                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
+//            }
+//            
+//            rightBarButtonItems = rightBarButtonItems + rightBarButtons
+//        }
+        
+        let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
+            button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
+        }
+        
+        self.navigationItem.rightBarButtonItems = self.layout.rightNavButtons?.compactMap { (layoutButton) -> UIBarButtonItem? in
+            return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
         }
         
         //set up web view
@@ -165,6 +260,9 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
         
     }
     
+ 
+    
+    
     public func updateLayout(matchedRoute: RSMatchedRoute, state: RSState) {
         self.matchedRoute = matchedRoute
         
@@ -183,8 +281,22 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
             return
         }
         
-        let remainder = self.matchedRoute.match.path.replacingOccurrences(of: prefix, with: "")
+        
+        let remainder: String = {
+            var remainder = self.matchedRoute.match.path.replacingOccurrences(of: prefix, with: "")
+            if remainder.count == 0 {
+                remainder = "/index.html"
+            }
+            else if remainder.last! == "/" {
+                remainder = remainder + "index.html"
+            }
+            return remainder
+        }()
+        
         debugPrint(remainder)
+        
+        //if the remainder specifies a directory, append index.html
+//        if remainder.last
         
         if let state = self.store?.state,
             let urlBase = RSValueManager.processValue(jsonObject: self.webLayout.urlBase, state: state, context: self.context())?.evaluate() as? String,

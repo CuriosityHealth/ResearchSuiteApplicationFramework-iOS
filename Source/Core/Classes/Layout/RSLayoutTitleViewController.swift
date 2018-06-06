@@ -62,8 +62,13 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         }
         
         self.navigationItem.title = self.layout.navTitle
-        if let rightButton = self.layout.navButtonRight {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
+        
+        let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
+            button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
+        }
+        
+        self.navigationItem.rightBarButtonItems = self.layout.rightNavButtons?.compactMap { (layoutButton) -> UIBarButtonItem? in
+            return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
         }
         
     }
@@ -113,15 +118,6 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         if let store = self.store {
             store.processAction(action: action, context: self.context(), store: store)
         }
-    }
-    
-    @objc
-    func tappedRightBarButton() {
-        guard let button = self.layout.navButtonRight else {
-            return
-        }
-        
-        button.onTapActions.forEach { self.processAction(action: $0) }
     }
     
     open func backTapped() {

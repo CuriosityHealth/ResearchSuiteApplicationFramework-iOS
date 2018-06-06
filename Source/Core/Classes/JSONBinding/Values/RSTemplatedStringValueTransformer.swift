@@ -21,6 +21,7 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
     public static func supportsType(type: String) -> Bool {
         return "templatedString" == type
     }
+    
     public static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
         guard let template: String = "template" <~~ jsonObject,
             let substitutionsJSON: [String: JSON] = "substitutions" <~~ jsonObject else {

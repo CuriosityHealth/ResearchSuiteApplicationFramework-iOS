@@ -132,14 +132,14 @@ public class RSActionCreators: NSObject {
         
     }
     
-    public static func addActivitiesFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addActivitiesFromFile(fileName: String, activityManager: RSActivityManager, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
             configJSONBaseURL: configJSONBaseURL,
             selector: { "activities" <~~ $0 },
-            flatMapFunc: { RSActivity(json: $0) },
+            flatMapFunc: { activityManager.generate(jsonObject: $0) },
             mapFunc: { AddActivityAction(activity: $0) }
         )
         

@@ -163,7 +163,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSMoreLayout.self,
             RSCollectionLayout.self,
             RSCalendarLayout.self,
-            RSWebLayout.self
+            RSWebLayout.self,
+            RSDashboardLayout.self
         ]
     }
     
@@ -261,7 +262,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTemplatedStringValueTransformer.self,
             RSContextValueTransformer.self,
             RSDateFormatterValueTransform.self,
-            RSPrettyPrintJSONTransformer.self
+            RSPrettyPrintJSONTransformer.self,
+            RSTemplatedMarkdownTransformer.self
         ]
     }
     
@@ -269,7 +271,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return [
             RSBasicCollectionViewCell.self,
 //            RSCardCollectionViewCell.self
-            RSTextCardCollectionViewCell.self
+            RSTextCardCollectionViewCell.self,
+            RSMarkdownCardCollectionViewCell.self
         ]
     }
     
@@ -541,6 +544,17 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return true
     }
     
+    open func appURLScheme() -> String? {
+        guard let infoPlist = Bundle.main.infoDictionary,
+            let urlTypes = infoPlist["CFBundleURLTypes"] as? NSArray,
+            let first = urlTypes.firstObject as? [String: Any],
+            let urlSchemes = first["CFBundleURLSchemes"] as? NSArray,
+            let urlScheme = urlSchemes.firstObject as? String else {
+                return nil
+        }
+        return urlScheme
+    }
+    
     open func developmentInitialization() {
         
     }
@@ -620,7 +634,20 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     //note that this is invoked after application didFinishLauchingWithOptions
     open func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
-        return self.openURLManager.handleURL(app: app, url: url, options: options)
+        
+        //first check to see if this is a routable url
+        if let routingVC = self.routingViewController,
+            let appURLScheme = self.appURLScheme(),
+            routingVC.canRoute(newPath: url.absoluteString.replacingOccurrences(of: "\(appURLScheme)://", with: ""), state: self.store.state)
+            {
+            let action = RSActionCreators.requestPathChange(path: url.absoluteString.replacingOccurrences(of: "\(appURLScheme)://", with: ""))
+            self.store.dispatch(action)
+            return true
+        }
+        else {
+            return self.openURLManager.handleURL(app: app, url: url, options: options)
+        }
+        
     }
     
     

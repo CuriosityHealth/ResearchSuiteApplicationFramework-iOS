@@ -48,14 +48,7 @@ open class RSCollectionLayout: RSBaseLayout, RSLayoutGenerator {
         guard let collectionLayoutVC = storyboard.instantiateViewController(withIdentifier: "collectionLayoutViewController") as? RSCollectionLayoutViewController else {
             throw RSLayoutError.cannotInstantiateLayout(layoutIdentifier: self.identifier)
         }
-        
-//        let layout = UICollectionViewFlowLayout()
-//        let collectionLayoutVC = RSCollectionLayoutViewController(collectionViewLayout: layout)
-        
-//        guard let collectionLayoutVC = storyboard.instantiateViewController(withIdentifier: "collectionLayoutViewController") as? RSCollectionLayoutViewController else {
-//            throw RSLayoutError.cannotInstantiateLayout(layoutIdentifier: self.identifier)
-//        }
-        
+
         collectionLayoutVC.matchedRoute = matchedRoute
         collectionLayoutVC.parentLayoutViewController = parent
         
