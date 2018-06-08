@@ -153,6 +153,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         self.collectionView.layer.addSublayer(border)
         self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
+        self.collectionView!.allowsSelection = false
         
         self.collectionViewCellManager = RSApplicationDelegate.appDelegate.collectionViewCellManager
         self.collectionViewCellManager.registerCellsFor(collectionView: self.collectionView!)
@@ -694,39 +695,39 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     
     
     //MARK: CollectionView Stuff
-    open func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //        collectionView.deselectRow(at: indexPath, animated: true)
-        collectionView.deselectItem(at: indexPath, animated: true)
-        
-//        guard let dataSource = self.tableViewDataSource,
-//            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
-//                return
-//        }
-        
-//        guard let datapoints = self.tableViewDatapoints else {
+//    open func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        //        collectionView.deselectRow(at: indexPath, animated: true)
+//        collectionView.deselectItem(at: indexPath, animated: true)
+//        
+////        guard let dataSource = self.tableViewDataSource,
+////            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
+////                return
+////        }
+//        
+////        guard let datapoints = self.tableViewDatapoints else {
+////            return
+////        }
+//        
+//        guard let datapointIndices = self.tableViewDatapointIndices else {
 //            return
 //        }
-        
-        guard let datapointIndices = self.tableViewDatapointIndices else {
-            return
-        }
-        
-        //note that we need to filter datapoints prior to indexing into the array
-//        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
-//
-//        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
-        
-        guard let datapointClass = self.datapointClass(for: indexPath.row),
-            let datapoint = self.calendarDataSource?.get(for: datapointIndices[indexPath.row]),
-            let datapointJSON = datapoint.toJSON()  else {
-                return
-        }
-        
-        let onTapActions: [JSON] = datapointClass.onTapActions
-        onTapActions.forEach { (action) in
-            self.processAction(action: action, extraContext: ["selected": datapointJSON as AnyObject])
-        }
-    }
+//        
+//        //note that we need to filter datapoints prior to indexing into the array
+////        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
+////
+////        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
+//        
+//        guard let datapointClass = self.datapointClass(for: indexPath.row),
+//            let datapoint = self.calendarDataSource?.get(for: datapointIndices[indexPath.row]),
+//            let datapointJSON = datapoint.toJSON()  else {
+//                return
+//        }
+//        
+//        let onTapActions: [JSON] = datapointClass.onTapActions
+//        onTapActions.forEach { (action) in
+//            self.processAction(action: action, extraContext: ["selected": datapointJSON as AnyObject])
+//        }
+//    }
     
     open func createParameterMap(datapoint: LS2Datapoint, mapping: [String: JSON]) -> [String: Any]? {
         
@@ -784,7 +785,14 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
             return cell
         }
         
+        let onTap: (RSCollectionViewCell)->() = { [unowned self] cell in
+            datapointClass.onTapActions.forEach({ (action) in
+                self.processAction(action: action)
+            })
+        }
+        
         cell.configure(paramMap: paramMap)
+        cell.onTap = onTap
         
         if let cellTintJSON: JSON = datapointClass.cellTint,
             let state = self.state,

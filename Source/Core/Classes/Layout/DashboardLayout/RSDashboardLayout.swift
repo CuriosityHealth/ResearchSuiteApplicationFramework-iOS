@@ -19,6 +19,7 @@ open class RSDashboardLayout: RSBaseLayout, RSLayoutGenerator  {
     }
     
     public let items: [RSDashboardListItem]
+    public let monitoredValues: [JSON]
     
     required public init?(json: JSON) {
         
@@ -27,6 +28,7 @@ open class RSDashboardLayout: RSBaseLayout, RSLayoutGenerator  {
         }
         
         self.items = itemsJSON.compactMap({ RSDashboardListItem(json: $0) })
+        self.monitoredValues = "monitoredValues" <~~ json ?? []
         
         super.init(json: json)
     }

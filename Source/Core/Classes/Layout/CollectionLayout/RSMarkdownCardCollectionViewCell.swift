@@ -51,16 +51,6 @@ open class RSMarkdownCardCollectionViewCell: RSCardCollectionViewCell, RSCollect
         
     }
     
-//    override open func configure(paramMap: [String : Any], onTap: ((RSCollectionViewCell)->())?) {
-//        
-//        super.configure(paramMap: paramMap, onTap: onTap)
-//        
-//        if let bodyText = paramMap["body"] as? NSAttributedString {
-//            self.bodyTextView.attributedText = bodyText
-//        }
-//        
-//    }
-    
     override open func configure(paramMap: [String : Any]) {
         
         super.configure(paramMap: paramMap)

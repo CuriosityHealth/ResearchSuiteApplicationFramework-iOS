@@ -42,14 +42,7 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
         return self.matchedRoute.layout
     }
     
-    //    var visibleLayoutItems: [RSListItem] = []
     var hasAppeared: Bool = false
-    //    var locationEvents: Results<LS2RealmDatapoint>?
-    //    var notificationToken: NotificationToken? = nil
-    
-    //    var dataSource: RSRealmCollectionLayoutViewControllerDataSource?
-//    var collectionDataSource: RSCompositeCollectionDataSource?
-    //    var datapointClassifier: RSOldDatapointClassifier!
     
     var collectionViewCellManager: RSCollectionViewCellManager!
     var logger: RSLogger?
@@ -228,7 +221,27 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
     }
     
     open func newState(state: RSState) {
+        
+        guard let lastState = self.lastState else {
+            self.lastState = state
+            return
+        }
+        
         self.state = state
+        
+        let shouldReload = self.dashboardLayout.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
+            return acc || RSValueManager.valueChanged(jsonObject: monitoredValue, state: state, lastState: lastState, context: [:])
+        }
+        
+        if shouldReload {
+            self.updateVisibleItems()
+            self.collectionView?.reloadData()
+        }
+        
+        self.lastState = state
+        
+        
+        
     }
     
 //    func datapointClass(for index: Int) -> RSDatapointClass? {
@@ -339,8 +352,8 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
         }
 
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "configuring cell")
-//        cell.configure(paramMap: paramMap, onTap: onTap)
         cell.configure(paramMap: paramMap)
+        cell.onTap = onTap
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "cell configured")
 
         if let cellTintJSON: JSON = "cellTint" <~~ item.element,

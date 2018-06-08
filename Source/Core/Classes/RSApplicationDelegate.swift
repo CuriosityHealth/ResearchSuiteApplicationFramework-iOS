@@ -521,22 +521,33 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         self.printRefCount()
         
-        //function bindings need to go first in case they are used by routes
-        let registerFunctionAction = RSActionCreators.registerFunction(identifier: "now") { state in
-            return Date() as NSDate
-        }
-
-        self.store.dispatch(registerFunctionAction)
-        
-        self.store.dispatch(RSActionCreators.registerFunction(identifier: "config") { state in
-            return self.chConfig?.rawValue as NSString?
-        })
+       
         
         self.openURLManager = RSOpenURLManager(openURLDelegates: self.openURLDelegates)
         
         self.printRefCount()
         
         self.storeInitialization(store: self.store!)
+        
+        //function bindings need to go first in case they are used by routes
+        let registerFunctionAction = RSActionCreators.registerFunction(identifier: "now") { state in
+            return Date() as NSDate
+        }
+        
+        self.store.dispatch(registerFunctionAction)
+        
+        let calendar = Calendar.current
+        let registerToadyAction = RSActionCreators.registerFunction(identifier: "startOfToday") { state in
+            return calendar.date(bySettingHour: 0, minute: 0, second: 0, of: Date()) as NSDate?
+        }
+        
+        self.store.dispatch(registerToadyAction)
+        
+        self.store.dispatch(RSActionCreators.registerFunction(identifier: "config") { state in
+            return self.chConfig?.rawValue as NSString?
+        })
+        
+        
         self.initializeBackends()
         self.developmentInitialization()
         

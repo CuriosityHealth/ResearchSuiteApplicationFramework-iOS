@@ -14,6 +14,8 @@ open class RSCollectionViewCell: UICollectionViewCell {
     open var widthConstraint: NSLayoutConstraint!
     open var heightConstraint: NSLayoutConstraint!
     
+    open var onTap: ((RSCollectionViewCell)->())?
+    
     static func spacingView(axis: UILayoutConstraintAxis) -> UIView {
         let view = UIView()
         view.snp.makeConstraints { (make) in
@@ -65,10 +67,24 @@ open class RSCollectionViewCell: UICollectionViewCell {
         self.widthConstraint = self.contentView.widthAnchor.constraint(equalToConstant: 0.0)
         self.heightConstraint = self.contentView.heightAnchor.constraint(equalToConstant: 0.0)
         
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cellTapped))
+        self.addGestureRecognizer(tapGestureRecognizer)
+        
     }
     
-    open func configure(paramMap: [String : Any]) {
-        
+    open override func prepareForReuse() {
+        self.onTap = nil
+        super.prepareForReuse()
+    }
+    
+    
+    open func configure(paramMap: [String : Any]){
+
+    }
+    
+    @objc
+    open func cellTapped() {
+        self.onTap?(self)
     }
     
     open func setCellTint(color: UIColor) {

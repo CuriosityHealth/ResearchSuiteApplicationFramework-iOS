@@ -50,17 +50,7 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         super.prepareForReuse()
         
     }
-    
-//    override open func configure(paramMap: [String : Any], onTap: ((RSCollectionViewCell)->())?) {
-//
-//        super.configure(paramMap: paramMap, onTap: onTap)
-//
-//        if let bodyText = paramMap["body"] as? String {
-//            self.bodyTextLabel.text = bodyText
-//        }
-//
-//    }
-    
+
     override open func configure(paramMap: [String : Any]) {
         
         super.configure(paramMap: paramMap)

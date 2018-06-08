@@ -316,8 +316,8 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         }
         
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "configuring cell")
-//        cell.configure(paramMap: paramMap, onTap: onTap)
         cell.configure(paramMap: paramMap)
+        cell.onTap = onTap
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "cell configured")
         
         if let cellTintJSON: JSON = datapointClass.cellTint,
