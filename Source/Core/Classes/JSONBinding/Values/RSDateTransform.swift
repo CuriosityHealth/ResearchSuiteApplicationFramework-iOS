@@ -31,20 +31,46 @@ open class RSDateTransform: RSValueTransformer {
             return afterDate as Date
         }() ?? Date()
         
-        let timeInterval: TimeInterval = {
-            guard let timeIntervalJSON: JSON = "timeInterval" <~~ jsonObject else {
-                return nil
+        return {
+            if let timeInterval: TimeInterval = {
+                guard let timeIntervalJSON: JSON = "timeInterval" <~~ jsonObject else {
+                    return nil
+                }
+                
+                return RSValueManager.processValue(jsonObject: timeIntervalJSON, state: state, context: context)?.evaluate() as? TimeInterval
+                }() {
+                
+                if subtracting {
+                    return RSValueConvertible(value: date.addingTimeInterval(-timeInterval) as NSDate)
+                }
+                else {
+                    return RSValueConvertible(value: date.addingTimeInterval(timeInterval) as NSDate)
+                }
+                
             }
-            
-            return RSValueManager.processValue(jsonObject: timeIntervalJSON, state: state, context: context)?.evaluate() as? TimeInterval
-        }() ?? 0.0
+            else if let dateComponents: DateComponents = {
+                guard let dateComponentsJSON: JSON = "dateComponents" <~~ jsonObject else {
+                    return nil
+                }
+                
+                return RSValueManager.processValue(jsonObject: dateComponentsJSON, state: state, context: context)?.evaluate() as? DateComponents
+                }() {
+                
+                let calendar = Calendar.current
+                let direction: Calendar.SearchDirection = subtracting ? .backward : .forward
+                
+                guard let nextDate = calendar.nextDate(after: date, matching: dateComponents, matchingPolicy: .nextTime, direction: direction) else {
+                    return nil
+                }
+                
+                return RSValueConvertible(value: nextDate as NSDate)
+                
+            }
+            else {
+                return RSValueConvertible(value: date as NSDate)
+            }
+        }()
         
-        if subtracting {
-            return RSValueConvertible(value: date.addingTimeInterval(-timeInterval) as NSDate)
-        }
-        else {
-            return RSValueConvertible(value: date.addingTimeInterval(timeInterval) as NSDate)
-        }
         
         
     }

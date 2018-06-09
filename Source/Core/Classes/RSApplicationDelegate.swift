@@ -263,7 +263,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSContextValueTransformer.self,
             RSDateFormatterValueTransform.self,
             RSPrettyPrintJSONTransformer.self,
-            RSTemplatedMarkdownTransformer.self
+            RSTemplatedMarkdownTransformer.self,
+            RSMostRecentDateTransformer.self,
+            RSStartOfDayValueTransformer.self
         ]
     }
     
@@ -538,7 +540,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         let calendar = Calendar.current
         let registerToadyAction = RSActionCreators.registerFunction(identifier: "startOfToday") { state in
-            return calendar.date(bySettingHour: 0, minute: 0, second: 0, of: Date()) as NSDate?
+            return calendar.startOfDay(for: Date()) as NSDate
         }
         
         self.store.dispatch(registerToadyAction)

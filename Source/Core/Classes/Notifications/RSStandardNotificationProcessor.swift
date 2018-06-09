@@ -46,8 +46,9 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
         if let components = dateComopnents {
             let calendar = Calendar(identifier: .gregorian)
             //I'm not sure this is doing what we want it to do
-            //for example, say i'd like to deliver a notification 1 week after baseline, but want to round to 
-            if let fireDate = calendar.nextDate(after: startDate.addingTimeInterval(computedTimeInterval), matching: components, matchingPolicy: .strict) {
+            //for example, say i'd like to deliver a notification 1 week after baseline, but want to round to
+            let after = startDate.addingTimeInterval(computedTimeInterval)
+            if let fireDate = calendar.nextDate(after: after, matching: components, matchingPolicy: .strict) {
                 return fireDate.timeIntervalSinceNow
             }
             else {
