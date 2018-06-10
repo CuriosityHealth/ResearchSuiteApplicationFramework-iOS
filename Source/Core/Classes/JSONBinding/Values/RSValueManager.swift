@@ -11,6 +11,73 @@ import UIKit
 import ReSwift
 import Gloss
 
+public struct RSValueLog: JSONEncodable {
+    
+    
+    let value: JSON
+    let uuid: UUID
+    let timestamp: Date
+    var evaluated: AnyObject?
+//    var malformedAction = false
+//    var predicateResult: Bool? = nil
+//    var successfulTransforms: [String] = []
+    
+    
+    public static func encode(key: String) -> ((AnyObject?) -> JSON?) {
+        return { value in
+            if let date = value as? Date {
+                return Gloss.Encoder.encode(dateISO8601ForKey: key)(date)
+            }
+            else if let dateComponents = value as? DateComponents {
+                
+                let dateFormatter = DateComponentsFormatter()
+                dateFormatter.allowedUnits = [NSCalendar.Unit.year, NSCalendar.Unit.month, NSCalendar.Unit.weekOfMonth ,NSCalendar.Unit.day, NSCalendar.Unit.hour, NSCalendar.Unit.minute, NSCalendar.Unit.second]
+                
+                if let dateComponentsString = dateFormatter.string(from: dateComponents) {
+                    return key ~~> dateComponentsString
+                }
+                else {
+                    assertionFailure("cannot handle key: \(key), value: \(value)")
+                    return nil
+                }
+                
+            }
+            else if let json = key ~~> value {
+                return json
+            }
+            else if value != nil{
+                assertionFailure("cannot handle key: \(key), value: \(value)")
+                return nil
+            }
+            else {
+                return nil
+            }
+        }
+    }
+    
+    public func toJSON() -> JSON? {
+        
+        return jsonify([
+            "value" ~~> self.value,
+            "uuid" ~~> self.uuid,
+            Gloss.Encoder.encode(dateISO8601ForKey: "timestamp")(self.timestamp),
+            RSValueLog.encode(key: "evaluated")(self.evaluated)
+            ])
+    }
+    
+    public init(value: JSON) {
+        self.value = value
+        self.uuid = UUID()
+        self.timestamp = Date()
+    }
+    
+}
+
+public protocol RSValueManagerDelegate: class {
+    func log(log: RSValueLog)
+}
+
+
 open class RSValueManager: NSObject {
     
     //TODO: add state value transformer
@@ -25,20 +92,40 @@ open class RSValueManager: NSObject {
 //        RSDateComponentsTransform.self
 //    ]
     
+    
+    public weak var delegate: RSValueManagerDelegate?
+    
+    let  valueTransforms: [RSValueTransformer.Type]
+    
+    public init(
+        valueTransforms: [RSValueTransformer.Type]?
+        ) {
+        self.valueTransforms = valueTransforms ?? []
+        super.init()
+    }
+    
     //generate values
     //TODO: make distinction between truly nil values and programming / config errors
     //right now, we just return nil, which is ambiguous
-    public static func processValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
+    public func processValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
+        
+        var log = RSValueLog(value: jsonObject)
+        
+        defer {
+            self.delegate?.log(log: log)
+        }
         
         guard let type: String = "type" <~~ jsonObject else {
             return nil
         }
         
-        let transforms = RSApplicationDelegate.appDelegate.valueTransforms
+        let transforms = self.valueTransforms
         
         for transformer in transforms {
             if transformer.supportsType(type: type),
                 let value = transformer.generateValue(jsonObject: jsonObject, state: state, context: context) {
+                
+                log.evaluated = value.evaluate()
                 
                 return value
                 
@@ -46,6 +133,16 @@ open class RSValueManager: NSObject {
         }
         
         return nil
+    
+    }
+    
+    public static func processValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
+        
+        return RSApplicationDelegate.appDelegate.valueManager.processValue(
+            jsonObject: jsonObject,
+            state: state,
+            context: context
+        )
         
     }
     

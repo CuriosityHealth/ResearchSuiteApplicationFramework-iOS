@@ -57,7 +57,7 @@ import UIKit
 import ReSwift
 import ResearchSuiteResultsProcessor
 
-open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate, StoreSubscriber, RSRoutingDelegate {
+open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate, StoreSubscriber, RSRoutingDelegate, RSValueManagerDelegate, RSPredicateManagerDelegate {
     
     let socket: WebSocket
     weak var store: Store<RSState>?
@@ -179,6 +179,40 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
             }
         }
         
+    }
+    
+    public func log(log: RSValueLog) {
+        if let log = log.toJSON() {
+            
+            let message: JSON = [
+                "type": "valueLog",
+                "message": log
+            ]
+            
+            if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
+                debugPrint(log)
+                self.socket.write(data: data) {
+                    
+                }
+            }
+        }
+    }
+    
+    public func log(log: RSPredicateLog) {
+        if let log = log.toJSON() {
+            
+            let message: JSON = [
+                "type": "predicateLog",
+                "message": log
+            ]
+            
+            if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
+                debugPrint(log)
+                self.socket.write(data: data) {
+                    
+                }
+            }
+        }
     }
     
     public func logRoutingEvent(routingEventLog: RSRoutingEventLog) {

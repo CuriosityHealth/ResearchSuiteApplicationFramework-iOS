@@ -41,6 +41,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     public var activityManager: RSActivityManager!
     public var actionManager: RSActionManager!
+    public var valueManager: RSValueManager!
+    public var predicateManager: RSPredicateManager!
     public var notificationManager: RSNotificationManager?
     public var locationManager: RSLocationManager?
     public var routeManager: RSRouteManager!
@@ -375,6 +377,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             self.taskBuilder = nil
             self.activityManager = nil
             self.actionManager = nil
+            self.valueManager = nil
+            self.predicateManager = nil
             self.stateObjectManager = nil
             
             if self.notificationSupport {
@@ -487,6 +491,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.activityManager = RSActivityManager(stepTreeBuilder: self.stepTreeBuilder)
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
         self.actionManager = RSActionManager(actionCreatorTransforms: self.actionCreatorTransforms)
+        self.valueManager = RSValueManager(valueTransforms: self.valueTransforms)
+        self.predicateManager = RSPredicateManager()
         self.stateObjectManager = RSStateObjectManager(stateObjectTypes: self.stateObjectTypes)
         self.collectionViewCellManager = RSCollectionViewCellManager(cellGenerators: self.collectionViewCellGenerators)
         self.collectionDataSourceManager = RSCollectionDataSourceManager(collectionDataSourceGenerators: self.collectionDataSourceGenerators)
