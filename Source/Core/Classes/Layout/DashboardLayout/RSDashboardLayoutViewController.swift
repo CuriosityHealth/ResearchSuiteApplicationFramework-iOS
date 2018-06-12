@@ -69,6 +69,7 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
         }
         
         self.store?.subscribe(self)
+        self.state = self.store?.state
         
         // Register cell classes
         self.collectionViewCellManager = RSApplicationDelegate.appDelegate.collectionViewCellManager
@@ -220,6 +221,20 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
         }
     }
     
+    public func handleNewStateActions(state: RSState, lastState: RSState) {
+        
+        let shouldRunActions = self.layout.onNewStateActions.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
+            return acc || RSValueManager.valueChanged(jsonObject: monitoredValue, state: state, lastState: lastState, context: [:])
+        }
+        
+        if shouldRunActions {
+            self.layout.onNewStateActions.actions.forEach { (actionJSON) in
+                self.processAction(action: actionJSON)
+            }
+        }
+        
+    }
+    
     open func newState(state: RSState) {
         
         guard let lastState = self.lastState else {
@@ -228,6 +243,8 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
         }
         
         self.state = state
+        
+        self.handleNewStateActions(state: state, lastState: lastState)
         
         let shouldReload = self.dashboardLayout.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
             return acc || RSValueManager.valueChanged(jsonObject: monitoredValue, state: state, lastState: lastState, context: [:])

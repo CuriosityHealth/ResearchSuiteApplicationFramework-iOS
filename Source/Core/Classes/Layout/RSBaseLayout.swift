@@ -10,12 +10,12 @@
 import UIKit
 import Gloss
 
-open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
-    
+open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {   
     open let identifier: String
     open let type: String
     open let onLoadActions: [JSON]
     open let onFirstAppearanceActions: [JSON]
+    open let onNewStateActions: RSOnNewState = RSOnNewState()
     open var navTitle: String?
     open var navButtonRight: RSLayoutButton?
     open var rightNavButtons: [RSLayoutButton]?
@@ -40,6 +40,13 @@ open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {
         if let rightNavButtonsJSON: [JSON] = "rightNavButtons" <~~ json {
             self.rightNavButtons = rightNavButtonsJSON.compactMap{ RSLayoutButton(json: $0) }
         }
+        
+//        if let onNewState: JSON = "onNewState" <~~ json {
+//            self.onNewStateActions = RSOnNewState(json: onNewState) ?? RSOnNewState()
+//        }
+//        else {
+//            self.onNewStateActions = RSOnNewState()
+//        }
         
         self.onBackActions = "onBack" <~~ json ?? []
         self.childRouteJSON = "childRoutes" <~~ json ?? []

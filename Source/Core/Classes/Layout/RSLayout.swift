@@ -15,6 +15,21 @@ public enum RSLayoutError: Error {
     case noMatchingLayout(routeIdentifier: String, layoutIdentifier: String)
 }
 
+public struct RSOnNewState: JSONDecodable {
+    public let actions: [JSON]
+    public let monitoredValues: [JSON]
+    
+    public init?(json: JSON) {
+        self.actions = "actions" <~~ json ?? []
+        self.monitoredValues = "monitoredValues" <~~ json ?? []
+    }
+    
+    public init() {
+        self.actions = []
+        self.monitoredValues = []
+    }
+}
+
 //A Layout is more or less a template for a view controller
 public protocol RSLayout: RSIsEqual {
     var identifier: String { get }
@@ -23,6 +38,7 @@ public protocol RSLayout: RSIsEqual {
     var onLoadActions: [JSON] { get }
     //when the layout is on the tap of the stack for the FIRST time in its lifecycle
     var onFirstAppearanceActions: [JSON] { get }
+    var onNewStateActions: RSOnNewState { get }
     
     var navTitle: String? { get }
     //deprecated
