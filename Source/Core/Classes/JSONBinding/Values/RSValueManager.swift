@@ -10,6 +10,7 @@
 import UIKit
 import ReSwift
 import Gloss
+import LS2SDK
 
 public struct RSValueLog: JSONEncodable {
     
@@ -41,6 +42,13 @@ public struct RSValueLog: JSONEncodable {
                     return nil
                 }
                 
+            }
+            else if let color = value as? UIColor {
+                return key ~~> color.hexString
+            }
+            else if let convertible = value as? LS2DatapointConvertible,
+                let datapoint = convertible.toDatapoint(builder: LS2ConcreteDatapoint.self) {
+                return key ~~> datapoint.toJSON()
             }
             else if let json = key ~~> value {
                 return json

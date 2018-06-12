@@ -191,6 +191,9 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
             self.webView.load(request)
 
         }
+        else if let state = self.store?.state {
+            self.updateLayout(matchedRoute: self.matchedRoute, state: state)
+        }
         
         self.store?.subscribe(self)
 

@@ -113,7 +113,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBScaleStepGenerator(),
             RSTBTextScaleStepGenerator(),
             RSEnhancedTextScaleStepGenerator(),
-            RSEnhancedScaleStepGenerator()
+            RSEnhancedScaleStepGenerator(),
+            RSTBBooleanStepGenerator()
         ]
     }
     
