@@ -22,7 +22,7 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
         self.parameters = parameters
         self.stepTreeBuilder = stepTreeBuilder
         self.children = []
-        super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type, children: [], parent: parent, navigationRules: nil, resultTransforms: nil)
+        super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type, children: [], parent: parent, navigationRules: nil, resultTransforms: nil, valueMapping: nil)
     }
     
     open func generateParameters(result: ORKTaskResult, state: RSState) -> JSON? {

@@ -58,7 +58,8 @@ open class RSActivityManager: NSObject {
             children: [],
             parent: nil,
             navigationRules: nil,
-            resultTransforms: nil
+            resultTransforms: nil,
+            valueMapping: nil
         )
         
         let nodes = activity.elements.compactMap { (json) -> RSStepTreeNode? in

@@ -14,20 +14,23 @@ import ResearchKit
 
 open class RSStepTreeLeafNode: RSStepTreeNode {
     
-    let stepGenerator: (RSTBTaskBuilder, String) -> ORKStep?
+    let stepGenerator: (RSStepTreeTaskBuilder, String, RSStepTreeBranchNode, ORKTaskResult?) -> ORKStep?
     public init(
         identifier: String,
         identifierPrefix: String,
         type: String,
         parent: RSStepTreeNode?,
-        stepGenerator: @escaping (RSTBTaskBuilder, String) -> ORKStep?
+        stepGenerator: @escaping (RSStepTreeTaskBuilder, String, RSStepTreeBranchNode, ORKTaskResult?) -> ORKStep?
         ) {
         self.stepGenerator = stepGenerator
         super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type, parent: parent)
     }
     
-    open func step(taskBuilder: RSTBTaskBuilder) -> ORKStep? {
-        return self.stepGenerator(taskBuilder, self.identifierPrefix)
+    open func step(taskBuilder: RSStepTreeTaskBuilder, taskResult: ORKTaskResult? = nil) -> ORKStep? {
+        guard let branchNode = self.parent as? RSStepTreeBranchNode else {
+            return nil
+        }
+        return self.stepGenerator(taskBuilder, self.identifierPrefix, branchNode, taskResult)
     }
     
     open override func firstLeaf(with result: ORKTaskResult, state: RSState) -> RSStepTreeLeafNode? {

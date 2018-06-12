@@ -58,7 +58,8 @@ open class RSStepTreeElementFileGenerator: RSStepTreeNodeGenerator {
             children: [],
             parent: parent,
             navigationRules: nil,
-            resultTransforms: nil
+            resultTransforms: nil,
+            valueMapping: nil
         )
         
         //recurse

@@ -24,7 +24,7 @@ public class RSInstructionActivityElementTransformer: RSActivityElementTransform
             identifierPrefix: identifierPrefix,
             type: instructionDescriptor.type,
             parent: parent,
-            stepGenerator: { (taskBuilder, identifierPrefix) -> ORKStep? in
+            stepGenerator: { (taskBuilder, identifierPrefix, parent, taskResult) -> ORKStep? in
 //                return taskBuilder.steps(forElement: jsonObject as JsonElement)?.first
                 guard let descriptor = RSTBElementDescriptor(json: jsonObject) else {
                     return nil

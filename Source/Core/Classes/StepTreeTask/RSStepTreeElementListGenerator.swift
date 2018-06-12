@@ -25,7 +25,8 @@ open class RSStepTreeElementListGenerator: RSStepTreeNodeGenerator {
             children: [],
             parent: parent,
             navigationRules: descriptor.navigationRules,
-            resultTransforms: descriptor.resultTransforms
+            resultTransforms: descriptor.resultTransforms,
+            valueMapping: descriptor.valueMapping
         )
         
         //recurse

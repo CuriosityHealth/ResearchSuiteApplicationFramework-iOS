@@ -9,6 +9,7 @@
 
 import UIKit
 import ResearchKit
+import Gloss
 
 open class RSStepTreeBranchNode: RSStepTreeNode {
     
@@ -17,6 +18,7 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
     
     private let navigationRules: [String: RSStepTreeNavigationRule]
     open let resultTransforms: [String: RSResultTransform]
+    open let valueMapping: [String: JSON]
     
     public init(
         identifier: String,
@@ -25,7 +27,8 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         children: [RSStepTreeNode],
         parent: RSStepTreeNode?,
         navigationRules: [RSStepTreeNavigationRule]?,
-        resultTransforms: [RSResultTransform]?
+        resultTransforms: [RSResultTransform]?,
+        valueMapping: [String: JSON]?
         ) {
         var navRulesMap: [String: RSStepTreeNavigationRule] = [:]
         navigationRules?.forEach { (rule) in
@@ -41,6 +44,7 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         })
         
         self.resultTransforms = resultTransformMap
+        self.valueMapping = valueMapping ?? [:]
         super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type, parent: parent)
         
         self.setChildren(children: children)

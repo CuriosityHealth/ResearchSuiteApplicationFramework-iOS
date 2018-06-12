@@ -15,6 +15,7 @@ open class RSElementListNodeDescriptor: RSTBElementListDescriptor {
     
     let navigationRules: [RSStepTreeNavigationRule]?
     let resultTransforms: [RSResultTransform]?
+    let valueMapping: [String: JSON]?
     
     // MARK: - Deserialization
     
@@ -25,6 +26,8 @@ open class RSElementListNodeDescriptor: RSTBElementListDescriptor {
         
         let resultTransformsJSON: [JSON]? = "resultTransforms" <~~ json
         self.resultTransforms = resultTransformsJSON?.compactMap { RSResultTransform(json: $0) }
+        
+        self.valueMapping = "valueMapping" <~~ json
         
         super.init(json: json)
     }

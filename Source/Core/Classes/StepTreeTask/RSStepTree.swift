@@ -15,11 +15,11 @@ open class RSStepTree: NSObject, ORKTask, RSTask {
     
     open let identifier: String
     let root: RSStepTreeNode
-    let taskBuilder: RSTBTaskBuilder
+    let taskBuilder: RSStepTreeTaskBuilder
     let state: RSState
 //    let leafIdentifiers: [String]
     open let shouldHideCancelButton: Bool
-    public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSTBTaskBuilder, state: RSState, shouldHideCancelButton: Bool = false) {
+    public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSStepTreeTaskBuilder, state: RSState, shouldHideCancelButton: Bool = false) {
         self.identifier = identifier
         self.root = root
 //        self.leafIdentifiers = self.root.leaves().map { $0.fullyQualifiedIdentifier }
@@ -47,7 +47,7 @@ open class RSStepTree: NSObject, ORKTask, RSTask {
             return nil
         }
         
-        let step = nextNode.step(taskBuilder: self.taskBuilder)
+        let step = nextNode.step(taskBuilder: self.taskBuilder, taskResult: result)
 //        debugPrint(step)
         return step
     }

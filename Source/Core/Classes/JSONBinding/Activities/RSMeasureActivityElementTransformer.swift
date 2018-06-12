@@ -43,7 +43,8 @@ public class RSMeasureActivityElementTransformer: RSActivityElementTransformer {
             children: [],
             parent: parent,
             navigationRules: nil,
-            resultTransforms: nil
+            resultTransforms: nil,
+            valueMapping: nil
         )
         
         guard let child = stepTreeBuilder.node(json: measure.taskElement, identifierPrefix: "\(identifierPrefix).\(measure.identifier)", parent: branchNode) else {
