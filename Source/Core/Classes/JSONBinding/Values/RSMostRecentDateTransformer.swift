@@ -27,6 +27,11 @@ open class RSMostRecentDateTransformer: RSValueTransformer {
         var iteratedDate: Date = anchorDate
         let now = Date()
         
+        //if no histrical events, return nil
+        if iteratedDate > now {
+            return nil
+        }
+        
         //loop until newDate is in the future
         while true {
             

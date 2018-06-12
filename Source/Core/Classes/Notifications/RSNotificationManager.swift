@@ -39,7 +39,11 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
             return
         }
         
-        self.lastState = state
+        //there is an issue here
+        //if we update last state, but we then go fetch the pending notifications
+        //then it's possible that the state changes do not get propagated to notifications
+        //hold off on setting last state, moved below
+//        self.lastState = state
         
         guard RSStateSelectors.isConfigurationCompleted(state) else {
             return
@@ -62,7 +66,9 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         guard !RSStateSelectors.isFetchingNotifications(state) else {
             return
         }
-
+        
+        self.lastState = state
+        
         let notifications = RSStateSelectors.notifications(state)
         
         //we should proabbly prune orphaned notifications here
@@ -156,7 +162,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
             
             //check with processor to see if we should update
             //if so, generate notification request
-            if processor.shouldUpdate(notification: notification, state: state, lastState: state),
+            if processor.shouldUpdate(notification: notification, state: state, lastState: lastState),
                 let notificationRequest = processor.generateNotificationRequest(notification: notification, state: state, lastState: lastState) {
                 
                 UNUserNotificationCenter.current().add(notificationRequest, withCompletionHandler: { error in

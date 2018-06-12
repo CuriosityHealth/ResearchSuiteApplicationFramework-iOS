@@ -31,8 +31,15 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
         }
         
         //otherwise, check monitored values to see if they changed between state and last state
-        return standardNotification.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
+        let detectedDifferences: Bool = standardNotification.monitoredValues.reduce(false) { (acc, monitoredValue) -> Bool in
             return acc || RSValueManager.valueChanged(jsonObject: monitoredValue, state: state, lastState: lastState, context: [:])
+        }
+        
+        if detectedDifferences {
+            return true
+        }
+        else {
+            return false
         }
         
     }
@@ -136,6 +143,8 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
                 return RSValueManager.processValue(jsonObject: timeIntervalJSON, state: state, context: [:])?.evaluate() as? TimeInterval
                 }() {
                 
+                //this actually sets repeating interval from now, but we actually want it anchored at the last
+                //assume this is ok for now
                 let trigger = UNTimeIntervalNotificationTrigger(timeInterval: repeatInterval, repeats: true)
                 
                 // Enable or disable features based on authorization
