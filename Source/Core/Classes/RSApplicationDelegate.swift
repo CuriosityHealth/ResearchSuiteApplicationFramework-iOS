@@ -101,6 +101,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBImageCaptureStepGenerator(),
             RSEnhancedSingleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
             RSEnhancedMultipleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
+            RSTBCountdownStepGenerator()
         ]
     }
     
