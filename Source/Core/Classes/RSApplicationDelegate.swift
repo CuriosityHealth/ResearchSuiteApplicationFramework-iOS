@@ -269,7 +269,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSPrettyPrintJSONTransformer.self,
             RSTemplatedMarkdownTransformer.self,
             RSMostRecentDateTransformer.self,
-            RSStartOfDayValueTransformer.self
+            RSStartOfDayValueTransformer.self,
+            RSExpressionValueTransformer.self
         ]
     }
     
