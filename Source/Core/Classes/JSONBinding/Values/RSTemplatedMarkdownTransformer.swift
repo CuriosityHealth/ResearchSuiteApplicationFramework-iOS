@@ -32,22 +32,22 @@ open class RSTemplatedMarkdownDescriptor: Gloss.JSONDecodable {
 
 open class RSTemplatedMarkdownTransformer: RSValueTransformer {
     
-    class RSTBStateHelperAdaptor: NSObject, RSTBStateHelper {
-        
-        let state: RSState
-        init(state: RSState) {
-            self.state = state
-        }
-        
-        func valueInState(forKey: String) -> NSSecureCoding? {
-            return nil
-        }
-        
-        func setValueInState(value: NSSecureCoding?, forKey: String) {
-            
-        }
-        
-    }
+//    class RSTBStateHelperAdaptor: NSObject, RSTBStateHelper {
+//        
+//        let state: RSState
+//        init(state: RSState) {
+//            self.state = state
+//        }
+//        
+//        func valueInState(forKey: String) -> NSSecureCoding? {
+//            return nil
+//        }
+//        
+//        func setValueInState(value: NSSecureCoding?, forKey: String) {
+//            
+//        }
+//        
+//    }
     
     public func registerFormatters(template: Template) {
         let percentFormatter = NumberFormatter()

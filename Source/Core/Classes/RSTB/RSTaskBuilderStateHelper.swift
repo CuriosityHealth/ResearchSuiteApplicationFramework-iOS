@@ -35,6 +35,10 @@ public class RSTaskBuilderStateHelper: NSObject, RSTBStateHelper, StoreSubscribe
         return RSStateSelectors.getValueInCombinedState(self.state, for: forKey) as? NSSecureCoding
     }
     
+    public func objectInState(forKey: String) -> AnyObject? {
+        return RSStateSelectors.getValueInCombinedState(self.state, for: forKey)
+    }
+    
     deinit {
         self.store?.unsubscribe(self)
     }

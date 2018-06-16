@@ -197,6 +197,9 @@ public class RSStateValue: Glossy {
         case "Double":
             return (object as? Double) != nil
             
+        case "Object":
+            return true
+            
         default:
             return false
         }

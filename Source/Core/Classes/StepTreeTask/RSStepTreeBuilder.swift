@@ -39,6 +39,14 @@ open class RSStepTreeStateHelper: RSTBStateHelper {
 //    generatedParameters[key] = parameterValueConvertible.evaluate()
 //    }
     
+    public func objectInState(forKey: String) -> AnyObject? {
+        if let valueJSON = self.valueMapping[forKey],
+            let value = RSValueManager.processValue(jsonObject: valueJSON, state: self.state, context: self.context)?.evaluate() as? NSSecureCoding {
+            return value
+        }
+        
+        return self.baseStateHelper?.objectInState(forKey: forKey)
+    }
     
     public func valueInState(forKey: String) -> NSSecureCoding? {
         
