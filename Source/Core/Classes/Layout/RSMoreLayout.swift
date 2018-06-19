@@ -32,8 +32,13 @@ open class RSMoreLayout: RSBaseLayout, RSLayoutGenerator {
         }
 
         let routes = parent.hiddenTabs(state: state).compactMap({ (tab) -> RSRoute? in
+            
+            guard let layoutIdentifier = tab.layoutIdentifier else {
+                return nil
+            }
+            
             let path = RSPrefixPath(prefix: "/\(tab.identifier)")
-            return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
+            return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: layoutIdentifier)
         })
 
         return routes

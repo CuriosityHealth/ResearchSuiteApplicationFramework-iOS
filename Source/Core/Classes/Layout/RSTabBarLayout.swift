@@ -15,12 +15,12 @@ public struct RSTab: JSONDecodable {
     let identifier: String
     public let tabBarTitle: String
     public let image: UIImage?
-    let layoutIdentifier: String
+    let layoutIdentifier: String?
     public let pathJSON: JSON?
+    public let action: JSON?
     public init?(json: JSON) {
         guard let identifier: String = "identifier" <~~ json,
-            let title: String = "tabBarTitle" <~~ json,
-            let layoutIdentifier: String = "layout" <~~ json else {
+            let title: String = "tabBarTitle" <~~ json else {
                 return nil
         }
         
@@ -31,10 +31,12 @@ public struct RSTab: JSONDecodable {
             
             return UIImage(named: imageString)
         }()
+        
         self.tabBarTitle = title
         self.identifier = identifier
-        self.layoutIdentifier = layoutIdentifier
+        self.layoutIdentifier = "layout" <~~ json
         self.pathJSON = "path" <~~ json
+        self.action = "action" <~~ json
     }
     
     
@@ -139,13 +141,17 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
             
             let visibleTabRoutes = visibleTabs.compactMap({ (tab) -> RSRoute? in
                 
+                guard let layoutIdentifier = tab.layoutIdentifier else {
+                    return nil
+                }
+                
                 if let pathJSON = tab.pathJSON,
                     let path = routeManager.pathManager.generatePath(jsonObject: pathJSON, state: state) {
-                    return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
+                    return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: layoutIdentifier)
                 }
                 else {
                     let path = RSPrefixPath(prefix: "/\(tab.identifier)")
-                    return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: tab.layoutIdentifier)
+                    return RSRoute(identifier: tab.identifier, path: path, layoutIdentifier: layoutIdentifier)
                 }
             })
             

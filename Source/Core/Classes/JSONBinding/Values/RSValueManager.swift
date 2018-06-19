@@ -50,6 +50,9 @@ public struct RSValueLog: JSONEncodable {
                 let datapoint = convertible.toDatapoint(builder: LS2ConcreteDatapoint.self) {
                 return key ~~> datapoint.toJSON()
             }
+            else if let attributedString = value as? NSAttributedString {
+                return key ~~> attributedString.string
+            }
             else if let json = key ~~> value {
                 return json
             }

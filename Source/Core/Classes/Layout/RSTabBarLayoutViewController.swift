@@ -11,6 +11,10 @@ import UIKit
 import ReSwift
 import Gloss
 
+open class RSTabBarItem: UITabBarItem {
+    open var identifier: String!
+}
+
 open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerDelegate, RSLayoutViewController {
 
     var state: RSState?
@@ -81,27 +85,44 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
             var navControllerMap: [String: RSTabBarNavigationViewController] = [:]
             self.tabLayout.tabs.forEach({ (tab) in
                 
-                let initialPath = "\(self.matchedRoute.match.path)/\(tab.identifier)"
-                let match: RSMatch = RSMatch(params: [:], isExact: false, path: initialPath)
-                let route: RSRoute = childRoutes.first(where: { $0.identifier == tab.identifier })!
-                let layout: RSLayout = RSStateSelectors.layout(state, for: tab.layoutIdentifier)!
-                
-                do {
-                    let vc = try layout.instantiateViewController(parent: self, matchedRoute: RSMatchedRoute(match: match, route: route, layout: layout))
-
-                    self.tabLayoutVCs = self.tabLayoutVCs + [vc]
+                if let layoutIdentifier = tab.layoutIdentifier,
+                    let layout: RSLayout = RSStateSelectors.layout(state, for: layoutIdentifier) {
                     
-                    let navController = RSNavigationController(rootViewController: vc.viewController)
+                    let initialPath = "\(self.matchedRoute.match.path)/\(tab.identifier)"
+                    let match: RSMatch = RSMatch(params: [:], isExact: false, path: initialPath)
+                    let route: RSRoute = childRoutes.first(where: { $0.identifier == tab.identifier })!
+                    
+                    do {
+                        let vc = try layout.instantiateViewController(parent: self, matchedRoute: RSMatchedRoute(match: match, route: route, layout: layout))
+                        
+                        self.tabLayoutVCs = self.tabLayoutVCs + [vc]
+                        
+                        let navController = RSNavigationController(rootViewController: vc.viewController)
+                        navController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                        let tabBarNavController = RSTabBarNavigationViewController(identifier: tab.identifier, viewController: navController, parentMatchedRoute: self.matchedRoute)
+                        tabBarNavController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+                        tabBarNavController.title = tab.tabBarTitle
+                        let tabBarItem = RSTabBarItem(title: tab.tabBarTitle, image: tab.image, selectedImage: nil)
+                        tabBarItem.identifier = tab.identifier
+                        tabBarNavController.tabBarItem = tabBarItem
+                        tabBarNavController.setPath(path: initialPath)
+                        navControllerMap[tab.identifier] = tabBarNavController
+                    }
+                    catch {
+                        assertionFailure()
+                    }
+                }
+                else if let action = tab.action {
+                    let navController = RSNavigationController(rootViewController: UIViewController())
                     navController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                     let tabBarNavController = RSTabBarNavigationViewController(identifier: tab.identifier, viewController: navController, parentMatchedRoute: self.matchedRoute)
                     tabBarNavController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                     tabBarNavController.title = tab.tabBarTitle
-                    tabBarNavController.tabBarItem = UITabBarItem(title: tab.tabBarTitle, image: tab.image, selectedImage: nil)
-                    tabBarNavController.setPath(path: initialPath)
+                    let tabBarItem = RSTabBarItem(title: tab.tabBarTitle, image: tab.image, selectedImage: nil)
+                    tabBarItem.identifier = tab.identifier
+                    tabBarNavController.tabBarItem = tabBarItem
+//                    tabBarNavController.setPath(path: initialPath)
                     navControllerMap[tab.identifier] = tabBarNavController
-                }
-                catch {
-                    assertionFailure()
                 }
  
             })
@@ -168,30 +189,33 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
     open override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         
         
-        //note that if the item title is nil,
+        //note that if the item is not an RSTabBarItem
         //assume that this is the "More" route
-        if item.title == nil {
-            
+        guard let tabBarItem = item as? RSTabBarItem else {
             //reroute to more
             self.redirectToMorePath()
-            
             return
-            
         }
-        
         
         //get tab for tab bar item
         let layout: RSTabBarLayout = self.layout as! RSTabBarLayout
-        guard let tab = layout.tabs.first(where: { $0.tabBarTitle == item.title }),
+        guard let tab = layout.tabs.first(where: { $0.identifier == tabBarItem.identifier }),
             let nav = self.tabNavigationControllers[tab.identifier] else {
 
                 return
         }
         
-        //build path based on what's saved in the tab nav controller
-        let absolutePath = nav.getPath(incudeMore: false)
-        let action = RSActionCreators.requestPathChange(path: absolutePath)
-        self.store?.dispatch(action)
+        if let _ = tab.layoutIdentifier {
+            //build path based on what's saved in the tab nav controller
+            let absolutePath = nav.getPath(incudeMore: false)
+            let action = RSActionCreators.requestPathChange(path: absolutePath)
+            self.store?.dispatch(action)
+        }
+        else if let action = tab.action,
+            let store = self.store {
+            store.processAction(action: action, context: ["layoutViewController":self], store: store)
+        }
+        
     }
 
     required public init?(coder aDecoder: NSCoder) {
