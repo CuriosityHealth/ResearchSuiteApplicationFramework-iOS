@@ -101,7 +101,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBImageCaptureStepGenerator(),
             RSEnhancedSingleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
             RSEnhancedMultipleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
-            RSTBCountdownStepGenerator()
+            RSTBCountdownStepGenerator(),
+            RSTBDateTimePickerStepGenerator()
         ]
     }
     
@@ -115,7 +116,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBTextScaleStepGenerator(),
             RSEnhancedTextScaleStepGenerator(),
             RSEnhancedScaleStepGenerator(),
-            RSTBBooleanStepGenerator()
+            RSTBBooleanStepGenerator(),
+            RSTBDateTimePickerStepGenerator()
         ]
     }
     
