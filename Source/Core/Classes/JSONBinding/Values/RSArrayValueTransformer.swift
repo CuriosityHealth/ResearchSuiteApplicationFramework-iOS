@@ -113,6 +113,47 @@ open class RSArrayOperationPredicateFilterFunction: RSArrayOperationFunction {
     
 }
 
+open class RSArrayOperationIndividualElementFilterFunction: RSArrayOperationFunction {
+    public static func generate(jsonObject: JSON, state: RSState, context: [String : AnyObject]) -> RSArrayOperationFunction? {
+        return self.init(json: jsonObject)
+    }
+    
+    public func performOperation(array: [AnyObject], state: RSState, context: [String : AnyObject]) -> [AnyObject] {
+        return array.filter({ (element) -> Bool in
+            
+            var updatedContext = context
+            updatedContext["element"] = element
+            
+            return RSPredicateManager.evaluatePredicate(predicate: self.predicate, state: state, context: updatedContext)
+        })
+    }
+    
+    let type: String
+    let predicate: RSPredicate
+    
+    public required init?(json: JSON) {
+        
+        guard let type: String = "type" <~~ json,
+            type == "individualElementFilter",
+            let predicate: RSPredicate = "predicate" <~~ json else {
+                return nil
+        }
+        
+        self.type = type
+        self.predicate = predicate
+        
+    }
+    
+    public func toJSON() -> JSON? {
+        return jsonify([
+            "type" ~~> self.type,
+            "predicate" ~~> self.predicate
+            ])
+    }
+    
+    
+}
+
 
 
 open class RSArrayValueTransformer: RSValueTransformer {
@@ -145,7 +186,8 @@ open class RSArrayValueTransformer: RSValueTransformer {
 
         let operationTemplates: [RSArrayOperationFunction.Type] = [
             RSArrayOperationPredicateFilterFunction.self,
-            RSArrayOperationSelectCompactMapFunction.self
+            RSArrayOperationSelectCompactMapFunction.self,
+            RSArrayOperationIndividualElementFilterFunction.self
         ]
         
         //for every operation json value, try to instantiate it
