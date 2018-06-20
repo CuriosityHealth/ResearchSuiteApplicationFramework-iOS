@@ -23,6 +23,15 @@ public struct RSValueLog: JSONEncodable {
 //    var predicateResult: Bool? = nil
 //    var successfulTransforms: [String] = []
     
+    public static func toJSONArray(array:[AnyObject]) -> [JSON] {
+        return array.compactMap { item in
+            guard let encodable = item as? JSONEncodable else {
+                return nil
+            }
+            
+            return encodable.toJSON()
+        }
+    }
     
     public static func encode(key: String) -> ((AnyObject?) -> JSON?) {
         return { value in
@@ -45,6 +54,13 @@ public struct RSValueLog: JSONEncodable {
             }
             else if let color = value as? UIColor {
                 return key ~~> color.hexString
+            }
+            else if let array = value as? [AnyObject],
+                let _ = array as? [Gloss.JSONEncodable] {
+                return key ~~> RSValueLog.toJSONArray(array: array)
+            }
+            else if let datapoint = value as? LS2Datapoint {
+                return key ~~> datapoint.toJSON()
             }
             else if let convertible = value as? LS2DatapointConvertible,
                 let datapoint = convertible.toDatapoint(builder: LS2ConcreteDatapoint.self) {

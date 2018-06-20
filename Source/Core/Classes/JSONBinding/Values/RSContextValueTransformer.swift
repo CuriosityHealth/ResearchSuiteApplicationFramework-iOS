@@ -34,8 +34,15 @@ open class RSContextValueTransformer: RSValueTransformer {
                 
                 mappedValues[pair.key] = value
             }
-            
+
             return RSValueConvertible(value: mappedValues as AnyObject)
+        }
+        else if let path: [AnyObject] = "path" <~~ jsonObject {
+            guard let value = RSSelectorResult.recursivelyExtractValue(path: path, collection: context as AnyObject) else {
+                return nil
+            }
+            
+            return RSValueConvertible(value: value as AnyObject)
         }
         else {
             return nil

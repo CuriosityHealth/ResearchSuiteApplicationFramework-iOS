@@ -11,6 +11,7 @@ import UIKit
 import Gloss
 import ResearchKit
 import ResearchSuiteResultsProcessor
+import LS2SDK
 
 open class RSResultTransformValueTransformer: RSValueTransformer {
     
@@ -74,11 +75,26 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         
         //select and map results
         
-        return RSRPFrontEndService.processResult(
+        let result = RSRPFrontEndService.processResult(
             taskResult: filteredTaskResult,
             resultTransform: resultTransform,
             frontEndTransformers: RSApplicationDelegate.appDelegate.frontEndResultTransformers
         )
+        
+        if let convertToJSON: Bool = "convertToJSON" <~~ jsonObject,
+            convertToJSON {
+            
+            guard let datapoint = result as? LS2DatapointConvertible,
+                let json = datapoint.toDatapoint(builder: LS2ConcreteDatapoint.self)?.toJSON()  else {
+                    return nil
+            }
+            
+            return RSValueConvertible(value: json as AnyObject)
+
+        }
+        else {
+            return result
+        }
         
     }
 

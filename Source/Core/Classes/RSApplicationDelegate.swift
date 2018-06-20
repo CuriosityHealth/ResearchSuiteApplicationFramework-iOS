@@ -102,7 +102,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSEnhancedSingleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
             RSEnhancedMultipleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
             RSTBCountdownStepGenerator(),
-            RSTBDateTimePickerStepGenerator()
+            RSTBDateTimePickerStepGenerator(),
+            RSTBTimeIntervalStepGenerator()
         ]
     }
     
@@ -117,7 +118,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSEnhancedTextScaleStepGenerator(),
             RSEnhancedScaleStepGenerator(),
             RSTBBooleanStepGenerator(),
-            RSTBDateTimePickerStepGenerator()
+            RSTBDateTimePickerStepGenerator(),
+            RSTBTimeIntervalStepGenerator()
         ]
     }
     
@@ -272,7 +274,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTemplatedMarkdownTransformer.self,
             RSMostRecentDateTransformer.self,
             RSStartOfDayValueTransformer.self,
-            RSExpressionValueTransformer.self
+            RSExpressionValueTransformer.self,
+            RSDataSourceCollectionValueTransformer.self,
+            RSJSONValueTransformer.self,
+            RSDatapointValueTransformer.self
         ]
     }
     
