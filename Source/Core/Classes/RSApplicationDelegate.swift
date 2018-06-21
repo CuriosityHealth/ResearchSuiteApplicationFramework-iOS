@@ -277,7 +277,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSExpressionValueTransformer.self,
             RSDataSourceCollectionValueTransformer.self,
             RSJSONValueTransformer.self,
-            RSDatapointValueTransformer.self
+            RSDatapointValueTransformer.self,
+            RSFetchDatapointValueTransformer.self
         ]
     }
     

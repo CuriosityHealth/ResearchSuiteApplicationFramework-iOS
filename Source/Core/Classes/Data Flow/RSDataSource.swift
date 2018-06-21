@@ -44,6 +44,6 @@ public protocol RSDataSource  {
     func getCollectionDataSource(identifier: String, predicates: [NSPredicate], sortSettings: RSSortSettings?) -> RSCollectionDataSource?
     func getCollectionDataSource(identifier: String, predicates: [NSPredicate], sortSettings: RSSortSettings?, readyCallback: @escaping (RSCollectionDataSource)->(), updateCallback: @escaping ((RSCollectionDataSource, [Int], [Int], [Int]) -> ())) -> RSCollectionDataSource?
     
-    
+    func getDatapoint(identifier: UUID) -> LS2Datapoint?
 
 }
