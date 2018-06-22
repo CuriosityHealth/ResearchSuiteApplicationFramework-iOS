@@ -14,7 +14,7 @@ import ResearchKit
 
 open class RSStepTreeStateHelper: RSTBStateHelper {
     
-    weak var baseStateHelper: RSTBStateHelper?
+    let baseStateHelper: RSTBStateHelper?
     let valueMapping: [String: JSON]
     let state: RSState
     let context: [String: AnyObject]
@@ -40,32 +40,31 @@ open class RSStepTreeStateHelper: RSTBStateHelper {
 //    }
     
     public func objectInState(forKey: String) -> AnyObject? {
-        if let valueJSON = self.valueMapping[forKey],
-            let value = RSValueManager.processValue(jsonObject: valueJSON, state: self.state, context: self.context)?.evaluate() as? NSSecureCoding {
-            return value
+        if let valueJSON = self.valueMapping[forKey] {
+            return RSValueManager.processValue(jsonObject: valueJSON, state: self.state, context: self.context)?.evaluate()
         }
         
-        return self.baseStateHelper?.objectInState(forKey: forKey)
+        return self.baseStateHelper!.objectInState(forKey: forKey)
     }
     
     public func valueInState(forKey: String) -> NSSecureCoding? {
         
-        if let valueJSON = self.valueMapping[forKey],
-            let value = RSValueManager.processValue(jsonObject: valueJSON, state: self.state, context: self.context)?.evaluate() as? NSSecureCoding {
-            return value
+        if let valueJSON = self.valueMapping[forKey] {
+            return RSValueManager.processValue(jsonObject: valueJSON, state: self.state, context: self.context)?.evaluate() as? NSSecureCoding
         }
-        
-        return self.baseStateHelper?.valueInState(forKey: forKey)
+
+        return self.baseStateHelper!.valueInState(forKey: forKey)
         
     }
     
     public func setValueInState(value: NSSecureCoding?, forKey: String) {
-        self.baseStateHelper?.setValueInState(value: value, forKey: forKey)
+        self.baseStateHelper!.setValueInState(value: value, forKey: forKey)
     }
     
 }
 
 open class RSStepTreeTaskBuilderHelper: RSTBTaskBuilderHelper {
+    
     
     let stepTreeStateHelper: RSStepTreeStateHelper
     
@@ -83,6 +82,32 @@ open class RSStepTreeTaskBuilder: RSTBTaskBuilder {
 //        return self.stepGeneratorService.generateSteps(type: type, jsonObject: jsonObject, helper: self.helper, identifierPrefix: identifierPrefix)
 //    }
     
+    //if we don't hold a reference to stateHelper, it will go out of scope
+    //before the task has completed execution. RSTBTaskBuilder holds
+    //its state helper weakly
+    private let stateHelper: RSTBStateHelper?
+    public override init(stateHelper: RSTBStateHelper?,
+                         elementGeneratorServices: [RSTBElementGenerator]?,
+                         stepGeneratorServices: [RSTBStepGenerator]?,
+                         answerFormatGeneratorServices: [RSTBAnswerFormatGenerator]?,
+                         taskGeneratorServices: [RSTBTaskGenerator.Type]? = nil,
+                         consentDocumentGeneratorServices: [RSTBConsentDocumentGenerator.Type]? = nil,
+                         consentSectionGeneratorServices: [RSTBConsentSectionGenerator.Type]? = nil,
+                         consentSignatureGeneratorServices: [RSTBConsentSignatureGenerator.Type]? = nil) {
+        
+        self.stateHelper = stateHelper
+        super.init(
+            stateHelper: stateHelper,
+            elementGeneratorServices: elementGeneratorServices,
+            stepGeneratorServices: stepGeneratorServices,
+            answerFormatGeneratorServices: answerFormatGeneratorServices,
+            taskGeneratorServices: taskGeneratorServices,
+            consentDocumentGeneratorServices: consentDocumentGeneratorServices,
+            consentSectionGeneratorServices: consentSectionGeneratorServices,
+            consentSignatureGeneratorServices: consentSignatureGeneratorServices
+        )
+        
+    }
     open func createSteps(forType type: String, withJsonObject jsonObject: JsonObject, identifierPrefix: String, parent: RSStepTreeBranchNode, taskResult: ORKTaskResult?) -> [ORKStep]? {
         
         let state: RSState = RSApplicationDelegate.appDelegate.store.state
@@ -110,13 +135,6 @@ open class RSStepTreeBuilder: NSObject {
         answerFormatGeneratorServices: [RSTBAnswerFormatGenerator]?
     ) {
         
-//        self.rstb = RSTBTaskBuilder(
-//            stateHelper: stateHelper,
-//            elementGeneratorServices: nil,
-//            stepGeneratorServices: stepGeneratorServices,
-//            answerFormatGeneratorServices: answerFormatGeneratorServices
-//        )
-        
         self.rstb = RSStepTreeTaskBuilder(
             stateHelper: stateHelper,
             elementGeneratorServices: nil,
@@ -130,6 +148,12 @@ open class RSStepTreeBuilder: NSObject {
         else {
             self.nodeGeneratorService = RSStepTreeNodeGeneratorService()
         }
+        
+    }
+    
+    deinit {
+        
+        print("deiniting RSStepTreeBuilder")
         
     }
     
