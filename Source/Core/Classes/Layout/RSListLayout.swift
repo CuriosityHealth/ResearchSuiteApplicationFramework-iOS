@@ -16,7 +16,7 @@ open class RSListLayout: RSBaseLayout, RSLayoutGenerator {
         return type == "list"
     }
     
-    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout? {
         return RSListLayout(json: jsonObject)
     }
 

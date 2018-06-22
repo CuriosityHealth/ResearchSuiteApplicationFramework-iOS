@@ -12,6 +12,7 @@ import ReSwift
 import ResearchSuiteResultsProcessor
 import ResearchKit
 import UserNotifications
+import Gloss
 
 public final class RSState: NSObject, StateType {
     
@@ -44,7 +45,7 @@ public final class RSState: NSObject, StateType {
     //static after config
     public let routeIdentifiers: [String]
     
-    public let activityQueue: [(UUID, String)]
+    public let activityQueue: [(UUID, String, JSON?)]
     public let isPresenting: Bool
     public let isDismissing: Bool
     public let presentedActivity: (UUID, String, Date)?
@@ -97,7 +98,7 @@ public final class RSState: NSObject, StateType {
                 layoutMap: [String: RSLayout] = [:],
                 routeMap: [String: RSRoute] = [:],
                 routeIdentifiers: [String] = [],
-                activityQueue:[(UUID, String)] = [],
+                activityQueue:[(UUID, String, JSON?)] = [],
                 isPresenting: Bool = false,
                 isDismissing: Bool = false,
                 presentedActivity: (UUID, String, Date)? = nil,
@@ -177,7 +178,7 @@ public final class RSState: NSObject, StateType {
         layoutMap: [String: RSLayout]? = nil,
         routeMap: [String: RSRoute]? = nil,
         routeIdentifiers: [String]? = nil,
-        activityQueue: [(UUID, String)]? = nil,
+        activityQueue: [(UUID, String, JSON?)]? = nil,
         isPresenting: Bool? = nil,
         isDismissing: Bool? = nil,
         presentedActivity: ((UUID, String, Date)?)? = nil,

@@ -51,9 +51,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var collectionDataSourceManager: RSCollectionDataSourceManager!
     
     public var storeManager: RSStoreManager!
-    public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
-    public var taskBuilder: RSTBTaskBuilder!
-    public var stepTreeBuilder: RSStepTreeBuilder!
+//    public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
+//    public var taskBuilder: RSTBTaskBuilder!
+//    public var stepTreeBuilder: RSStepTreeBuilder!
     
     public var resultsProcessorFrontEnd: RSRPFrontEndService!
     public var persistentStoreSubscriber: RSStatePersistentStoreSubscriber!
@@ -384,8 +384,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             
             self.persistentStoreSubscriber = nil
             
-            self.taskBuilderStateHelper = nil
-            self.taskBuilder = nil
+//            self.taskBuilderStateHelper = nil
+//            self.taskBuilder = nil
             self.activityManager = nil
             self.actionManager = nil
             self.valueManager = nil
@@ -478,28 +478,29 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.weakStore = store
         self.printRefCount()
         
-        self.taskBuilderStateHelper = RSTaskBuilderStateHelper(store: self.store)
-        self.taskBuilder = RSTBTaskBuilder(
-            stateHelper: self.taskBuilderStateHelper,
-            elementGeneratorServices: self.elementGeneratorServices,
-            stepGeneratorServices: self.stepGeneratorServices,
-            answerFormatGeneratorServices: self.answerFormatGeneratorServices
-        )
-        
-        self.stepTreeBuilder = RSStepTreeBuilder(
-            stateHelper: self.taskBuilderStateHelper,
-            nodeGeneratorServices: self.stepTreeNodeGenerators,
-            elementGeneratorServices: self.elementGeneratorServices,
-            stepGeneratorServices: self.stepGeneratorServices,
-            answerFormatGeneratorServices: self.answerFormatGeneratorServices
-        )
+//        self.taskBuilderStateHelper = RSTaskBuilderStateHelper(store: self.store)
+//
+//        self.taskBuilder = RSTBTaskBuilder(
+//            stateHelper: self.taskBuilderStateHelper,
+//            elementGeneratorServices: self.elementGeneratorServices,
+//            stepGeneratorServices: self.stepGeneratorServices,
+//            answerFormatGeneratorServices: self.answerFormatGeneratorServices
+//        )
+//
+//        self.stepTreeBuilder = RSStepTreeBuilder(
+//            stateHelper: self.taskBuilderStateHelper,
+//            nodeGeneratorServices: self.stepTreeNodeGenerators,
+//            elementGeneratorServices: self.elementGeneratorServices,
+//            stepGeneratorServices: self.stepGeneratorServices,
+//            answerFormatGeneratorServices: self.answerFormatGeneratorServices
+//        )
         
         
         self.printRefCount()
         
         self.store.subscribe(self.persistentStoreSubscriber)
         
-        self.activityManager = RSActivityManager(stepTreeBuilder: self.stepTreeBuilder)
+        self.activityManager = RSActivityManager()
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
         self.actionManager = RSActionManager(actionCreatorTransforms: self.actionCreatorTransforms)
         self.valueManager = RSValueManager(valueTransforms: self.valueTransforms)

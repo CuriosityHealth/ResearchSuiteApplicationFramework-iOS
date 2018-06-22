@@ -15,7 +15,7 @@ import Gloss
 
 public protocol RSActivityGenerator {
     static func supportsType(type: String?) -> Bool
-    static func generate(jsonObject: JSON, activityManager: RSActivityManager) -> RSActivity?
+    static func generate(jsonObject: JSON, activityManager: RSActivityManager, state: RSState) -> RSActivity?
 }
 
 open class RSActivityManager: NSObject {
@@ -32,24 +32,20 @@ open class RSActivityManager: NSObject {
     
     let activityElementTransforms: [RSActivityElementTransformer.Type]
     let activityGenerators: [RSActivityGenerator.Type]
-
-    let stepTreeBuilder: RSStepTreeBuilder
     
     init(
-        stepTreeBuilder: RSStepTreeBuilder,
         activityGenerators: [RSActivityGenerator.Type] = RSActivityManager.defaultActivityGenerators,
         activityElementTransforms: [RSActivityElementTransformer.Type] = RSActivityManager.defaultActivityElementTransforms
         ) {
 
         self.activityElementTransforms = activityElementTransforms
         self.activityGenerators = activityGenerators
-        self.stepTreeBuilder = stepTreeBuilder
         
         super.init()
     
     }
     
-    public func taskForActivity(activity: RSActivity, state: RSState) -> RSTask? {
+    public func taskForActivity(activity: RSActivity, state: RSState, stepTreeBuilder: RSStepTreeBuilder) -> RSTask? {
         
         let rootNode = RSStepTreeBranchNode(
             identifier: activity.identifier,
@@ -65,7 +61,7 @@ open class RSActivityManager: NSObject {
         let nodes = activity.elements.compactMap { (json) -> RSStepTreeNode? in
             return self.transformActivityElementIntoNode(
                 jsonObject: json,
-                stepTreeBuilder: self.stepTreeBuilder,
+                stepTreeBuilder: stepTreeBuilder,
                 state: state,
                 identifierPrefix: activity.identifier,
                 parent: rootNode
@@ -86,7 +82,7 @@ open class RSActivityManager: NSObject {
         let stepTree = RSStepTree(
             identifier: activity.identifier,
             root: rootNode,
-            taskBuilder: self.stepTreeBuilder.rstb,
+            taskBuilder: stepTreeBuilder.rstb,
             state: state,
             shouldHideCancelButton: activity.shouldHideCancelButton
         )
@@ -122,13 +118,13 @@ open class RSActivityManager: NSObject {
         
     }
     
-    public func generate(jsonObject: JSON) -> RSActivity? {
+    public func generate(jsonObject: JSON, state: RSState) -> RSActivity? {
         
         let type: String? = "type" <~~ jsonObject
         
         for generator in self.activityGenerators {
             if generator.supportsType(type: type),
-                let activity = generator.generate(jsonObject: jsonObject, activityManager: self) {
+                let activity = generator.generate(jsonObject: jsonObject, activityManager: self, state: state) {
                 return activity
             }
         }

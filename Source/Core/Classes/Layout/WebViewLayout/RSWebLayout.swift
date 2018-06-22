@@ -14,7 +14,7 @@ open class RSWebLayout: RSBaseLayout, RSLayoutGenerator  {
         return type == "webView"
     }
     
-    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout? {
         return RSWebLayout(json: jsonObject)
     }
     

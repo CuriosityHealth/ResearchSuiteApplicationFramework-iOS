@@ -13,6 +13,7 @@ import Gloss
 import ResearchKit
 import ResearchSuiteResultsProcessor
 import UserNotifications
+import ResearchSuiteTaskBuilder
 
 public class RSActionCreators: NSObject {
     
@@ -134,27 +135,37 @@ public class RSActionCreators: NSObject {
     
     public static func addActivitiesFromFile(fileName: String, activityManager: RSActivityManager, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
-        return addArrayOfObjectsFromFile(
-            fileName: fileName,
-            inDirectory: inDirectory,
-            configJSONBaseURL: configJSONBaseURL,
-            selector: { "activities" <~~ $0 },
-            flatMapFunc: { activityManager.generate(jsonObject: $0) },
-            mapFunc: { AddActivityAction(activity: $0) }
-        )
+        return { state, store in
+            
+            store.dispatch(addArrayOfObjectsFromFile(
+                fileName: fileName,
+                inDirectory: inDirectory,
+                configJSONBaseURL: configJSONBaseURL,
+                selector: { "activities" <~~ $0 },
+                flatMapFunc: { activityManager.generate(jsonObject: $0, state: state) },
+                mapFunc: { AddActivityAction(activity: $0) }
+            ))
+            
+            return nil
+        }
         
     }
     
     public static func addLayoutsFromFile(fileName: String, layoutManager: RSLayoutManager, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
-        return addArrayOfObjectsFromFile(
-            fileName: fileName,
-            inDirectory: inDirectory,
-            configJSONBaseURL: configJSONBaseURL,
-            selector: { "layouts" <~~ $0 },
-            flatMapFunc: { layoutManager.generateLayout(jsonObject: $0) },
-            mapFunc: { AddLayoutAction(layout: $0) }
-        )
+        return { state, store in
+            
+            store.dispatch(addArrayOfObjectsFromFile(
+                fileName: fileName,
+                inDirectory: inDirectory,
+                configJSONBaseURL: configJSONBaseURL,
+                selector: { "layouts" <~~ $0 },
+                flatMapFunc: { layoutManager.generateLayout(jsonObject: $0, state: state) },
+                mapFunc: { AddLayoutAction(layout: $0) }
+            ))
+            
+            return nil
+        }
         
     }
 //
@@ -170,9 +181,9 @@ public class RSActionCreators: NSObject {
 //        
 //    }
     
-    public static func queueActivity(activityID: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func queueActivity(activityID: String, context: JSON?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
-            return QueueActivityAction(uuid: UUID(), activityID: activityID)
+            return QueueActivityAction(uuid: UUID(), activityID: activityID, context: context)
         }
     }
     
@@ -262,10 +273,47 @@ public class RSActionCreators: NSObject {
                 return nil
             }
             
-            guard let firstActivity: (UUID, String) = RSStateSelectors.getNextActivity(state),
-                let activity = RSStateSelectors.activity(state, for: firstActivity.1),
-                let task = activityManager.taskForActivity(activity: activity, state: state) else {
+            guard let firstActivity: (UUID, String, JSON?) = RSStateSelectors.getNextActivity(state),
+                let activity = RSStateSelectors.activity(state, for: firstActivity.1) else {
                     return nil
+            }
+            
+            let extraContext: [String: AnyObject] = {
+                
+                if let extraContextJSON = firstActivity.2 {
+                    
+                    let pairs: [(String, AnyObject)] = extraContextJSON.compactMap({ (pair) -> (String, AnyObject)? in
+                        
+                        guard let valueJSON: JSON = pair.value as? JSON,
+                            let value = RSValueManager.processValue(jsonObject: valueJSON, state: state, context: [:])?.evaluate() else {
+                            return nil
+                        }
+                        
+                        return (pair.key, value)
+                        
+                    })
+                    
+                    return Dictionary.init(uniqueKeysWithValues: pairs)
+                    
+                }
+                else {
+                    return [:]
+                }
+                
+            }()
+
+            let taskBuilderStateHelper = RSTaskBuilderStateHelper(store: store, extraStateValues: extraContext)
+
+            let stepTreeBuilder = RSStepTreeBuilder(
+                stateHelper: taskBuilderStateHelper,
+                nodeGeneratorServices: RSApplicationDelegate.appDelegate.stepTreeNodeGenerators,
+                elementGeneratorServices: RSApplicationDelegate.appDelegate.elementGeneratorServices,
+                stepGeneratorServices: RSApplicationDelegate.appDelegate.stepGeneratorServices,
+                answerFormatGeneratorServices: RSApplicationDelegate.appDelegate.answerFormatGeneratorServices)
+            
+            
+            guard let task = activityManager.taskForActivity(activity: activity, state: state, stepTreeBuilder: stepTreeBuilder) else {
+                return nil
             }
             
             let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
@@ -273,11 +321,11 @@ public class RSActionCreators: NSObject {
                 //process on success action
                 if reason == ORKTaskViewControllerFinishReason.completed {
                     let taskResult = taskViewController.result
-                    RSActionCreators.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store)
+                    RSActionCreators.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store, extraContext: extraContext)
                 }
                     //process on failure actions
                 else {
-                    RSActionCreators.processOnFailureActions(activity: activity, store: store)
+                    RSActionCreators.processOnFailureActions(activity: activity, store: store, extraContext: extraContext)
                 }
                 
                 
@@ -297,7 +345,7 @@ public class RSActionCreators: NSObject {
                 }
                 
                 //process finally actions
-                RSActionCreators.processFinallyActions(activity: activity, store: store)
+                RSActionCreators.processFinallyActions(activity: activity, store: store, extraContext: extraContext)
                 
                 //NOTE: We are wiping out the storage directory, so any results should have been copied out of here
                 
@@ -406,21 +454,24 @@ public class RSActionCreators: NSObject {
         }
     }
     
-    private static func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>) {
+    private static func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>, extraContext: [String: AnyObject]) {
         let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
-        let context: [String: AnyObject] = ["taskResult": taskResult]
+        let context: [String: AnyObject] = extraContext.merging(["taskResult": taskResult], uniquingKeysWith: { (obj1, obj2) -> AnyObject in
+            return obj2
+        })
+        
         store.processActions(actions: onSuccessActionJSON, context: context, store: store)
     }
     
-    private static func processOnFailureActions(activity: RSActivity, store: Store<RSState>) {
+    private static func processOnFailureActions(activity: RSActivity, store: Store<RSState>, extraContext: [String: AnyObject]) {
         let onFailureActionJSON: [JSON] = activity.onCompletion.onFailureActions
-        let context: [String: AnyObject] = [:]
+        let context: [String: AnyObject] = extraContext
         store.processActions(actions: onFailureActionJSON, context: context, store: store)
     }
     
-    private static func processFinallyActions(activity: RSActivity, store: Store<RSState>) {
+    private static func processFinallyActions(activity: RSActivity, store: Store<RSState>, extraContext: [String: AnyObject]) {
         let finallyActionJSON: [JSON] = activity.onCompletion.finallyActions
-        let context: [String: AnyObject] = [:]
+        let context: [String: AnyObject] = extraContext
         store.processActions(actions: finallyActionJSON, context: context, store: store)
     }
 

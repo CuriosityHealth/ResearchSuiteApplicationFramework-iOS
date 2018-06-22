@@ -76,6 +76,7 @@ public struct AddRouteAction: Action {
 public struct QueueActivityAction: Action {
     let uuid: UUID
     let activityID: String
+    let context: JSON?
 }
 
 public struct DequeueActivityAction: Action {

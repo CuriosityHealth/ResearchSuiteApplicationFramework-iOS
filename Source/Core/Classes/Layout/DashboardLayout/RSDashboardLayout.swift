@@ -14,7 +14,7 @@ open class RSDashboardLayout: RSBaseLayout, RSLayoutGenerator  {
         return type == "dashboard"
     }
     
-    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout? {
         return RSDashboardLayout(json: jsonObject)
     }
     

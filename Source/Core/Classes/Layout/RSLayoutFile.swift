@@ -32,8 +32,8 @@ open class RSLayoutFile: RSLayoutGenerator {
         return type == "layoutFile"
     }
     
-    private static func loadLayoutJSON(descriptor: RSLayoutFileDescriptor) -> JSON? {
-        if let urlBase = RSApplicationDelegate.appDelegate.taskBuilderStateHelper.valueInState(forKey: descriptor.layoutURLBaseKey) as? String,
+    private static func loadLayoutJSON(descriptor: RSLayoutFileDescriptor, state: RSState) -> JSON? {
+        if let urlBase = RSStateSelectors.getValueInCombinedState(state, for: descriptor.layoutURLBaseKey) as? String,
             let urlPath = descriptor.layoutURLPath,
             let url = URL(string: urlBase + urlPath) {
 
@@ -48,14 +48,14 @@ open class RSLayoutFile: RSLayoutGenerator {
         }
     }
     
-    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout? {
         
         guard let descriptor: RSLayoutFileDescriptor = RSLayoutFileDescriptor(json: jsonObject),
-            let json = RSLayoutFile.loadLayoutJSON(descriptor: descriptor) else {
+            let json = RSLayoutFile.loadLayoutJSON(descriptor: descriptor, state: state) else {
             return nil
         }
         
-        return layoutManager.generateLayout(jsonObject: json)
+        return layoutManager.generateLayout(jsonObject: json, state: state)
     }
     
     

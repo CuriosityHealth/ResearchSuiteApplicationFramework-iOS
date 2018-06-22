@@ -48,7 +48,7 @@ open class RSTabBarLayout: RSBaseLayout, RSLayoutGenerator {
         return type == "tab"
     }
     
-    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout? {
         return RSTabBarLayout(json: jsonObject)
     }
     

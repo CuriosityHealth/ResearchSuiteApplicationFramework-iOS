@@ -34,8 +34,8 @@ open class RSActivityFileGenerator: RSActivityGenerator {
         return type == "activityFile"
     }
     
-    private static func loadJSON(descriptor: RSActivityFileDescriptor) -> JSON? {
-        if let urlBase = RSApplicationDelegate.appDelegate.taskBuilderStateHelper.valueInState(forKey: descriptor.URLBaseKey) as? String,
+    private static func loadJSON(descriptor: RSActivityFileDescriptor, state: RSState) -> JSON? {
+        if let urlBase = RSStateSelectors.getValueInCombinedState(state, for: descriptor.URLBaseKey) as? String,
             let urlPath = descriptor.URLPath,
             let url = URL(string: urlBase + urlPath) {
             
@@ -50,13 +50,13 @@ open class RSActivityFileGenerator: RSActivityGenerator {
         }
     }
     
-    public static func generate(jsonObject: JSON, activityManager: RSActivityManager) -> RSActivity? {
+    public static func generate(jsonObject: JSON, activityManager: RSActivityManager, state: RSState) -> RSActivity? {
         guard let descriptor: RSActivityFileDescriptor = RSActivityFileDescriptor(json: jsonObject),
-            let json = RSActivityFileGenerator.loadJSON(descriptor: descriptor) else {
+            let json = RSActivityFileGenerator.loadJSON(descriptor: descriptor, state: state) else {
                 return nil
         }
         
-        return activityManager.generate(jsonObject: json)
+        return activityManager.generate(jsonObject: json, state: state)
     }
     
 }

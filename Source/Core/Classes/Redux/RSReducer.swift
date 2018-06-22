@@ -46,7 +46,7 @@ public class RSReducer: NSObject {
                 
             case let queueActivityAction as QueueActivityAction:
                 
-                let pair = (queueActivityAction.uuid, queueActivityAction.activityID)
+                let pair = (queueActivityAction.uuid, queueActivityAction.activityID, queueActivityAction.context)
                 let newActivityQueue = state.activityQueue + [pair]
                 return RSState.newState(fromState: state, activityQueue: newActivityQueue)
                 

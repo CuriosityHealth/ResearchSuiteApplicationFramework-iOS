@@ -12,7 +12,7 @@ import Gloss
 
 public protocol RSLayoutGenerator {
     static func supportsType(type: String) -> Bool
-    static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout?
+    static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout?
 }
 
 public class RSLayoutManager: NSObject {
@@ -26,7 +26,7 @@ public class RSLayoutManager: NSObject {
         super.init()
     }
     
-    public func generateLayout(jsonObject: JSON) -> RSLayout? {
+    public func generateLayout(jsonObject: JSON, state: RSState) -> RSLayout? {
         
         guard let type: String = "type" <~~ jsonObject else {
             return nil
@@ -34,7 +34,7 @@ public class RSLayoutManager: NSObject {
         
         for layoutGenerator in layoutGenerators {
             if layoutGenerator.supportsType(type: type),
-                let layout = layoutGenerator.generate(jsonObject: jsonObject, layoutManager: self) {
+                let layout = layoutGenerator.generate(jsonObject: jsonObject, layoutManager: self, state: state) {
                 return layout
             }
         }

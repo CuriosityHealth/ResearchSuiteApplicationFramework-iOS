@@ -14,7 +14,7 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
         return type == "calendar"
     }
     
-    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout? {
         return RSCalendarLayout(json: jsonObject)
     }
     

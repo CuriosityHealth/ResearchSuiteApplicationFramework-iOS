@@ -16,7 +16,7 @@ open class RSMoreLayout: RSBaseLayout, RSLayoutGenerator {
         return type == "more"
     }
     
-    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout? {
         return RSMoreLayout(json: jsonObject)
     }
     

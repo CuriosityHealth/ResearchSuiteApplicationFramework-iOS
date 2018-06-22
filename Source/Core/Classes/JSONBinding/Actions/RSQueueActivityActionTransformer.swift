@@ -23,9 +23,11 @@ open class RSQueueActivityActionTransformer: RSActionTransformer, RSURLToJSONAct
                 return nil
         }
         
+        let context: JSON? = "context" <~~ jsonObject
+        
         return { state, store in
             
-            store.dispatch(RSActionCreators.queueActivity(activityID: activityID))
+            store.dispatch(RSActionCreators.queueActivity(activityID: activityID, context: context))
             
             return nil
             

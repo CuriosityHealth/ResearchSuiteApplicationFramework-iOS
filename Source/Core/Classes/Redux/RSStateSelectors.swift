@@ -11,6 +11,7 @@ import UIKit
 import ResearchSuiteResultsProcessor
 import ResearchKit
 import UserNotifications
+import Gloss
 
 public class RSStateSelectors: NSObject {
     
@@ -123,11 +124,11 @@ public class RSStateSelectors: NSObject {
 
     }
     
-    public static func getNextActivity(_ state: RSState) -> (UUID, String)? {
+    public static func getNextActivity(_ state: RSState) -> (UUID, String, JSON?)? {
         return state.activityQueue.first
     }
     
-    public static func getQueuedActivities(_ state: RSState) -> [(UUID, String)] {
+    public static func getQueuedActivities(_ state: RSState) -> [(UUID, String, JSON?)] {
         return state.activityQueue
     }
     

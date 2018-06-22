@@ -14,7 +14,7 @@ open class RSCollectionLayout: RSBaseLayout, RSLayoutGenerator {
         return type == "collection"
     }
     
-    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager) -> RSLayout? {
+    public static func generate(jsonObject: JSON, layoutManager: RSLayoutManager, state: RSState) -> RSLayout? {
         return RSCollectionLayout(json: jsonObject)
     }
     

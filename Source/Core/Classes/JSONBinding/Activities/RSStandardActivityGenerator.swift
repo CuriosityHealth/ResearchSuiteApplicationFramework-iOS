@@ -9,12 +9,12 @@ import UIKit
 import Gloss
 
 open class RSStandardActivityGenerator: RSActivityGenerator {
-
+    
     public static func supportsType(type: String?) -> Bool {
         return true
     }
     
-    public static func generate(jsonObject: JSON, activityManager: RSActivityManager) -> RSActivity? {
+    public static func generate(jsonObject: JSON, activityManager: RSActivityManager, state: RSState) -> RSActivity? {
         return RSActivity(json: jsonObject)
     }
     
