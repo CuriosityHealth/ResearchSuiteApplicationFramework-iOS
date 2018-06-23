@@ -35,46 +35,66 @@ public struct RSValueLog: JSONEncodable {
     
     public static func encode(key: String) -> ((AnyObject?) -> JSON?) {
         return { value in
-            if let date = value as? Date {
-                return Gloss.Encoder.encode(dateISO8601ForKey: key)(date)
-            }
-            else if let dateComponents = value as? DateComponents {
-                
-                let dateFormatter = DateComponentsFormatter()
-                dateFormatter.allowedUnits = [NSCalendar.Unit.year, NSCalendar.Unit.month, NSCalendar.Unit.weekOfMonth ,NSCalendar.Unit.day, NSCalendar.Unit.hour, NSCalendar.Unit.minute, NSCalendar.Unit.second]
-                
-                if let dateComponentsString = dateFormatter.string(from: dateComponents) {
-                    return key ~~> dateComponentsString
+            
+            
+            let json: JSON? = {
+                if let date = value as? Date {
+                    return Gloss.Encoder.encode(dateISO8601ForKey: key)(date)
                 }
-                else {
+                else if let dateComponents = value as? DateComponents {
+                    
+                    let dateFormatter = DateComponentsFormatter()
+                    dateFormatter.allowedUnits = [NSCalendar.Unit.year, NSCalendar.Unit.month, NSCalendar.Unit.weekOfMonth ,NSCalendar.Unit.day, NSCalendar.Unit.hour, NSCalendar.Unit.minute, NSCalendar.Unit.second]
+                    
+                    if let dateComponentsString = dateFormatter.string(from: dateComponents) {
+                        return key ~~> dateComponentsString
+                    }
+                    else {
+                        assertionFailure("cannot handle key: \(key), value: \(value)")
+                        return nil
+                    }
+                    
+                }
+                else if let color = value as? UIColor {
+                    return key ~~> color.hexString
+                }
+                else if let array = value as? [AnyObject],
+                    let _ = array as? [Gloss.JSONEncodable] {
+                    return key ~~> RSValueLog.toJSONArray(array: array)
+                }
+                else if let datapoint = value as? LS2Datapoint {
+                    return key ~~> datapoint.toJSON()
+                }
+                else if let convertible = value as? LS2DatapointConvertible,
+                    let datapoint = convertible.toDatapoint(builder: LS2ConcreteDatapoint.self) {
+                    return key ~~> datapoint.toJSON()
+                }
+                else if let attributedString = value as? NSAttributedString {
+                    return key ~~> attributedString.string
+                }
+                else if let uuid = value as? NSUUID {
+                    return key ~~> uuid.uuidString
+                }
+                else if let json = key ~~> value {
+                    return json
+                }
+                else if value != nil{
                     assertionFailure("cannot handle key: \(key), value: \(value)")
                     return nil
                 }
-                
-            }
-            else if let color = value as? UIColor {
-                return key ~~> color.hexString
-            }
-            else if let array = value as? [AnyObject],
-                let _ = array as? [Gloss.JSONEncodable] {
-                return key ~~> RSValueLog.toJSONArray(array: array)
-            }
-            else if let datapoint = value as? LS2Datapoint {
-                return key ~~> datapoint.toJSON()
-            }
-            else if let convertible = value as? LS2DatapointConvertible,
-                let datapoint = convertible.toDatapoint(builder: LS2ConcreteDatapoint.self) {
-                return key ~~> datapoint.toJSON()
-            }
-            else if let attributedString = value as? NSAttributedString {
-                return key ~~> attributedString.string
-            }
-            else if let json = key ~~> value {
-                return json
-            }
-            else if value != nil{
-                assertionFailure("cannot handle key: \(key), value: \(value)")
-                return nil
+                else {
+                    return nil
+                }
+            }()
+            
+            if let json = json {
+                if JSONSerialization.isValidJSONObject(json) {
+                    return json
+                }
+                else {
+//                    assertionFailure("Cannot serialize value as JSON")
+                    return nil
+                }
             }
             else {
                 return nil
