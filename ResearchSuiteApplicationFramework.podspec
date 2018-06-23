@@ -44,6 +44,7 @@ Pod::Spec.new do |s|
     core.dependency 'GRMustache.swift', '~> 2.1'
     core.dependency 'FSCalendar'
     core.dependency 'SnapKit'
+    core.dependency 'LS2SDK/Common'
   end
 
   s.subspec 'Development' do |dev|

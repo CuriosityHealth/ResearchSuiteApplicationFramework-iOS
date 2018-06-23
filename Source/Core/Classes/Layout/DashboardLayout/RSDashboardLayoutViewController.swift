@@ -8,7 +8,7 @@
 import UIKit
 import ReSwift
 import Gloss
-import RealmSwift
+//import RealmSwift
 import LS2SDK
 import ResearchSuiteExtensions
 

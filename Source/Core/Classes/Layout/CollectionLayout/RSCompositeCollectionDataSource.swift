@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Realm
+//import Realm
 import LS2SDK
 
 open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollectionDataSourceGenerator {
