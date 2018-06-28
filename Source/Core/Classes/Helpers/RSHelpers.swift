@@ -15,6 +15,7 @@ public class RSHelpers {
     
     open static func getJSON(forURL url: URL) -> JSON? {
         
+        print(url)
         guard let fileContent = try? Data(contentsOf: url)
             else {
                 assertionFailure("Unable to create NSData with content of file \(url)")
@@ -28,7 +29,31 @@ public class RSHelpers {
         return json
     }
     
+    open static func writeJSON(json: JSON, toURL url: URL) -> Bool {
+        
+        if JSONSerialization.isValidJSONObject(json) {
+            
+            guard let data = try? JSONSerialization.data(withJSONObject: json, options: .init(rawValue: 0)) else {
+                return false
+            }
+            
+            do {
+                try data.write(to: url, options: .atomicWrite)
+                return true
+            }
+            catch {
+                return false
+            }
+        }
+        else {
+            return false
+        }
+        
+    }
+    
     public static func getJson(forFilename filename: String, inBundle bundle: Bundle = Bundle.main, inDirectory: String? = nil) -> JsonElement? {
+        
+        assertionFailure("This method is deprecated. Use getJSON(forURL)")
         
         guard let filePath = bundle.path(forResource: filename, ofType: "json", inDirectory: inDirectory) else {
                 assertionFailure("unable to locate file \(filename)")

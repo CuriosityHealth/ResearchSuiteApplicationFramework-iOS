@@ -417,6 +417,7 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     
     private func dismissPasscodeViewController(_ animated: Bool) {
         
+        debugPrint(self.store)
         let state: RSState = self.store!.state
         guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
             return

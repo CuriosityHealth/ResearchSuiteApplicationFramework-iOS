@@ -16,7 +16,7 @@ open class RSCollectionViewCell: UICollectionViewCell {
     
     open var onTap: ((RSCollectionViewCell)->())?
     
-    static func spacingView(axis: UILayoutConstraintAxis) -> UIView {
+    public static func spacingView(axis: UILayoutConstraintAxis) -> UIView {
         let view = UIView()
         view.snp.makeConstraints { (make) in
             if axis == .vertical {
@@ -30,7 +30,7 @@ open class RSCollectionViewCell: UICollectionViewCell {
         return view
     }
     
-    static func lineView(axis: UILayoutConstraintAxis, color: UIColor) -> UIView {
+    public static func lineView(axis: UILayoutConstraintAxis, color: UIColor) -> UIView {
         let view = UIView()
         view.snp.makeConstraints { (make) in
             if axis == .vertical {

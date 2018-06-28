@@ -88,7 +88,7 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     }
     
     deinit {
-        self.store!.unsubscribe(self)
+        self.store?.unsubscribe(self)
     }
     
     open override func viewDidAppear(_ animated: Bool) {

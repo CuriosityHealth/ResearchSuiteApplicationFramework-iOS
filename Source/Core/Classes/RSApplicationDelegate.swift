@@ -244,7 +244,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSSetPreventSleepAction.self,
             RSActionSwitchTransformer.self,
             RSRequestPathChangeActionTransformer.self,
-            RSDefinedAction.self
+            RSDefinedAction.self,
+            RSReloadConfigActionTransformer.self
         ]
     }
     
@@ -354,6 +355,31 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             })
         }
         
+        
+        //We've decided to only reload config when we're not in the middle of doing a bunch of other stuff, including:
+        // - fetching notifications
+        // - presenting / dismissing passcode
+        // - presenting / dismissing activities (including processing their actions)
+        // we should also prevent us from doing so while processing actions associated with the activity. it appears that this is happening
+        // since we don't dismiss the activity until the actions have been processed
+        // for now, if there are activities queued up,
+        if state.reloadConfigRequested
+            && !RSStateSelectors.isFetchingNotifications(state)
+            && !RSStateSelectors.isPresentingPasscode(state)
+            && !RSStateSelectors.isDismissingPasscode(state)
+            && !RSStateSelectors.isPasscodePresented(state)
+            && !RSStateSelectors.isPresenting(state)
+            && !RSStateSelectors.isDismissing(state)
+            && RSStateSelectors.presentedActivity(state) == nil
+            && RSStateSelectors.getQueuedActivities(state).count == 0
+            && RSStateSelectors.isConfigurationCompleted(state) {
+            
+            debugPrint("####!!!! Reloading Config")
+            
+            self.reloadConfig()
+            
+        }
+        
         //check for notifications being enabled
         guard let lastState = self.lastState else {
             self.lastState = state
@@ -377,15 +403,49 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         completion(true, nil)
     }
     
+    
+    //we need to make sure that we only do this at certain points of time
+    public func reloadConfig() {
+        self.persistentStoreSubscriber = nil
+        
+        self.activityManager = nil
+        self.actionManager = nil
+        self.valueManager = nil
+        self.predicateManager = nil
+        self.stateObjectManager = nil
+        
+        if self.notificationSupport {
+            self.notificationManager?.cancelNotifications()
+            self.notificationManager = nil
+        }
+        
+        if self.locationSupport {
+            self.locationManager?.stopMonitoringRegions()
+            self.locationManager = nil
+        }
+        
+        self.layoutManager = nil
+        
+        self.window?.rootViewController = UIViewController()
+        self.window?.makeKeyAndVisible()
+        
+        self.routingViewController = nil
+        
+        self.openURLManager = nil
+
+        self.initializeApplication(fromReset: true)
+        
+        self.store?.dispatch(RSActionCreators.completeConfiguration())
+        self.onAppLoad()
+    }
+    
     private func finishApplicationReset() {
         
         //clear persistent store subscriber
         self.persistentStoreSubscriber.clearState { (completd, error) in
             
             self.persistentStoreSubscriber = nil
-            
-//            self.taskBuilderStateHelper = nil
-//            self.taskBuilder = nil
+
             self.activityManager = nil
             self.actionManager = nil
             self.valueManager = nil
@@ -575,6 +635,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return true
     }
     
+    open func configInitialization(store: Store<RSState>) {
+        
+    }
+    
     open func appURLScheme() -> String? {
         guard let infoPlist = Bundle.main.infoDictionary,
             let urlTypes = infoPlist["CFBundleURLTypes"] as? NSArray,
@@ -592,6 +656,18 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     open func feedbackEnabled() -> Bool {
         return false
+    }
+    
+    open func reloadStore(store: Store<RSState>) {
+        //remove everything
+        //state
+        //actions
+        //measures
+        //activities
+        //layouts
+        //notifications
+        
+        self.storeInitialization(store: store)
     }
     
     open func storeInitialization(store: Store<RSState>) {

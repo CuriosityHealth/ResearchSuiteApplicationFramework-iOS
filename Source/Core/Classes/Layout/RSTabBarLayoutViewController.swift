@@ -62,12 +62,17 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         
         super.viewDidLoad()
         
+        //if store is nil, we're in the midst of resetting anyway
+        guard let state: RSState = self.store?.state else {
+            return
+        }
+        
         self.delegate = self
         self.moreNavControllerDelegate = RSMoreNavigationControllerDelegate(tabBarLayoutVC: self)
         self.moreNavigationController.delegate = self.moreNavControllerDelegate
         
         let routeManager = RSApplicationDelegate.appDelegate.routeManager
-        let state: RSState = self.store!.state
+        
         let matchedRoute = self.matchedRoute
         let parentLayout = self.parentLayoutViewController.layout
         let childRoutes = self.matchedRoute.layout.childRoutes(routeManager: routeManager!, state: state, matchedRoute: matchedRoute, parentLayout: parentLayout)

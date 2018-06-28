@@ -181,6 +181,15 @@ public class RSActionCreators: NSObject {
 //        
 //    }
     
+    public static func reloadConfig() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            
+//            RSApplicationDelegate.appDelegate.reloadConfig()
+            
+            return ReloadConfigurationRequest()
+        }
+    }
+    
     public static func queueActivity(activityID: String, context: JSON?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             return QueueActivityAction(uuid: UUID(), activityID: activityID, context: context)
@@ -666,16 +675,17 @@ public class RSActionCreators: NSObject {
         }
     }
 
-    public static func addNotificationsFromFile(fileName: String, inDirectory: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addNotificationsFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
         return addArrayOfObjectsFromFile(
             fileName: fileName,
             inDirectory: inDirectory,
+            configJSONBaseURL: configJSONBaseURL,
             selector: { "notifications" <~~ $0 },
             flatMapFunc: { RSNotification(json: $0) },
             mapFunc: { AddNotificationAction(notification: $0) }
         )
-        
+
     }
     
     public static func addNotification(notification: RSNotification) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {

@@ -226,6 +226,10 @@ public struct UnregisterDataSinkAction: Action {
     let identifier: String
 }
 
+public struct ReloadConfigurationRequest: Action {
+    
+}
+
 public struct CompleteConfiguration: Action {
 }
 

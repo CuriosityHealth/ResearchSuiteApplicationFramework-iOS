@@ -83,6 +83,7 @@ public final class RSState: NSObject, StateType {
     
     //sign out
     public let signOutRequested: Bool
+    public let reloadConfigRequested: Bool
     
     public let preventSleep: Bool
     
@@ -121,6 +122,7 @@ public final class RSState: NSObject, StateType {
                 passcodeViewController: ORKPasscodeViewController? = nil,
                 isDismissingPasscode: Bool = false,
                 signOutRequested: Bool = false,
+                reloadConfigRequested: Bool = false,
                 preventSleep: Bool = false
         ) {
         
@@ -161,6 +163,7 @@ public final class RSState: NSObject, StateType {
         self.passcodeViewController = passcodeViewController
         self.isDismissingPasscode = isDismissingPasscode
         self.signOutRequested = signOutRequested
+        self.reloadConfigRequested = reloadConfigRequested
         self.preventSleep = preventSleep
     }
     
@@ -203,6 +206,7 @@ public final class RSState: NSObject, StateType {
         passcodeViewController: ORKPasscodeViewController?? = nil,
         isDismissingPasscode: Bool? = nil,
         signOutRequested: Bool? = nil,
+        reloadConfigRequested: Bool? = nil,
         preventSleep: Bool? = nil
         ) -> RSState {
         
@@ -242,6 +246,7 @@ public final class RSState: NSObject, StateType {
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
             isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode,
             signOutRequested: signOutRequested ?? fromState.signOutRequested,
+            reloadConfigRequested: reloadConfigRequested ?? fromState.reloadConfigRequested,
             preventSleep: preventSleep ?? fromState.preventSleep
         )
     }
