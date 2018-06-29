@@ -13,16 +13,16 @@ import Gloss
 public struct RSTab: JSONDecodable {
     
     let identifier: String
-    public let tabBarTitle: String
+    public let tabBarTitle: String?
     public let image: UIImage?
     let layoutIdentifier: String?
     public let pathJSON: JSON?
     public let action: JSON?
     public init?(json: JSON) {
-        guard let identifier: String = "identifier" <~~ json,
-            let title: String = "tabBarTitle" <~~ json else {
+        guard let identifier: String = "identifier" <~~ json else {
                 return nil
         }
+        
         
         self.image = {
             guard let imageString: String = "tabBarImage" <~~ json else {
@@ -32,7 +32,7 @@ public struct RSTab: JSONDecodable {
             return UIImage(named: imageString)
         }()
         
-        self.tabBarTitle = title
+        self.tabBarTitle = "tabBarTitle" <~~ json
         self.identifier = identifier
         self.layoutIdentifier = "layout" <~~ json
         self.pathJSON = "path" <~~ json
