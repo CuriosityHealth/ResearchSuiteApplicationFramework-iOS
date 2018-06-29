@@ -105,7 +105,8 @@ open class RSFilterPopoverTableViewController: UITableViewController {
         
         cell.selectionStyle = .none
         
-        cell.textLabel?.text = item.0.prompt
+        let localizedString = RSApplicationDelegate.localizedString(item.0.prompt)
+        cell.textLabel?.text = localizedString
         cell.imageView?.image = RSFilterPopoverTableViewController.checkImage
         
         return cell

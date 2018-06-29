@@ -56,7 +56,7 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         super.configure(paramMap: paramMap)
         
         if let bodyText = paramMap["body"] as? String {
-            self.bodyTextLabel.text = bodyText
+            self.bodyTextLabel.text = RSApplicationDelegate.localizedString(bodyText)
         }
         
     }

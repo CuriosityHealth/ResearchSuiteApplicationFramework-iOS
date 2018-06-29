@@ -148,7 +148,7 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
         
         // Do any additional setup after loading the view.
         
-        self.navigationItem.title = self.layout.navTitle
+        self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         
 //        var rightBarButtonItems: [UIBarButtonItem] = []
 //        if let rightButtons = self.layout.rightNavButtons {
@@ -169,7 +169,7 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
         }
         
         self.navigationItem.rightBarButtonItems = self.layout.rightNavButtons?.compactMap { (layoutButton) -> UIBarButtonItem? in
-            return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
+            return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
         }
         
         //set up web view

@@ -45,30 +45,30 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     open func updateUI(state: RSState) {
 
         if let title = self.titleLayout.title {
-            self.titleLabel?.text = title
+            self.titleLabel?.text = RSApplicationDelegate.localizedString(title)
         }
         else if let titleJSON = self.titleLayout.titleJSON,
             let title = RSValueManager.processValue(jsonObject: titleJSON, state: state, context: self.context())?.evaluate() as? String {
-            self.titleLabel?.text = title
+            self.titleLabel?.text = RSApplicationDelegate.localizedString(title)
         }
         
         self.imageView?.image = self.titleLayout.image
         if let button = self.titleLayout.button {
             self.button?.isHidden = false
-            self.button?.setTitle(button.title, for: .normal)
+            self.button?.setTitle(RSApplicationDelegate.localizedString(button.title), for: .normal)
         }
         else {
             self.button?.isHidden = true
         }
         
-        self.navigationItem.title = self.layout.navTitle
+        self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         
         let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
             button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
         }
         
         self.navigationItem.rightBarButtonItems = self.layout.rightNavButtons?.compactMap { (layoutButton) -> UIBarButtonItem? in
-            return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
+            return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
         }
         
     }

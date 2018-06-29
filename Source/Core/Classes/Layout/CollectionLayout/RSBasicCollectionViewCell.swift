@@ -65,11 +65,11 @@ open class RSBasicCollectionViewCell: RSCollectionViewCell, RSCollectionViewCell
         super.configure(paramMap: paramMap)
         
         if let title = paramMap["title"] as? String {
-            self.textLabel.text = title
+            self.textLabel.text = RSApplicationDelegate.localizedString(title)
         }
         
         if let subtitle = paramMap["subtitle"] as? String {
-            self.detailTextLabel.text = subtitle
+            self.detailTextLabel.text = RSApplicationDelegate.localizedString(subtitle) 
         }
         
     }

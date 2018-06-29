@@ -39,7 +39,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     public var feedbackViewController: RSFeedbackViewController?
     
-    public var localizationHelper: RSTBLocalizationHelper?
+    public var localizationHelper: RSTBLocalizationHelper = RSTBLocalizationHelper()
     
     public var activityManager: RSActivityManager!
     public var actionManager: RSActionManager!
@@ -855,5 +855,15 @@ extension Store: RSActionManagerProvider {
     }
     
     
+}
+
+extension RSApplicationDelegate {
+    public class func localizedString(_ string: String) -> String {
+        return self.appDelegate.localizationHelper.localizedString(string)
+    }
+    
+    public class func localizedString(_ string: String?) -> String? {
+        return self.appDelegate.localizationHelper.localizedString(string)
+    }
 }
 

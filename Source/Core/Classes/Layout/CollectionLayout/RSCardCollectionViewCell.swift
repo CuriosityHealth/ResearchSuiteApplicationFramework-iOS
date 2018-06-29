@@ -123,11 +123,11 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         }
         
         if let title = paramMap["title"] as? String {
-            self.titleLabel.text = title
+            self.titleLabel.text = RSApplicationDelegate.localizedString(title)
         }
         
         if let subtitle = paramMap["subtitle"] as? String {
-            self.subtitleLabel.text = subtitle
+            self.subtitleLabel.text = RSApplicationDelegate.localizedString(subtitle)
         }
         
     }

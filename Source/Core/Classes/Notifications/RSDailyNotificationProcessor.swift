@@ -96,8 +96,8 @@ open class RSDailyNotificationProcessor: NSObject, RSNotificationProcessor {
             
             // Enable or disable features based on authorization
             let content = UNMutableNotificationContent()
-            content.title = dailyNotification.title
-            content.body = dailyNotification.body
+            content.title = RSApplicationDelegate.localizedString(dailyNotification.title)
+            content.body = RSApplicationDelegate.localizedString(dailyNotification.body)
             content.sound = UNNotificationSound.default()
             
             let request = UNNotificationRequest(

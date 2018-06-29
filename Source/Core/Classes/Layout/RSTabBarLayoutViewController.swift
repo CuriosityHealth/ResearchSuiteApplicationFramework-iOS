@@ -106,8 +106,9 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                         navController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                         let tabBarNavController = RSTabBarNavigationViewController(identifier: tab.identifier, viewController: navController, parentMatchedRoute: self.matchedRoute)
                         tabBarNavController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-                        tabBarNavController.title = tab.tabBarTitle
-                        let tabBarItem = RSTabBarItem(title: tab.tabBarTitle, image: tab.image, selectedImage: nil)
+                        let title = RSApplicationDelegate.localizedString(tab.tabBarTitle)
+                        tabBarNavController.title = title
+                        let tabBarItem = RSTabBarItem(title: title, image: tab.image, selectedImage: nil)
                         tabBarItem.identifier = tab.identifier
                         tabBarNavController.tabBarItem = tabBarItem
                         tabBarNavController.setPath(path: initialPath)
@@ -122,8 +123,9 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                     navController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
                     let tabBarNavController = RSTabBarNavigationViewController(identifier: tab.identifier, viewController: navController, parentMatchedRoute: self.matchedRoute)
                     tabBarNavController.view.backgroundColor =  #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
-                    tabBarNavController.title = tab.tabBarTitle
-                    let tabBarItem = RSTabBarItem(title: tab.tabBarTitle, image: tab.image, selectedImage: nil)
+                    let title = RSApplicationDelegate.localizedString(tab.tabBarTitle)
+                    tabBarNavController.title = title
+                    let tabBarItem = RSTabBarItem(title: title, image: tab.image, selectedImage: nil)
                     tabBarItem.identifier = tab.identifier
                     tabBarNavController.tabBarItem = tabBarItem
 //                    tabBarNavController.setPath(path: initialPath)
@@ -380,7 +382,8 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                 
                 do {
                     let childVC = try head.layout.instantiateViewController(parent: self, matchedRoute: head)
-                    childVC.viewController.title = tab.tabBarTitle
+                    let title = RSApplicationDelegate.localizedString(tab.tabBarTitle)
+                    childVC.viewController.title = title
                     self.tabLayoutVCs = self.tabLayoutVCs + [childVC]
                     let rootNav = nav.rootViewController as! RSNavigationController
                     rootNav.viewControllers = [childVC.viewController]

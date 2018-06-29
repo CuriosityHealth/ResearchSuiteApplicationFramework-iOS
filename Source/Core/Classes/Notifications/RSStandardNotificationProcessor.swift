@@ -149,8 +149,8 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
                 
                 // Enable or disable features based on authorization
                 let content = UNMutableNotificationContent()
-                content.title = descriptor.title
-                content.body = descriptor.body
+                content.title = RSApplicationDelegate.localizedString(descriptor.title)
+                content.body = RSApplicationDelegate.localizedString(descriptor.body)
                 content.sound = UNNotificationSound.default()
                 
                 let request = UNNotificationRequest(
@@ -176,8 +176,8 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
                 
                 // Enable or disable features based on authorization
                 let content = UNMutableNotificationContent()
-                content.title = descriptor.title
-                content.body = descriptor.body
+                content.title = RSApplicationDelegate.localizedString(descriptor.title)
+                content.body = RSApplicationDelegate.localizedString(descriptor.body)
                 content.sound = UNNotificationSound.default()
                 
                 let request = UNNotificationRequest(

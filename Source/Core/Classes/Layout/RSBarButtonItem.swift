@@ -6,13 +6,14 @@
 //
 
 import UIKit
+import ResearchSuiteTaskBuilder
 
 open class RSBarButtonItem: UIBarButtonItem {
     
     open let layoutButton: RSLayoutButton
     open let onTap: ((RSBarButtonItem) -> ())?
     
-    init?(layoutButton: RSLayoutButton, onTap: ((RSBarButtonItem) -> ())?) {
+    init?(layoutButton: RSLayoutButton, onTap: ((RSBarButtonItem) -> ())?, localizationHelper: RSTBLocalizationHelper) {
         
         self.layoutButton = layoutButton
         self.onTap = onTap
@@ -24,7 +25,7 @@ open class RSBarButtonItem: UIBarButtonItem {
             self.image = image
         }
         else if let title = layoutButton.title {
-            self.title = title
+            self.title = localizationHelper.localizedString(title)
         }
         else {
             return nil

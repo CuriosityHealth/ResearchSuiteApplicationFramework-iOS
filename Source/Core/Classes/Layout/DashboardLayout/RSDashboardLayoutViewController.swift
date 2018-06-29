@@ -55,14 +55,14 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
         
-        self.navigationItem.title = self.layout.navTitle
+        self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         if let rightButtons = self.layout.rightNavButtons {
             let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
                 button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
             }
             
             let rightBarButtons = rightButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
-                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
+                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
             }
             
             self.navigationItem.rightBarButtonItems = rightBarButtons

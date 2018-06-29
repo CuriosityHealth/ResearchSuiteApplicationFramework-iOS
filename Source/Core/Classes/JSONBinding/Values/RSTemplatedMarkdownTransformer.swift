@@ -87,7 +87,8 @@ open class RSTemplatedMarkdownTransformer: RSValueTransformer {
         
         //then pass through handlebars
         do {
-            let template = try Template(string: descriptor.template)
+            let localizedTemplate = RSApplicationDelegate.localizedString(descriptor.template)
+            let template = try Template(string: localizedTemplate)
             self.registerFormatters(template: template)
             renderedString = try template.render(arguments)
         }

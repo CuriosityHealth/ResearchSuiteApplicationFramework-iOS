@@ -11,6 +11,7 @@ import UIKit
 import ReSwift
 import Gloss
 import CoreLocation
+import ResearchSuiteTaskBuilder
 
 open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, RSSingleLayoutViewController {
 
@@ -48,9 +49,22 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         //process on load actions
 //        self.layout.onLoadActions.forEach { self.processAction(action: $0) }
         
-        self.navigationItem.title = self.layout.navTitle
-        if let rightButton = self.layout.navButtonRight {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: rightButton.title, style: .plain, target: self, action: #selector(tappedRightBarButton))
+        self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
+        
+//        if let rightButton = self.layout.navButtonRight {
+//            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+//                title: self.localizationHelper.localizedString(rightButton.title),
+//                style: .plain,
+//                target: self,
+//                action: #selector(tappedRightBarButton))
+//        }
+        
+        let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
+            button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
+        }
+        
+        self.navigationItem.rightBarButtonItems = self.layout.rightNavButtons?.compactMap { (layoutButton) -> UIBarButtonItem? in
+            return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
         }
         
         self.store?.subscribe(self)
@@ -75,14 +89,14 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         self.hasAppeared = true
     }
     
-    @objc
-    func tappedRightBarButton() {
-        guard let button = self.layout.navButtonRight else {
-            return
-        }
-        
-        button.onTapActions.forEach { self.processAction(action: $0) }
-    }
+//    @objc
+//    func tappedRightBarButton() {
+//        guard let button = self.layout.navButtonRight else {
+//            return
+//        }
+//
+//        button.onTapActions.forEach { self.processAction(action: $0) }
+//    }
     
     open func backTapped() {
         self.layout.onBackActions.forEach { self.processAction(action: $0) }
@@ -214,12 +228,12 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         switch item.type {
         case "tappableItem":
             cell = tableView.dequeueReusableCell(withIdentifier: "activity_cell", for: indexPath)
-            cell.textLabel?.text = self.generateString(key: "title", element: item.element, state: state)
+            cell.textLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
             
         case "textItem":
             cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
-            cell.textLabel?.text = self.generateString(key: "title", element: item.element, state: state)
-            cell.detailTextLabel?.text = self.generateString(key: "text", element: item.element, state: state)
+            cell.textLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
+            cell.detailTextLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "text", element: item.element, state: state))
             
         case "toggleItem":
             guard let toggleCell = tableView.dequeueReusableCell(withIdentifier: "toggle_cell", for: indexPath) as? RSToggleCell,
@@ -229,7 +243,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
                 break
             }
             
-            toggleCell.title?.text = self.generateString(key: "title", element: item.element, state: state)
+            toggleCell.title?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
             
             toggleCell.onToggle = { isOn in
                 let action = RSActionCreators.setValueInState(key: toggleItem.boundStateIdentifier, value: NSNumber(booleanLiteral: isOn))
@@ -251,7 +265,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
             
         default:
             cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
-            cell.textLabel?.text = self.generateString(key: "title", element: item.element, state: state)
+            cell.textLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
         }
         
         

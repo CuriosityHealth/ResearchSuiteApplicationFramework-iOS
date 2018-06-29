@@ -78,7 +78,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         // Do any additional setup after loading the view.
         
-        self.navigationItem.title = self.layout.navTitle
+        self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         
         var rightBarButtonItems: [UIBarButtonItem] = []
         if let rightButtons = self.layout.rightNavButtons {
@@ -88,7 +88,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
             }
             
             let rightBarButtons = rightButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
-                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
+                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
             }
             
             rightBarButtonItems = rightBarButtonItems + rightBarButtons
@@ -109,7 +109,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
                     return UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(self.filterClicked(_:)))
                 }
                 else {
-                    return UIBarButtonItem(title: "Filter", style: .plain, target: self, action:  #selector(self.filterClicked(_:)))
+                    return UIBarButtonItem(title: RSApplicationDelegate.localizedString("Filter"), style: .plain, target: self, action:  #selector(self.filterClicked(_:)))
                 }
                 
             }()

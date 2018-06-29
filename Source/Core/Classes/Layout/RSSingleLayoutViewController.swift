@@ -9,6 +9,7 @@
 
 import UIKit
 import Gloss
+import ResearchSuiteTaskBuilder
 
 public protocol RSSingleLayoutViewController: class, RSLayoutViewController {
     
@@ -18,6 +19,10 @@ public protocol RSSingleLayoutViewController: class, RSLayoutViewController {
 }
 
 extension RSSingleLayoutViewController {
+    
+    public var localizationHelper: RSTBLocalizationHelper {
+        return RSApplicationDelegate.appDelegate.localizationHelper
+    }
     
     public func dismissChildLayout(childVC: RSLayoutViewController, animated: Bool, completion: ((Error?) -> Void)?) {
         guard let nav = self.viewController.navigationController as? RSNavigationController else {
