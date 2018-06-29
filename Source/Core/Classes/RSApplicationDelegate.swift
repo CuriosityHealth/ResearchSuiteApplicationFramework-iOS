@@ -70,6 +70,22 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return storeManager.store
     }
     
+    public var appBundleVersion: String {
+        return Bundle.main.infoDictionary!["CFBundleVersion"] as! String
+    }
+    
+    public var appVersion: String {
+        return Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+    }
+    
+    public var documentsPath: String {
+        return NSSearchPathForDirectoriesInDomains(
+            FileManager.SearchPathDirectory.documentDirectory,
+            FileManager.SearchPathDomainMask.userDomainMask,
+            true
+            ).first!
+    }
+    
     weak var weakStore: Store<RSState>?
     
     private var lastState: RSState?

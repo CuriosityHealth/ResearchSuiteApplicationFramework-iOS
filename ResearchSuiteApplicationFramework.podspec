@@ -45,6 +45,7 @@ Pod::Spec.new do |s|
     core.dependency 'FSCalendar'
     core.dependency 'SnapKit'
     core.dependency 'LS2SDK/Common'
+    core.dependency 'Zip', '~> 1.1'
   end
 
   s.subspec 'Development' do |dev|
