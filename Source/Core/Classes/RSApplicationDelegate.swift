@@ -39,6 +39,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     public var feedbackViewController: RSFeedbackViewController?
     
+    public var localizationHelper: RSTBLocalizationHelper?
+    
     public var activityManager: RSActivityManager!
     public var actionManager: RSActionManager!
     public var valueManager: RSValueManager!

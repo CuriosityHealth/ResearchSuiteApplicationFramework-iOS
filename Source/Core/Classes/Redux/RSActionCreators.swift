@@ -315,6 +315,7 @@ public class RSActionCreators: NSObject {
 
             let stepTreeBuilder = RSStepTreeBuilder(
                 stateHelper: taskBuilderStateHelper,
+                localizationHelper: RSApplicationDelegate.appDelegate.localizationHelper,
                 nodeGeneratorServices: RSApplicationDelegate.appDelegate.stepTreeNodeGenerators,
                 elementGeneratorServices: RSApplicationDelegate.appDelegate.elementGeneratorServices,
                 stepGeneratorServices: RSApplicationDelegate.appDelegate.stepGeneratorServices,

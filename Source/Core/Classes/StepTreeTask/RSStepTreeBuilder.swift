@@ -70,7 +70,7 @@ open class RSStepTreeTaskBuilderHelper: RSTBTaskBuilderHelper {
     
     init(taskBuilderHelper: RSTBTaskBuilderHelper, valueMapping: [String: JSON], state: RSState, context: [String: AnyObject]) {
         self.stepTreeStateHelper = RSStepTreeStateHelper(stateHelper: taskBuilderHelper.stateHelper, valueMapping: valueMapping, state: state, context: context)
-        super.init(builder: taskBuilderHelper.builder!, stateHelper: self.stepTreeStateHelper)
+        super.init(builder: taskBuilderHelper.builder!, stateHelper: self.stepTreeStateHelper, localizationHelper: taskBuilderHelper.localizationHelper)
     }
     
 }
@@ -87,6 +87,7 @@ open class RSStepTreeTaskBuilder: RSTBTaskBuilder {
     //its state helper weakly
     private let stateHelper: RSTBStateHelper?
     public override init(stateHelper: RSTBStateHelper?,
+                         localizationHelper: RSTBLocalizationHelper?,
                          elementGeneratorServices: [RSTBElementGenerator]?,
                          stepGeneratorServices: [RSTBStepGenerator]?,
                          answerFormatGeneratorServices: [RSTBAnswerFormatGenerator]?,
@@ -98,6 +99,7 @@ open class RSStepTreeTaskBuilder: RSTBTaskBuilder {
         self.stateHelper = stateHelper
         super.init(
             stateHelper: stateHelper,
+            localizationHelper: localizationHelper,
             elementGeneratorServices: elementGeneratorServices,
             stepGeneratorServices: stepGeneratorServices,
             answerFormatGeneratorServices: answerFormatGeneratorServices,
@@ -129,6 +131,7 @@ open class RSStepTreeBuilder: NSObject {
     
     public init(
         stateHelper:RSTBStateHelper?,
+        localizationHelper: RSTBLocalizationHelper?,
         nodeGeneratorServices: [RSStepTreeNodeGenerator.Type]?,
         elementGeneratorServices: [RSTBElementGenerator]?,
         stepGeneratorServices: [RSTBStepGenerator]?,
@@ -137,6 +140,7 @@ open class RSStepTreeBuilder: NSObject {
         
         self.rstb = RSStepTreeTaskBuilder(
             stateHelper: stateHelper,
+            localizationHelper: localizationHelper,
             elementGeneratorServices: nil,
             stepGeneratorServices: stepGeneratorServices,
             answerFormatGeneratorServices: answerFormatGeneratorServices)

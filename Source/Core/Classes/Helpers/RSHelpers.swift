@@ -13,6 +13,17 @@ import Gloss
 
 public class RSHelpers {
     
+    open static func getJSON(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> JSON? {
+        
+        let urlPath: String = inDirectory != nil ? inDirectory! + "/" + fileName : fileName
+        guard let urlBase = configJSONBaseURL,
+            let url = URL(string: urlBase + urlPath) else {
+                return nil
+        }
+        
+        return RSHelpers.getJSON(forURL: url)
+    }
+    
     open static func getJSON(forURL url: URL) -> JSON? {
         
         print(url)
