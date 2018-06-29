@@ -54,11 +54,7 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
     var collectionViewCellManager: RSCollectionViewCellManager!
     var logger: RSLogger?
     
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
+    open func initializeNavBar() {
         
         self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         if let rightButtons = self.layout.rightNavButtons {
@@ -72,6 +68,24 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             
             self.navigationItem.rightBarButtonItems = rightBarButtons
         }
+        
+    }
+    
+    open func reloadLayout() {
+        
+        self.initializeNavBar()
+        self.collectionView?.reloadData()
+        self.childLayoutVCs.forEach({$0.reloadLayout()})
+    }
+    
+    
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Uncomment the following line to preserve selection between presentations
+        // self.clearsSelectionOnViewWillAppear = false
+        
+        self.initializeNavBar()
         
         self.store?.subscribe(self)
         

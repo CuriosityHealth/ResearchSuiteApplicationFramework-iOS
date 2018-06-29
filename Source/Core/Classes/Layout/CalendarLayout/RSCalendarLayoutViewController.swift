@@ -13,7 +13,6 @@ import FSCalendar
 
 open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RSSingleLayoutViewController, FSCalendarDataSource, FSCalendarDelegate, FSCalendarDelegateAppearance, UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate  {
     
-    
     public var identifier: String! {
         return self.matchedRoute.route.identifier
     }
@@ -73,10 +72,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         return panGesture
         }()
     
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
+    
+    open func initializeNavBar() {
         
         self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         
@@ -120,7 +117,23 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         self.navigationItem.rightBarButtonItems = rightBarButtonItems
         
+    }
+    
+    open func reloadLayout() {
         
+        self.initializeNavBar()
+        self.calendarView?.reloadData()
+        self.collectionView?.reloadData()
+        self.childLayoutVCs.forEach({$0.reloadLayout()})
+    }
+    
+    
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Do any additional setup after loading the view.
+        
+        self.initializeNavBar()
         
         self.store?.subscribe(self)
         

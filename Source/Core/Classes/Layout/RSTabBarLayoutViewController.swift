@@ -16,6 +16,8 @@ open class RSTabBarItem: UITabBarItem {
 }
 
 open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerDelegate, RSLayoutViewController {
+    
+    
 
     var state: RSState?
     var lastState: RSState?
@@ -40,6 +42,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         }
     }
     
+    
     public init(identifier: String, matchedRoute: RSMatchedRoute, parent: RSLayoutViewController) {
         self.matchedRoute = matchedRoute
         self.parentLayoutViewController = parent
@@ -58,6 +61,36 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
     var moreNavControllerDelegate: RSMoreNavigationControllerDelegate!
     
     var hasAppeared: Bool = false
+    
+    open func reloadLayout() {
+        
+        self.tabNavigationControllers.forEach { (tabIdentifier, tabBarNavController) in
+            
+            
+            guard let tab = self.tabLayout.tabs.filter( { $0.identifier == tabIdentifier }).first else {
+                return
+            }
+            
+            let title = RSApplicationDelegate.localizedString(tab.tabBarTitle)
+            tabBarNavController.title = title
+            tabBarNavController.tabBarItem.title = title
+            
+            guard let rootNav = tabBarNavController.rootViewController as? RSNavigationController,
+                let childVC = rootNav.viewControllers.first else {
+                return
+            }
+            
+            childVC.title = title
+            
+            
+        }
+        
+        self.tabLayoutVCs.forEach({ $0.reloadLayout() })
+        self.presentedLayoutVCs.forEach({ $0.reloadLayout() })
+        
+    }
+    
+    
     open override func viewDidLoad() {
         
         super.viewDidLoad()

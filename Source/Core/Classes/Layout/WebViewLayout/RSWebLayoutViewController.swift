@@ -143,26 +143,9 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
     
     var requestedURL: URL?
     
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
+    open func initializeNavBar() {
         
         self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
-        
-//        var rightBarButtonItems: [UIBarButtonItem] = []
-//        if let rightButtons = self.layout.rightNavButtons {
-//            
-//            let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
-//                button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
-//            }
-//            
-//            let rightBarButtons = rightButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
-//                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap)
-//            }
-//            
-//            rightBarButtonItems = rightBarButtonItems + rightBarButtons
-//        }
         
         let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
             button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
@@ -171,6 +154,22 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
         self.navigationItem.rightBarButtonItems = self.layout.rightNavButtons?.compactMap { (layoutButton) -> UIBarButtonItem? in
             return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
         }
+        
+    }
+    
+    open func reloadLayout() {
+        
+        self.initializeNavBar()
+        self.childLayoutVCs.forEach({$0.reloadLayout()})
+        
+    }
+    
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Do any additional setup after loading the view.
+        
+        self.initializeNavBar()
         
         //set up web view
         self.webView = WKWebView()

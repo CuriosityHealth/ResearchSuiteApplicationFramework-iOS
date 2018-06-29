@@ -28,6 +28,8 @@ public protocol RSLayoutViewController {
     func layoutDidAppear(initialAppearance: Bool)
     
     func backTapped()
+    
+    func reloadLayout()
 }
 
 public extension RSLayoutViewController {

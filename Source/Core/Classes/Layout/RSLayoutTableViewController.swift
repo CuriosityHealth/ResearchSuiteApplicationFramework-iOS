@@ -43,21 +43,9 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     var visibleLayoutItems: [RSListItem] = []
     var hasAppeared: Bool = false
     
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //process on load actions
-//        self.layout.onLoadActions.forEach { self.processAction(action: $0) }
+    open func initializeNavBar() {
         
         self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
-        
-//        if let rightButton = self.layout.navButtonRight {
-//            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-//                title: self.localizationHelper.localizedString(rightButton.title),
-//                style: .plain,
-//                target: self,
-//                action: #selector(tappedRightBarButton))
-//        }
         
         let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
             button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
@@ -66,6 +54,20 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         self.navigationItem.rightBarButtonItems = self.layout.rightNavButtons?.compactMap { (layoutButton) -> UIBarButtonItem? in
             return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
         }
+        
+    }
+    
+    open func reloadLayout() {
+        
+        self.initializeNavBar()
+        self.tableView?.reloadData()
+        self.childLayoutVCs.forEach({ $0.reloadLayout() })
+    }
+    
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.initializeNavBar()
         
         self.store?.subscribe(self)
         

@@ -11,6 +11,11 @@ import UIKit
 
 open class RSMoreLayoutViewController: RSLayoutViewController {
     
+    public func reloadLayout() {
+        
+    }
+    
+    
     public init(identifier: String, matchedRoute: RSMatchedRoute, parent: RSLayoutViewController) {
         self.matchedRoute = matchedRoute
         self.parentLayoutViewController = parent

@@ -73,6 +73,14 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         
     }
     
+    open func reloadLayout() {
+        if let state = self.store?.state {
+            self.updateUI(state: state)
+        }
+        
+        self.childLayoutVCs.forEach({ $0.reloadLayout() })
+    }
+    
     override open func viewDidLoad() {
         super.viewDidLoad()
 

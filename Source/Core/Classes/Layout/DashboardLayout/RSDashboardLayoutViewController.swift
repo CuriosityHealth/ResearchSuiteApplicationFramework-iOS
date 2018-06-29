@@ -49,11 +49,8 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
     
     var visibleItems: [RSDashboardListItem]!
     
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
+    
+    open func initializeNavBar() {
         
         self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         if let rightButtons = self.layout.rightNavButtons {
@@ -67,6 +64,24 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
             
             self.navigationItem.rightBarButtonItems = rightBarButtons
         }
+        
+    }
+    
+    open func reloadLayout() {
+        
+        self.initializeNavBar()
+        self.collectionView?.reloadData()
+        self.childLayoutVCs.forEach({$0.reloadLayout()})
+        
+    }
+    
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Uncomment the following line to preserve selection between presentations
+        // self.clearsSelectionOnViewWillAppear = false
+        
+        self.initializeNavBar()
         
         self.store?.subscribe(self)
         self.state = self.store?.state

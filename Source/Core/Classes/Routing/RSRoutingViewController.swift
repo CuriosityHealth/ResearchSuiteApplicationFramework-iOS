@@ -89,6 +89,10 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         return nil
     }
     
+    open func reloadLayout() {
+        self.childLayoutVCs.forEach({ $0.reloadLayout() })
+    }
+    
     public var layout: RSLayout! {
         let state: RSState = self.store!.state
         return RSStateSelectors.layout(state, for: self.rootLayoutIdentifier)
