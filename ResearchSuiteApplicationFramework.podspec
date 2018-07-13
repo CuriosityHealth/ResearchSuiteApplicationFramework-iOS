@@ -45,7 +45,6 @@ Pod::Spec.new do |s|
     core.dependency 'FSCalendar'
     core.dependency 'SnapKit'
     core.dependency 'LS2SDK/Common'
-    core.dependency 'Zip', '~> 1.1'
   end
 
   s.subspec 'Development' do |dev|
@@ -62,6 +61,13 @@ Pod::Spec.new do |s|
     db.dependency 'RealmSwift'
     db.dependency 'LS2SDK/Common'
     db.dependency 'LS2SDK/Database'
+  end
+
+  s.subspec 'ConfigCaching' do |config|
+    config.source_files = 'Source/ConfigCache/**/*'
+    config.dependency 'ResearchSuiteApplicationFramework/Core'
+    config.dependency 'Zip', '~> 1.1'
+    config.dependency 'Alamofire', '~> 4'
   end
 
   s.default_subspec = 'Core'
