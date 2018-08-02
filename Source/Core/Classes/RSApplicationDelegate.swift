@@ -223,7 +223,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     }
     
     open var locationSupport: Bool {
-        return true
+        return false
     }
     
     open var locationManagerConfig: RSLocationManagerConfiguration? {
