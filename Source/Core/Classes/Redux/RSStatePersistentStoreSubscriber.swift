@@ -34,6 +34,8 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
     let stateManagerMap: [String: RSPersistedValueMap]
     let stateManagers: [RSStateManagerProtocol]
     
+    var lastState: RSState!
+    
     static func generateStateManager(
         stateManagerDescriptor: RSStateManagerDescriptor,
         stateManagerGenerators: [RSStateManagerGenerator.Type]
@@ -94,6 +96,11 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
     
     public func newState(state: RSState) {
         
+//        assertionFailure("added applications state check code. Make sure this works before continuing...")
+        defer {
+            self.lastState = state
+        }
+        
         //we need to prevent writing to the persistent maps before the application has 
         //configured the state metadata
         //if there is no state metadata, then we would end up removing everything from the persistent
@@ -109,6 +116,11 @@ public class RSStatePersistentStoreSubscriber: StoreSubscriber {
         //then, filter application state based on keys in state metadata
         
         let applicationState = RSStateSelectors.getApplicationState(state)
+        let lastApplicationState = RSStateSelectors.getApplicationState(self.lastState)
+        
+        guard applicationState != lastApplicationState else {
+            return
+        }
         
         for (stateManagerID, persistedValueMap) in self.stateManagerMap {
             let stateMetadata = RSStateSelectors.getStateValueMetadataForStateManager(state, stateManagerID: stateManagerID)
