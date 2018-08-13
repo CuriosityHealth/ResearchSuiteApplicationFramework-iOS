@@ -35,5 +35,7 @@ public class RSPredicate: Glossy {
             "substitutions" ~~> self.substitutions
             ])
     }
+    
+    
 
 }
