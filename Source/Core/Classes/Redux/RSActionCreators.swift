@@ -360,7 +360,7 @@ public class RSActionCreators: NSObject {
                 //NOTE: We are wiping out the storage directory, so any results should have been copied out of here
                 
                 if let outputDirectory = taskViewController.outputDirectory,
-                    FileManager.default.fileExists(atPath: outputDirectory.absoluteString){
+                    FileManager.default.fileExists(atPath: outputDirectory.path){
                     
                     do {
                         try FileManager.default.removeItem(at: outputDirectory)
