@@ -242,8 +242,13 @@ struct RSExpressionTokenizer {
             }
         }
         
-        //if hit end of input, return variable
-        return RSExpressionToken(type: .explicitVariable, value: tokenText)
+        if (tokenText.count > 0){
+            //if hit end of input, return variable
+            return RSExpressionToken(type: .explicitVariable, value: tokenText)
+        }
+        else {
+            throw RSExpressionTokenError.unterminatedString
+        }
     }
 
     private mutating func reservedStringToken(startingWith first: Character) throws -> RSExpressionToken {
