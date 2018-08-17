@@ -53,8 +53,9 @@ open class RSLoggingMiddleware: RSMiddlewareProvider {
                     }
                     print("*******************************************************\n")
                     
-                    weak var store = RSApplicationDelegate.appDelegate.store
-                    print("store ref count: \(CFGetRetainCount(store))")
+                    if var store = RSApplicationDelegate.appDelegate.store {
+                        print("store ref count: \(CFGetRetainCount(store))")
+                    }
                     
                     // call next middleware
                     return retVal
