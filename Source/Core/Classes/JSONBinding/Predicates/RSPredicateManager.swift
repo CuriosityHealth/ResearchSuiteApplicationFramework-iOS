@@ -62,56 +62,56 @@ open class RSPredicateManager: NSObject {
 
     public weak var delegate: RSPredicateManagerDelegate?
     
-    public func generatePredicateExpression(predicate: RSPredicate, state: RSState, context: [String: AnyObject], log: RSPredicateLog?) -> RSPredicateExpression? {
-        
-        let predicateExpressionOpt: RSPredicateExpression? = {
-            do {
-                return try RSPredicateExpression.generateExpression(format: predicate.format)
-            }
-            catch let e {
-                print(e)
-                assertionFailure(e.localizedDescription)
-                return nil
-            }
-        }()
-        
-        guard let predicateExpression = predicateExpressionOpt else {
-            return nil
-        }
-        
-        guard let substitutionsJSON = predicate.substitutions else {
-                return predicateExpression
-        }
-        
-        var substitutions: [String: NSObject] = [:]
-        
-        substitutionsJSON.forEach({ (key: String, value: JSON) in
-            
-            if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context) {
-                
-                //so we know this is a valid value convertible (i.e., it's been recognized by the state map)
-                //we also want to potentially have a null value substituted
-                if let value = valueConvertible.evaluate() as? NSObject {
-                    substitutions[key] = value
-                }
-                else {
-                    //                    assertionFailure("Added NSNull support for this type")
-//                    let nilObject: AnyObject? = nil as AnyObject?
-                    substitutions[key] = NSNull()
-                }
-                
-            }
-            
-        })
-        
-        guard substitutions.count == substitutionsJSON.count else {
-            return nil
-        }
-        
-        let predicateWithSubstitutions = predicateExpression.withSubstitutions(substitutions: substitutions)
-        return predicateWithSubstitutions
-        
-    }
+//    public func generatePredicateExpression(predicate: RSPredicate, state: RSState, context: [String: AnyObject], log: RSPredicateLog?) -> RSPredicateExpression? {
+//
+//        let predicateExpressionOpt: RSPredicateExpression? = {
+//            do {
+//                return try RSPredicateExpression.generateExpression(format: predicate.format)
+//            }
+//            catch let e {
+//                print(e)
+//                assertionFailure(e.localizedDescription)
+//                return nil
+//            }
+//        }()
+//
+//        guard let predicateExpression = predicateExpressionOpt else {
+//            return nil
+//        }
+//
+//        guard let substitutionsJSON = predicate.substitutions else {
+//                return predicateExpression
+//        }
+//
+//        var substitutions: [String: NSObject] = [:]
+//
+//        substitutionsJSON.forEach({ (key: String, value: JSON) in
+//
+//            if let valueConvertible = RSValueManager.processValue(jsonObject:value, state: state, context: context) {
+//
+//                //so we know this is a valid value convertible (i.e., it's been recognized by the state map)
+//                //we also want to potentially have a null value substituted
+//                if let value = valueConvertible.evaluate() as? NSObject {
+//                    substitutions[key] = value
+//                }
+//                else {
+//                    //                    assertionFailure("Added NSNull support for this type")
+////                    let nilObject: AnyObject? = nil as AnyObject?
+//                    substitutions[key] = NSNull()
+//                }
+//
+//            }
+//
+//        })
+//
+//        guard substitutions.count == substitutionsJSON.count else {
+//            return nil
+//        }
+//
+//        let predicateWithSubstitutions = predicateExpression.withSubstitutions(substitutions: substitutions)
+//        return predicateWithSubstitutions
+//
+//    }
     
     public func generatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject], log: RSPredicateLog?) -> NSPredicate? {
         
@@ -157,16 +157,16 @@ open class RSPredicateManager: NSObject {
         return predicateWithSubstitutions
     }
     
-    public static func generatePredicateExpression(predicate: RSPredicate, state: RSState, context: [String: AnyObject], log: RSPredicateLog? = nil) -> RSPredicateExpression? {
-        
-        return RSApplicationDelegate.appDelegate.predicateManager.generatePredicateExpression(
-            predicate:predicate,
-            state: state,
-            context: context,
-            log: log
-        )
-        
-    }
+//    public static func generatePredicateExpression(predicate: RSPredicate, state: RSState, context: [String: AnyObject], log: RSPredicateLog? = nil) -> RSPredicateExpression? {
+//
+//        return RSApplicationDelegate.appDelegate.predicateManager.generatePredicateExpression(
+//            predicate:predicate,
+//            state: state,
+//            context: context,
+//            log: log
+//        )
+//
+//    }
     
     public static func generatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject], log: RSPredicateLog? = nil) -> NSPredicate? {
         
@@ -202,28 +202,28 @@ open class RSPredicateManager: NSObject {
         let arrayToApplyTo = array as NSArray
         let filteredArray = arrayToApplyTo.filtered(using: nsPredicate) as [AnyObject]
         
-        if let predicateExpression = self.generatePredicateExpression(predicate: predicate, state: state, context: context, log: log) {
-            
-            do {
-//                let newEvaluatesTo = try predicateExpression.evaluate(with: [:])
-                let newFilteredArray = try predicateExpression.filter(array: arrayToApplyTo) as [AnyObject]
-                assert(newFilteredArray.count == filteredArray.count)
-                zip(filteredArray, newFilteredArray).forEach { (pair) in
-                    assert(pair.0 as! NSObject == pair.1 as! NSObject)
-                }
-
-            }
-            catch let e {
-                print(e)
-                assertionFailure()
-            }
-            
-            print(predicateExpression)
-            
-        }
-        else {
-            assertionFailure("Could not generate predicate expression")
-        }
+//        if let predicateExpression = self.generatePredicateExpression(predicate: predicate, state: state, context: context, log: log) {
+//            
+//            do {
+////                let newEvaluatesTo = try predicateExpression.evaluate(with: [:])
+//                let newFilteredArray = try predicateExpression.filter(array: arrayToApplyTo) as [AnyObject]
+//                assert(newFilteredArray.count == filteredArray.count)
+//                zip(filteredArray, newFilteredArray).forEach { (pair) in
+//                    assert(pair.0 as! NSObject == pair.1 as! NSObject)
+//                }
+//
+//            }
+//            catch let e {
+//                print(e)
+//                assertionFailure()
+//            }
+//            
+//            print(predicateExpression)
+//            
+//        }
+//        else {
+//            assertionFailure("Could not generate predicate expression")
+//        }
         
         return filteredArray
     }
@@ -245,21 +245,21 @@ open class RSPredicateManager: NSObject {
         log.status = "Evaluated"
         log.evaluated = evaluatesTo
         
-        if let predicateExpression = self.generatePredicateExpression(predicate: predicate, state: state, context: context, log: log) {
-            
-            do {
-                let newEvaluatesTo = try predicateExpression.evaluate(with: nil)
-                assert(newEvaluatesTo == evaluatesTo)
-            }
-            catch let e {
-                print(e)
-                assertionFailure()
-            }
-            
-        }
-        else {
-            assertionFailure("Could not generate predicate expression")
-        }
+//        if let predicateExpression = self.generatePredicateExpression(predicate: predicate, state: state, context: context, log: log) {
+//
+//            do {
+//                let newEvaluatesTo = try predicateExpression.evaluate(with: nil)
+//                assert(newEvaluatesTo == evaluatesTo)
+//            }
+//            catch let e {
+//                print(e)
+//                assertionFailure()
+//            }
+//
+//        }
+//        else {
+//            assertionFailure("Could not generate predicate expression")
+//        }
         
         return evaluatesTo
         
