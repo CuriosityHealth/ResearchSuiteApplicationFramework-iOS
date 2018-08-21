@@ -53,7 +53,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var stateObjectManager: RSStateObjectManager!
     public var collectionDataSourceManager: RSCollectionDataSourceManager!
     
-    public var storeManager: RSStoreManager!
+    //TODO:
+    public var storeManager: RSStoreManager?
 //    public var taskBuilderStateHelper: RSTaskBuilderStateHelper!
 //    public var taskBuilder: RSTBTaskBuilder!
 //    public var stepTreeBuilder: RSStepTreeBuilder!
@@ -69,8 +70,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return UIApplication.shared.delegate as! RSApplicationDelegate
     }
     
-    public var store: Store<RSState>! {
-        return storeManager.store
+    public var store: Store<RSState>? {
+        return self.storeManager?.store
     }
     
     public var appBundleVersion: String {
@@ -508,7 +509,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     private func startApplicationReset() {
         
         //remove all subscribers
-        self.storeManager.unsubscribeAll()
+        self.storeManager?.unsubscribeAll()
         //Even though we've unsubscribed, we're going to dispatch
         //the SignOut action to all the listeners before the action was submitted
         //allow the remaining subscribers to continue processing
@@ -547,12 +548,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         let middleware: [Middleware] = self.storeMiddleware.compactMap { $0.getMiddleware(appDelegate: self) }
 
-        self.storeManager = RSStoreManager(
+        let storeManager = RSStoreManager(
             initialState: self.persistentStoreSubscriber.loadState(),
             middleware: middleware
         )
         
-        self.store.subscribe(self)
+        self.storeManager = storeManager
+        
+        let store = storeManager.store
+        
+        store.subscribe(self)
         
         self.weakStore = store
         self.printRefCount()
@@ -577,7 +582,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         self.printRefCount()
         
-        self.store.subscribe(self.persistentStoreSubscriber)
+        store.subscribe(self.persistentStoreSubscriber)
         
         self.activityManager = RSActivityManager()
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
@@ -589,16 +594,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.collectionDataSourceManager = RSCollectionDataSourceManager(collectionDataSourceGenerators: self.collectionDataSourceGenerators)
         
         if notificationSupport {
-            self.notificationManager = RSNotificationManager(store: self.store, notificationProcessors: self.notificationProcessors)
-            self.store.subscribe(self.notificationManager!)
+            self.notificationManager = RSNotificationManager(store: store, notificationProcessors: self.notificationProcessors)
+            store.subscribe(self.notificationManager!)
             RSNotificationManager.printPendingNotifications()
         }
         
         if self.locationSupport,
             let config = self.locationManagerConfig {
             
-            self.locationManager = RSLocationManager(store: self.store, config: config)
-            self.store.subscribe(self.locationManager!)
+            self.locationManager = RSLocationManager(store: store, config: config)
+            store.subscribe(self.locationManager!)
         }
         
         self.printRefCount()
@@ -608,7 +613,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.routeManager = routeManager
         
         //set root view controller
-        self.routingViewController = RSRoutingViewController(rootLayoutIdentifier: "ROOT", routeManager: routeManager, activityManager: self.activityManager, store: self.store)
+        self.routingViewController = RSRoutingViewController(rootLayoutIdentifier: "ROOT", routeManager: routeManager, activityManager: self.activityManager, store: store)
         self.window!.rootViewController = self.routingViewController
         self.window!.makeKeyAndVisible()
         
@@ -633,16 +638,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             return Date() as NSDate
         }
         
-        self.store.dispatch(registerFunctionAction)
+        store.dispatch(registerFunctionAction)
         
         let calendar = Calendar.current
         let registerToadyAction = RSActionCreators.registerFunction(identifier: "startOfToday") { state in
             return calendar.startOfDay(for: Date()) as NSDate
         }
         
-        self.store.dispatch(registerToadyAction)
+        store.dispatch(registerToadyAction)
         
-        self.store.dispatch(RSActionCreators.registerFunction(identifier: "config") { state in
+        store.dispatch(RSActionCreators.registerFunction(identifier: "config") { state in
             return self.chConfig?.rawValue as NSString?
         })
         
@@ -764,10 +769,11 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         //first check to see if this is a routable url
         if let routingVC = self.routingViewController,
             let appURLScheme = self.appURLScheme(),
-            routingVC.canRoute(newPath: url.absoluteString.replacingOccurrences(of: "\(appURLScheme)://", with: ""), state: self.store.state)
+            let store = self.store,
+            routingVC.canRoute(newPath: url.absoluteString.replacingOccurrences(of: "\(appURLScheme)://", with: ""), state: store.state)
             {
             let action = RSActionCreators.requestPathChange(path: url.absoluteString.replacingOccurrences(of: "\(appURLScheme)://", with: ""))
-            self.store.dispatch(action)
+            store.dispatch(action)
             return true
         }
         else {
@@ -791,8 +797,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillResignActive")
         
-        let state: RSState = self.store.state
-        if RSStateSelectors.shouldShowPasscode(state) {
+        
+        if let state: RSState = self.store?.state,
+            RSStateSelectors.shouldShowPasscode(state) {
             // Hide content so it doesn't appear in the app switcher.
 
             let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController

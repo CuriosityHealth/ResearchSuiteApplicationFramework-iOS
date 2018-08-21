@@ -112,7 +112,10 @@ open class RSStepTreeTaskBuilder: RSTBTaskBuilder {
     }
     open func createSteps(forType type: String, withJsonObject jsonObject: JsonObject, identifierPrefix: String, parent: RSStepTreeBranchNode, taskResult: ORKTaskResult?) -> [ORKStep]? {
         
-        let state: RSState = RSApplicationDelegate.appDelegate.store.state
+        guard let state: RSState = RSApplicationDelegate.appDelegate.store?.state else {
+            return nil
+        }
+        
         var context: [String: AnyObject] = ["node": parent as AnyObject]
         context["taskResult"] = taskResult
         

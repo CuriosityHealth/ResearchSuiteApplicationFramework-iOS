@@ -32,12 +32,13 @@ open class RSOpenURLManager: NSObject {
     open func handleURL(app: UIApplication, url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
         let delegates = self.openURLDelegates
         
-        guard let appDelegate = app.delegate as? RSApplicationDelegate else {
+        guard let appDelegate = app.delegate as? RSApplicationDelegate,
+            let store = appDelegate.store else {
             return false
         }
         
         for delegate in delegates {
-            let context: [String: AnyObject] = ["store": appDelegate.store]
+            let context: [String: AnyObject] = ["store": store]
             let handled = delegate.handleURL(app: app, url: url, options: options, context: context)
             if handled { return true }
         }

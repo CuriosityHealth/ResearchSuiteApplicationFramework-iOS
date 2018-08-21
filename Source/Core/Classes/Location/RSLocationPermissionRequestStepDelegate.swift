@@ -20,14 +20,14 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
     }
     
     var completion: ((Bool, Error?) -> ())?
-    var store: Store<RSState> {
+    var store: Store<RSState>? {
         return RSApplicationDelegate.appDelegate.store
     }
     
     var lastAuthorizationStatus: CLAuthorizationStatus = .notDetermined
     
     deinit {
-        self.store.unsubscribe(self)
+        self.store?.unsubscribe(self)
     }
     
     open func permissionRequestViewControllerDidLoad(viewController: RSPermissionRequestStepViewController) {
@@ -40,10 +40,10 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             completion(false, LocationPermissionRequestError.locationServicesDisabled)
         } else if !CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) {
             completion(false, LocationPermissionRequestError.regionMonitoringNotAvailable)
-        } else if let state = self.store.state,
+        } else if let state = self.store?.state,
             RSStateSelectors.locationAuthorizationStatus(state) == .authorizedAlways {
             completion(true, nil)
-        } else if let state = self.store.state,
+        } else if let state = self.store?.state,
             RSStateSelectors.locationAuthorizationStatus(state) == .notDetermined {
             
             self.lastAuthorizationStatus = RSStateSelectors.locationAuthorizationStatus(state)
@@ -51,9 +51,9 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             //perform authoriztion request
             self.completion = completion
             //request
-            self.store.subscribe(self)
+            self.store?.subscribe(self)
             let request = RSActionCreators.requestLocationAuthorization(always: true)
-            self.store.dispatch(request)
+            self.store?.dispatch(request)
         }
         else {
             completion(false, LocationPermissionRequestError.insufficentPermissions)
