@@ -16,7 +16,7 @@ extension RSRPIntermediateResult: RSDatapoint {
 
 open class RSSinkDatapointActionTransformer: RSActionTransformer {
     open static func supportsType(type: String) -> Bool {
-        return "sinkDatapoint" == type
+        return "sinkDatapoint" == type || "sinkDatapoints" == type
     }
     //this return a closure, of which state and store are injected
     open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
@@ -40,15 +40,24 @@ open class RSSinkDatapointActionTransformer: RSActionTransformer {
         
         return { state, store in
             
-            guard let valueConvertible = RSValueManager.processValue(jsonObject:valueJSON, state: state, context: context),
-                let datapoint = valueConvertible.evaluate() as? RSDatapoint else {
+            guard let valueConvertible = RSValueManager.processValue(jsonObject:valueJSON, state: state, context: context) else {
                     return nil
             }
             
-            dataSinkIdentifiers.forEach({ (identifier) in
-                let action: Action = RSSinkDatapointAction(dataSinkIdentifier: identifier, datapoint: datapoint)
-                store.dispatch(action)
-            })
+            if let datapoint = valueConvertible.evaluate() as? RSDatapoint {
+                dataSinkIdentifiers.forEach({ (identifier) in
+                    let action: Action = RSSinkDatapointAction(dataSinkIdentifier: identifier, datapoint: datapoint)
+                    store.dispatch(action)
+                })
+            }
+            else if let datapoints = valueConvertible.evaluate() as? [RSDatapoint] {
+                datapoints.forEach { datapoint in
+                    dataSinkIdentifiers.forEach({ (identifier) in
+                        let action: Action = RSSinkDatapointAction(dataSinkIdentifier: identifier, datapoint: datapoint)
+                        store.dispatch(action)
+                    })
+                }
+            }
             
             return nil
         }

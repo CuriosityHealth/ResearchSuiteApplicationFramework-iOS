@@ -518,6 +518,9 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         let updateCallback: (RSCollectionDataSource, [Int], [Int], [Int]) -> () = { [unowned self] collectionDataSource, deletions, insertions, modifications in
             
+            debugPrint(collectionDataSource)
+            debugPrint("inserted \(insertions)")
+            
             guard let calendarDataSource = self.calendarDataSource else {
                 return
             }

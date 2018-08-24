@@ -20,8 +20,20 @@ open class RSJSONValueTransformer: RSValueTransformer {
             return nil
         }
         
+        let fullContext: [String: AnyObject] = {
+            if let extraContextJSON: JSON = "extraContext" <~~ jsonObject,
+                let extraContext: [String: Any] = RSValueManager.processValue(jsonObject: extraContextJSON, state: state, context: context)?.evaluate() as? [String: Any] {
+                return context.merging(extraContext as [String: AnyObject], uniquingKeysWith: { (obj1, obj2) -> AnyObject in
+                    return obj2
+                })
+            }
+            else {
+                return context
+            }
+        }()
+        
         let pairs: [(String, Any)] = json.compactMap { (pair) -> (String, Any)? in
-            guard let value = RSValueManager.processValue(jsonObject: pair.value, state: state, context: context)?.evaluate() else {
+            guard let value = RSValueManager.processValue(jsonObject: pair.value, state: state, context: fullContext)?.evaluate() else {
                 return nil
             }
             
