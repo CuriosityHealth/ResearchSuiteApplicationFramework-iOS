@@ -33,7 +33,16 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
         
         var generatedParameters: JSON = [:]
         
-        let context: [String: AnyObject] = ["taskResult": result, "node": self.parent as AnyObject]
+        let context: [String: AnyObject] = {
+            if let stateHelper = self.stepTreeBuilder.rstb.helper.stateHelper as? RSTaskBuilderStateHelper {
+                return stateHelper.extraStateValues.merging(["taskResult": result, "node": self.parent as AnyObject], uniquingKeysWith: { (obj1, obj2) -> AnyObject in
+                    return obj2
+                })
+            }
+            else {
+                return ["taskResult": result, "node": self.parent as AnyObject]
+            }
+        }()
         
         parameters.keys.forEach { (key) in
             

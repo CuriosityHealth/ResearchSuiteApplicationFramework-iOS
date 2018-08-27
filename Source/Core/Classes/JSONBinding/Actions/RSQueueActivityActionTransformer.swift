@@ -22,12 +22,36 @@ open class RSQueueActivityActionTransformer: RSActionTransformer, RSURLToJSONAct
         guard let activityID: String = "activityID" <~~ jsonObject else {
                 return nil
         }
-        
-        let context: JSON? = "context" <~~ jsonObject
-        
+
         return { state, store in
             
-            store.dispatch(RSActionCreators.queueActivity(activityID: activityID, context: context))
+            //the implication is that we'd like the context to be evaluated when the queue activity action is emitted
+            //rather than when it get's pulled off of the queue
+            //this will allow for context chaining
+            let extraContext: [String: AnyObject] = {
+                
+                if let extraContextJSON: [String: JSON] = "context" <~~ jsonObject {
+                    
+                    let pairs: [(String, AnyObject)] = extraContextJSON.compactMap({ (pair) -> (String, AnyObject)? in
+                        
+                        guard let value = RSValueManager.processValue(jsonObject: pair.value, state: state, context: context)?.evaluate() else {
+                                return nil
+                        }
+                        
+                        return (pair.key, value)
+                        
+                    })
+                    
+                    return Dictionary.init(uniqueKeysWithValues: pairs)
+                    
+                }
+                else {
+                    return [:]
+                }
+                
+            }()
+            
+            store.dispatch(RSActionCreators.queueActivity(activityID: activityID, context: extraContext))
             
             return nil
             

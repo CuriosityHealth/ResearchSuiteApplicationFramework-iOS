@@ -190,7 +190,7 @@ public class RSActionCreators: NSObject {
         }
     }
     
-    public static func queueActivity(activityID: String, context: JSON?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func queueActivity(activityID: String, context: [String: AnyObject]?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             return QueueActivityAction(uuid: UUID(), activityID: activityID, context: context)
         }
@@ -282,34 +282,36 @@ public class RSActionCreators: NSObject {
                 return nil
             }
             
-            guard let firstActivity: (UUID, String, JSON?) = RSStateSelectors.getNextActivity(state),
+            guard let firstActivity: (UUID, String, [String: AnyObject]?) = RSStateSelectors.getNextActivity(state),
                 let activity = RSStateSelectors.activity(state, for: firstActivity.1) else {
                     return nil
             }
             
-            let extraContext: [String: AnyObject] = {
-                
-                if let extraContextJSON = firstActivity.2 {
-                    
-                    let pairs: [(String, AnyObject)] = extraContextJSON.compactMap({ (pair) -> (String, AnyObject)? in
-                        
-                        guard let valueJSON: JSON = pair.value as? JSON,
-                            let value = RSValueManager.processValue(jsonObject: valueJSON, state: state, context: [:])?.evaluate() else {
-                            return nil
-                        }
-                        
-                        return (pair.key, value)
-                        
-                    })
-                    
-                    return Dictionary.init(uniqueKeysWithValues: pairs)
-                    
-                }
-                else {
-                    return [:]
-                }
-                
-            }()
+//            let extraContext: [String: AnyObject] = {
+//
+//                if let extraContextJSON = firstActivity.2 {
+//
+//                    let pairs: [(String, AnyObject)] = extraContextJSON.compactMap({ (pair) -> (String, AnyObject)? in
+//
+//                        guard let valueJSON: JSON = pair.value as? JSON,
+//                            let value = RSValueManager.processValue(jsonObject: valueJSON, state: state, context: [:])?.evaluate() else {
+//                            return nil
+//                        }
+//
+//                        return (pair.key, value)
+//
+//                    })
+//
+//                    return Dictionary.init(uniqueKeysWithValues: pairs)
+//
+//                }
+//                else {
+//                    return [:]
+//                }
+//
+//            }()
+            
+            let extraContext: [String: AnyObject] = firstActivity.2 ?? [:]
 
             let taskBuilderStateHelper = RSTaskBuilderStateHelper(store: store, extraStateValues: extraContext)
 
