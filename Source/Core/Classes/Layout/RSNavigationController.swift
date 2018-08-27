@@ -19,6 +19,15 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
         self.delegate = delegate
         self.popRequests = Set<String>()
         self.popRequestQueue = DispatchQueue(label: "PopRequestQueue")
+        
+        //configure navigation bar appearance
+//        if let navBarColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarBackgroundColor {
+//            self.navigationBar.backgroundColor = navBarColor
+//        }
+//        
+//        if let navBarTitleColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationTitleColor {
+//            self.navigationBar.tintColor = navBarTitleColor
+//        }
     }
     
     public func pushViewController(

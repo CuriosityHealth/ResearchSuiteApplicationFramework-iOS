@@ -176,6 +176,11 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         self.viewControllers?.forEach({ (viewController) in
             assert(viewController is RSTabBarNavigationViewController)
         })
+        
+//        //configure tab bar appearance
+//        if let tabBarColor = RSApplicationDelegate.appDelegate.applicationTheme?.tabBarBackgroundColor {
+//            self.tabBar.backgroundColor = tabBarColor
+//        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {

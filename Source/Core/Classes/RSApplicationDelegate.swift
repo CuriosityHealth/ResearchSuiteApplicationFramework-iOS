@@ -96,6 +96,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     open var logger: RSLogger?
     
+    open var applicationTheme: RSApplicationTheme? {
+        return nil
+    }
+    
     open var cellControllerGenerators: [RSEnhancedMultipleChoiceCellControllerGenerator.Type] = [
         RSEnhancedMultipleChoiceCellWithTextScaleAccessoryController.self,
         RSEnhancedMultipleChoiceCellWithNumericScaleAccessoryController.self,
