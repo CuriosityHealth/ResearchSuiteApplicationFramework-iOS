@@ -132,7 +132,7 @@ class RSExpressionParser {
                 return expr
             }
             catch let e {
-                print(e)
+//                print(e)
                 self.current = saveCurrent
             }
             
@@ -141,7 +141,7 @@ class RSExpressionParser {
                 return expr
             }
             catch let e {
-                print(e)
+//                print(e)
                 self.current = saveCurrent
             }
             
@@ -151,7 +151,7 @@ class RSExpressionParser {
                 return expr
             }
             catch let e {
-                print(e)
+//                print(e)
                 self.current = saveCurrent
             }
             

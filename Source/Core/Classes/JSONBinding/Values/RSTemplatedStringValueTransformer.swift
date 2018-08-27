@@ -59,7 +59,7 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
             return RSValueConvertible(value: renderedString as NSString)
         }
         catch let error {
-            debugPrint(error)
+//            debugPrint(error)
             return nil
         }
         

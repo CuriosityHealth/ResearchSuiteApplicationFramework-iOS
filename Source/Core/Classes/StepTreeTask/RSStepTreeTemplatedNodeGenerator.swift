@@ -38,7 +38,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
                 return try Template(URL: url)
             }
             catch let error {
-                debugPrint(error)
+//                debugPrint(error)
                 return nil
             }
             
@@ -49,7 +49,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
                 return try Template(path: filename)
             }
             catch let error {
-                debugPrint(error)
+//                debugPrint(error)
                 return nil
             }
         }
@@ -91,7 +91,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
                 guard let selectedBoxValue = box.mustacheBox(forKey: selectPath).value as? NSObject else {
                     return false
                 }
-                print(selectedBoxValue)
+//                print(selectedBoxValue)
                 return selectedBoxValue.isEqual(selectValue)
             })
             

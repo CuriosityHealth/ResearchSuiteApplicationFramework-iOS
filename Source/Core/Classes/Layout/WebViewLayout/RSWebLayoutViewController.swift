@@ -127,7 +127,7 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
 //                }
                 else if UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url)
-                    print(url)
+//                    print(url)
                     print("Redirected to browser. No need to open it locally")
                 }
                 
@@ -277,7 +277,7 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
         let browserPathPrefix = browserPath.prefix
         
         let prefix = parentMatchPath + browserPathPrefix
-        debugPrint(prefix)
+//        debugPrint(prefix)
         
         guard self.matchedRoute.match.path.hasPrefix(prefix) else {
             return
@@ -295,7 +295,7 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
             return remainder
         }()
         
-        debugPrint(remainder)
+//        debugPrint(remainder)
         
         //if the remainder specifies a directory, append index.html
 //        if remainder.last

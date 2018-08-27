@@ -330,7 +330,7 @@ open class RSConfigBundleCache: NSObject  {
         Alamofire.download(bundleInfo.url, to: destination).response { response in
             print(response)
             
-            debugPrint(response.error)
+//            debugPrint(response.error)
             if response.error == nil, let archiveURL = response.destinationURL {
                 
                 print("Archive has been downloaded to \(archiveURL)")

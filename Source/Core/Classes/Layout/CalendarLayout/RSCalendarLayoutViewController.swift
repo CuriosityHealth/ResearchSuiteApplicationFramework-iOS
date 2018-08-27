@@ -518,8 +518,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         let updateCallback: (RSCollectionDataSource, [Int], [Int], [Int]) -> () = { [unowned self] collectionDataSource, deletions, insertions, modifications in
             
-            debugPrint(collectionDataSource)
-            debugPrint("inserted \(insertions)")
+//            debugPrint(collectionDataSource)
+//            debugPrint("inserted \(insertions)")
             
             guard let calendarDataSource = self.calendarDataSource else {
                 return
@@ -685,7 +685,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     
     open func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         
-        debugPrint(date)
+//        debugPrint(date)
         self.updateTableViewDataSource(date: date)
         
     }

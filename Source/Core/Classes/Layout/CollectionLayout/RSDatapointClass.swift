@@ -30,7 +30,7 @@ open class RSDatapointClass: JSONDecodable, Hashable, Equatable {
     
     public required init?(json: JSON) {
         
-        debugPrint(json)
+//        debugPrint(json)
         
         guard let identifier: String = "identifier" <~~ json,
             let collectionDataSourceJSON: JSON = "collectionDataSource" <~~ json,

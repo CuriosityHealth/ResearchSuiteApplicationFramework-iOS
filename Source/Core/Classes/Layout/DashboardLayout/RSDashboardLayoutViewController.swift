@@ -399,7 +399,7 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
     
     open override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        debugPrint("cell tapped at \(indexPath)")
+//        debugPrint("cell tapped at \(indexPath)")
         collectionView.deselectItem(at: indexPath, animated: true)
         
 //        guard let dataSource = self.collectionDataSource,

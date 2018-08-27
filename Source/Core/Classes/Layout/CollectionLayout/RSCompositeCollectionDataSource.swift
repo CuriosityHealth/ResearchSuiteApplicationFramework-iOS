@@ -207,7 +207,11 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
             return oldResultPaths.index(of: indexPath)
         }
         
-        resultDatapoints[dataSourceIndex] = collectionDataSource.toArray()!
+        guard let array = collectionDataSource.toArray() else {
+            return nil
+        }
+        
+        resultDatapoints[dataSourceIndex] = array
         self.resultDatapoints = resultDatapoints
             
         let newResultPaths = resultDatapoints.flatMap({ (pair) -> [IndexPath] in

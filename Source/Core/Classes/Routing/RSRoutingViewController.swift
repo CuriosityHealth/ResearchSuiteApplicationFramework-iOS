@@ -421,7 +421,7 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     
     private func dismissPasscodeViewController(_ animated: Bool) {
         
-        debugPrint(self.store)
+//        debugPrint(self.store)
         let state: RSState = self.store!.state
         guard let passcodeViewController = RSStateSelectors.passcodeViewController(state) else {
             return
@@ -535,7 +535,7 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         else {
             if hidden {
                 let vc = self.topViewController
-                debugPrint(hidden)
+//                debugPrint(hidden)
                 vc.view.isHidden = hidden
                 self.hiddenViewControllers = self.hiddenViewControllers + [vc]
             }

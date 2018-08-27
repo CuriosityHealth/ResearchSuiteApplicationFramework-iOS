@@ -160,7 +160,7 @@ open class RSStepTreeBuilder: NSObject {
     
     deinit {
         
-        print("deiniting RSStepTreeBuilder")
+//        print("deiniting RSStepTreeBuilder")
         
     }
     

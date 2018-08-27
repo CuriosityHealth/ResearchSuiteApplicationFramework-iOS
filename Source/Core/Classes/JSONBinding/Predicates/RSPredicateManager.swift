@@ -191,10 +191,10 @@ open class RSPredicateManager: NSObject {
             return []
         }
         
-        debugPrint(array)
+//        debugPrint(array)
         
         array.forEach { (element) in
-            debugPrint(element)
+//            debugPrint(element)
         }
         
         log.status = "Applying To Array"

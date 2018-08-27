@@ -26,7 +26,7 @@ public class RSHelpers {
     
     open static func getJSON(forURL url: URL) -> JSON? {
         
-        print(url)
+//        print(url)
         guard let fileContent = try? Data(contentsOf: url)
             else {
                 assertionFailure("Unable to create NSData with content of file \(url)")

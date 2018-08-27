@@ -287,7 +287,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                 }
             }
             
-            debugPrint(debugString)
+//            debugPrint(debugString)
         })
     }
     

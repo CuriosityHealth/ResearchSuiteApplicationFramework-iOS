@@ -128,7 +128,7 @@ open class RSParamPath: RSPath, RSPathGenerator {
             case .str:
                 return str
             case .uuid:
-                print(str)
+//                print(str)
                 return UUID(uuidString: str)
             }
             
@@ -161,7 +161,7 @@ open class RSParamPath: RSPath, RSPathGenerator {
             
             let fullMatchedPath: String = {
                 let completeMatch = match.range(at: 0)
-                print(completeMatch)
+//                print(completeMatch)
                 let start = remainingPath.index(remainingPath.startIndex, offsetBy: completeMatch.lowerBound)
                 let end = remainingPath.index(remainingPath.startIndex, offsetBy: completeMatch.upperBound)
                 let matchedPath = String(remainingPath[start..<end])
@@ -181,13 +181,13 @@ open class RSParamPath: RSPath, RSPathGenerator {
                 let paramRange = match.range(at: pair.offset + 1)
                 let start = remainingPath.index(remainingPath.startIndex, offsetBy: paramRange.lowerBound)
                 let end = remainingPath.index(remainingPath.startIndex, offsetBy: paramRange.upperBound)
-                print(start, end)
+//                print(start, end)
                 let substring = remainingPath[start..<end]
                 paramDict[pair.element.name] =  pair.element.paramType.convert(str: String(substring))
             }
             
             let remainder = "/\(remainingPath.dropFirst(match.range.length))"
-            print(remainder)
+//            print(remainder)
             
             return RSMatch(params: paramDict, isExact: false, path: previousPath + fullMatchedPath)
         }
@@ -280,7 +280,7 @@ open class RSParamPath: RSPath, RSPathGenerator {
             self.regex = regex
         }
         catch let error {
-            debugPrint(error)
+//            debugPrint(error)
             return nil
         }
         
