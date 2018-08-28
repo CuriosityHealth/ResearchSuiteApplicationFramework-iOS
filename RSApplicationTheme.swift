@@ -11,18 +11,28 @@ import Gloss
 public struct RSApplicationTheme: JSONDecodable {
     
     public let navigationBarBackgroundColor: UIColor?
-    public let navigationTitleColor: UIColor?
+    public let navigationBarTitleColor: UIColor?
+    public let navigationBarIconColor: UIColor?
+    
     public let tabBarBackgroundColor: UIColor?
+    public let tabBarActiveIconColor: UIColor?
+    public let tabBarInactiveIconColor: UIColor?
     
     public init(
         navigationBarBackgroundColor: UIColor? = nil,
-        navigationTitleColor: UIColor? = nil,
-        tabBarBackgroundColor: UIColor? = nil
+        navigationBarTitleColor: UIColor? = nil,
+        navigationBarIconColor: UIColor? = nil,
+        tabBarBackgroundColor: UIColor? = nil,
+        tabBarActiveIconColor: UIColor? = nil,
+        tabBarInactiveIconColor: UIColor? = nil
         ) {
         
         self.navigationBarBackgroundColor = navigationBarBackgroundColor
-        self.navigationTitleColor = navigationTitleColor
+        self.navigationBarTitleColor = navigationBarTitleColor
+        self.navigationBarIconColor = navigationBarIconColor
         self.tabBarBackgroundColor = tabBarBackgroundColor
+        self.tabBarActiveIconColor = tabBarActiveIconColor
+        self.tabBarInactiveIconColor = tabBarInactiveIconColor
         
     }
     public init?(json: JSON) {

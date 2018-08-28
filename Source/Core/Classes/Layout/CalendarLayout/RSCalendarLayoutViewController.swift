@@ -194,6 +194,18 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         //
         //        self.updateWindow(filter: false)
         
+        
+        if let navigationBarTitleColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarTitleColor {
+//            self.navigationBar.titleTextAttributes?[NSAttributedStringKey.foregroundColor] = navigationBarTitleColor
+            
+            let appearance = self.calendarView.appearance
+            appearance.headerTitleColor = navigationBarTitleColor
+            appearance.weekdayTextColor = navigationBarTitleColor
+        }
+        
+        
+        
+        
         self.layoutDidLoad()
     }
     

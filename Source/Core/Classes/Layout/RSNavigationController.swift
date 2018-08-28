@@ -21,13 +21,18 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
         self.popRequestQueue = DispatchQueue(label: "PopRequestQueue")
         
         //configure navigation bar appearance
-//        if let navBarColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarBackgroundColor {
-//            self.navigationBar.backgroundColor = navBarColor
-//        }
-//        
-//        if let navBarTitleColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationTitleColor {
-//            self.navigationBar.tintColor = navBarTitleColor
-//        }
+        if let navBarColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarBackgroundColor {
+            self.navigationBar.barTintColor = navBarColor
+//            self.navigationBar.isTranslucent = false
+        }
+        
+        if let navigationBarTitleColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarTitleColor {
+            self.navigationBar.titleTextAttributes?[NSAttributedStringKey.foregroundColor] = navigationBarTitleColor
+        }
+        
+        if let navigationBarIconColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarIconColor {
+            self.navigationBar.tintColor = navigationBarIconColor
+        }
     }
     
     public func pushViewController(

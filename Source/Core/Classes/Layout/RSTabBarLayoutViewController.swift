@@ -177,10 +177,20 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
             assert(viewController is RSTabBarNavigationViewController)
         })
         
-//        //configure tab bar appearance
-//        if let tabBarColor = RSApplicationDelegate.appDelegate.applicationTheme?.tabBarBackgroundColor {
+        //configure tab bar appearance
+        if let tabBarColor = RSApplicationDelegate.appDelegate.applicationTheme?.tabBarBackgroundColor {
 //            self.tabBar.backgroundColor = tabBarColor
-//        }
+            self.tabBar.barTintColor = tabBarColor
+//            self.tabBar.isTranslucent = false
+        }
+        
+        if let tabBarActiveIconColor = RSApplicationDelegate.appDelegate.applicationTheme?.tabBarActiveIconColor {
+            self.tabBar.tintColor = tabBarActiveIconColor
+        }
+        
+        if let tabBarInactiveIconColor = RSApplicationDelegate.appDelegate.applicationTheme?.tabBarInactiveIconColor {
+            self.tabBar.unselectedItemTintColor = tabBarInactiveIconColor
+        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {

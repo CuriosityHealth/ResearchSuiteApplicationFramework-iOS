@@ -71,13 +71,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kZh-0E-Eom">
-                                            <rect key="frame" x="310" y="14.5" width="51" height="31"/>
+                                            <rect key="frame" x="531" y="14.5" width="51" height="31"/>
                                             <connections>
                                                 <action selector="valueChanged:" destination="xKB-GC-yat" eventType="valueChanged" id="lmQ-MO-vZe"/>
                                             </connections>
                                         </switch>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9xT-co-6GL" customClass="ORKLabel">
-                                            <rect key="frame" x="16" y="19" width="34" height="21"/>
+                                            <rect key="frame" x="20" y="19" width="34" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -230,7 +230,7 @@
             <objects>
                 <collectionViewController storyboardIdentifier="collectionLayoutViewController" id="tDU-lf-huk" customClass="RSCollectionLayoutViewController" customModule="ResearchSuiteApplicationFramework" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="SNV-j5-PYF">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="8" minimumInteritemSpacing="0.0" id="TyB-EO-abT">
@@ -245,6 +245,7 @@
                             <outlet property="delegate" destination="tDU-lf-huk" id="bMH-Aq-MYh"/>
                         </connections>
                     </collectionView>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XBd-V6-J5Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
