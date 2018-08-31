@@ -41,7 +41,7 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     @IBOutlet weak var button: RSBorderedButton!
     
     private var hasAppeared: Bool = false
-    
+
     open func updateUI(state: RSState) {
 
         if let title = self.titleLayout.title {
@@ -52,6 +52,18 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
             self.titleLabel?.text = RSApplicationDelegate.localizedString(title)
         }
         
+        if let titleTextColorJSON = self.titleLayout.titleTextColorJSON,
+            let titleTextColor = RSValueManager.processValue(jsonObject: titleTextColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+            
+            self.titleLabel.textColor = titleTextColor
+        }
+        
+        if let backgroundColorJSON = self.titleLayout.backgroundColorJSON,
+            let backgroundColor = RSValueManager.processValue(jsonObject: backgroundColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+            
+            self.view.backgroundColor = backgroundColor
+        }
+ 
         self.imageView?.image = self.titleLayout.image
         if let button = self.titleLayout.button {
             self.button?.isHidden = false
