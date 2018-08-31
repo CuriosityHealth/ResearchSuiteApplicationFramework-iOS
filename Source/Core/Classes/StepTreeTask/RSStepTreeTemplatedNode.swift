@@ -68,7 +68,7 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
             return nil
         }
         
-//        print(renderedTemplate)
+        print(renderedTemplate)
         //convert to json
         guard let jsonData = renderedTemplate.data(using: .utf8),
             let json = (try? JSONSerialization.jsonObject(with: jsonData, options: [])) as? JSON else {

@@ -38,7 +38,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
                 return try Template(URL: url)
             }
             catch let error {
-//                debugPrint(error)
+                debugPrint(error)
                 return nil
             }
             
@@ -49,7 +49,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
                 return try Template(path: filename)
             }
             catch let error {
-//                debugPrint(error)
+                debugPrint(error)
                 return nil
             }
         }
@@ -121,10 +121,27 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
             return jsonString
         }
         
+        let some = Filter { (box: MustacheBox) -> Any? in
+            if box.isEmpty {
+                return false
+            }
+            
+            if let dictionary = box.dictionaryValue {
+                return dictionary.count > 0
+            }
+            else if let array = box.arrayValue {
+                return array.count > 0
+            }
+            else {
+                return false
+            }
+        }
+        
         template.register(mapSelect, forKey: "mapSelect")
         template.register(contains, forKey: "contains")
         template.register(selectElement, forKey: "select")
         template.register(jsonString, forKey: "jsonString")
+        template.register(some, forKey: "some")
         
         
         let node = RSStepTreeTemplatedNode(
