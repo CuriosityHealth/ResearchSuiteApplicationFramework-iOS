@@ -63,6 +63,12 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
             
             self.view.backgroundColor = backgroundColor
         }
+        
+        if let buttonColorJSON = self.titleLayout.button?.colorJSON,
+            let buttonColor = RSValueManager.processValue(jsonObject: buttonColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+            
+            self.button.tintColor = buttonColor
+        }
  
         self.imageView?.image = self.titleLayout.image
         if let button = self.titleLayout.button {
