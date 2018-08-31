@@ -39,6 +39,7 @@ public protocol RSLayout: RSIsEqual {
     //when the layout is on the tap of the stack for the FIRST time in its lifecycle
     var onFirstAppearanceActions: [JSON] { get }
     var onNewStateActions: RSOnNewState { get }
+    var hidesNavBar: Bool { get }
     
     var navTitle: String? { get }
     //deprecated

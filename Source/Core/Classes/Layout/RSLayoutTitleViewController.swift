@@ -95,6 +95,8 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     
     override open func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationController?.navigationBar.isHidden = self.layout.hidesNavBar
 
         // Do any additional setup after loading the view.
         if let state = self.store?.state {
