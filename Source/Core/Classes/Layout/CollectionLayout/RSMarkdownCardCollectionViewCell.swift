@@ -26,6 +26,7 @@ open class RSMarkdownCardCollectionViewCell: RSCardCollectionViewCell, RSCollect
         self.bodyTextView.dataDetectorTypes = .all
         self.bodyTextView.isEditable = false
         self.bodyTextView.isScrollEnabled = false
+        self.bodyTextView.isSelectable = false
         
         let bodyStackView = UIStackView()
         self.contentStackView.addArrangedSubview(bodyStackView)

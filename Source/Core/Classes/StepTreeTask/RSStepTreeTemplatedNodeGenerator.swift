@@ -137,11 +137,48 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
             }
         }
         
+        let listOfStrings = Filter { (box: MustacheBox) -> Any? in
+            
+            guard let array = box.arrayValue else {
+                return nil
+            }
+            
+            let strings: [String] = array.compactMap({ $0.value as? String })
+            switch strings.count {
+            case 0:
+                return ""
+            case 1:
+                return strings[0]
+            case 2:
+                return "\(strings[0]) and \(strings[1])"
+            default:
+                return strings.enumerated().reduce("", { (acc, pair) -> String in
+                    
+//                    if last, don't append
+                    //if second to last, append ", and "
+                    //else, append ", "
+                    if pair.offset == strings.count - 1 {
+                        return acc + pair.element
+                    }
+                    else if pair.offset == strings.count - 2 {
+                        return acc + pair.element + ", and "
+                    }
+                    else {
+                        return acc + pair.element + ", "
+                    }
+                    
+                })
+            }
+            
+        }
+        
         template.register(mapSelect, forKey: "mapSelect")
         template.register(contains, forKey: "contains")
         template.register(selectElement, forKey: "select")
         template.register(jsonString, forKey: "jsonString")
         template.register(some, forKey: "some")
+        template.register(StandardLibrary.each, forKey: "each")
+        template.register(listOfStrings, forKey: "listOfStrings")
         
         
         let node = RSStepTreeTemplatedNode(
