@@ -81,7 +81,20 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         if let rightButtons = self.layout.rightNavButtons {
             
             let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
-                button.layoutButton.onTapActions.forEach { self.processAction(action: $0) }
+                button.layoutButton.onTapActions.forEach {
+                    
+                    let extraContext: [String : AnyObject] = {
+                        if let selectedDate = self.calendarView.selectedDate ?? self.calendarView.today {
+                            return ["selectedDate": selectedDate as AnyObject]
+                        }
+                        else {
+                            return [:]
+                        }
+                    }()
+                    
+                    self.processAction(action: $0, extraContext: extraContext)
+                    
+                }
             }
             
             let rightBarButtons = rightButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
@@ -142,7 +155,17 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         self.calendarView.dataSource = self
         self.calendarView.delegate = self
         self.calendarView.appearance.eventDefaultColor = UIColor.red
-        self.calendarView.scope = .week
+        
+        switch self.calendarLayout.calendarScope {
+        case .alwaysExpanded:
+            self.calendarView.scope = .month
+        case .alwaysCollapsed:
+            self.calendarView.scope = .week
+        case .configurable:
+            self.calendarView.scope = .week
+            self.view.addGestureRecognizer(self.scopeGesture)
+            self.collectionView.panGestureRecognizer.require(toFail: self.scopeGesture)
+        }
         
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
@@ -150,9 +173,6 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         //        self.tableView.dataSource = self
         //        self.tableView.delegate = self
-        
-        self.view.addGestureRecognizer(self.scopeGesture)
-        self.collectionView.panGestureRecognizer.require(toFail: self.scopeGesture)
         
         //add top border to table view
         //        CALayer *TopBorder = [CALayer layer];

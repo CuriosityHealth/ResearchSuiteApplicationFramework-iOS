@@ -10,6 +10,12 @@ import Gloss
 
 open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
     
+    public enum CalendarScope: String {
+        case alwaysExpanded = "alwaysExpanded"
+        case alwaysCollapsed = "alwaysCollapsed"
+        case configurable = "configurable"
+    }
+    
     public static func supportsType(type: String) -> Bool {
         return type == "calendar"
     }
@@ -21,6 +27,7 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
 //    open let dataSource: RSCollectionDataSourceDescriptor
     open let filterOptions: JSON?
     open let datapointClasses: [RSDatapointClass]
+    open let calendarScope: CalendarScope
     
     required public init?(json: JSON) {
         
@@ -31,6 +38,13 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
 //        self.dataSource = dataSource
         self.datapointClasses = datapointClassesJSON.compactMap({ RSDatapointClass(json: $0) })
         self.filterOptions = "filterOptions" <~~ json
+        if let calendarScopeString: String = "calendarScope" <~~ json,
+            let calendarScope = CalendarScope(rawValue: calendarScopeString) {
+            self.calendarScope = calendarScope
+        }
+        else {
+            self.calendarScope = .configurable
+        }
         
         super.init(json: json)
     }
