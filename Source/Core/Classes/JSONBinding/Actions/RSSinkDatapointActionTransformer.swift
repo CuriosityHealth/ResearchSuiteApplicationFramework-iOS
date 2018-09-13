@@ -45,18 +45,10 @@ open class RSSinkDatapointActionTransformer: RSActionTransformer {
             }
             
             if let datapoint = valueConvertible.evaluate() as? RSDatapoint {
-                dataSinkIdentifiers.forEach({ (identifier) in
-                    let action: Action = RSSinkDatapointAction(dataSinkIdentifier: identifier, datapoint: datapoint)
-                    store.dispatch(action)
-                })
+                store.dispatch(RSActionCreators.sinkDatapoints(datapoints: [datapoint], dataSinkIdentifiers: dataSinkIdentifiers))
             }
             else if let datapoints = valueConvertible.evaluate() as? [RSDatapoint] {
-                datapoints.forEach { datapoint in
-                    dataSinkIdentifiers.forEach({ (identifier) in
-                        let action: Action = RSSinkDatapointAction(dataSinkIdentifier: identifier, datapoint: datapoint)
-                        store.dispatch(action)
-                    })
-                }
+                store.dispatch(RSActionCreators.sinkDatapoints(datapoints: datapoints, dataSinkIdentifiers: dataSinkIdentifiers))
             }
             
             return nil

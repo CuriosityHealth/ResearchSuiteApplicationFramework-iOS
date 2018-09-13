@@ -265,6 +265,20 @@ public class RSActionCreators: NSObject {
         }
     }
     
+    public static func sinkDatapoints(datapoints: [RSDatapoint], dataSinkIdentifiers: [String]) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            
+            datapoints.forEach { datapoint in
+                dataSinkIdentifiers.forEach({ (identifier) in
+                    let action: Action = RSSinkDatapointAction(dataSinkIdentifier: identifier, datapoint: datapoint)
+                    store.dispatch(action)
+                })
+            }
+            
+            return nil
+        }
+    }
+    
     public static func presentActivity(on viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
