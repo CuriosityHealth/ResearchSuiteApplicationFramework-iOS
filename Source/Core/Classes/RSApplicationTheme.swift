@@ -18,7 +18,10 @@ public struct RSApplicationTheme: JSONDecodable {
     public let tabBarActiveIconColor: UIColor?
     public let tabBarInactiveIconColor: UIColor?
     
+    public let windowTintColor: UIColor?
+    
     public init(
+        windowTintColor: UIColor? = nil,
         navigationBarBackgroundColor: UIColor? = nil,
         navigationBarTitleColor: UIColor? = nil,
         navigationBarIconColor: UIColor? = nil,
@@ -27,6 +30,7 @@ public struct RSApplicationTheme: JSONDecodable {
         tabBarInactiveIconColor: UIColor? = nil
         ) {
         
+        self.windowTintColor = windowTintColor
         self.navigationBarBackgroundColor = navigationBarBackgroundColor
         self.navigationBarTitleColor = navigationBarTitleColor
         self.navigationBarIconColor = navigationBarIconColor

@@ -307,7 +307,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSSelectorValueTransformer.self,
             RSDatapointHeaderValueTransformer.self,
             RSMapValueTransformer.self,
-            RSFirstValueTransformer.self
+            RSFirstValueTransformer.self,
+            RSFontValueTransformer.self
         ]
     }
     
@@ -766,6 +767,11 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         let initialzed = self.initializeApplication(fromReset: false)
         
         self.store?.dispatch(RSActionCreators.completeConfiguration())
+        
+        if let windowTintColor = self.applicationTheme?.windowTintColor {
+            self.window?.tintColor = windowTintColor
+        }
+        
         self.onAppLoad()
         
         return initialzed

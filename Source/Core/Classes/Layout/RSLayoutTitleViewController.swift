@@ -38,7 +38,8 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var button: RSBorderedButton!
+    var button: UIButton!
+    @IBOutlet weak var backgroundImageView: UIImageView!
     
     private var hasAppeared: Bool = false
 
@@ -58,27 +59,88 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
             self.titleLabel.textColor = titleTextColor
         }
         
+        if let titleFontJSON = self.titleLayout.titleFontJSON,
+            let titleFont = RSValueManager.processValue(jsonObject: titleFontJSON, state: state, context: self.context())?.evaluate() as? UIFont {
+            self.titleLabel.font = titleFont
+//            self.titleLabel.adjustsFontForContentSizeCategory = false
+        }
+        
+        self.backgroundImageView?.image = self.titleLayout.backgroundImage
         if let backgroundColorJSON = self.titleLayout.backgroundColorJSON,
             let backgroundColor = RSValueManager.processValue(jsonObject: backgroundColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
             
-            self.view.backgroundColor = backgroundColor
+            self.backgroundImageView.backgroundColor = backgroundColor
         }
         
-        if let buttonColorJSON = self.titleLayout.button?.colorJSON,
-            let buttonColor = RSValueManager.processValue(jsonObject: buttonColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
-            
-            self.button.tintColor = buttonColor
-        }
- 
-        self.imageView?.image = self.titleLayout.image
+        //create button only once
+        //update button
+        self.button?.removeFromSuperview()
+        self.button = nil
+        
         if let button = self.titleLayout.button {
-            self.button?.isHidden = false
-            self.button?.setTitle(RSApplicationDelegate.localizedString(button.title), for: .normal)
+            
+            let newButton: UIButton = {
+                switch button.buttonType {
+                case .bordered:
+                    
+                    let newButton = RSBorderedButton(type: .custom)
+                    
+                    if let primaryColorJSON = button.primaryColorJSON,
+                        let primaryColor = RSValueManager.processValue(jsonObject: primaryColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+                        
+                        newButton.tintColor = primaryColor
+                    }
+                    
+                    if let secondaryColorJSON = button.secondaryColorJSON,
+                        let secondaryColor = RSValueManager.processValue(jsonObject: secondaryColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+                        
+                        newButton.tappedTitleColor = secondaryColor
+                    }
+                    
+                    
+                    return newButton
+                case .solid:
+                    let newButton = RSSolidButton(type: .custom)
+                    
+                    if let primaryColorJSON = button.primaryColorJSON,
+                        let primaryColor = RSValueManager.processValue(jsonObject: primaryColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+                        
+                        if let secondaryColorJSON = button.secondaryColorJSON,
+                            let secondaryColor = RSValueManager.processValue(jsonObject: secondaryColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+                            
+                            newButton.setColors(titleColor: primaryColor, backgroundColor: secondaryColor)
+                        }
+                        else {
+                            newButton.setColors(titleColor: primaryColor, backgroundColor: nil)
+                        }
+                    }
+                    
+                    return newButton
+                }
+            }()
+            
+            self.view.addSubview(newButton)
+            
+            newButton.snp.makeConstraints { (make) in
+                make.height.equalTo(44)
+                make.width.greaterThanOrEqualTo(150)
+                make.centerX.equalToSuperview()
+                make.bottom.equalToSuperview().offset(-40)
+            }
+            
+            newButton.isHidden = false
+            newButton.setTitle(RSApplicationDelegate.localizedString(button.title), for: .normal)
+            newButton.addTarget(self, action: #selector(tappedButton), for: .touchUpInside)
+            
+            self.button = newButton
+            
         }
         else {
             self.button?.isHidden = true
         }
         
+        self.imageView?.image = self.titleLayout.image
+
         self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         
         let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
@@ -103,6 +165,7 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.isHidden = self.layout.hidesNavBar
+        
 
         // Do any additional setup after loading the view.
         if let state = self.store?.state {

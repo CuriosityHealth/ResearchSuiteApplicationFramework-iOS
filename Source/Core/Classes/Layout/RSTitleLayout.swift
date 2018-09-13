@@ -23,12 +23,14 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
     
     open let title: String?
     open let titleJSON: JSON?
+    open let titleFontJSON: JSON?
     open let image: UIImage?
     open let button: RSLayoutButton?
     
     //theme
     open let titleTextColorJSON: JSON?
     open let backgroundColorJSON: JSON?
+    open let backgroundImage: UIImage?
     
     
     
@@ -47,6 +49,8 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
             return nil
         }
         
+        self.titleFontJSON = "titleFont" <~~ json
+        
         self.image = {
             if let imageTitle: String = "image" <~~ json {
                 return UIImage(named: imageTitle)
@@ -59,6 +63,15 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
         self.button = "button" <~~ json
         self.titleTextColorJSON = "titleTextColor" <~~ json
         self.backgroundColorJSON = "backgroundColor" <~~ json
+        
+        self.backgroundImage = {
+            if let imageTitle: String = "backgroundImage" <~~ json {
+                return UIImage(named: imageTitle)
+            }
+            else {
+                return nil
+            }
+        }()
         
         super.init(json: json)
         

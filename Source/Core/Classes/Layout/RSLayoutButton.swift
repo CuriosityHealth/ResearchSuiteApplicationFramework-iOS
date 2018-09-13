@@ -10,15 +10,22 @@
 import UIKit
 import Gloss
 
+public enum RSLayoutButtonType: String {
+    case bordered = "bordered"
+    case solid = "solid"
+}
+
 open class RSLayoutButton: Gloss.JSONDecodable {
     
     public let identifier: String
     public let title: String?
     public let image: UIImage?
-    public let colorJSON: JSON?
+    public let primaryColorJSON: JSON?
+    public let secondaryColorJSON: JSON?
     public let predicate: RSPredicate?
     public let onTapActions: [JSON]
     public let element: JSON
+    public let buttonType: RSLayoutButtonType
     
     required public init?(json: JSON) {
         
@@ -35,10 +42,23 @@ open class RSLayoutButton: Gloss.JSONDecodable {
             
             return UIImage(named: imageString)
         }()
+        
         self.predicate = "predicate" <~~ json
         self.onTapActions = "onTap" <~~ json ?? []
         self.element = json
-        self.colorJSON = "color" <~~ json
+        self.primaryColorJSON = "color" <~~ json
+        self.secondaryColorJSON = "secondaryColor" <~~ json
+        
+        self.buttonType = {
+            if let buttonTypeString: String = "type" <~~ json,
+                let buttonType = RSLayoutButtonType(rawValue: buttonTypeString) {
+                return buttonType
+            }
+            else {
+                return .bordered
+            }
+        }()
+        
     }
 
 }
