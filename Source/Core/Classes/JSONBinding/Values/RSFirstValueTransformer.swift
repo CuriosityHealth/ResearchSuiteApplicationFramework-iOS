@@ -26,7 +26,8 @@ open class RSFirstValueTransformer: RSValueTransformer {
                 return acc
             }
             
-            if let value = RSValueManager.processValue(jsonObject: valueJSON, state: state, context: context)?.evaluate() {
+            if let value = RSValueManager.processValue(jsonObject: valueJSON, state: state, context: context)?.evaluate(),
+                value as? NSNull == nil {
                 return RSValueConvertible(value: value)
             }
             else {
