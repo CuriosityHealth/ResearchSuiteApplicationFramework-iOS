@@ -221,5 +221,30 @@ open class RSValueManager: NSObject {
         //otherwise, we know that both are not nil
         return c != l
     }
+    
+    public static func valueInCombinedStateChanged(identifier: String, state: RSState, lastState: RSState, context: [String: AnyObject]) -> Bool {
+
+        let currentValue = RSStateSelectors.getValueInCombinedState(state, for: identifier)
+        let lastValue = RSStateSelectors.getValueInCombinedState(lastState, for: identifier)
+        
+        if currentValue == nil && lastValue == nil {
+            return false
+        }
+        
+        //we checked above to see if both are nil,
+        //therefore if one is, the other isnt
+        if currentValue == nil || lastValue == nil {
+            return true
+        }
+        
+        guard let c = currentValue as? NSObject,
+            let l = lastValue as? NSObject else {
+                assertionFailure("Assuming that all objects inherit from NSObject")
+                return false
+        }
+        
+        //otherwise, we know that both are not nil
+        return c != l
+    }
 
 }

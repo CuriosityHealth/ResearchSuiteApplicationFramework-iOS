@@ -196,7 +196,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSCollectionLayout.self,
             RSCalendarLayout.self,
             RSWebLayout.self,
-            RSDashboardLayout.self
+            RSDashboardLayout.self,
+            RSNewDashboardLayout.self
         ]
     }
     
