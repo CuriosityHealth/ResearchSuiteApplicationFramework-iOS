@@ -262,5 +262,9 @@ open class RSScheduler: NSObject {
         }
         
     }
+    
+    open func markEventCompleted(event: RSScheduleEvent) {
+        
+    }
 
 }

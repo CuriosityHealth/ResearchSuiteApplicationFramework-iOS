@@ -243,7 +243,7 @@ open class RSSchedulerDatabase: NSObject {
         
         let error: Error? = autoreleasepool {
             do {
-                let realm = try Realm()
+                let realm = try Realm(configuration: self.realmConfig)
                 try realm.write {
                     realm.add(scheduleEvents)
                 }
@@ -267,7 +267,7 @@ open class RSSchedulerDatabase: NSObject {
         
         let error: Error? = autoreleasepool {
             do {
-                let realm = try Realm()
+                let realm = try Realm(configuration: self.realmConfig)
                 try realm.write {
                     realm.delete(scheduleEvents)
                 }
@@ -287,7 +287,7 @@ open class RSSchedulerDatabase: NSObject {
     }
     
     public func getSchedulerEvents(eventType: String?) throws -> [RSRealmScheduleEvent] {
-        let realm = try Realm()
+        let realm = try Realm(configuration: self.realmConfig)
         
         var results = realm.objects(RSRealmScheduleEvent.self)
         if let et = eventType {
@@ -303,8 +303,8 @@ open class RSSchedulerDatabase: NSObject {
         
         let error: Error? = autoreleasepool {
             do {
-                let realm = try Realm()
-                guard let event = realm.objects(RSRealmScheduleEvent.self).filter("identifier == \(eventIdentifier)").first else {
+                let realm = try Realm(configuration: self.realmConfig)
+                guard let event = realm.objects(RSRealmScheduleEvent.self).filter("identifier == '\(eventIdentifier)'").first else {
                     return nil
                 }
                 

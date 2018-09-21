@@ -251,10 +251,26 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
         
     }
     
-    public func setDataseFile(databaseFile: String) {
+    public func setDatapointDatabaseFile(databaseFile: String) {
         
         let message: JSON = [
-            "type": "setDatabaseFile",
+            "type": "setDatapointDatabaseFile",
+            "file": databaseFile
+        ]
+        
+        if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
+            //                debugPrint(log)
+            self.socket.write(data: data) {
+                
+            }
+        }
+        
+    }
+    
+    public func setSchedulerDatabaseFile(databaseFile: String) {
+        
+        let message: JSON = [
+            "type": "setSchedulerDatabaseFile",
             "file": databaseFile
         ]
         
