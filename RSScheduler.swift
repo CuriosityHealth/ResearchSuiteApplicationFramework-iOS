@@ -7,6 +7,7 @@
 
 import UIKit
 import Gloss
+import ReSwift
 
 //how do we identify that an item has been interacted with?
 //completed / completed time?
@@ -78,6 +79,18 @@ extension RSScheduleEvent {
         //otherwise, the event is pending if the expiration date is in the future
         return now < startTime.addingTimeInterval(duration)
     }
+}
+
+public typealias RSDashboardCellGenerator = (RSScheduler, Store<RSState>, RSState, UICollectionView, RSCollectionViewCellManager, RSDashboardAdaptorItem, IndexPath) -> RSCollectionViewCell?
+
+public protocol RSDashboardAdaptorItemConvertible {
+    func toDashboardAdaptorItem() -> RSDashboardAdaptorItem?
+}
+
+public protocol RSDashboardAdaptorItem {
+    var identifier: String { get }
+    var priority: Int { get }
+    var generateCell: RSDashboardCellGenerator { get }
 }
 
 public struct RSConcreteScheduleEvent: RSScheduleEvent, RSScheduleEventBuilder {
