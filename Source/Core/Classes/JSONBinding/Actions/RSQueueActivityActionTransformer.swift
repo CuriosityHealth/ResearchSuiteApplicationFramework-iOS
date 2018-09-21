@@ -51,7 +51,11 @@ open class RSQueueActivityActionTransformer: RSActionTransformer, RSURLToJSONAct
                 
             }()
             
-            store.dispatch(RSActionCreators.queueActivity(activityID: activityID, context: extraContext))
+            store.dispatch(RSActionCreators.queueActivity(
+                activityID: activityID,
+                context: extraContext,
+                extraOnCompletionActions: nil
+            ))
             
             return nil
             

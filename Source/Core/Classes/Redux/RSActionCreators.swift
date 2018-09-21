@@ -15,7 +15,10 @@ import ResearchSuiteResultsProcessor
 import UserNotifications
 import ResearchSuiteTaskBuilder
 
+public typealias RSAnonymousAction = (_ state: RSState, _ store: Store<RSState>) -> Action?
+
 public class RSActionCreators: NSObject {
+    
     
 
     //loads json from (fileName, directory)
@@ -190,9 +193,9 @@ public class RSActionCreators: NSObject {
         }
     }
     
-    public static func queueActivity(activityID: String, context: [String: AnyObject]?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func queueActivity(activityID: String, context: [String: AnyObject]?, extraOnCompletionActions: RSOnCompletionActions?) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
-            return QueueActivityAction(uuid: UUID(), activityID: activityID, context: context)
+            return QueueActivityAction(uuid: UUID(), activityID: activityID, context: context, onCompletionActions: extraOnCompletionActions)
         }
     }
     
@@ -296,7 +299,7 @@ public class RSActionCreators: NSObject {
                 return nil
             }
             
-            guard let firstActivity: (UUID, String, [String: AnyObject]?) = RSStateSelectors.getNextActivity(state),
+            guard let firstActivity: (UUID, String, [String: AnyObject]?, RSOnCompletionActions?) = RSStateSelectors.getNextActivity(state),
                 let activity = RSStateSelectors.activity(state, for: firstActivity.1) else {
                     return nil
             }
@@ -348,10 +351,19 @@ public class RSActionCreators: NSObject {
                 if reason == ORKTaskViewControllerFinishReason.completed {
                     let taskResult = taskViewController.result
                     RSActionCreators.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store, extraContext: extraContext)
+                    
+                    firstActivity.3?.onSuccessActions?.forEach({ (action) in
+                        store.dispatch(action)
+                    })
+                    
                 }
                     //process on failure actions
                 else {
                     RSActionCreators.processOnFailureActions(activity: activity, store: store, extraContext: extraContext)
+                    
+                    firstActivity.3?.onFailureActions?.forEach({ (action) in
+                        store.dispatch(action)
+                    })
                 }
                 
                 
@@ -372,6 +384,10 @@ public class RSActionCreators: NSObject {
                 
                 //process finally actions
                 RSActionCreators.processFinallyActions(activity: activity, store: store, extraContext: extraContext)
+                
+                firstActivity.3?.finallyActions?.forEach({ (action) in
+                    store.dispatch(action)
+                })
                 
                 //NOTE: We are wiping out the storage directory, so any results should have been copied out of here
                 

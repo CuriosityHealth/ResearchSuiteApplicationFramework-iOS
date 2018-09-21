@@ -45,7 +45,7 @@ public final class RSState: NSObject, StateType {
     //static after config
     public let routeIdentifiers: [String]
     
-    public let activityQueue: [(UUID, String, [String: AnyObject]?)]
+    public let activityQueue: [(UUID, String, [String: AnyObject]?, RSOnCompletionActions?)]
     public let isPresenting: Bool
     public let isDismissing: Bool
     public let presentedActivity: (UUID, String, Date)?
@@ -99,7 +99,7 @@ public final class RSState: NSObject, StateType {
                 layoutMap: [String: RSLayout] = [:],
                 routeMap: [String: RSRoute] = [:],
                 routeIdentifiers: [String] = [],
-                activityQueue:[(UUID, String, [String: AnyObject]?)] = [],
+                activityQueue:[(UUID, String, [String: AnyObject]?, RSOnCompletionActions?)] = [],
                 isPresenting: Bool = false,
                 isDismissing: Bool = false,
                 presentedActivity: (UUID, String, Date)? = nil,
@@ -181,7 +181,7 @@ public final class RSState: NSObject, StateType {
         layoutMap: [String: RSLayout]? = nil,
         routeMap: [String: RSRoute]? = nil,
         routeIdentifiers: [String]? = nil,
-        activityQueue: [(UUID, String, [String: AnyObject]?)]? = nil,
+        activityQueue: [(UUID, String, [String: AnyObject]?, RSOnCompletionActions?)]? = nil,
         isPresenting: Bool? = nil,
         isDismissing: Bool? = nil,
         presentedActivity: ((UUID, String, Date)?)? = nil,

@@ -124,11 +124,11 @@ public class RSStateSelectors: NSObject {
 
     }
     
-    public static func getNextActivity(_ state: RSState) -> (UUID, String, [String: AnyObject]?)? {
+    public static func getNextActivity(_ state: RSState) -> (UUID, String, [String: AnyObject]?, RSOnCompletionActions?)? {
         return state.activityQueue.first
     }
     
-    public static func getQueuedActivities(_ state: RSState) -> [(UUID, String, [String: AnyObject]?)] {
+    public static func getQueuedActivities(_ state: RSState) -> [(UUID, String, [String: AnyObject]?, RSOnCompletionActions?)] {
         return state.activityQueue
     }
     

@@ -73,10 +73,27 @@ public struct AddRouteAction: Action {
     let route: RSRoute
 }
 
+public struct RSOnCompletionActions {
+    public let onSuccessActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]?
+    public let onFailureActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]?
+    public let finallyActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]?
+    
+    public init(
+        onSuccessActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]? = nil,
+        onFailureActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]? = nil,
+        finallyActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]? = nil
+        ) {
+        self.onSuccessActions = onSuccessActions
+        self.onFailureActions = onFailureActions
+        self.finallyActions = finallyActions
+    }
+}
+
 public struct QueueActivityAction: Action {
     let uuid: UUID
     let activityID: String
     let context: [String: AnyObject]?
+    let onCompletionActions: RSOnCompletionActions?
 }
 
 public struct DequeueActivityAction: Action {
