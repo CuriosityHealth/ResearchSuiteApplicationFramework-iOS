@@ -286,12 +286,17 @@ open class RSSchedulerDatabase: NSObject {
         
     }
     
-    public func getSchedulerEvents(eventType: String?) throws -> [RSRealmScheduleEvent] {
+    public func getSchedulerEvents(eventType: String? = nil, completed: Bool? = nil) throws -> [RSRealmScheduleEvent] {
         let realm = try Realm(configuration: self.realmConfig)
         
         var results = realm.objects(RSRealmScheduleEvent.self)
         if let et = eventType {
             let filterString = "eventType == '\(et)'"
+            results = results.filter(filterString)
+        }
+        
+        if let completed = completed {
+            let filterString = completed ? "completed == true" : "completed == false"
             results = results.filter(filterString)
         }
 
