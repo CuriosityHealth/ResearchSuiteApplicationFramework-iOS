@@ -55,8 +55,8 @@ public protocol RSActionManagerDelegate: class {
 
 
 
-extension URL {
-    var queryDictionary: [String: String]? {
+public extension URL {
+    public var queryDictionary: [String: String]? {
         guard let query = URLComponents(string: self.absoluteString)?.query else { return nil}
         
         var queryStrings = [String: String]()
