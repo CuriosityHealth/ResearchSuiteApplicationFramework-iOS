@@ -88,16 +88,16 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
                     if let primaryColorJSON = button.primaryColorJSON,
                         let primaryColor = RSValueManager.processValue(jsonObject: primaryColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
                         
-                        newButton.tintColor = primaryColor
+                        if let secondaryColorJSON = button.secondaryColorJSON,
+                            let secondaryColor = RSValueManager.processValue(jsonObject: secondaryColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+                            
+                            newButton.setColors(primaryColor: primaryColor, secondaryColor: secondaryColor)
+                        }
+                        else {
+                            newButton.setColors(primaryColor: primaryColor)
+                        }
                     }
-                    
-                    if let secondaryColorJSON = button.secondaryColorJSON,
-                        let secondaryColor = RSValueManager.processValue(jsonObject: secondaryColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
-                        
-                        newButton.tappedTitleColor = secondaryColor
-                    }
-                    
-                    
+
                     return newButton
                 case .solid:
                     let newButton = RSSolidButton(type: .custom)
