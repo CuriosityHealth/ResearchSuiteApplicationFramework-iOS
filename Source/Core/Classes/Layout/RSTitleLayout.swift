@@ -22,15 +22,15 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
     
     
     open let title: String?
-    open let titleJSON: JSON?
+    public let titleJSON: JSON?
     open let titleFontJSON: JSON?
     open let image: UIImage?
     open let button: RSLayoutButton?
     
     //theme
-    open let titleTextColorJSON: JSON?
-    open let backgroundColorJSON: JSON?
-    open let backgroundImage: UIImage?
+    public let titleTextColorJSON: JSON?
+    public let backgroundColorJSON: JSON?
+    public let backgroundImage: UIImage?
     
     
     
