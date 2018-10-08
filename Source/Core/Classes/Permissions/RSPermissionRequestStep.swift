@@ -9,11 +9,11 @@
 
 import UIKit
 import ResearchKit
+import ResearchSuiteExtensions
 
-open class RSPermissionRequestStep: ORKStep {
+open class RSPermissionRequestStep: RSStep {
     
     let delegate: RSPermissionRequestStepDelegate
-    let buttonText: String
     
     public init(identifier: String,
                 title: String? = nil,
@@ -23,13 +23,13 @@ open class RSPermissionRequestStep: ORKStep {
         
         let title = title ?? "Permissions"
         let text = text ?? "Please grant permissions"
-        self.buttonText = buttonText ?? "Grant Permissions"
         self.delegate = delegate
         
         super.init(identifier: identifier)
         
         self.title = title
         self.text = text
+        self.buttonText = buttonText ?? "Grant Permissions"
         
     }
     

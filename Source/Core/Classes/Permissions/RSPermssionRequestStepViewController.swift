@@ -21,7 +21,6 @@ open class RSPermissionRequestStepViewController: RSQuestionViewController {
         super.viewDidLoad()
         
         if let step = self.step as? RSPermissionRequestStep {
-            self.setContinueButtonTitle(title: step.buttonText)
             self.requestDelegate = step.delegate
         }
         
