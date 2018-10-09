@@ -8,6 +8,19 @@
 import UIKit
 import Gloss
 
+
+public struct RSCalendarAppearance: JSONDecodable {
+    
+    public let defaultEventColor: JSON?
+    public let headerColor: JSON?
+    
+    public init?(json: JSON) {
+        self.defaultEventColor = "defaultEventColor" <~~ json
+        self.headerColor = "headerColor" <~~ json
+    }
+    
+}
+
 open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
     
     public enum CalendarScope: String {
@@ -28,6 +41,7 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
     open let filterOptions: JSON?
     open let datapointClasses: [RSDatapointClass]
     open let calendarScope: CalendarScope
+    open let calendarAppearance: RSCalendarAppearance?
     
     required public init?(json: JSON) {
         
@@ -45,6 +59,8 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
         else {
             self.calendarScope = .configurable
         }
+        
+        self.calendarAppearance = "calendarAppearance" <~~ json
         
         super.init(json: json)
     }

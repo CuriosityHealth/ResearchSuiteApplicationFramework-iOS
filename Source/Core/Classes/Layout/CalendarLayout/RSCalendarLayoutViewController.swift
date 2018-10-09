@@ -154,7 +154,6 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         self.calendarView.dataSource = self
         self.calendarView.delegate = self
-        self.calendarView.appearance.eventDefaultColor = UIColor.red
         
         switch self.calendarLayout.calendarScope {
         case .alwaysExpanded:
@@ -215,16 +214,32 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         //        self.updateWindow(filter: false)
         
         
-        if let navigationBarTitleColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarTitleColor {
-//            self.navigationBar.titleTextAttributes?[NSAttributedStringKey.foregroundColor] = navigationBarTitleColor
+        let defaultAccentColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarTitleColor ?? self.view.window?.tintColor
+        
+        let appearance = self.calendarView.appearance
+        appearance.eventDefaultColor = defaultAccentColor
+        appearance.headerTitleColor = defaultAccentColor
+        appearance.weekdayTextColor = defaultAccentColor
+        
+        if let calendarAppearance = self.calendarLayout.calendarAppearance,
+            let state = self.state {
             
-            let appearance = self.calendarView.appearance
-            appearance.headerTitleColor = navigationBarTitleColor
-            appearance.weekdayTextColor = navigationBarTitleColor
-        }
-        
-        
-        
+            if let colorJSON = calendarAppearance.defaultEventColor,
+                let color = RSValueManager.processValue(jsonObject: colorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+                
+                appearance.eventDefaultColor = color
+                
+            }
+            
+            if let colorJSON = calendarAppearance.headerColor,
+                let color = RSValueManager.processValue(jsonObject: colorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+                
+                appearance.headerTitleColor = color
+                appearance.weekdayTextColor = color
+                
+            }
+            
+        } 
         
         self.layoutDidLoad()
     }
