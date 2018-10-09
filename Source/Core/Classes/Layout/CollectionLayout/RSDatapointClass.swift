@@ -26,7 +26,7 @@ open class RSDatapointClass: JSONDecodable, Hashable, Equatable {
     public let cellTint: JSON?
     public let cellMapping: [String: JSON]
     public let onTapActions: [JSON]
-    public let dateSelector: ((LS2Datapoint) -> Date?)
+    public let dateSelector: ((RSCollectionDataSourceElement) -> Date?)
     
     public required init?(json: JSON) {
         
@@ -62,7 +62,8 @@ open class RSDatapointClass: JSONDecodable, Hashable, Equatable {
         }
         else {
             self.dateSelector = { datapoint in
-                return datapoint.header?.acquisitionProvenance.sourceCreationDateTime
+//                return datapoint.header?.acquisitionProvenance.sourceCreationDateTime
+                return datapoint.primaryDate
             }
         }
         

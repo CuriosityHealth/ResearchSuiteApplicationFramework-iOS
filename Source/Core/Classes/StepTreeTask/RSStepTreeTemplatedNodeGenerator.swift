@@ -172,6 +172,21 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
             
         }
         
+        let removeControlCharacters = Filter { (box: MustacheBox) -> Any? in
+            
+            guard let string = box.value as? String else {
+                return nil
+            }
+            
+            
+            let escapedString = string
+                .replacingOccurrences(of: "\t", with: "")
+                .replacingOccurrences(of: "\n", with: "")
+            
+            return escapedString
+            
+        }
+        
         template.register(mapSelect, forKey: "mapSelect")
         template.register(contains, forKey: "contains")
         template.register(selectElement, forKey: "select")
@@ -179,6 +194,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
         template.register(some, forKey: "some")
         template.register(StandardLibrary.each, forKey: "each")
         template.register(listOfStrings, forKey: "listOfStrings")
+        template.register(escapeControlCharacters, forKey: "removeControlCharacters")
         
         
         let node = RSStepTreeTemplatedNode(

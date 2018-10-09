@@ -51,7 +51,16 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
                     return
             }
             
-            generatedParameters[key] = parameterValueConvertible.evaluate()
+            let parameter: AnyObject? = {
+                if let parameterValue = parameterValueConvertible.evaluate() as? String {
+                    return parameterValue.replacingOccurrences(of: "\t", with: "") as AnyObject
+                }
+                else {
+                    return parameterValueConvertible.evaluate()
+                }
+            }()
+            
+            generatedParameters[key] = parameter
         }
         
         return generatedParameters
@@ -64,6 +73,8 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
         
         //render template
         
+        
+        
         guard let renderedTemplate: String = (try? self.template.render(parameters)) else {
             return nil
         }
@@ -71,7 +82,7 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
         print(renderedTemplate)
         //convert to json
         guard let jsonData = renderedTemplate.data(using: .utf8),
-            let json = (try? JSONSerialization.jsonObject(with: jsonData, options: [])) as? JSON else {
+            let json = (try! JSONSerialization.jsonObject(with: jsonData, options: [])) as? JSON else {
             return nil
         }
         

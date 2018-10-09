@@ -79,8 +79,8 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
     
     //
     var resultPaths: [IndexPath]?
-    var memoizedResults: [LS2Datapoint]?
-    var resultDatapoints: [Int: [LS2Datapoint]]?
+    var memoizedResults: [RSCollectionDataSourceElement]?
+    var resultDatapoints: [Int: [RSCollectionDataSourceElement]]?
     
     //update callback propagates all updates from child data sources to caller
     
@@ -171,9 +171,9 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
     
     func initializeResults() {
         
-        let pairs: [(Int, [LS2Datapoint])] = self.collectionDataSources.enumerated().map { (offset, collectionDataSource) -> (Int, [LS2Datapoint]) in
+        let pairs: [(Int, [RSCollectionDataSourceElement])] = self.collectionDataSources.enumerated().map { (offset, collectionDataSource) -> (Int, [RSCollectionDataSourceElement]) in
             
-            let collectionArray: [LS2Datapoint] =  collectionDataSource.toArray() ?? []
+            let collectionArray: [RSCollectionDataSourceElement] =  collectionDataSource.toArray() ?? []
             return (offset, collectionArray)
             
         }
@@ -271,7 +271,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
     }
     
     //need constant time lookup
-    public func get(for index: Int) -> LS2Datapoint? {
+    public func get(for index: Int) -> RSCollectionDataSourceElement? {
 
         guard let results = self.toArray(),
             index < results.count else {
@@ -282,7 +282,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
         return results[index]
     }
     
-    public func generateDictionary() -> [Int : LS2Datapoint]? {
+    public func generateDictionary() -> [Int : RSCollectionDataSourceElement]? {
         
         guard let results = self.toArray() else {
                 return nil
@@ -292,7 +292,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
 
     }
     
-    public func toArray() -> [LS2Datapoint]? {
+    public func toArray() -> [RSCollectionDataSourceElement]? {
         
         if let memoizedResults = self.memoizedResults {
             return memoizedResults
@@ -303,7 +303,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
                 return nil
             }
             
-            let memoizedResults = self.resultPaths?.compactMap({ (indexPath) -> LS2Datapoint? in
+            let memoizedResults = self.resultPaths?.compactMap({ (indexPath) -> RSCollectionDataSourceElement? in
                 let collectionArray = resultDatapoints[indexPath.section]!
                 return collectionArray[indexPath.row]
             })

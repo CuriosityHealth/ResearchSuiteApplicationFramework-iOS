@@ -12,7 +12,7 @@ import ReSwift
 //how do we identify that an item has been interacted with?
 //completed / completed time?
 
-public protocol RSScheduleEvent {
+public protocol RSScheduleEvent: RSCollectionDataSourceElement {
     var identifier: String { get }
     var eventType: String { get }
     var startTime: Date? { get }
@@ -30,6 +30,7 @@ public protocol RSScheduleEvent {
 }
 
 extension RSScheduleEvent {
+    
     //an event has expired iff
     //the current time is after (i.e., greater than) startTime + duration
     //the event is not completed
@@ -79,6 +80,27 @@ extension RSScheduleEvent {
         //otherwise, the event is pending if the expiration date is in the future
         return now < startTime.addingTimeInterval(duration)
     }
+    
+    public var primaryDate: Date? {
+        return self.startTime
+    }
+    
+    public func toJSON() -> JSON? {
+        return jsonify([
+            "identifier" ~~> self.identifier,
+            "eventType" ~~> self.eventType,
+            Gloss.Encoder.encode(dateISO8601ForKey: "startTime")(self.startTime),
+            "duration" ~~> self.duration,
+            "completed" ~~> self.completed,
+            Gloss.Encoder.encode(dateISO8601ForKey: "completionTime")(self.completionTime),
+            "persistent" ~~> self.persistent,
+            "priority" ~~> self.priority,
+            "extraInfo" ~~> self.extraInfo,
+            "expired" ~~> self.expired,
+            "pending" ~~> self.pending,
+            ])
+    }
+    
 }
 
 public typealias RSDashboardCellGenerator = (RSScheduler, Store<RSState>, RSState, UICollectionView, RSCollectionViewCellManager, RSDashboardAdaptorItem, IndexPath) -> RSCollectionViewCell?
@@ -94,6 +116,8 @@ public protocol RSDashboardAdaptorItem {
 }
 
 public struct RSConcreteScheduleEvent: RSScheduleEvent, RSScheduleEventBuilder {
+    
+    
     
     public static func createEvent(identifier: String, eventType: String, startTime: Date?, duration: TimeInterval?, completed: Bool, completionTime: Date?, persistent: Bool, priority: Int, extraInfo: [String : Any]?) -> RSScheduleEvent {
         return RSConcreteScheduleEvent(

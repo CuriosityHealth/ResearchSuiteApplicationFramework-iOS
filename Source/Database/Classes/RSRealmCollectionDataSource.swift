@@ -13,10 +13,17 @@ public protocol RSRealmDataSource: RSDataSource {
     func getRealm() -> Realm
 }
 
+extension LS2RealmDatapoint: RSCollectionDataSourceElement {
+    
+    public var primaryDate: Date? {
+        return self.header?.acquisitionProvenance.sourceCreationDateTime
+    }
+    
+}
+
 open class RSRealmCollectionDataSource: RSCollectionDataSource {
     
     open let identifier: String
-//    public typealias Element = LS2Datapoint
     var results: Results<LS2RealmDatapoint>? = nil
     var notificationToken: NotificationToken? = nil
     
@@ -103,7 +110,7 @@ open class RSRealmCollectionDataSource: RSCollectionDataSource {
     
     open var updateCallback: ((Int, Int, Int) -> ())?
     
-    open func get(for index: Int) -> LS2Datapoint? {
+    open func get(for index: Int) -> RSCollectionDataSourceElement? {
         guard let results = self.results,
             !results.isInvalidated else {
                 return nil
@@ -112,7 +119,7 @@ open class RSRealmCollectionDataSource: RSCollectionDataSource {
         return results[index]
     }
     
-    open func toArray() -> [LS2Datapoint]? {
+    open func toArray() -> [RSCollectionDataSourceElement]? {
         guard let results = self.results,
             !results.isInvalidated else {
                 return nil
@@ -121,14 +128,14 @@ open class RSRealmCollectionDataSource: RSCollectionDataSource {
         return Array(results)
     }
     
-    open func generateDictionary() -> [Int : LS2Datapoint]? {
+    open func generateDictionary() -> [Int : RSCollectionDataSourceElement]? {
         
         guard let results = self.results,
             !results.isInvalidated else {
                 return nil
         }
         
-        var returnDict: [Int : LS2Datapoint] = [:]
+        var returnDict: [Int : RSCollectionDataSourceElement] = [:]
         (0..<results.count).forEach { (index) in
             returnDict[index] = results[index]
         }

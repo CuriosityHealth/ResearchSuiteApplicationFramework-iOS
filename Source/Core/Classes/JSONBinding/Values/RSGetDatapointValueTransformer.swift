@@ -20,8 +20,8 @@ open class RSFetchDatapointValueTransformer: RSValueTransformer {
             let dataSource = RSStateSelectors.getDataSource(state, for: dataSourceIdentifier),
             let idJSON: JSON = "id" <~~ jsonObject,
             let idString: String = RSValueManager.processValue(jsonObject: idJSON, state: state, context: context)?.evaluate() as? String,
-            let id = UUID(uuidString: idString),
-            let datapoint = dataSource.getDatapoint(identifier: id) else {
+//            let id = UUID(uuidString: idString),
+            let datapoint = dataSource.getDatapoint(identifier: idString) else {
             return nil
         }
         

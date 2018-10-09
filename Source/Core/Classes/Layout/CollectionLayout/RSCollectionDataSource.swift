@@ -21,15 +21,29 @@ import LS2SDK
 //
 //}
 
+public protocol RSCollectionDataSourceElement: JSONEncodable {
+    
+    var primaryDate: Date? { get }
+    
+}
+
+extension LS2ConcreteDatapoint: RSCollectionDataSourceElement {
+    
+    public var primaryDate: Date? {
+        return self.header?.acquisitionProvenance.sourceCreationDateTime
+    }
+    
+}
+
 public protocol RSCollectionDataSource {
     
     var identifier: String { get }
     var count: Int? { get }
     //    var updateCallback: ((Int, Int, Int) -> ())? { get set }
-    func get(for index: Int) -> LS2Datapoint?
+    func get(for index: Int) -> RSCollectionDataSourceElement?
     
-    func generateDictionary() -> [Int: LS2Datapoint]?
-    func toArray() -> [LS2Datapoint]?
+    func generateDictionary() -> [Int: RSCollectionDataSourceElement]?
+    func toArray() -> [RSCollectionDataSourceElement]?
     
     
     

@@ -19,7 +19,7 @@ open class RSDataSourceCollectionValueTransformer: RSValueTransformer {
         guard let dataSourceJSON: JSON = "dataSourceCollection" <~~ jsonObject,
             let descriptor = RSCollectionDataSourceDescriptor(json: dataSourceJSON),
             let dataSourceCollection = RSApplicationDelegate.appDelegate.collectionDataSourceManager.generateCollectionDataSource(dataSourceDescriptor: descriptor, state: state, context: context),
-            let datapoints: [LS2Datapoint] = dataSourceCollection.toArray() else {
+            let datapoints: [RSCollectionDataSourceElement] = dataSourceCollection.toArray() else {
                 return nil
         }
 

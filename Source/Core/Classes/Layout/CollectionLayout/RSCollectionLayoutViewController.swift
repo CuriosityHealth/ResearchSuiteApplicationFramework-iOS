@@ -259,7 +259,7 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         return count
     }
     
-    open func createParameterMap(datapoint: LS2Datapoint, mapping: [String: JSON]) -> [String: Any]? {
+    open func createParameterMap(datapoint: RSCollectionDataSourceElement, mapping: [String: JSON]) -> [String: Any]? {
         
         guard let datapointJSON = datapoint.toJSON(),
             let state = self.state else {
@@ -292,20 +292,6 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         }
         
         let cellWidth = collectionView.bounds.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right)
-        
-//        guard let dataSource = self.collectionDataSource,
-//            let datapoints: [LS2Datapoint] = dataSource.toArray() else {
-//                let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
-//                cell.setCellWidth(width: cellWidth)
-//                return cell
-//        }
-        
-        
-//        self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "Filtering datapoints")
-//        let filteredDatapoints = datapoints.filter { self.datapointClassifier.classifyDatapoint(datapoint: $0) != nil }
-//        self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "datapoints filtered")
-//
-//        let datapoint:LS2Datapoint = filteredDatapoints[indexPath.row]
         
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "Generating cell")
         guard let datapoint = self.collectionDataSource?.get(for: indexPath.row),
@@ -342,24 +328,6 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         
         return cell
     }
-    
-//    open override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//
-//        collectionView.deselectItem(at: indexPath, animated: true)
-//
-//        guard let dataSource = self.collectionDataSource,
-//            let datapoint:LS2Datapoint = dataSource.get(for: indexPath.row),
-//            let datapointJSON = datapoint.toJSON(),
-//            let datapointClass = self.datapointClass(for: indexPath.row) else {
-//                return
-//        }
-//
-//        let onTapActions = datapointClass.onTapActions
-//
-//        onTapActions.forEach { (action) in
-//            self.processAction(action: action, extraContext: ["selected": datapointJSON as AnyObject])
-//        }
-//    }
     
     open func layoutDidLoad() {
         

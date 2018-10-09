@@ -11,6 +11,7 @@ import Realm
 import Gloss
 
 open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder {
+
     public static func createEvent(identifier: String, eventType: String, startTime: Date?, duration: TimeInterval?, completed: Bool, completionTime: Date?, persistent: Bool, priority: Int, extraInfo: [String : Any]?) -> RSScheduleEvent {
         
         let event = RSRealmScheduleEvent()
