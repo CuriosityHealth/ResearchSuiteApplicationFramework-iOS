@@ -76,7 +76,7 @@ open class RSPrefixPath: RSPath, RSPathGenerator {
     
     public func match(remainingPath: String, previousPath: String) -> RSMatch? {
         
-        if remainingPath.hasPrefix(self.prefix) {
+        if remainingPath.lowercased().hasPrefix(self.prefix) {
             return RSMatch(params: [:], isExact: false, path: previousPath + self.prefix)
         }
         
