@@ -194,7 +194,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
         template.register(some, forKey: "some")
         template.register(StandardLibrary.each, forKey: "each")
         template.register(listOfStrings, forKey: "listOfStrings")
-        template.register(escapeControlCharacters, forKey: "removeControlCharacters")
+        template.register(removeControlCharacters, forKey: "removeControlCharacters")
         
         
         let node = RSStepTreeTemplatedNode(
