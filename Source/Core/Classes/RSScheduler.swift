@@ -12,7 +12,7 @@ import ReSwift
 //how do we identify that an item has been interacted with?
 //completed / completed time?
 
-public protocol RSScheduleEvent: RSCollectionDataSourceElement {
+public protocol RSScheduleEvent: RSCollectionDataSourceElement, NSObjectProtocol {
     var identifier: String { get }
     var eventType: String { get }
     var startTime: Date? { get }
@@ -27,6 +27,7 @@ public protocol RSScheduleEvent: RSCollectionDataSourceElement {
 //    var expired: Bool { get }
     var completed: Bool { get }
 //    var pending: Bool { get }
+    
 }
 
 extension RSScheduleEvent {
@@ -115,9 +116,7 @@ public protocol RSDashboardAdaptorItem {
     var generateCell: RSDashboardCellGenerator { get }
 }
 
-public struct RSConcreteScheduleEvent: RSScheduleEvent, RSScheduleEventBuilder {
-    
-    
+public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEventBuilder {
     
     public static func createEvent(identifier: String, eventType: String, startTime: Date?, duration: TimeInterval?, completed: Bool, completionTime: Date?, persistent: Bool, priority: Int, extraInfo: [String : Any]?) -> RSScheduleEvent {
         return RSConcreteScheduleEvent(
@@ -220,7 +219,7 @@ public protocol RSScheduleEventBuilder {
 }
 
 public protocol RSSchedulerSubscriber: class {
-    func newSchedulerEvents(scheduler: RSScheduler, events: [RSScheduleEvent], deletions: [Int], additions: [Int])
+    func newSchedulerEvents(scheduler: RSScheduler, events: [RSScheduleEvent], deletions: [Int], additions: [Int], modifications: [Int])
 }
 
 struct RSSchedulerSubscription {
@@ -262,7 +261,7 @@ open class RSScheduler: NSObject {
         
         self.subscriptions = self.subscriptions + [subscription]
         
-        subscriber.newSchedulerEvents(scheduler: self, events: self.events, deletions: [], additions: [])
+        subscriber.newSchedulerEvents(scheduler: self, events: self.events, deletions: [], additions: [], modifications: [])
     }
     
     open func unsubscribe(_ subscriber: RSSchedulerSubscriber) {
@@ -272,20 +271,42 @@ open class RSScheduler: NSObject {
     open func setEvents(events: [RSScheduleEvent]) {
         
         let oldEventsEnumerated = self._events.enumerated()
-        let oldEventIdentifierSet = Set(self._events.map({$0.identifier}))
+        let oldEventDict:[String: (Int, RSScheduleEvent)] = Dictionary.init(
+            uniqueKeysWithValues: oldEventsEnumerated.map { ($0.element.identifier, $0) }
+        )
         
         let newEventsEnumerated = events.enumerated()
-        let newEventIdentifierSet = Set(events.map({$0.identifier}))
+        let newEventDict:[String: (Int, RSScheduleEvent)] = Dictionary.init(
+            uniqueKeysWithValues: newEventsEnumerated.map { ($0.element.identifier, $0) }
+        )
         
         //check to see which items in old events is not in new events
         let deletions: [Int] = oldEventsEnumerated
-            .filter { !newEventIdentifierSet.contains($0.element.identifier) }
+//            .filter { !newEventIdentifierSet.contains($0.element.identifier) }
+            .filter { newEventDict[$0.element.identifier] == nil }
             .map { $0.offset }
         
         //vice versa
         let additions: [Int] = newEventsEnumerated
-            .filter { !oldEventIdentifierSet.contains($0.element.identifier) }
+//            .filter { !oldEventIdentifierSet.contains($0.element.identifier) }
+            .filter { oldEventDict[$0.element.identifier] == nil }
             .map { $0.offset }
+        
+        //Seems like we need to list the item indicies in the old collection per link here:
+        //https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/TableView_iPhone/ManageInsertDeleteRow/ManageInsertDeleteRow.html#//apple_ref/doc/uid/TP40007451-CH10-SW9
+        
+        //to check for mods, compact map all elements that exist in both
+        let modificationsList: [(Int, RSScheduleEvent, RSScheduleEvent)] = oldEventsEnumerated
+            .compactMap { (oldEventPair) -> (Int, RSScheduleEvent, RSScheduleEvent)? in
+                
+                guard let newEventPair = newEventDict[oldEventPair.element.identifier] else {
+                    return nil
+                }
+                
+                return (oldEventPair.offset, oldEventPair.element, newEventPair.1)
+            }.filter { $0.1.isEqual($0.2) }
+        
+        let modifications = modificationsList.map { $0.0 }
         
         self._events = events
         let subscriptions = self.subscriptions
@@ -294,7 +315,8 @@ open class RSScheduler: NSObject {
                 scheduler: self,
                 events: self.events,
                 deletions: deletions,
-                additions: additions
+                additions: additions,
+                modifications: modifications
             )
         }
         
