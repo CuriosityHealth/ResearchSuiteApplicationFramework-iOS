@@ -346,7 +346,14 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         self.tableViewDatapointIndices  = sortedDatapoints.map { $0.0 }
         
-        self.collectionView.reloadData()
+//        self.collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+        
+        self.collectionView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: false)
+        
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+        
 
     }
     
@@ -562,8 +569,10 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
             return cell
         }
         
-        guard let datapointClass = self.datapointClass(for: datapointIndices[indexPath.row]),
-            let datapoint = self.calendarDataSource?.get(for: datapointIndices[indexPath.row]),
+        let row = indexPath.row
+        
+        guard let datapointClass = self.datapointClass(for: datapointIndices[row]),
+            let datapoint = self.calendarDataSource?.get(for: datapointIndices[row]),
             let cell = self.collectionViewCellManager.cell(cellIdentifier: datapointClass.cellIdentifier, collectionView: collectionView, indexPath: indexPath) else {
                 let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
                 cell.setCellWidth(width: cellWidth)
