@@ -15,11 +15,10 @@ import ReSwift
 public protocol RSScheduleEvent: RSCollectionDataSourceElement, NSObjectProtocol {
     var identifier: String { get }
     var eventType: String { get }
-    var startTime: Date? { get }
+    var startTime: Date { get }
     var duration: TimeInterval? { get }
     
     var completionTime: Date? { get }
-    var persistent: Bool { get }
     var priority: Int { get }
     var extraInfo: JSON? { get }
     
@@ -32,6 +31,17 @@ public protocol RSScheduleEvent: RSCollectionDataSourceElement, NSObjectProtocol
 
 extension RSScheduleEvent {
     
+    //events have 4 states
+    //scheduled - submitted, but start time is in the future
+    //pending - runnable, start time is in past, not completed, not expired
+    //expired - start time + duration is in the past, not completed
+    //completed - event was executed
+    
+    public var scheduled: Bool {
+        let now = Date()
+        return self.startTime > now
+    }
+    
     //an event has expired iff
     //the current time is after (i.e., greater than) startTime + duration
     //the event is not completed
@@ -41,13 +51,17 @@ extension RSScheduleEvent {
             return false
         }
         
-        guard let startTime = self.startTime,
-            let duration = self.duration else {
+        if self.scheduled {
+            return false
+        }
+        
+        let startTime = self.startTime
+        
+        guard let duration = self.duration else {
                 return false
         }
         
         let now = Date()
-        
         return now > startTime.addingTimeInterval(duration)
     }
     
@@ -56,22 +70,20 @@ extension RSScheduleEvent {
     //the event has no start time OR the event has a start time and it is currently after the start time
     //if the event has a start time, the event has NO duration OR the start time + duration is after now
     public var pending: Bool {
+        
         if self.completed {
             return false
         }
         
-        guard let startTime = self.startTime else {
-            //if the event has no start time, the event is considered pending
-            return true
+        if self.scheduled {
+            return false
+        }
+        
+        if self.expired {
+            return false
         }
         
         let now = Date()
-        
-        //if startTime is after the current time (i.e., the start time is in the future)
-        //the event is not pending
-        if startTime > now {
-            return false
-        }
         
         guard let duration = self.duration else {
             //if the event has no duration, this means it cannot expire, thus is pending
@@ -94,9 +106,9 @@ extension RSScheduleEvent {
             "duration" ~~> self.duration,
             "completed" ~~> self.completed,
             Gloss.Encoder.encode(dateISO8601ForKey: "completionTime")(self.completionTime),
-            "persistent" ~~> self.persistent,
             "priority" ~~> self.priority,
             "extraInfo" ~~> self.extraInfo,
+            "scheduled" ~~> self.scheduled,
             "expired" ~~> self.expired,
             "pending" ~~> self.pending,
             ])
@@ -118,7 +130,15 @@ public protocol RSDashboardAdaptorItem {
 
 public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEventBuilder {
     
-    public static func createEvent(identifier: String, eventType: String, startTime: Date?, duration: TimeInterval?, completed: Bool, completionTime: Date?, persistent: Bool, priority: Int, extraInfo: [String : Any]?) -> RSScheduleEvent {
+    public static func createEvent(
+        identifier: String,
+        eventType: String,
+        startTime: Date,
+        duration: TimeInterval?,
+        completed: Bool,
+        completionTime: Date?,
+        priority: Int,
+        extraInfo: [String : Any]?) -> RSScheduleEvent {
         return RSConcreteScheduleEvent(
             identifier: identifier,
             eventType: eventType,
@@ -126,7 +146,6 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
             duration: duration,
             completed: completed,
             completionTime: completionTime,
-            persistent: persistent,
             priority: priority,
             extraInfo: extraInfo
         )
@@ -141,7 +160,6 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
             duration: event.duration,
             completed: event.completed,
             completionTime: event.completionTime,
-            persistent: event.persistent,
             priority: event.priority,
             extraInfo: event.extraInfo
         )
@@ -151,11 +169,10 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
     public init(
         identifier: String,
         eventType: String,
-        startTime: Date?,
+        startTime: Date,
         duration: TimeInterval?,
         completed: Bool,
         completionTime: Date?,
-        persistent: Bool,
         priority: Int,
         extraInfo: [String : Any]?
         ) {
@@ -166,7 +183,6 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
         self.duration = duration
         self.completed = completed
         self.completionTime = completionTime
-        self.persistent = persistent
         self.priority = priority
         self.extraInfo = extraInfo
         
@@ -177,14 +193,12 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
     
     public var eventType: String
     
-    public var startTime: Date?
+    public var startTime: Date
     
     public var duration: TimeInterval?
     
     public var completed: Bool
     public var completionTime: Date?
-    
-    public var persistent: Bool
     
     public var priority: Int
     
@@ -205,11 +219,10 @@ public protocol RSScheduleEventBuilder {
     static func createEvent(
         identifier: String,
         eventType: String,
-        startTime: Date?,
+        startTime: Date,
         duration: TimeInterval?,
         completed: Bool,
         completionTime: Date?,
-        persistent: Bool,
         priority: Int,
         extraInfo: [String: Any]?
         ) -> RSScheduleEvent

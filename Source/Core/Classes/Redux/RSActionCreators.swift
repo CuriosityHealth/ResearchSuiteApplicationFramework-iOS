@@ -851,5 +851,17 @@ public class RSActionCreators: NSObject {
         }
     }
     
+    public static func definedAction(identifier: String, context: [String: AnyObject] = [:]) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            guard let definedAction = RSStateSelectors.getDefinedAction(state, for: identifier) else {
+                return nil
+            }
+            
+            let actionManager: RSActionManager = RSApplicationDelegate.appDelegate.actionManager
+            actionManager.processAction(action: definedAction.json, context: context, store: store)
+            return nil
+        }
+    }
+    
     
 }

@@ -12,7 +12,15 @@ import Gloss
 
 open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder {
 
-    public static func createEvent(identifier: String, eventType: String, startTime: Date?, duration: TimeInterval?, completed: Bool, completionTime: Date?, persistent: Bool, priority: Int, extraInfo: [String : Any]?) -> RSScheduleEvent {
+    public static func createEvent(
+        identifier: String,
+        eventType: String,
+        startTime: Date,
+        duration: TimeInterval?,
+        completed: Bool,
+        completionTime: Date?,
+        priority: Int,
+        extraInfo: [String : Any]?) -> RSScheduleEvent {
         
         let event = RSRealmScheduleEvent()
         event.identifier = identifier
@@ -21,7 +29,6 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
         event.duration = duration
         event.completed = completed
         event.completionTime = completionTime
-        event.persistent = persistent
         event.priority = priority
         event.extraInfo = extraInfo
         
@@ -37,7 +44,6 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
             duration: event.duration,
             completed: event.completed,
             completionTime: event.completionTime,
-            persistent: event.persistent,
             priority: event.priority,
             extraInfo: event.extraInfo
         )
@@ -56,7 +62,7 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
     
     @objc dynamic public var eventType: String = ""
     
-    @objc dynamic public var startTime: Date? = nil
+    @objc dynamic public var startTime: Date = Date.distantPast
     
     public var duration: TimeInterval? {
         get {
@@ -77,8 +83,6 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
     @objc dynamic public var completed: Bool = false
     
     @objc dynamic public var completionTime: Date? = nil
-    
-    @objc dynamic public var persistent: Bool = false
     
     @objc dynamic public var priority: Int = 0
     
