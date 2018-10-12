@@ -96,7 +96,12 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
                 return nil
             }
             
-            let strings: [String] = array.compactMap({ $0.value as? String })
+            let localizationHelper = RSApplicationDelegate.appDelegate.localizationHelper
+            
+            let strings: [String] = array
+                .compactMap({ $0.value as? String })
+                .map { localizationHelper.localizedString($0) }
+            
             switch strings.count {
             case 0:
                 return ""
@@ -132,6 +137,7 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
         template.register(some, forKey: "some")
         template.register(StandardLibrary.each, forKey: "each")
         template.register(listOfStrings, forKey: "listOfStrings")
+//        template.register(escapeControlCharacters, forKey: "escapeControlCharacters")
     }
     
     public static func supportsType(type: String) -> Bool {
@@ -139,7 +145,9 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
     }
     
     public static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
-        guard let template: String = "template" <~~ jsonObject,
+        
+        let localizationHelper = RSApplicationDelegate.appDelegate.localizationHelper
+        guard let template: String = localizationHelper.localizedString("template" <~~ jsonObject),
             let substitutionsJSON: [String: JSON] = "substitutions" <~~ jsonObject else {
             return nil
         }
@@ -153,7 +161,17 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
                 //so we know this is a valid value convertible (i.e., it's been recognized by the state map)
                 //we also want to potentially have a null value substituted
                 if let value = valueConvertible.evaluate() {
-                    substitutions[key] = value
+                    
+                    if let str = value as? String {
+                        substitutions[key] = localizationHelper.localizedString(str)
+                    }
+                    else if let listOfStr = value as? [String] {
+                        substitutions[key] = listOfStr.map({ localizationHelper.localizedString($0) })
+                    }
+                    else {
+                        substitutions[key] = value
+                    }
+                    
                 }
                 else {
                     //                    assertionFailure("Added NSNull support for this type")

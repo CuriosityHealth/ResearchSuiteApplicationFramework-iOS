@@ -143,7 +143,12 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
                 return nil
             }
             
-            let strings: [String] = array.compactMap({ $0.value as? String })
+            let localizationHelper = RSApplicationDelegate.appDelegate.localizationHelper
+            
+            let strings: [String] = array
+                .compactMap({ $0.value as? String })
+                .map { localizationHelper.localizedString($0) }
+            
             switch strings.count {
             case 0:
                 return ""

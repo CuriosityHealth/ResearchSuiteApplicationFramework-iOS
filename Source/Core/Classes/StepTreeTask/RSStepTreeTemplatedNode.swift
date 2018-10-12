@@ -53,7 +53,11 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
             
             let parameter: AnyObject? = {
                 if let parameterValue = parameterValueConvertible.evaluate() as? String {
-                    return parameterValue.replacingOccurrences(of: "\t", with: "") as AnyObject
+                    
+                    //try to localize string...
+                    let localizedParameterValue = self.stepTreeBuilder.rstb.helper.localizationHelper.localizedString(parameterValue)
+                    
+                    return localizedParameterValue.replacingOccurrences(of: "\t", with: "") as AnyObject
                 }
                 else {
                     return parameterValueConvertible.evaluate()
@@ -79,7 +83,7 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
             return nil
         }
         
-        print(renderedTemplate)
+//        print(renderedTemplate)
         //convert to json
         guard let jsonData = renderedTemplate.data(using: .utf8),
             let json = (try! JSONSerialization.jsonObject(with: jsonData, options: [])) as? JSON else {
