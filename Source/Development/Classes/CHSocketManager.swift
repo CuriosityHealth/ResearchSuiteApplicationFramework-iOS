@@ -145,7 +145,7 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
             ]
             
             if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
-                debugPrint(message)
+//                debugPrint(message)
                 self.socket.write(data: data) {
                     
                 }
@@ -172,7 +172,7 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
             ]
             
             if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
-                debugPrint(log)
+//                debugPrint(log)
                 self.socket.write(data: data) {
                     
                 }
@@ -190,7 +190,7 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
             ]
             
             if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
-                debugPrint(log)
+//                debugPrint(log)
                 self.socket.write(data: data) {
                     
                 }
@@ -207,7 +207,7 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
             ]
             
             if let data = try? JSONSerialization.data(withJSONObject: message, options: [.prettyPrinted]) {
-                debugPrint(log)
+//                debugPrint(log)
                 self.socket.write(data: data) {
                     
                 }
@@ -315,7 +315,7 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
             RSApplicationDelegate.appDelegate.loadState()
             
             let reloadTesting = RSStateSelectors.getValueInCombinedState(state, for: "reloadTesting")
-            debugPrint(reloadTesting)
+//            debugPrint(reloadTesting)
             
             
         }
