@@ -863,5 +863,12 @@ public class RSActionCreators: NSObject {
         }
     }
     
+    public static func updateScheduler(schedulerEventUpdate: RSSchedulerEventUpdate) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+//            return SetScheduleEvents(scheduleEvents: scheduleEvents)
+            return UpdateScheduler(schedulerEventUpdate: schedulerEventUpdate)
+        }
+    }
+    
     
 }

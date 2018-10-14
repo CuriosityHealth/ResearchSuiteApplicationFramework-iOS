@@ -287,5 +287,10 @@ public class RSStateSelectors: NSObject {
     public static func shouldPreventSleep(_ state: RSState) -> Bool {
         return state.preventSleep
     }
+    
+    public static func getSchedulerEventUpdate(_ state: RSState) -> RSSchedulerEventUpdate {
+        return state.schedulerEventUpdate
+    }
+    
 
 }

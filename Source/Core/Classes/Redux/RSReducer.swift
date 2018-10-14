@@ -24,7 +24,8 @@ public class RSReducer: NSObject {
         DataFlowReducer(),
         AppConfigurationReducer(),
         NotificationReducer(),
-        LocationReducer()
+        LocationReducer(),
+        SchedulerReducer()
     ])
     
     
@@ -531,6 +532,25 @@ public class RSReducer: NSObject {
             case let action as SetVisitMonitoringEnabled:
                 return RSState.newState(fromState: state, isVisitMonitoringEnabled: action.enabled)
                 
+            default:
+                return state
+            }
+            
+        }
+    }
+    
+    final class SchedulerReducer: Reducer {
+        
+        open func handleAction(action: Action, state: RSState?) -> RSState {
+            
+            let state = state ?? RSState.empty()
+            
+            switch action {
+                
+            case let action as UpdateScheduler:
+                
+                return RSState.newState(fromState: state, schedulerEventUpdate: action.schedulerEventUpdate)
+
             default:
                 return state
             }

@@ -367,6 +367,10 @@ public struct LogNotificationAction: Action {
     let date: Date
 }
 
+public struct UpdateScheduler: Action {
+    let schedulerEventUpdate: RSSchedulerEventUpdate
+}
+
 
 
 
