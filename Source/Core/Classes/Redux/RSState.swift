@@ -16,6 +16,8 @@ import Gloss
 
 public final class RSState: NSObject, StateType {
     
+    
+    public let iteration: Int
 //    public let protectedState: [String: NSObject]
 //    public let unprotectedState: [String: NSObject]
     public let configurationCompleted: Bool
@@ -89,7 +91,8 @@ public final class RSState: NSObject, StateType {
     
     public let preventSleep: Bool
     
-    public init(configurationCompleted: Bool = false,
+    public init(iteration: Int = 0,
+                configurationCompleted: Bool = false,
                 applicationState: [String: NSObject] = [:],
                 stateValueMap: [String: RSStateValue] = [:],
                 stateValueHasBeenSet: [String: NSObject] = [:],
@@ -128,7 +131,7 @@ public final class RSState: NSObject, StateType {
                 reloadConfigRequested: Bool = false,
                 preventSleep: Bool = false
         ) {
-        
+        self.iteration = iteration
         self.configurationCompleted = configurationCompleted
         self.applicationState = applicationState
         self.stateValueMap = stateValueMap
@@ -216,6 +219,7 @@ public final class RSState: NSObject, StateType {
         ) -> RSState {
         
         return RSState(
+            iteration: fromState.iteration + 1,
             configurationCompleted: configurationCompleted ?? fromState.configurationCompleted,
             applicationState: applicationState ?? fromState.applicationState,
             stateValueMap: stateValueMap ?? fromState.stateValueMap,
@@ -263,6 +267,7 @@ public final class RSState: NSObject, StateType {
     
     open override var description: String {
         return
+            "\n\titeration: \(self.iteration)" +
             "\n\tapplicationState: \(self.applicationState)" +
 //            "\n\tstateValueHasBeenSet: \(self.stateValueHasBeenSet)" +
 //            "\n\tconstants: \(self.constantsMap)" +

@@ -225,6 +225,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         ]
     }
     
+    open var notificationResponseHandlers: [RSNotificationResponseHandler.Type] {
+        return []
+    }
+    
     open var notificationSupport: Bool {
         return true
     }
@@ -606,7 +610,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.collectionDataSourceManager = RSCollectionDataSourceManager(collectionDataSourceGenerators: self.collectionDataSourceGenerators)
         
         if notificationSupport {
-            self.notificationManager = RSNotificationManager(store: store, notificationProcessors: self.notificationProcessors)
+            self.notificationManager = RSNotificationManager(
+                store: store,
+                notificationResponseHandlers: self.notificationResponseHandlers,
+                legacySupport: false,
+                notificationProcessors: self.notificationProcessors
+            )
             store.subscribe(self.notificationManager!)
             RSNotificationManager.printPendingNotifications()
         }

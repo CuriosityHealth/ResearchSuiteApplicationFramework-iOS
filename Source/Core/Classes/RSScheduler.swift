@@ -12,6 +12,14 @@ import ReSwift
 //how do we identify that an item has been interacted with?
 //completed / completed time?
 
+
+public enum RSScheduleEventState: String {
+    case scheduled = "scheduled"
+    case pending = "pending"
+    case expired = "expired"
+    case completed = "completed"
+}
+
 public protocol RSScheduleEvent: RSCollectionDataSourceElement, NSObjectProtocol {
     var identifier: String { get }
     var eventType: String { get }
@@ -22,6 +30,8 @@ public protocol RSScheduleEvent: RSCollectionDataSourceElement, NSObjectProtocol
     var priority: Int { get }
     var extraInfo: JSON? { get }
     
+    var state: RSScheduleEventState { get }
+    
     //state - these should be mutually exclusive
 //    var expired: Bool { get }
     var completed: Bool { get }
@@ -31,68 +41,96 @@ public protocol RSScheduleEvent: RSCollectionDataSourceElement, NSObjectProtocol
 
 extension RSScheduleEvent {
     
+    public var state: RSScheduleEventState {
+        
+        //first, check for completed
+        if self.completed {
+            return .completed
+        }
+        
+        //next, check for scheduled
+        let now = Date()
+        if self.startTime > now {
+            return .scheduled
+        }
+        
+        //next, check for expired
+        //if no duration, can't expire
+        //if now is later than start time + duration, event has expired
+        if let duration = self.duration,
+            now > self.startTime.addingTimeInterval(duration) {
+            return .expired
+        }
+        
+        //otherwise, considered pending
+        else {
+            return .pending
+        }
+
+    }
+    
     //events have 4 states
     //scheduled - submitted, but start time is in the future
     //pending - runnable, start time is in past, not completed, not expired
     //expired - start time + duration is in the past, not completed
     //completed - event was executed
     
-    public var scheduled: Bool {
-        let now = Date()
-        return self.startTime > now
-    }
+//    public var scheduled: Bool {
+//        let now = Date()
+//        return self.startTime > now
+//    }
     
     //an event has expired iff
     //the current time is after (i.e., greater than) startTime + duration
     //the event is not completed
     //NOTE: an item can only exipre if it has a start time AND duration
-    public var expired: Bool {
-        if self.completed {
-            return false
-        }
-        
-        if self.scheduled {
-            return false
-        }
-        
-        let startTime = self.startTime
-        
-        guard let duration = self.duration else {
-                return false
-        }
-        
-        let now = Date()
-        return now > startTime.addingTimeInterval(duration)
-    }
+//    public var expired: Bool {
+//        if self.completed {
+//            return false
+//        }
+//
+//        if self.scheduled {
+//            return false
+//        }
+//
+//        let startTime = self.startTime
+//
+//        guard let duration = self.duration else {
+//                return false
+//        }
+//
+//        let now = Date()
+//        return now > startTime.addingTimeInterval(duration)
+//    }
     
     //an event is pending iff
     //the event is not completed
     //the event has no start time OR the event has a start time and it is currently after the start time
     //if the event has a start time, the event has NO duration OR the start time + duration is after now
-    public var pending: Bool {
-        
-        if self.completed {
-            return false
-        }
-        
-        if self.scheduled {
-            return false
-        }
-        
-        if self.expired {
-            return false
-        }
-        
-        let now = Date()
-        
-        guard let duration = self.duration else {
-            //if the event has no duration, this means it cannot expire, thus is pending
-            return true
-        }
-        
-        //otherwise, the event is pending if the expiration date is in the future
-        return now < startTime.addingTimeInterval(duration)
-    }
+//    public var pending: Bool {
+//
+//        if self.completed {
+//            return false
+//        }
+//
+//        if self.scheduled {
+//            return false
+//        }
+//
+//        if self.expired {
+//            return false
+//        }
+//
+//        let now = Date()
+//
+//        guard let duration = self.duration else {
+//            //if the event has no duration, this means it cannot expire, thus is pending
+//            return true
+//        }
+//
+//        //otherwise, the event is pending if the expiration date is in the future
+//        return now < startTime.addingTimeInterval(duration)
+//    }
     
     public var primaryDate: Date? {
         return self.startTime
@@ -108,14 +146,14 @@ extension RSScheduleEvent {
             Gloss.Encoder.encode(dateISO8601ForKey: "completionTime")(self.completionTime),
             "priority" ~~> self.priority,
             "extraInfo" ~~> self.extraInfo,
-            "scheduled" ~~> self.scheduled,
-            "expired" ~~> self.expired,
-            "pending" ~~> self.pending,
+            "state" ~~> self.state
             ])
     }
     
 }
 
+//NOTE: RSScheduler should probably be removed from this
+//W
 public typealias RSDashboardCellGenerator = (RSScheduler, Store<RSState>, RSState, UICollectionView, RSCollectionViewCellManager, RSDashboardAdaptorItem, IndexPath) -> RSCollectionViewCell?
 
 public protocol RSDashboardAdaptorItemConvertible {
@@ -253,11 +291,12 @@ public struct RSSchedulerEventChanges {
 public struct RSSchedulerEventUpdate {
     public let uuid: UUID
     public let events: [RSScheduleEvent]
+    public let oldEvents: [RSScheduleEvent]
     public let changes: RSSchedulerEventChanges
     
     public static func initial() -> RSSchedulerEventUpdate {
         let changes = RSSchedulerEventChanges(deletions: [], additions: [], modifications: [])
-        return RSSchedulerEventUpdate(uuid: UUID(), events: [], changes: changes)
+        return RSSchedulerEventUpdate(uuid: UUID(), events: [], oldEvents: [], changes: changes)
     }
     
 }
@@ -391,6 +430,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
             let scheduleEventUpdate = RSSchedulerEventUpdate(
                 uuid: UUID(),
                 events: events,
+                oldEvents: oldEvents,
                 changes: changes
             )
             

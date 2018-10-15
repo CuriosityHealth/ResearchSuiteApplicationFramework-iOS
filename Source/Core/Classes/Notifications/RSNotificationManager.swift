@@ -11,18 +11,60 @@ import UIKit
 import ReSwift
 import UserNotifications
 
+public protocol RSNotificationConverter {
+    var notificationRequestIdentifiers: [String] { get }
+    func generateNotificationRequests(state: RSState) -> [UNNotificationRequest]?
+    func hasPendingNotification(state: RSState) -> Bool
+}
+
+public protocol RSNotificationResponseHandler {
+    static func canHandleNotificationResponse(notificationResponse: UNNotificationResponse) -> Bool
+    static func handleNotificationResponse(notificationResponse: UNNotificationResponse, store: Store<RSState>)
+}
+
+extension UNUserNotificationCenter {
+    
+    //A, B, C
+    //head = A, tail = [B,C]
+    //calls add([B,C], completionA = Add(A), followed by completion
+    //head = B, tail = [C]
+    //calls add([C], completionB = Add(B), followed by completionA
+    //head = C, tail = []
+    //calls add([]), completionC = Add(C), followed by completion B
+    //head = nil, calls completionC
+    open func add(_ requests: [UNNotificationRequest], withCompletionHandler completionHandler: ((Error?) -> Void)? = nil) {
+        
+        if let head = requests.first {
+            let tail = Array(requests.dropFirst())
+            self.add(tail) { (tailError) in
+                self.add(head) { (headError) in
+                    completionHandler?(headError ?? tailError)
+                }
+            }
+        }
+        else {
+            completionHandler?(nil)
+        }
+        
+    }
+}
+
 open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationCenterDelegate {
     
     weak var store: Store<RSState>?
     var lastState: RSState?
+    let legacySupport: Bool
     
     static let minFetchInterval: TimeInterval = 1.0*60.0
 
     let notificationProcessors: [RSNotificationProcessor]
+    let notificationResponseHandlers: [RSNotificationResponseHandler.Type]
     
-    public init(store: Store<RSState>, notificationProcessors: [RSNotificationProcessor]) {
+    public init(store: Store<RSState>, notificationResponseHandlers: [RSNotificationResponseHandler.Type], legacySupport: Bool, notificationProcessors: [RSNotificationProcessor]) {
         self.store = store
         self.notificationProcessors = notificationProcessors
+        self.notificationResponseHandlers = notificationResponseHandlers
+        self.legacySupport = legacySupport
         super.init()
         UNUserNotificationCenter.current().delegate = self
     }
@@ -69,25 +111,108 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         
         self.lastState = state
         
+        if self.legacySupport {
+            self.processLegacyNotifications(
+                state: state,
+                lastState: lastState,
+                pendingNotificationIdentifiers: pendingNotificationIdentifiers
+            )
+        }
+        else {
+            self.processScheduleEventNotifications(state: state, lastState: lastState, pendingNotificationIdentifiers: Set(pendingNotificationIdentifiers))
+        }
+
+    }
+    
+    private func processScheduleEventNotifications(state: RSState, lastState: RSState, pendingNotificationIdentifiers: Set<String>) {
+        
+        var shouldFetchNotifications = false
+        //if there are changes in schedule between state and last state, update notifications
+        let oldSchedule = RSStateSelectors.getSchedulerEventUpdate(lastState)
+        let newSchedule = RSStateSelectors.getSchedulerEventUpdate(state)
+        
+        //NOTE: This method is not called until after initial request fetching
+        //We need to ensure that the below happens during the initial load
+        //Actually, it looks like this will get called with the initial state of the system
+        //(i.e., see that lastState.iteration == 0)
+        if oldSchedule.uuid != newSchedule.uuid {
+            //get deleted + modified events
+            let deletedAndModifiedIndices = newSchedule.changes.deletions + newSchedule.changes.modifications
+            let deletedAndModifiedEvents = deletedAndModifiedIndices.map { newSchedule.oldEvents[$0] }
+            
+            //check to see if they support notifications
+            let notificationConvertersToCancel = deletedAndModifiedEvents.compactMap { $0 as? RSNotificationConverter }
+            //if so, generate ID's and remove them, provided that they are in the list of pending notificaitons
+            let identifiersToCancel: [String] = notificationConvertersToCancel
+                .flatMap { $0.notificationRequestIdentifiers }
+                .filter { pendingNotificationIdentifiers.contains($0) }
+            
+            if identifiersToCancel.count > 0 {
+                shouldFetchNotifications = true
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+            }
+            
+            let modifiedEvents:[RSScheduleEvent] = {
+                //modification indicies map to old events, so we need to pull these from the oldSchedule
+                if newSchedule.changes.modifications.count > 0 {
+                    let modificationIdentifiers = newSchedule.changes.modifications.map { newSchedule.oldEvents[$0].identifier }
+                    let newEventDict: [String: RSScheduleEvent] =  Dictionary.init(uniqueKeysWithValues: newSchedule.events.map { ($0.identifier, $0) })
+                    let newlyModifiedEvents = modificationIdentifiers.compactMap { newEventDict[$0] }
+                    return newlyModifiedEvents
+                }
+                else {
+                    return []
+                }
+            }()
+            
+            let addedEvents:[RSScheduleEvent] = newSchedule.changes.additions.map { newSchedule.events[$0] }
+            
+            let notificationRequests: [UNNotificationRequest] = (addedEvents + modifiedEvents)
+                .compactMap { $0 as? RSNotificationConverter }
+                .compactMap { $0.generateNotificationRequests(state: state) }
+                .flatMap { $0 }
+            
+            if notificationRequests.count > 0 {
+                //need to do this recursively due to notification center call
+                UNUserNotificationCenter.current().add(notificationRequests) { (error) in
+                    DispatchQueue.main.async {
+                        self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
+                        RSNotificationManager.printPendingNotifications()
+                    }
+                }
+            }
+            else {
+                if shouldFetchNotifications {
+                    self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
+                }
+            }
+        
+        }
+        
+    }
+
+    private func processLegacyNotifications(state: RSState, lastState: RSState, pendingNotificationIdentifiers: [String]) {
+        
+        //Legacy Notifications
         let notifications = RSStateSelectors.notifications(state)
         
         //we should proabbly prune orphaned notifications here
         //i.e., to account for the case where there are enabled notifications but no RSNotification in the store
         //take all pending notification identifiers, filter by all configured notifications
         
-        //how might we delay this until the data source has a chance to load?
-        let identifiersToCancel: [String] = notifications.reduce(pendingNotificationIdentifiers) { (remainingPendingNotificationIdentifiers, notification) -> [String] in
-            let processor = self.processor(forNotification: notification)!
-            let filterfunction = processor.identifierFilter(notification: notification)
-            return remainingPendingNotificationIdentifiers.filter({ (identifier) -> Bool in
-                return !filterfunction(identifier)
-            })
-            
-        }
-        
-        if identifiersToCancel.count > 0 {
-            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
-        }
+//        //how might we delay this until the data source has a chance to load?
+//        let identifiersToCancel: [String] = notifications.reduce(pendingNotificationIdentifiers) { (remainingPendingNotificationIdentifiers, notification) -> [String] in
+//            let processor = self.processor(forNotification: notification)!
+//            let filterfunction = processor.identifierFilter(notification: notification)
+//            return remainingPendingNotificationIdentifiers.filter({ (identifier) -> Bool in
+//                return !filterfunction(identifier)
+//            })
+//
+//        }
+//
+//        if identifiersToCancel.count > 0 {
+//            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+//        }
         
         
         guard notifications.count > 0 else {
@@ -104,7 +229,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                     }
                 }
         }
-
+        
     }
     
     public func nextTriggerDate(notification: RSNotification, state: RSState) -> Date? {
@@ -206,7 +331,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         return self.notificationProcessors.first { $0.supportsType(type: forNotification.type) }
     }
     
-    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    private func handleLegacyNotification(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) {
         
         let date = response.notification.date
         let notificationID = response.notification.request.identifier
@@ -228,6 +353,31 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                 store.processActions(actions: handlerActions, context: ["notification": response.notification], store: store)
                 
             }
+        }
+    }
+    
+    private func handleScheduleEventNotification(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) {
+        
+        //log notification
+        let date = response.notification.date
+        let notificationID = response.notification.request.identifier
+        let action = RSActionCreators.logNotificationInteraction(notificationID: notificationID, date: date)
+        self.store?.dispatch(action)
+        
+        if let store = self.store,
+            let notificationResponseHandler = self.notificationResponseHandlers.first(where: { $0.canHandleNotificationResponse(notificationResponse: response) }) {
+            notificationResponseHandler.handleNotificationResponse(notificationResponse: response, store: store)
+        }
+        
+    }
+    
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        if self.legacySupport {
+            self.handleLegacyNotification(center, didReceive: response)
+        }
+        else {
+            self.handleScheduleEventNotification(center, didReceive: response)
         }
         
         completionHandler()
@@ -287,7 +437,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                 }
             }
             
-//            debugPrint(debugString)
+            debugPrint(debugString)
         })
     }
     
