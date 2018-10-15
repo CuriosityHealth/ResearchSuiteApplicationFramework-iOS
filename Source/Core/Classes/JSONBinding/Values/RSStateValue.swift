@@ -70,6 +70,13 @@ public class RSStateValue: Glossy {
             
             return RSValueConvertible(value: value as NSArray)
             
+        case "JSON":
+            guard let value = value as? JSON else {
+                return nil
+            }
+            
+            return RSValueConvertible(value: value as NSDictionary)
+            
         case "StateObjectArray":
             return nil
             
@@ -157,6 +164,9 @@ public class RSStateValue: Glossy {
             
         case "JSONArray":
             return (object as? [JSON]) != nil
+            
+        case "JSON":
+            return object is JSON
             
         case "IntArray":
             return (object as? [Int]) != nil
