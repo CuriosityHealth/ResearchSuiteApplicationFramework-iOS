@@ -101,11 +101,6 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         }
         
         self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
-        self.collectionView!.allowsSelection = false
-        
-        //        self.collectionView!.backgroundColor = UIColor.blue
-        
-        //        self.collectionView.layoutDel
         
         // Do any additional setup after loading the view.
         self.layoutDidLoad()
@@ -309,15 +304,20 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             return cell
         }
         
-        let onTap: (RSCollectionViewCell)->() = { [unowned self] cell in
-            datapointClass.onTapActions.forEach({ (action) in
-                self.processAction(action: action)
-            })
-        }
-        
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "configuring cell")
         cell.configure(paramMap: paramMap)
-        cell.onTap = onTap
+        
+        if datapointClass.onTapActions.count > 0 {
+            let onTap: (RSCollectionViewCell)->() = { [unowned self] cell in
+                datapointClass.onTapActions.forEach({ (action) in
+                    self.processAction(action: action)
+                })
+            }
+            cell.onTap = onTap
+        }
+        else {
+            cell.onTap = nil
+        }
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "cell configured")
         
         if let cellTintJSON: JSON = datapointClass.cellTint,

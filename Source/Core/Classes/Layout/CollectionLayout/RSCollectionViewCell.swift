@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import Gloss
 
-open class RSCollectionViewCell: UICollectionViewCell {
+open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     
     open var widthConstraint: NSLayoutConstraint!
     open var heightConstraint: NSLayoutConstraint!
@@ -63,13 +63,12 @@ open class RSCollectionViewCell: UICollectionViewCell {
     override public init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.contentView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.translatesAutoresizingMaskIntoConstraints = true
         self.widthConstraint = self.contentView.widthAnchor.constraint(equalToConstant: 0.0)
         self.heightConstraint = self.contentView.heightAnchor.constraint(equalToConstant: 0.0)
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(cellTapped))
         self.addGestureRecognizer(tapGestureRecognizer)
-        
     }
     
     open override func prepareForReuse() {
@@ -77,13 +76,65 @@ open class RSCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
     }
     
+    open override var isHighlighted: Bool {
+        
+        get {
+            return super.isHighlighted
+        }
+        
+        set(newIsHighlighted) {
+            
+            if self.onTap != nil {
+                super.isHighlighted = newIsHighlighted
+                self.updateShadow(shadow: !newIsHighlighted, animated: false)
+            }
+            
+        }
+
+    }
+    
+    
+    
+    @objc
+    public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        let shadowOpacity: Float = self.isHighlighted ? 0.0 : 0.3
+        self.layer.shadowOpacity = shadowOpacity
+    }
+    
+    func updateShadow(shadow: Bool, animated: Bool) {
+
+        let opacity: Float = shadow ? 0.3 : 0.0
+        
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
+        self.layer.shadowRadius = 3.0
+        
+        if animated {
+            let animation = CABasicAnimation(keyPath: "shadowOpacity")
+            animation.duration = 0.025
+            animation.fromValue = self.layer.shadowOpacity
+            animation.toValue = opacity
+            animation.delegate = self
+            self.layer.add(animation, forKey: "shadowOpacity")
+        }
+        else {
+            self.layer.shadowOpacity = opacity
+        }
+
+    }
+    
+    open override func layoutSubviews()
+    {
+        super.layoutSubviews()
+        self.updateShadow(shadow: !self.isHighlighted, animated: false)
+    }
     
     open func configure(paramMap: [String : Any]){
 
     }
     
     @objc
-    open func cellTapped() {
+    open func cellTapped(sender: UITapGestureRecognizer) {
         self.onTap?(self)
     }
     

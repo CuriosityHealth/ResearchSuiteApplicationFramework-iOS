@@ -99,8 +99,6 @@ open class RSNewDashboardLayoutViewController: UIViewController, UICollectionVie
         
         self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
         
-        self.collectionView!.allowsSelection = false
-        
         if let adaptor = RSStateSelectors.getValueInCombinedState(state, for: self.dashboardLayout.adaptor) as? RSDashboardAdaptor {
             
             //hold this strongly

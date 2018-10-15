@@ -169,7 +169,6 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         self.collectionView.layer.addSublayer(border)
         self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
-        self.collectionView!.allowsSelection = false
         
         self.collectionViewCellManager = RSApplicationDelegate.appDelegate.collectionViewCellManager
         self.collectionViewCellManager.registerCellsFor(collectionView: self.collectionView!)
@@ -585,14 +584,20 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
             return cell
         }
         
-        let onTap: (RSCollectionViewCell)->() = { [unowned self] cell in
-            datapointClass.onTapActions.forEach({ (action) in
-                self.processAction(action: action)
-            })
+        cell.configure(paramMap: paramMap)
+        
+        if datapointClass.onTapActions.count > 0 {
+            let onTap: (RSCollectionViewCell)->() = { [unowned self] cell in
+                datapointClass.onTapActions.forEach({ (action) in
+                    self.processAction(action: action)
+                })
+            }
+            cell.onTap = onTap
+        }
+        else {
+            cell.onTap = nil
         }
         
-        cell.configure(paramMap: paramMap)
-        cell.onTap = onTap
         
         if let cellTintJSON: JSON = datapointClass.cellTint,
             let state = self.state,
