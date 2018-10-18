@@ -361,7 +361,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
         self.setEvents(events: events, state: state)
     }
     
-    func loadEvents(state: RSState) -> [RSScheduleEvent] {
+    open func loadEvents(state: RSState) -> [RSScheduleEvent] {
         return []
     }
     
