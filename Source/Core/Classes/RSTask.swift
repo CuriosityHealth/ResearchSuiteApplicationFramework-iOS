@@ -12,10 +12,15 @@ import ResearchKit
 
 public protocol RSTask: ORKTask {
     var shouldHideCancelButton: Bool { get }
+    var shouldConfirmCancel: Bool { get }
 }
 
 extension ORKOrderedTask: RSTask {
     public var shouldHideCancelButton: Bool {
         return false
+    }
+    
+    public var shouldConfirmCancel: Bool {
+        return true
     }
 }

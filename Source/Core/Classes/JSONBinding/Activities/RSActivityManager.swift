@@ -84,7 +84,8 @@ open class RSActivityManager: NSObject {
             root: rootNode,
             taskBuilder: stepTreeBuilder.rstb,
             state: state,
-            shouldHideCancelButton: activity.shouldHideCancelButton
+            shouldHideCancelButton: activity.shouldHideCancelButton,
+            shouldConfirmCancel: activity.shouldConfirmCancel
         )
         
         return stepTree

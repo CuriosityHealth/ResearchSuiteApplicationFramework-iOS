@@ -19,13 +19,15 @@ open class RSStepTree: NSObject, ORKTask, RSTask {
     let state: RSState
 //    let leafIdentifiers: [String]
     open let shouldHideCancelButton: Bool
-    public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSStepTreeTaskBuilder, state: RSState, shouldHideCancelButton: Bool = false) {
+    open let shouldConfirmCancel: Bool
+    public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSStepTreeTaskBuilder, state: RSState, shouldHideCancelButton: Bool = false, shouldConfirmCancel: Bool = true) {
         self.identifier = identifier
         self.root = root
 //        self.leafIdentifiers = self.root.leaves().map { $0.fullyQualifiedIdentifier }
         self.taskBuilder = taskBuilder
         self.state = state
         self.shouldHideCancelButton = shouldHideCancelButton
+        self.shouldConfirmCancel = shouldConfirmCancel
     }
     
     open func step(withIdentifier identifier: String) -> ORKStep? {

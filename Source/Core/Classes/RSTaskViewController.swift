@@ -41,4 +41,12 @@ open class RSTaskViewController: ORKTaskViewController, ORKTaskViewControllerDel
             stepViewController.cancelButtonItem = nil
         }
     }
+    
+    open func taskViewControllerShouldConfirmCancel(_ taskViewController: ORKTaskViewController) -> Bool {
+        if let task = self.task as? RSTask {
+            return task.shouldConfirmCancel
+        }
+        
+        return true
+    }
 }
