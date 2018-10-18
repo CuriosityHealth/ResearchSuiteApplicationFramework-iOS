@@ -166,6 +166,7 @@ public protocol RSDashboardAdaptorItemConvertible {
 public protocol RSDashboardAdaptorItem {
     var identifier: String { get }
     var priority: Int { get }
+    var shouldPresentItem: Bool { get }
     var generateCell: RSDashboardCellGenerator { get }
 }
 
