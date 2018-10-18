@@ -53,7 +53,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var stateObjectManager: RSStateObjectManager!
     public var collectionDataSourceManager: RSCollectionDataSourceManager!
     
-    public var scheduler: RSScheduler!
+    public var scheduler: RSScheduler?
     
     //TODO:
     public var storeManager: RSStoreManager?
@@ -851,6 +851,11 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
         let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
         rootVC.lockScreen()
+        
+        //reload schedule
+        //can we do this, or would it be better to set a flag in the state and reload when convenient?
+        assert(self.scheduler != nil)
+        self.scheduler?.reloadSchedule(state: nil)
     }
     
     open func applicationDidBecomeActive(_ application: UIApplication) {

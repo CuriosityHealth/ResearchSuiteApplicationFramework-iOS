@@ -917,7 +917,7 @@ public class RSActionCreators: NSObject {
                 return nil
             }
             
-            scheduler.markEventCompleted(eventId: eventId, taskRuns: taskRuns)
+            scheduler.markEventCompleted(eventId: eventId, taskRuns: taskRuns, state: state)
             
             return nil
         }

@@ -47,7 +47,7 @@ public final class RSState: NSObject, StateType {
     //static after config
     public let routeIdentifiers: [String]
     
-    public let schedulerEventUpdate: RSSchedulerEventUpdate
+    public let schedulerEventUpdate: RSSchedulerEventUpdate?
     
     public let activityQueue: [(UUID, String, [String: AnyObject]?, RSOnCompletionActions?)]
     public let isPresenting: Bool
@@ -104,7 +104,7 @@ public final class RSState: NSObject, StateType {
                 layoutMap: [String: RSLayout] = [:],
                 routeMap: [String: RSRoute] = [:],
                 routeIdentifiers: [String] = [],
-                schedulerEventUpdate: RSSchedulerEventUpdate = RSSchedulerEventUpdate.initial(),
+                schedulerEventUpdate: RSSchedulerEventUpdate? = nil,
                 activityQueue:[(UUID, String, [String: AnyObject]?, RSOnCompletionActions?)] = [],
                 isPresenting: Bool = false,
                 isDismissing: Bool = false,
@@ -188,7 +188,7 @@ public final class RSState: NSObject, StateType {
         layoutMap: [String: RSLayout]? = nil,
         routeMap: [String: RSRoute]? = nil,
         routeIdentifiers: [String]? = nil,
-        schedulerEventUpdate: RSSchedulerEventUpdate? = nil,
+        schedulerEventUpdate: (RSSchedulerEventUpdate?)? = nil,
         activityQueue: [(UUID, String, [String: AnyObject]?, RSOnCompletionActions?)]? = nil,
         isPresenting: Bool? = nil,
         isDismissing: Bool? = nil,

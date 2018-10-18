@@ -324,14 +324,45 @@ open class RSScheduler: NSObject, StoreSubscriber {
             return []
         }
         
-        return RSStateSelectors.getSchedulerEventUpdate(state).events
+        return RSStateSelectors.getSchedulerEventUpdate(state)?.events ?? []
     }
     
     var subscriptions: [RSSchedulerSubscription] = []
     private var lastState: RSState?
     
     open func newState(state: RSState) {
+        
+        guard let lastState = self.lastState,
+            RSStateSelectors.isConfigurationCompleted(state) else {
+                self.lastState = state
+                return
+        }
+        
+        //check for initial load
+        if RSStateSelectors.getSchedulerEventUpdate(state) == nil {
+            self.reloadSchedule(state: state)
+        }
+        else if self.shouldReloadSchedule(state: state, lastState: lastState) {
+            self.reloadSchedule(state: state)
+        }
+        
         self.lastState = state
+    }
+    
+    open func shouldReloadSchedule(state: RSState, lastState: RSState) -> Bool {
+        return false
+    }
+    
+    open func reloadSchedule(state: RSState?) {
+        guard let state = state ?? self.lastState else {
+            return
+        }
+        let events = self.loadEvents(state: state)
+        self.setEvents(events: events, state: state)
+    }
+    
+    func loadEvents(state: RSState) -> [RSScheduleEvent] {
+        return []
     }
     
     private func _isNewSubscriber(subscriber: RSSchedulerSubscriber) -> Bool {
@@ -355,7 +386,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
         self.subscriptions = self.subscriptions + [subscription]
         
         if let state = self.lastState {
-            let events = RSStateSelectors.getSchedulerEventUpdate(state).events
+            let events = RSStateSelectors.getSchedulerEventUpdate(state)?.events ?? []
             subscriber.newSchedulerEvents(scheduler: self, events: events, deletions: [], additions: [], modifications: [])
         }
         
@@ -432,7 +463,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
     
     open func setEvents(events: [RSScheduleEvent], state: RSState) {
         
-        let oldEvents = RSStateSelectors.getSchedulerEventUpdate(state).events
+        let oldEvents = RSStateSelectors.getSchedulerEventUpdate(state)?.events ?? []
         
         if let changes = self.computeChanges(newEvents: events, oldEvents: oldEvents),
             let store = RSApplicationDelegate.appDelegate.store {
@@ -460,7 +491,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
         
     }
     
-    open func markEventCompleted(eventId: String, taskRuns: [UUID]) {
+    open func markEventCompleted(eventId: String, taskRuns: [UUID], state: RSState) {
         
     }
 

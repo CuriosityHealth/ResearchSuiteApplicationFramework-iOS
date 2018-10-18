@@ -128,8 +128,10 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         
         var shouldFetchNotifications = false
         //if there are changes in schedule between state and last state, update notifications
-        let oldSchedule = RSStateSelectors.getSchedulerEventUpdate(lastState)
-        let newSchedule = RSStateSelectors.getSchedulerEventUpdate(state)
+        guard let oldSchedule = RSStateSelectors.getSchedulerEventUpdate(lastState),
+            let newSchedule = RSStateSelectors.getSchedulerEventUpdate(state) else {
+                return
+        }
         
         //NOTE: This method is not called until after initial request fetching
         //We need to ensure that the below happens during the initial load
