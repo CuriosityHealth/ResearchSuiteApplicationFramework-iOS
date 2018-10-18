@@ -73,15 +73,16 @@ public struct AddRouteAction: Action {
     let route: RSRoute
 }
 
+public typealias RSOnCompletionActionGenerator = (_ context: [String: AnyObject]) -> (_ state: RSState, _ store: Store<RSState>) -> Action?
 public struct RSOnCompletionActions {
-    public let onSuccessActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]?
-    public let onFailureActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]?
-    public let finallyActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]?
+    public let onSuccessActions: [RSOnCompletionActionGenerator]?
+    public let onFailureActions: [RSOnCompletionActionGenerator]?
+    public let finallyActions: [RSOnCompletionActionGenerator]?
     
     public init(
-        onSuccessActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]? = nil,
-        onFailureActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]? = nil,
-        finallyActions: [(_ state: RSState, _ store: Store<RSState>) -> Action?]? = nil
+        onSuccessActions: [RSOnCompletionActionGenerator]? = nil,
+        onFailureActions: [RSOnCompletionActionGenerator]? = nil,
+        finallyActions: [RSOnCompletionActionGenerator]? = nil
         ) {
         self.onSuccessActions = onSuccessActions
         self.onFailureActions = onFailureActions

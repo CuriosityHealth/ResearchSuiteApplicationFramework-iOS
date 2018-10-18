@@ -304,7 +304,7 @@ open class RSSchedulerDatabase: NSObject {
     }
     
     //mark event as completed
-    public func markEventCompleted(eventIdentifier: String, completed: Bool) throws {
+    public func markEventCompleted(eventIdentifier: String, completed: Bool, taskRuns: [String]?) throws {
         
         let error: Error? = autoreleasepool {
             do {
@@ -316,6 +316,7 @@ open class RSSchedulerDatabase: NSObject {
                 try realm.write {
                     event.completed = completed
                     event.completionTime = Date()
+                    event.completedTaskRuns = taskRuns
                 }
                 
                 return nil

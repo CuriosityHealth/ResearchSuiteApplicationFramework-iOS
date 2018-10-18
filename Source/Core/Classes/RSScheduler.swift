@@ -37,6 +37,8 @@ public protocol RSScheduleEvent: RSCollectionDataSourceElement, NSObjectProtocol
     var completed: Bool { get }
 //    var pending: Bool { get }
     
+    var completedTaskRuns: [String]? { get }
+    
 }
 
 extension RSScheduleEvent {
@@ -144,6 +146,7 @@ extension RSScheduleEvent {
             "duration" ~~> self.duration,
             "completed" ~~> self.completed,
             Gloss.Encoder.encode(dateISO8601ForKey: "completionTime")(self.completionTime),
+            "completedTaskRuns" ~~> self.completedTaskRuns,
             "priority" ~~> self.priority,
             "extraInfo" ~~> self.extraInfo,
             "state" ~~> self.state
@@ -175,6 +178,7 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
         duration: TimeInterval?,
         completed: Bool,
         completionTime: Date?,
+        completedTaskRuns: [String]?,
         priority: Int,
         extraInfo: [String : Any]?) -> RSScheduleEvent {
         return RSConcreteScheduleEvent(
@@ -184,6 +188,7 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
             duration: duration,
             completed: completed,
             completionTime: completionTime,
+            completedTaskRuns: completedTaskRuns,
             priority: priority,
             extraInfo: extraInfo
         )
@@ -198,6 +203,7 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
             duration: event.duration,
             completed: event.completed,
             completionTime: event.completionTime,
+            completedTaskRuns: event.completedTaskRuns,
             priority: event.priority,
             extraInfo: event.extraInfo
         )
@@ -211,6 +217,7 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
         duration: TimeInterval?,
         completed: Bool,
         completionTime: Date?,
+        completedTaskRuns: [String]?,
         priority: Int,
         extraInfo: [String : Any]?
         ) {
@@ -221,6 +228,7 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
         self.duration = duration
         self.completed = completed
         self.completionTime = completionTime
+        self.completedTaskRuns = completedTaskRuns
         self.priority = priority
         self.extraInfo = extraInfo
         
@@ -237,6 +245,7 @@ public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEvent
     
     public var completed: Bool
     public var completionTime: Date?
+    public var completedTaskRuns: [String]?
     
     public var priority: Int
     
@@ -261,6 +270,7 @@ public protocol RSScheduleEventBuilder {
         duration: TimeInterval?,
         completed: Bool,
         completionTime: Date?,
+        completedTaskRuns: [String]?,
         priority: Int,
         extraInfo: [String: Any]?
         ) -> RSScheduleEvent
@@ -450,7 +460,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
         
     }
     
-    open func markEventCompleted(event: RSScheduleEvent) {
+    open func markEventCompleted(eventId: String, taskRuns: [UUID]) {
         
     }
 

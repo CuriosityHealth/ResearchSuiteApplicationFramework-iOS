@@ -19,6 +19,7 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
         duration: TimeInterval?,
         completed: Bool,
         completionTime: Date?,
+        completedTaskRuns: [String]?,
         priority: Int,
         extraInfo: [String : Any]?) -> RSScheduleEvent {
         
@@ -29,6 +30,7 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
         event.duration = duration
         event.completed = completed
         event.completionTime = completionTime
+        event.completedTaskRuns = completedTaskRuns
         event.priority = priority
         event.extraInfo = extraInfo
         
@@ -44,6 +46,7 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
             duration: event.duration,
             completed: event.completed,
             completionTime: event.completionTime,
+            completedTaskRuns: event.completedTaskRuns,
             priority: event.priority,
             extraInfo: event.extraInfo
         )
@@ -86,7 +89,40 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
     
     @objc dynamic public var priority: Int = 0
     
-     @objc dynamic var extraInfoJSONString: String? = nil
+    public var completedTaskRuns: [String]? {
+        get {
+            if let completedTaskRuns = self._completedTaskRuns {
+                return completedTaskRuns
+            }
+            else if self._completedTaskRunsSet {
+                let completedTaskRuns = Array(self._completedTaskRunsList)
+                self._completedTaskRuns = completedTaskRuns
+                return completedTaskRuns
+            }
+            else {
+                return nil
+            }
+        }
+        set(newCompletedTaskRuns) {
+            self._completedTaskRunsList.removeAll()
+            if let completedTaskRuns = newCompletedTaskRuns {
+                self._completedTaskRunsSet = true
+                self._completedTaskRuns = completedTaskRuns
+                self._completedTaskRunsList.append(objectsIn: completedTaskRuns)
+            }
+            else {
+                self._completedTaskRunsSet = false
+                self._completedTaskRuns = []
+            }
+        }
+    }
+    
+    private var _completedTaskRuns: [String]?
+    
+    @objc dynamic public var _completedTaskRunsSet: Bool = false
+    var _completedTaskRunsList: List<String> = List()
+    
+    @objc dynamic var extraInfoJSONString: String? = nil
     var _extraInfo: JSON? = nil
     public var extraInfo: JSON? {
         get {

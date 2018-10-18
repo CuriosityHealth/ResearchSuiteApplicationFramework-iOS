@@ -53,6 +53,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var stateObjectManager: RSStateObjectManager!
     public var collectionDataSourceManager: RSCollectionDataSourceManager!
     
+    public var scheduler: RSScheduler!
+    
     //TODO:
     public var storeManager: RSStoreManager?
 //    public var taskBuilderStateHelper: RSTaskBuilderStateHelper!

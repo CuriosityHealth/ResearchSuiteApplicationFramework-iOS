@@ -350,20 +350,22 @@ public class RSActionCreators: NSObject {
                 //process on success action
                 if reason == ORKTaskViewControllerFinishReason.completed {
                     let taskResult = taskViewController.result
-                    RSActionCreators.processOnSuccessActions(activity: activity, taskResult: taskResult, store: store, extraContext: extraContext)
-                    
-                    firstActivity.3?.onSuccessActions?.forEach({ (action) in
-                        store.dispatch(action)
-                    })
-                    
+                    RSActionCreators.processOnSuccessActions(
+                        activity: activity,
+                        taskResult: taskResult,
+                        store: store,
+                        extraContext: extraContext,
+                        extraOnCompletionActions: firstActivity.3
+                    )
                 }
                     //process on failure actions
                 else {
-                    RSActionCreators.processOnFailureActions(activity: activity, store: store, extraContext: extraContext)
-                    
-                    firstActivity.3?.onFailureActions?.forEach({ (action) in
-                        store.dispatch(action)
-                    })
+                    RSActionCreators.processOnFailureActions(
+                        activity: activity,
+                        store: store,
+                        extraContext: extraContext,
+                        extraOnCompletionActions: firstActivity.3
+                    )
                 }
                 
                 
@@ -383,11 +385,12 @@ public class RSActionCreators: NSObject {
                 }
                 
                 //process finally actions
-                RSActionCreators.processFinallyActions(activity: activity, store: store, extraContext: extraContext)
-                
-                firstActivity.3?.finallyActions?.forEach({ (action) in
-                    store.dispatch(action)
-                })
+                RSActionCreators.processFinallyActions(
+                    activity: activity,
+                    store: store,
+                    extraContext: extraContext,
+                    extraOnCompletionActions: firstActivity.3
+                )
                 
                 //NOTE: We are wiping out the storage directory, so any results should have been copied out of here
                 
@@ -496,25 +499,62 @@ public class RSActionCreators: NSObject {
         }
     }
     
-    private static func processOnSuccessActions(activity: RSActivity, taskResult: ORKTaskResult, store: Store<RSState>, extraContext: [String: AnyObject]) {
+    private static func processOnSuccessActions(
+        activity: RSActivity,
+        taskResult: ORKTaskResult,
+        store: Store<RSState>,
+        extraContext: [String: AnyObject],
+        extraOnCompletionActions: RSOnCompletionActions?
+    ) {
         let onSuccessActionJSON: [JSON] = activity.onCompletion.onSuccessActions
         let context: [String: AnyObject] = extraContext.merging(["taskResult": taskResult], uniquingKeysWith: { (obj1, obj2) -> AnyObject in
             return obj2
         })
         
         store.processActions(actions: onSuccessActionJSON, context: context, store: store)
+        
+        if let extraOnSuccessActions = extraOnCompletionActions?.onSuccessActions {
+            extraOnSuccessActions.forEach { generator in
+                let action = generator(context)
+                store.dispatch(action)
+            }
+        }
     }
     
-    private static func processOnFailureActions(activity: RSActivity, store: Store<RSState>, extraContext: [String: AnyObject]) {
+    private static func processOnFailureActions(
+        activity: RSActivity,
+        store: Store<RSState>,
+        extraContext: [String: AnyObject],
+        extraOnCompletionActions: RSOnCompletionActions?
+    ) {
         let onFailureActionJSON: [JSON] = activity.onCompletion.onFailureActions
         let context: [String: AnyObject] = extraContext
         store.processActions(actions: onFailureActionJSON, context: context, store: store)
+        
+        if let extraOnFailureActions = extraOnCompletionActions?.onFailureActions {
+            extraOnFailureActions.forEach { generator in
+                let action = generator(context)
+                store.dispatch(action)
+            }
+        }
     }
     
-    private static func processFinallyActions(activity: RSActivity, store: Store<RSState>, extraContext: [String: AnyObject]) {
+    private static func processFinallyActions(
+        activity: RSActivity,
+        store: Store<RSState>,
+        extraContext: [String: AnyObject],
+        extraOnCompletionActions: RSOnCompletionActions?
+    ) {
         let finallyActionJSON: [JSON] = activity.onCompletion.finallyActions
         let context: [String: AnyObject] = extraContext
         store.processActions(actions: finallyActionJSON, context: context, store: store)
+        
+        if let extraFinallyActions = extraOnCompletionActions?.finallyActions {
+            extraFinallyActions.forEach { generator in
+                let action = generator(context)
+                store.dispatch(action)
+            }
+        }
     }
 
     public static func evaluatePredicate(predicate: RSPredicate, state: RSState, context: [String: AnyObject]) -> Bool {
@@ -869,6 +909,20 @@ public class RSActionCreators: NSObject {
             return UpdateScheduler(schedulerEventUpdate: schedulerEventUpdate)
         }
     }
+    
+    public static func markScheduleEventCompleted(eventId: String, taskRuns: [UUID]) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            
+            guard let scheduler = RSApplicationDelegate.appDelegate?.scheduler else {
+                return nil
+            }
+            
+            scheduler.markEventCompleted(eventId: eventId, taskRuns: taskRuns)
+            
+            return nil
+        }
+    }
+
     
     
 }
