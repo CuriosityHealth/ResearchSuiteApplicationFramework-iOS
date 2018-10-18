@@ -21,6 +21,23 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
     //then content container
     open var contentStackView: UIStackView!
     
+    open var containerView: UIView!
+    
+    open override var onTap: ((RSCollectionViewCell)->())? {
+        didSet {
+            self.updateBorder(tintedBorder: self.onTap != nil, isHighlighted: self.isHighlighted)
+        }
+    }
+    
+    open override var isHighlighted: Bool {
+        
+        didSet {
+            self.updateBackgroundColor(isHighlighted: isHighlighted)
+            self.updateBorder(tintedBorder: self.onTap != nil, isHighlighted: isHighlighted)
+        }
+        
+    }
+    
     override public init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -31,19 +48,21 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         //        self.layer.shadowRadius = 2.0
         
         let containerView = UIView()
+        self.containerView = containerView
         self.contentView.addSubview(containerView)
         containerView.snp.makeConstraints { (make) in
             make.width.height.equalToSuperview()
             make.center.equalToSuperview()
         }
         
-        containerView.layer.borderColor = UIColor.lightGray.withAlphaComponent(0.3).cgColor
-        containerView.layer.borderWidth = 1.0
-        containerView.layer.cornerRadius = 8.0
-        containerView.layer.shadowRadius = 8.0
-        containerView.layer.shadowColor = UIColor.darkGray.cgColor
+//        containerView.layer.borderColor = UIColor.lightGray.withAlphaComponent(0.3).cgColor
+//        containerView.layer.borderWidth = 1.0
+//        containerView.layer.cornerRadius = 8.0
+//        containerView.layer.shadowRadius = 8.0
+//        containerView.layer.shadowColor = UIColor.darkGray.cgColor
         
-        containerView.backgroundColor = UIColor.white
+//        containerView.backgroundColor = UIColor.white
+        self.updateBackgroundColor(isHighlighted: false)
         
         let verticalStackView = UIStackView(frame: self.contentView.bounds)
         verticalStackView.axis = .vertical
@@ -102,6 +121,12 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    open override func layoutSubviews()
+    {
+        super.layoutSubviews()
+        self.updateBorder(tintedBorder: self.onTap != nil, isHighlighted: self.isHighlighted)
+    }
+    
     override open func prepareForReuse() {
         
         self.titleLabel.text = nil
@@ -132,8 +157,36 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
     }
     
+    func updateBorder(tintedBorder: Bool, isHighlighted: Bool) {
+        
+        self.containerView.layer.borderColor = {
+            if tintedBorder {
+                return self.tintColor.withAlphaComponent(0.3).cgColor
+            }
+            else {
+                return UIColor.lightGray.withAlphaComponent(0.3).cgColor
+            }
+        }()
+        
+        if isHighlighted {
+            self.containerView.layer.borderWidth = 0.0
+        }
+        else {
+            self.containerView.layer.borderWidth = 1.0
+        }
+        
+        self.containerView.layer.cornerRadius = 8.0
+        
+    }
+    
+    func updateBackgroundColor(isHighlighted: Bool) {
+        self.containerView.backgroundColor = isHighlighted ? UIColor.lightGray.withAlphaComponent(0.2) : UIColor.white
+    }
+    
     override open func setCellTint(color: UIColor) {
+        super.setCellTint(color: color)
         self.iconImageView.tintColor = color
+        self.updateBorder(tintedBorder: self.onTap != nil, isHighlighted: self.isHighlighted)
     }
     
 }

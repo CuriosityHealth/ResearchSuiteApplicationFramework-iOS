@@ -93,8 +93,6 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
 
     }
     
-    
-    
     @objc
     public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         let shadowOpacity: Float = self.isHighlighted ? 0.0 : 0.3
@@ -105,7 +103,8 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
 
         let opacity: Float = shadow ? 0.3 : 0.0
         
-        self.layer.shadowColor = UIColor.black.cgColor
+//        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowColor = (self.onTap == nil) ? UIColor.black.cgColor : self.tintColor.cgColor
         self.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
         self.layer.shadowRadius = 3.0
         
@@ -139,8 +138,7 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     }
     
     open func setCellTint(color: UIColor) {
-        
-        
+        self.tintColor = color
     }
     
     
