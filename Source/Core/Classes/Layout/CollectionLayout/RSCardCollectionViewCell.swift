@@ -41,12 +41,6 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
     override public init(frame: CGRect) {
         super.init(frame: frame)
         
-        //        configure border
-        //        self.layer.borderColor = UIColor.lightGray.withAlphaComponent(0.3).cgColor
-        //        self.layer.borderWidth = 1.0
-        //        self.layer.cornerRadius = 4.0
-        //        self.layer.shadowRadius = 2.0
-        
         let containerView = UIView()
         self.containerView = containerView
         self.contentView.addSubview(containerView)
@@ -55,13 +49,6 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
             make.center.equalToSuperview()
         }
         
-//        containerView.layer.borderColor = UIColor.lightGray.withAlphaComponent(0.3).cgColor
-//        containerView.layer.borderWidth = 1.0
-//        containerView.layer.cornerRadius = 8.0
-//        containerView.layer.shadowRadius = 8.0
-//        containerView.layer.shadowColor = UIColor.darkGray.cgColor
-        
-//        containerView.backgroundColor = UIColor.white
         self.updateBackgroundColor(isHighlighted: false)
         
         let verticalStackView = UIStackView(frame: self.contentView.bounds)

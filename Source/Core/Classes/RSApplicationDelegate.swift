@@ -129,7 +129,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSEnhancedMultipleChoiceStepGenerator(cellControllerGenerators: self.cellControllerGenerators),
             RSTBCountdownStepGenerator(),
             RSTBDateTimePickerStepGenerator(),
-            RSTBTimeIntervalStepGenerator()
+            RSTBTimeIntervalStepGenerator(),
+            RSTextInstructionStepGenerator()
         ]
     }
     
