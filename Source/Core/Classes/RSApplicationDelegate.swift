@@ -130,7 +130,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBCountdownStepGenerator(),
             RSTBDateTimePickerStepGenerator(),
             RSTBTimeIntervalStepGenerator(),
-            RSTextInstructionStepGenerator()
+            RSTextInstructionStepGenerator(),
+            RSTBVideoInstructionStepGenerator()
         ]
     }
     
