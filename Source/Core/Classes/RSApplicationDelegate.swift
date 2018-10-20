@@ -280,7 +280,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSActionSwitchTransformer.self,
             RSRequestPathChangeActionTransformer.self,
             RSDefinedAction.self,
-            RSReloadConfigActionTransformer.self
+            RSReloadConfigActionTransformer.self,
+            RSEmailCurrentLogActionTransformer.self
         ]
     }
     

@@ -285,49 +285,30 @@ public class RSActionCreators: NSObject {
     public static func presentActivity(on viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Presenting Activity")
+            
             //make sure we are not in the middle of routing
             //and there is a valid route
             guard !RSStateSelectors.isRouting(state),
 //                RSStateSelectors.currentRoute(state) != nil else {
             RSStateSelectors.currentPath(state) != nil else {
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "In the middle of routing, so not presenting")
                 return nil
             }
             
             //if nothing is presented and there are things to present, then begin presentation on delegate
             guard !RSStateSelectors.isPresenting(state),
                 RSStateSelectors.presentedActivity(state) == nil else {
+                    RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "We're already presenting or in the processos of presenting an activity \(RSStateSelectors.presentedActivity(state)?.1)")
                 return nil
             }
             
             guard let firstActivity: (UUID, String, [String: AnyObject]?, RSOnCompletionActions?) = RSStateSelectors.getNextActivity(state),
                 let activity = RSStateSelectors.activity(state, for: firstActivity.1) else {
+                    RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "No activities to present or could not generate activity")
                     return nil
             }
-            
-//            let extraContext: [String: AnyObject] = {
-//
-//                if let extraContextJSON = firstActivity.2 {
-//
-//                    let pairs: [(String, AnyObject)] = extraContextJSON.compactMap({ (pair) -> (String, AnyObject)? in
-//
-//                        guard let valueJSON: JSON = pair.value as? JSON,
-//                            let value = RSValueManager.processValue(jsonObject: valueJSON, state: state, context: [:])?.evaluate() else {
-//                            return nil
-//                        }
-//
-//                        return (pair.key, value)
-//
-//                    })
-//
-//                    return Dictionary.init(uniqueKeysWithValues: pairs)
-//
-//                }
-//                else {
-//                    return [:]
-//                }
-//
-//            }()
-            
+
             let extraContext: [String: AnyObject] = firstActivity.2 ?? [:]
 
             let taskBuilderStateHelper = RSTaskBuilderStateHelper(store: store, extraStateValues: extraContext)
@@ -342,10 +323,13 @@ public class RSActionCreators: NSObject {
             
             
             guard let task = activityManager.taskForActivity(activity: activity, state: state, stepTreeBuilder: stepTreeBuilder) else {
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Could not generate Task for Activity")
                 return nil
             }
             
             let taskFinishedHandler: ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ()) = { (taskViewController, reason, error) in
+                
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Task finished handler: \(firstActivity.1) has completed with reason \(reason)")
                 
                 //process on success action
                 if reason == ORKTaskViewControllerFinishReason.completed {
@@ -407,7 +391,7 @@ public class RSActionCreators: NSObject {
                 }
                 
                 
-                
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Task finished handler: Actions have been processed, dismissing activity")
                 //dismiss view controller
                 store.dispatch(RSActionCreators.dismissActivity(firstActivity.0, activity: activity, viewController: viewController, activityManager: activityManager))
                 
@@ -433,14 +417,22 @@ public class RSActionCreators: NSObject {
                 fatalError("The output directory for the task with UUID: \(taskViewController.taskRunUUID.uuidString) could not be created. Error: \(error.localizedDescription)")
             }
             
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Task view controller for \(firstActivity.1) has been instantiated. Dispatching PresentActivityRequest action.")
+            
             let presentRequestAction = PresentActivityRequest(uuid: firstActivity.0, activityID: firstActivity.1)
             store.dispatch(presentRequestAction)
             taskViewController.modalPresentationStyle = .overCurrentContext
             
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "PresentActivityRequest action has been dispatched for \(firstActivity.1). Presenting Task VC now.")
+            
             viewController.present(taskViewController, animated: true, completion: {
+                
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Task VC for \(firstActivity.1) has been presented. Dispatching PresentActivitySuccess action.")
                 
                 let presentSuccessAction = PresentActivitySuccess(uuid: firstActivity.0, activityID: firstActivity.1, presentationTime: Date())
                 store.dispatch(presentSuccessAction)
+                
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "PresentActivitySuccess action has been dispatched for \(firstActivity.1).")
                 
                 if let onLaunchActions = activity.onLaunchActions {
                     store.processActions(actions: onLaunchActions, context: [:], store: store)
@@ -455,18 +447,34 @@ public class RSActionCreators: NSObject {
     public static func dismissActivity(_ uuid: UUID, activity: RSActivity, viewController: UIViewController, activityManager: RSActivityManager) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             
-            guard !RSStateSelectors.isDismissing(state),
-                let presentedActivityPair = RSStateSelectors.presentedActivity(state),
-                presentedActivityPair.0 == uuid else {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.dismissActivity", level: .info, message: "Dismissing activty \(activity.identifier)")
+            
+            guard !RSStateSelectors.isDismissing(state) else {
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.dismissActivity", level: .info, message: "We're already dismissing an activity, returning")
+                return nil
+            }
+            
+            guard let presentedActivityPair = RSStateSelectors.presentedActivity(state) else {
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.dismissActivity", level: .info, message: "According to the state, there is no presented activity. Returning...")
+                return nil
+            }
+            
+            guard presentedActivityPair.0 == uuid else {
+                    RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.dismissActivity", level: .info, message: "Cannot dismiss as the presented activity's UUID \(presentedActivityPair.0) does not match the UUID of the actiity we are dismissing \(uuid)")
                     return nil
             }
             
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.dismissActivity", level: .info, message: "Activity \(presentedActivityPair.1) is able to be dismissed. Disptching DismissActivityRequest action")
             let dismissRequestAction = DismissActivityRequest(uuid: presentedActivityPair.0, activityID: presentedActivityPair.1)
             store.dispatch(dismissRequestAction)
             
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.dismissActivity", level: .info, message: "DismissActivityRequest action has been dispatched for \(presentedActivityPair.1). Dismissing Task VC.")
+            
             viewController.dismiss(animated: true, completion: {
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.dismissActivity", level: .info, message: "Task VC for \(presentedActivityPair.1) has been dismissed. Dispatching DismissActivitySuccess action.")
                 let dismissSuccessAction = DismissActivitySuccess(uuid: presentedActivityPair.0, activityID: presentedActivityPair.1)
                 store.dispatch(dismissSuccessAction)
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.dismissActivity", level: .info, message: "DismissActivitySuccess action has been dispatched for \(presentedActivityPair.1) ")
             })
             
             return nil

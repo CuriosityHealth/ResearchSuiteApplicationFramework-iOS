@@ -179,7 +179,11 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     }
     
     open func itemForIndexPath(indexPath: IndexPath) -> RSListItem? {
-        let index = indexPath.row
+        return self.itemForRow(row: indexPath.row)
+    }
+    
+    open func itemForRow(row: Int) -> RSListItem? {
+        let index = row
         
         guard index >= self.visibleLayoutItems.startIndex,
             index < self.visibleLayoutItems.endIndex else {
@@ -237,6 +241,15 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
             cell.textLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
             cell.detailTextLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "text", element: item.element, state: state))
             
+        case "debugItem":
+            cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
+            cell.textLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
+            cell.detailTextLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "text", element: item.element, state: state))
+            
+            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleDebugListItemTap))
+            gestureRecognizer.numberOfTapsRequired = 8
+            cell.addGestureRecognizer(gestureRecognizer)
+            
         case "toggleItem":
             guard let toggleCell = tableView.dequeueReusableCell(withIdentifier: "toggle_cell", for: indexPath) as? RSToggleCell,
                 let toggleItem = RSToggleListItem(json: item.element),
@@ -270,18 +283,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
             cell.textLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
         }
         
-        
-        
-//        if item.onTapActions.count > 0 {
-//            cell = tableView.dequeueReusableCell(withIdentifier: "activity_cell", for: indexPath)
-//        }
-//        else {
-//            cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
-//        }
-//
-//        cell.textLabel?.text = self.generateString(key: "title", element: item.element)
-//        cell.detailTextLabel?.text = self.generateString(key: "text", element: item.element)
-
+        cell.tag = indexPath.row
         return cell
     }
     
@@ -310,6 +312,25 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
         //dispatch onTap actions
         tappableItem.onTapActions.forEach { self.processAction(action: $0) }
         
+    }
+    
+    @objc func handleDebugListItemTap(sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            print("Debug list item enabled")
+            print(sender)
+            if let cell = sender.view as? UITableViewCell,
+                let item = self.itemForRow(row: cell.tag) {
+                
+                print(cell)
+                print(item)
+                
+                if let debugActionsJSON: [JSON] = "debugActions" <~~ item.element {
+                    //dispatch debug actions
+                    debugActionsJSON.forEach { self.processAction(action: $0) }
+                }
+                
+            }
+        }
     }
     
     open func layoutDidLoad() {

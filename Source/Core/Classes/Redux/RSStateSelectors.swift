@@ -145,14 +145,46 @@ public class RSStateSelectors: NSObject {
     }
     
     public static func shouldPresent(_ state: RSState) -> Bool {
-        return (state.activityQueue.first != nil) &&
-            (!state.isPresenting) &&
-            (state.presentedActivity == nil) &&
-            (!state.isDismissing) &&
-            (!state.isRouting) &&
-//            (state.currentRoute != nil) &&
-            (state.currentPath != nil) &&
-            (state.configurationCompleted)
+        
+        guard let activity = state.activityQueue.first else {
+            return false
+        }
+        
+        RSApplicationDelegate.appDelegate.logger?.log(tag: "RSStateSelectors.shouldPresent", level: .info, message: "Head of activity queue is \(activity.1), peforming further checks")
+        
+        if state.isPresenting {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSStateSelectors.shouldPresent", level: .info, message: "already presenting in the middle of presenting, returning false")
+            return false
+        }
+        
+        if state.presentedActivity != nil {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSStateSelectors.shouldPresent", level: .info, message: "Activity \(state.presentedActivity!.1) already presented")
+            return false
+        }
+        
+        if state.isDismissing {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSStateSelectors.shouldPresent", level: .info, message: "In the precess of dismissing")
+            return false
+        }
+        
+        if state.isRouting {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSStateSelectors.shouldPresent", level: .info, message: "In the precess of routing")
+            return false
+        }
+        
+        if state.currentPath == nil {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSStateSelectors.shouldPresent", level: .info, message: "No current path yet")
+            return false
+        }
+        
+        if state.configurationCompleted == false {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: "RSStateSelectors.shouldPresent", level: .info, message: "Configuration not yet completed")
+            return false
+        }
+        
+        RSApplicationDelegate.appDelegate.logger?.log(tag: "RSStateSelectors.shouldPresent", level: .info, message: "\(activity.1) able to be presented")
+        
+        return true
     }
 
     public static func isRouting(_ state: RSState) -> Bool {

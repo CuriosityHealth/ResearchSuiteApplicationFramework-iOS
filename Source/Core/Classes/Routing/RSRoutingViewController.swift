@@ -324,6 +324,9 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
                 !RSStateSelectors.isDismissingPasscode(state) else {
                     return
             }
+            
+            
+            
             //otherwise, check to see if there is an activity to present
             if RSStateSelectors.shouldPresent(state) {
                 self.store?.dispatch(RSActionCreators.presentActivity(on: self, activityManager: self.activityManager))
