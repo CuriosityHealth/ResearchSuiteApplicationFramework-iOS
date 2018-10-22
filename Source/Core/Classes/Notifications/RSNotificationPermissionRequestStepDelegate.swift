@@ -12,6 +12,10 @@ import UserNotifications
 
 open class RSNotificationPermissionRequestStepDelegate: RSPermissionRequestStepDelegate {
     
+    public enum NotificationPermissionRequestError: Error {
+        case permissionDenied
+    }
+    
     public func permissionRequestViewControllerDidLoad(viewController: RSPermissionRequestStepViewController) {
         
     }
@@ -19,7 +23,14 @@ open class RSNotificationPermissionRequestStepDelegate: RSPermissionRequestStepD
     public func requestPermissions(completion: @escaping ((Bool, Error?) -> ())) {
         let center = UNUserNotificationCenter.current()
         center.requestAuthorization(options: [.badge, .alert, .sound]) { (granted, error) in
-            completion(granted, error)
+            
+            if granted == false && error == nil {
+                completion(granted, NotificationPermissionRequestError.permissionDenied)
+            }
+            else {
+                completion(granted, error)
+            }
+            
         }
     }
     
