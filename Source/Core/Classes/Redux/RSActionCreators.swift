@@ -199,6 +199,12 @@ public class RSActionCreators: NSObject {
         }
     }
     
+    public static func dequeueActivity(activityInstanceUUID: UUID) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return DequeueActivityAction(uuid: activityInstanceUUID)
+        }
+    }
+    
     public static func presentedActivity(uuid: UUID, activityID: String) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         return { state, store in
             return SetPresentedActivityAction(uuid: uuid, activityID: activityID)
@@ -303,9 +309,16 @@ public class RSActionCreators: NSObject {
                 return nil
             }
             
-            guard let firstActivity: (UUID, String, [String: AnyObject]?, RSOnCompletionActions?) = RSStateSelectors.getNextActivity(state),
-                let activity = RSStateSelectors.activity(state, for: firstActivity.1) else {
-                    RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "No activities to present or could not generate activity")
+            guard let firstActivity: (UUID, String, [String: AnyObject]?, RSOnCompletionActions?) = RSStateSelectors.getNextActivity(state) else {
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "No activities to present")
+                return nil
+            }
+            
+            guard let activity = RSStateSelectors.activity(state, for: firstActivity.1) else {
+                    
+                    store.dispatch(RSActionCreators.dequeueActivity(activityInstanceUUID: firstActivity.0))
+        
+                    RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .error, message: "Could not generate activity for \(firstActivity.1). Removing from the queue")
                     return nil
             }
 
@@ -323,7 +336,10 @@ public class RSActionCreators: NSObject {
             
             
             guard let task = activityManager.taskForActivity(activity: activity, state: state, stepTreeBuilder: stepTreeBuilder) else {
-                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Could not generate Task for Activity")
+                
+                store.dispatch(RSActionCreators.dequeueActivity(activityInstanceUUID: firstActivity.0))
+                
+                RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .error, message: "Could not generate Task for Activity \(firstActivity.1). Removing from the queue")
                 return nil
             }
             
