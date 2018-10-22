@@ -312,6 +312,11 @@ public struct RSSchedulerEventUpdate {
     
 }
 
+public protocol RSSchedulerSeries {
+    static var monitoredValues: [String] { get }
+    static func generateEvents(schedulerDatabase: RSSchedulerDatabase, state: RSState, extrapolationDuration: TimeInterval) -> [RSScheduleEvent]
+}
+
 //it can either adopt or emit objects that adopt the dashbaord adaptor protocol
 //NOTE: this distinction will be made depending upon whether the object adopting
 //needs to keep a reference to the collection view. Maybe better to keep all this in the state?
