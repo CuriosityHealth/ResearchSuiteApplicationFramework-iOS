@@ -84,13 +84,22 @@ open class RSResultTransformValueTransformer: RSValueTransformer {
         if let convertToJSON: Bool = "convertToJSON" <~~ jsonObject,
             convertToJSON {
             
-            guard let datapoint = result as? LS2DatapointConvertible,
-                let json = datapoint.toDatapoint(builder: LS2ConcreteDatapoint.self)?.toJSON()  else {
-                    return nil
+            if let convertible = result as? LS2DatapointConvertible,
+                let json = convertible.toDatapoint(builder: LS2ConcreteDatapoint.self)?.toJSON() {
+                return RSValueConvertible(value: json as AnyObject)
+            }
+            else if let encodable = result?.evaluate() as? Gloss.JSONEncodable,
+                let json = encodable.toJSON() {
+                return RSValueConvertible(value: json as AnyObject)
+            }
+            else if let encodableArray: [Gloss.JSONEncodable] = result?.evaluate() as? [Gloss.JSONEncodable] {
+                let jsonArray = encodableArray.compactMap({ $0.toJSON() })
+                return RSValueConvertible(value: jsonArray as AnyObject)
+            }
+            else {
+                return nil
             }
             
-            return RSValueConvertible(value: json as AnyObject)
-
         }
         else {
             return result
