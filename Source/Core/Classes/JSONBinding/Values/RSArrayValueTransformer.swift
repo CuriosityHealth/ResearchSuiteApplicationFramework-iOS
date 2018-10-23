@@ -306,6 +306,46 @@ open class RSArrayOperationAddingFunction: RSArrayOperationFunction {
     
 }
 
+open class RSArrayOperationExtendingFunction: RSArrayOperationFunction {
+    public static func generate(jsonObject: JSON, state: RSState, context: [String : AnyObject]) -> RSArrayOperationFunction? {
+        return self.init(json: jsonObject)
+    }
+    
+    public func performOperation(array: [AnyObject], state: RSState, context: [String : AnyObject]) -> [AnyObject] {
+        
+        guard let elements = RSValueManager.processValue(jsonObject: self.elementsJSON, state: state, context: context)?.evaluate() as? [AnyObject] else {
+            return array
+        }
+        return array + elements
+        
+    }
+    
+    let type: String
+    let elementsJSON: JSON
+    
+    public required init?(json: JSON) {
+        
+        guard let type: String = "type" <~~ json,
+            type == "extending",
+            let elementsJSON: JSON = "elements" <~~ json else {
+                return nil
+        }
+        
+        self.type = type
+        self.elementsJSON = elementsJSON
+        
+    }
+    
+    public func toJSON() -> JSON? {
+        return jsonify([
+            "type" ~~> self.type,
+            "elements" ~~> self.elementsJSON
+            ])
+    }
+    
+    
+}
+
 
 
 open class RSArrayValueTransformer: RSValueTransformer {
@@ -351,7 +391,8 @@ open class RSArrayValueTransformer: RSValueTransformer {
             RSArrayOperationIndividualElementFilterFunction.self,
             RSArrayOperationMappingFunction.self,
             RSArrayOperationTransformValueFunction.self,
-            RSArrayOperationAddingFunction.self
+            RSArrayOperationAddingFunction.self,
+            RSArrayOperationExtendingFunction.self
         ]
         
         //for every operation json value, try to instantiate it
