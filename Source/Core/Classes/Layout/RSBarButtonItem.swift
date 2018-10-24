@@ -13,7 +13,7 @@ open class RSBarButtonItem: UIBarButtonItem {
     open let layoutButton: RSLayoutButton
     open let onTap: ((RSBarButtonItem) -> ())?
     
-    init?(layoutButton: RSLayoutButton, onTap: ((RSBarButtonItem) -> ())?, localizationHelper: RSTBLocalizationHelper) {
+    public init?(layoutButton: RSLayoutButton, onTap: ((RSBarButtonItem) -> ())?, localizationHelper: RSTBLocalizationHelper) {
         
         self.layoutButton = layoutButton
         self.onTap = onTap

@@ -124,6 +124,31 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         
         self.navigationItem.rightBarButtonItems = rightBarButtonItems
         
+        if let leftNavButtons = self.layout.leftNavButtons {
+            
+            let onTap: (RSBarButtonItem) -> () = { [unowned self] button in
+                button.layoutButton.onTapActions.forEach {
+                    
+                    let extraContext: [String : AnyObject] = {
+                        if let selectedDate = self.calendarView.selectedDate ?? self.calendarView.today {
+                            return ["selectedDate": selectedDate as AnyObject]
+                        }
+                        else {
+                            return [:]
+                        }
+                    }()
+                    
+                    self.processAction(action: $0, extraContext: extraContext)
+                    
+                }
+            }
+            
+            self.navigationItem.leftBarButtonItems =  leftNavButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
+                return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
+            }
+            
+        }
+        
     }
     
     open func reloadLayout() {
