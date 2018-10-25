@@ -245,11 +245,26 @@ public class RSStateSelectors: NSObject {
         return state.configurationCompleted
     }
     
+//    public let setContentHiddenRequested: Bool?
+    public static func setContentHiddenRequested(_ state: RSState) -> Bool? {
+        return state.setContentHiddenRequested
+    }
+    
+    public static func settingContentHidden(_ state: RSState) -> Bool {
+        return state.settingContentHidden
+    }
+    
+    public static func passcodeRequested(_ state: RSState) -> Bool {
+        return state.passcodeRequested
+    }
+    
     public static func shouldShowPasscode(_ state: RSState) -> Bool {
-        return !RSStateSelectors.isPasscodePresented(state) &&
+        return ORKPasscodeViewController.isPasscodeStoredInKeychain() &&
+            RSStateSelectors.passcodeRequested(state) &&
+            !RSStateSelectors.isPasscodePresented(state) &&
             !RSStateSelectors.isPresentingPasscode(state) &&
-            !RSStateSelectors.isDismissingPasscode(state) &&
-            ORKPasscodeViewController.isPasscodeStoredInKeychain()
+            !RSStateSelectors.isDismissingPasscode(state)
+        
     }
     
     public static func isPasscodePresented(_ state: RSState) -> Bool {

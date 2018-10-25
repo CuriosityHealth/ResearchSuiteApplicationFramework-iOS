@@ -830,15 +830,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillResignActive")
         
+        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+        rootVC.setContentHidden(hidden: true)
         
-        if let state: RSState = self.store?.state,
-            RSStateSelectors.shouldShowPasscode(state) {
-            // Hide content so it doesn't appear in the app switcher.
-
-            let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
-            rootVC.setContentHidden(hidden: true)
-            
-        }
     }
     
     open func applicationDidEnterBackground(_ application: UIApplication) {

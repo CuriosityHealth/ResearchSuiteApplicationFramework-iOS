@@ -251,6 +251,24 @@ public struct ReloadConfigurationRequest: Action {
 public struct CompleteConfiguration: Action {
 }
 
+public struct RequestSetContentHidden: Action {
+    let hidden: Bool
+}
+
+public struct SetContentHiddedStarted: Action {
+    let uuid: UUID
+    let hidden: Bool
+}
+
+public struct SetContentHiddedCompleted: Action {
+    let uuid: UUID
+    let hidden: Bool
+}
+
+public struct RequestPasscode: Action {
+    let uuid: UUID
+}
+
 public struct PresentPasscodeRequest: Action {
     let uuid: UUID
     let passcodeViewController: ORKPasscodeViewController

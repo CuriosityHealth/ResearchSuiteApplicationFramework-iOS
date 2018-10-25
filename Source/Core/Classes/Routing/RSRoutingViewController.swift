@@ -281,8 +281,40 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         
         //only route if the passcode view controller is NOT presented
         //NOTE: there is a race condition on sign out where the state is cleared but the passcode view controller is actully presented
+        
+        //if we are in the middle of doing something, wait until we are done
+        //maybe add more checks here
+        
+        //check for content hidden request
+        if let setContentHiddenRequest = RSStateSelectors.setContentHiddenRequested(state),
+            RSStateSelectors.settingContentHidden(state) == false,
+            RSStateSelectors.isPresentingPasscode(state) == false,
+            RSStateSelectors.isDismissing(state) == false {
+            
+            self.handleSetContentHidden(hidden: setContentHiddenRequest) {
+                
+            }
+            
+        }
+        
+        //passcode dismisses itself
         guard !RSStateSelectors.isPasscodePresented(state) && !self.isPasscodePresented() else {
             return
+        }
+        
+        //check for present passcode request
+        //once passcode is presented, we can set content hidden to false
+        if RSStateSelectors.passcodeRequested(state) == true,
+                RSStateSelectors.settingContentHidden(state) == false {
+            
+            self.handleLockScreen { [unowned self] (locked) in
+                
+                if locked {
+                    self.setContentHidden(hidden: false)
+                }
+                
+            }
+            
         }
         
         if let pathChangeRequest = RSStateSelectors.pathChangeRequest(state),
@@ -399,10 +431,16 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     }
     
     open func lockScreen() {
+        if ORKPasscodeViewController.isPasscodeStoredInKeychain() {
+            self.store!.dispatch(RequestPasscode(uuid: UUID()))
+        }
+    }
+    
+    private func handleLockScreen(completion: @escaping (Bool)->()) {
         
-//        let state: RSState = self.state
         let state: RSState = self.store!.state
         guard RSStateSelectors.shouldShowPasscode(state) else {
+            completion(false)
             return
         }
         
@@ -415,11 +453,13 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         self.store!.dispatch(PresentPasscodeRequest(uuid: uuid, passcodeViewController: vc))
         
         RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Presenting Passcode View")
-
+        
         self.topViewController.present(vc, animated: false, completion: {
             RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Passcode View Presented")
             self.store!.dispatch(PresentPasscodeSuccess(uuid: uuid, passcodeViewController: vc))
+            completion(true)
         })
+        
     }
     
     private func dismissPasscodeViewController(_ animated: Bool) {
@@ -484,9 +524,12 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         return self.topViewController is ORKPasscodeViewController
     }
     
-    open func setContentHidden(hidden: Bool) {
+    private func handleSetContentHidden(hidden: Bool, completion: @escaping ()->()) {
+        let logger = RSApplicationDelegate.appDelegate.logger
+        logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Setting contents hidden to \(hidden)")
         
-        RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Setting contents hidden to \(hidden)")
+        let uuid = UUID()
+        self.store!.dispatch(SetContentHiddedStarted(uuid: uuid, hidden: hidden))
         
         if let infoDict = Bundle.main.infoDictionary,
             let launchStoryboardName = infoDict["UILaunchStoryboardName"] as? String,
@@ -495,7 +538,10 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             if hidden {
                 
                 let vc = self.topViewController
+                logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Presenting initial view controller")
                 vc.present(viewController, animated: false) {
+                    
+                    logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Presented initial view controller")
                     
                     var screenshotImage:UIImage?
                     let layer = UIApplication.shared.keyWindow!.layer
@@ -509,6 +555,8 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
                         
                         if let image = screenshotImage {
                             
+                            logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Got screenshot")
+                            
                             let imageView = UIImageView(frame: vc.view.bounds)
                             imageView.image = image
                             imageView.contentMode = .scaleToFill
@@ -517,35 +565,59 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
                             self.hiddenViewControllers = self.hiddenViewControllers + [vc]
                             self.hiddenViewControllerImageViews = self.hiddenViewControllerImageViews + [imageView]
                             
-                            viewController.dismiss(animated: false, completion: nil)
+                            logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissing View Controller")
+                            viewController.dismiss(animated: false, completion: {
+                                logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissed View Controller")
+                                completion()
+                                
+                                self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
+                            })
                             return
                         }
                     }
                     
                     vc.view.isHidden = hidden
                     self.hiddenViewControllers = self.hiddenViewControllers + [vc]
-                    viewController.dismiss(animated: false, completion: nil)
+                    logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Couldn't get screenshipt, dismissing View Controller")
+                    viewController.dismiss(animated: false, completion: {
+                        logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissed View Controller")
+                        completion()
+                        self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
+                    })
                     return
-
+                    
                 }
                 
             }
             else {
                 self.hiddenViewControllers.forEach({ $0.view.isHidden = false })
                 self.hiddenViewControllerImageViews.forEach({ $0.removeFromSuperview() })
+                completion()
+                self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
             }
         }
         else {
             if hidden {
                 let vc = self.topViewController
-//                debugPrint(hidden)
+                //                debugPrint(hidden)
                 vc.view.isHidden = hidden
                 self.hiddenViewControllers = self.hiddenViewControllers + [vc]
+                completion()
+                self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
             }
             else {
                 self.hiddenViewControllers.forEach({ $0.view.isHidden = false })
+                completion()
+                self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
             }
         }
+    }
+    
+    open func setContentHidden(hidden: Bool) {
+        
+        self.store!.dispatch(RequestSetContentHidden(hidden: hidden))
+        
+        
     }
     
     open var topViewController: UIViewController {

@@ -81,6 +81,10 @@ public final class RSState: NSObject, StateType {
     public let isVisitMonitoringEnabled: Bool?
     
     //passcode stuff
+    public let setContentHiddenRequested: Bool?
+    public let settingContentHidden: Bool
+    
+    public let passcodeRequested: Bool
     public let isPresentingPasscode: Bool
     public let passcodeViewController: ORKPasscodeViewController?
     public let isDismissingPasscode: Bool
@@ -124,6 +128,9 @@ public final class RSState: NSObject, StateType {
                 isFetchingLocation: Bool = false,
                 isLocationMonitoringEnabled: Bool? = nil,
                 isVisitMonitoringEnabled: Bool? = nil,
+                setContentHiddenRequested: Bool? = nil,
+                settingContentHidden: Bool = false,
+                passcodeRequested: Bool = false,
                 isPresentingPasscode: Bool = false,
                 passcodeViewController: ORKPasscodeViewController? = nil,
                 isDismissingPasscode: Bool = false,
@@ -164,6 +171,9 @@ public final class RSState: NSObject, StateType {
         self.isRequestingLocationAuthorization = isRequestingLocationAuthorization
         self.locationAuthorizationStatus = locationAuthorizationStatus
         self.isFetchingLocation = isFetchingLocation
+        self.setContentHiddenRequested = setContentHiddenRequested
+        self.settingContentHidden = settingContentHidden
+        self.passcodeRequested = passcodeRequested
         self.isPresentingPasscode = isPresentingPasscode
         self.isLocationMonitoringEnabled = isLocationMonitoringEnabled
         self.isVisitMonitoringEnabled = isVisitMonitoringEnabled
@@ -208,6 +218,9 @@ public final class RSState: NSObject, StateType {
         isRequestingLocationAuthorization: Bool? = nil,
         locationAuthorizationStatus: CLAuthorizationStatus? = nil,
         isFetchingLocation: Bool? = nil,
+        setContentHiddenRequested: Bool?? = nil,
+        settingContentHidden: Bool? = nil,
+        passcodeRequested: Bool? = nil,
         isPresentingPasscode: Bool? = nil,
         isLocationMonitoringEnabled: Bool?? = nil,
         isVisitMonitoringEnabled: Bool?? = nil,
@@ -252,6 +265,9 @@ public final class RSState: NSObject, StateType {
             isFetchingLocation: isFetchingLocation ?? fromState.isFetchingLocation,
             isLocationMonitoringEnabled: isLocationMonitoringEnabled ?? fromState.isLocationMonitoringEnabled,
             isVisitMonitoringEnabled: isVisitMonitoringEnabled ?? fromState.isVisitMonitoringEnabled,
+            setContentHiddenRequested: setContentHiddenRequested ?? fromState.setContentHiddenRequested,
+            settingContentHidden: settingContentHidden ?? fromState.settingContentHidden,
+            passcodeRequested: passcodeRequested ?? fromState.passcodeRequested,
             isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
             isDismissingPasscode: isDismissingPasscode ?? fromState.isDismissingPasscode,

@@ -361,8 +361,20 @@ public class RSReducer: NSObject {
             case _ as DismissActivityFailure:
                 return RSState.newState(fromState: state, isDismissing: false)
                 
+            case let action as RequestSetContentHidden:
+                return RSState.newState(fromState: state, setContentHiddenRequested: action.hidden)
+                
+            case _ as SetContentHiddedStarted:
+                return RSState.newState(fromState: state, setContentHiddenRequested: nil as Bool?, settingContentHidden: true)
+                
+            case _ as SetContentHiddedCompleted:
+                return RSState.newState(fromState: state, settingContentHidden: false)
+                
+            case _ as RequestPasscode:
+                return RSState.newState(fromState: state, passcodeRequested: true)
+                
             case _ as PresentPasscodeRequest:
-                return RSState.newState(fromState: state, isPresentingPasscode: true)
+                return RSState.newState(fromState: state, passcodeRequested: false, isPresentingPasscode: true )
                 
             case let action as PresentPasscodeSuccess:
                 return RSState.newState(fromState: state, isPresentingPasscode: false, passcodeViewController: action.passcodeViewController)
@@ -378,6 +390,7 @@ public class RSReducer: NSObject {
                 
             case _ as DismissPasscodeFailure:
                 return RSState.newState(fromState: state, isDismissingPasscode: false)
+                
 
             default:
                 return state
