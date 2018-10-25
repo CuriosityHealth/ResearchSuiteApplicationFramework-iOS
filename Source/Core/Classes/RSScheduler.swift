@@ -170,6 +170,10 @@ public protocol RSDashboardAdaptorItem {
     var generateCell: RSDashboardCellGenerator { get }
 }
 
+public protocol RSScheduledAction: RSScheduleEvent {
+    func performAction(store: Store<RSState>)
+}
+
 public class RSConcreteScheduleEvent: NSObject, RSScheduleEvent, RSScheduleEventBuilder {
     
     public static func createEvent(
@@ -336,6 +340,23 @@ open class RSScheduler: NSObject, StoreSubscriber {
     var subscriptions: [RSSchedulerSubscription] = []
     private var lastState: RSState?
     
+    func processScheduledActions(state: RSState) {
+        
+        guard let events = RSStateSelectors.getSchedulerEventUpdate(state)?.events,
+            let store = RSApplicationDelegate.appDelegate.store else {
+            return
+        }
+        
+        let scheduledActions: [RSScheduledAction] = events
+            .filter { $0.state == .pending }
+            .compactMap({ $0 as? RSScheduledAction })
+        
+        scheduledActions.forEach { scheduledAction in
+            scheduledAction.performAction(store: store)
+        }
+
+    }
+    
     open func newState(state: RSState) {
         
         guard let lastState = self.lastState,
@@ -344,6 +365,10 @@ open class RSScheduler: NSObject, StoreSubscriber {
                 return
         }
         
+        self.lastState = state
+        
+        //reloadSchedule could potentially cause another action to be emitted,
+        //thus lastState should be set above
         //check for initial load
         if RSStateSelectors.getSchedulerEventUpdate(state) == nil {
             self.reloadSchedule(state: state)
@@ -352,7 +377,13 @@ open class RSScheduler: NSObject, StoreSubscriber {
             self.reloadSchedule(state: state)
         }
         
-        self.lastState = state
+        self.processScheduledActions(state: state)
+        
+        
+
+        //this is causing endless recursion as shouldReloadSchedule is using old last state,
+        //let's try moving this above
+//        self.lastState = state
     }
     
     open func shouldReloadSchedule(state: RSState, lastState: RSState) -> Bool {
@@ -474,6 +505,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
         if let changes = self.computeChanges(newEvents: events, oldEvents: oldEvents),
             let store = RSApplicationDelegate.appDelegate.store {
             
+               
             let scheduleEventUpdate = RSSchedulerEventUpdate(
                 uuid: UUID(),
                 events: events,
@@ -493,6 +525,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
                     modifications: changes.modifications
                 )
             }
+            
         }
         
     }
