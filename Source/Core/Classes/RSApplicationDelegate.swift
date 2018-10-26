@@ -853,7 +853,6 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         //reload schedule
         //can we do this, or would it be better to set a flag in the state and reload when convenient?
-        assert(self.scheduler != nil)
         self.scheduler?.reloadSchedule(state: nil)
     }
     

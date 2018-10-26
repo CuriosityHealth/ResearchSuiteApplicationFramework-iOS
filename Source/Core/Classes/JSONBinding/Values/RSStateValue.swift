@@ -50,6 +50,11 @@ public class RSStateValue: Glossy {
             return RSValueConvertible(value: NSNull())
             
         case "StringArray":
+            
+            if let nullValue = value as? NSNull {
+                return RSValueConvertible(value: nullValue)
+            }
+            
             guard let value = value as? [String] else {
                 return nil
             }
