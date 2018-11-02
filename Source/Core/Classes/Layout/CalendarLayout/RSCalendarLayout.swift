@@ -43,6 +43,9 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
     open let calendarScope: CalendarScope
     open let calendarAppearance: RSCalendarAppearance?
     
+    public let backgroundColorJSON: JSON?
+    public let backgroundImage: UIImage?
+    
     required public init?(json: JSON) {
         
         guard let datapointClassesJSON: [JSON] = "datapointClasses" <~~ json else {
@@ -61,6 +64,17 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
         }
         
         self.calendarAppearance = "calendarAppearance" <~~ json
+        
+        self.backgroundColorJSON = "backgroundColor" <~~ json
+        
+        self.backgroundImage = {
+            if let imageTitle: String = "backgroundImage" <~~ json {
+                return UIImage(named: imageTitle)
+            }
+            else {
+                return nil
+            }
+        }()
         
         super.init(json: json)
     }

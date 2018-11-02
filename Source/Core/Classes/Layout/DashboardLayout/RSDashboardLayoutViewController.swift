@@ -95,9 +95,28 @@ open class RSDashboardLayoutViewController: UICollectionViewController, UICollec
             let window = UIApplication.shared.windows.first {
             let cellWidth = window.frame.size.width - (flowLayout.sectionInset.right + flowLayout.sectionInset.left)
             flowLayout.estimatedItemSize = CGSize(width: cellWidth, height: cellWidth)
+            if #available(iOS 11.0, *) {
+                flowLayout.sectionInsetReference = .fromSafeArea
+            } else {
+                //do nothing
+            }
         }
         
-        self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
+        if let backgroundImage = self.dashboardLayout.backgroundImage {
+            let imageView = UIImageView(image: backgroundImage)
+            imageView.contentMode = .bottom
+            self.collectionView!.backgroundView = imageView
+        }
+        
+        if let backgroundColorJSON = self.dashboardLayout.backgroundColorJSON,
+            let state = self.state,
+            let backgroundColor = RSValueManager.processValue(jsonObject: backgroundColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+            
+            self.collectionView!.backgroundColor = backgroundColor
+        }
+        else {
+            self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
+        }
         
         // Do any additional setup after loading the view.
         self.layoutDidLoad()

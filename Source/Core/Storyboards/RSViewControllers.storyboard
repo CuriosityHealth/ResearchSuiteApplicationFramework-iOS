@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -111,10 +111,6 @@
         <scene sceneID="7y6-fL-Tv9">
             <objects>
                 <viewController storyboardIdentifier="titleLayoutViewController" id="xmN-ev-NpC" customClass="RSLayoutTitleViewController" customModule="ResearchSuiteApplicationFramework" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="FYd-6E-2O1"/>
-                        <viewControllerLayoutGuide type="bottom" id="sQk-Et-qjh"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="0pd-2w-hSN">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -137,10 +133,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="TH1-3j-kbb" firstAttribute="centerX" secondItem="0pd-2w-hSN" secondAttribute="centerX" id="1cg-iw-inq"/>
-                            <constraint firstItem="B2c-Wu-jNF" firstAttribute="centerX" secondItem="0pd-2w-hSN" secondAttribute="centerX" id="D0f-xO-8vr"/>
+                            <constraint firstItem="TH1-3j-kbb" firstAttribute="centerX" secondItem="Fw4-d7-NeU" secondAttribute="centerX" id="1cg-iw-inq"/>
+                            <constraint firstItem="B2c-Wu-jNF" firstAttribute="centerX" secondItem="Fw4-d7-NeU" secondAttribute="centerX" id="D0f-xO-8vr"/>
                             <constraint firstItem="B2c-Wu-jNF" firstAttribute="height" secondItem="0pd-2w-hSN" secondAttribute="height" id="PvS-KU-V89"/>
-                            <constraint firstItem="8pM-Mv-Ysp" firstAttribute="centerX" secondItem="0pd-2w-hSN" secondAttribute="centerX" id="Y8D-y8-yLo"/>
+                            <constraint firstItem="8pM-Mv-Ysp" firstAttribute="centerX" secondItem="Fw4-d7-NeU" secondAttribute="centerX" id="Y8D-y8-yLo"/>
                             <constraint firstItem="8pM-Mv-Ysp" firstAttribute="centerY" secondItem="0pd-2w-hSN" secondAttribute="centerY" id="YMM-ch-F7u"/>
                             <constraint firstItem="B2c-Wu-jNF" firstAttribute="centerY" secondItem="0pd-2w-hSN" secondAttribute="centerY" id="auT-uC-tqE"/>
                             <constraint firstItem="8pM-Mv-Ysp" firstAttribute="width" secondItem="0pd-2w-hSN" secondAttribute="width" multiplier="0.9" id="gun-Vf-xyU"/>
@@ -149,6 +145,7 @@
                             <constraint firstItem="TH1-3j-kbb" firstAttribute="leading" secondItem="0pd-2w-hSN" secondAttribute="leadingMargin" id="nuG-w7-1mp"/>
                             <constraint firstItem="8pM-Mv-Ysp" firstAttribute="top" secondItem="TH1-3j-kbb" secondAttribute="bottom" constant="20" id="rGd-Zy-SOf"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="Fw4-d7-NeU"/>
                     </view>
                     <connections>
                         <outlet property="backgroundImageView" destination="B2c-Wu-jNF" id="Y7T-vV-Vnk"/>
@@ -222,10 +219,6 @@
         <scene sceneID="LhY-vh-ex9">
             <objects>
                 <viewController storyboardIdentifier="newDashboardLayoutViewController" id="3mH-rB-HYn" customClass="RSNewDashboardLayoutViewController" customModule="ResearchSuiteApplicationFramework" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Yic-9n-GV6"/>
-                        <viewControllerLayoutGuide type="bottom" id="Hg4-Dx-Kuh"/>
-                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="26S-6d-C2j">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -257,10 +250,11 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="yUM-m0-fcW" secondAttribute="bottom" id="DDP-1B-R4h"/>
-                            <constraint firstItem="yUM-m0-fcW" firstAttribute="top" secondItem="Yic-9n-GV6" secondAttribute="bottom" id="ban-4C-fM8"/>
-                            <constraint firstItem="yUM-m0-fcW" firstAttribute="centerX" secondItem="26S-6d-C2j" secondAttribute="centerX" id="bcr-4w-L3g"/>
+                            <constraint firstItem="yUM-m0-fcW" firstAttribute="top" secondItem="800-6R-j9L" secondAttribute="top" id="ban-4C-fM8"/>
+                            <constraint firstItem="yUM-m0-fcW" firstAttribute="centerX" secondItem="800-6R-j9L" secondAttribute="centerX" id="bcr-4w-L3g"/>
                             <constraint firstItem="yUM-m0-fcW" firstAttribute="width" secondItem="26S-6d-C2j" secondAttribute="width" priority="750" id="oGL-tx-RCq"/>
                         </constraints>
+                        <viewLayoutGuide key="safeArea" id="800-6R-j9L"/>
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="yUM-m0-fcW" id="Zgg-6x-QYi"/>
@@ -290,6 +284,7 @@
                             <outlet property="delegate" destination="tDU-lf-huk" id="bMH-Aq-MYh"/>
                         </connections>
                     </collectionView>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XBd-V6-J5Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -316,6 +311,7 @@
                             <outlet property="delegate" destination="kZC-UJ-bVg" id="vex-dQ-uoV"/>
                         </connections>
                     </collectionView>
+                    <extendedEdge key="edgesForExtendedLayout" top="YES"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rvn-kB-nBv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

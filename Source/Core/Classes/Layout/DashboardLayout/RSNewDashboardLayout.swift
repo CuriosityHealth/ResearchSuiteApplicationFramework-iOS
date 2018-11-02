@@ -25,6 +25,9 @@ open class RSNewDashboardLayout: RSBaseLayout, RSLayoutGenerator  {
     
     public let adaptor: String
     
+    public let backgroundColorJSON: JSON?
+    public let backgroundImage: UIImage?
+    
     required public init?(json: JSON) {
         
         guard let adaptor: String = "adaptor" <~~ json else {
@@ -32,6 +35,17 @@ open class RSNewDashboardLayout: RSBaseLayout, RSLayoutGenerator  {
         }
         
         self.adaptor = adaptor
+        
+        self.backgroundColorJSON = "backgroundColor" <~~ json
+        
+        self.backgroundImage = {
+            if let imageTitle: String = "backgroundImage" <~~ json {
+                return UIImage(named: imageTitle)
+            }
+            else {
+                return nil
+            }
+        }()
 
         super.init(json: json)
     }

@@ -20,6 +20,8 @@ open class RSDashboardLayout: RSBaseLayout, RSLayoutGenerator  {
     
     public let items: [RSDashboardListItem]
     public let monitoredValues: [JSON]
+    public let backgroundColorJSON: JSON?
+    public let backgroundImage: UIImage?
     
     required public init?(json: JSON) {
         
@@ -29,6 +31,17 @@ open class RSDashboardLayout: RSBaseLayout, RSLayoutGenerator  {
         
         self.items = itemsJSON.compactMap({ RSDashboardListItem(json: $0) })
         self.monitoredValues = "monitoredValues" <~~ json ?? []
+        
+        self.backgroundColorJSON = "backgroundColor" <~~ json
+        
+        self.backgroundImage = {
+            if let imageTitle: String = "backgroundImage" <~~ json {
+                return UIImage(named: imageTitle)
+            }
+            else {
+                return nil
+            }
+        }()
         
         super.init(json: json)
     }

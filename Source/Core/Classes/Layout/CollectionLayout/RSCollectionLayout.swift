@@ -21,6 +21,9 @@ open class RSCollectionLayout: RSBaseLayout, RSLayoutGenerator {
 //    open let dataSource: RSCollectionDataSourceDescriptor
     open let datapointClasses: [RSDatapointClass]
     
+    public let backgroundColorJSON: JSON?
+    public let backgroundImage: UIImage?
+    
     required public init?(json: JSON) {
         
         guard let datapointClassesJSON: [JSON] = "datapointClasses" <~~ json else {
@@ -29,6 +32,17 @@ open class RSCollectionLayout: RSBaseLayout, RSLayoutGenerator {
         
 //        self.dataSource = dataSource
         self.datapointClasses = datapointClassesJSON.compactMap({ RSDatapointClass(json: $0) })
+        
+        self.backgroundColorJSON = "backgroundColor" <~~ json
+        
+        self.backgroundImage = {
+            if let imageTitle: String = "backgroundImage" <~~ json {
+                return UIImage(named: imageTitle)
+            }
+            else {
+                return nil
+            }
+        }()
         
         super.init(json: json)
     }

@@ -229,7 +229,23 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
                 
             }
             
-        } 
+        }
+        
+        if let backgroundImage = self.calendarLayout.backgroundImage {
+            let imageView = UIImageView(image: backgroundImage)
+            imageView.contentMode = .bottom
+            self.collectionView!.backgroundView = imageView
+        }
+        
+        if let backgroundColorJSON = self.calendarLayout.backgroundColorJSON,
+            let state = self.state,
+            let backgroundColor = RSValueManager.processValue(jsonObject: backgroundColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+            
+            self.collectionView!.backgroundColor = backgroundColor
+        }
+        else {
+            self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
+        }
         
         self.layoutDidLoad()
     }

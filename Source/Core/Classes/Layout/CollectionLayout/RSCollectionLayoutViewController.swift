@@ -100,7 +100,21 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             flowLayout.estimatedItemSize = CGSize(width: cellWidth, height: cellWidth)
         }
         
-        self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
+        if let backgroundImage = self.collectionLayout.backgroundImage {
+            let imageView = UIImageView(image: backgroundImage)
+            imageView.contentMode = .bottom
+            self.collectionView!.backgroundView = imageView
+        }
+        
+        if let backgroundColorJSON = self.collectionLayout.backgroundColorJSON,
+            let state = self.state,
+            let backgroundColor = RSValueManager.processValue(jsonObject: backgroundColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
+            
+            self.collectionView!.backgroundColor = backgroundColor
+        }
+        else {
+            self.collectionView!.backgroundColor = UIColor.groupTableViewBackground
+        }
         
         // Do any additional setup after loading the view.
         self.layoutDidLoad()
