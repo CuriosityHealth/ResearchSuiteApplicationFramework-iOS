@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ResearchSuiteApplicationFramework'
-  s.version          = '0.20.0'
+  s.version          = '0.21.0'
   s.summary          = 'The ResearchSuite Application Framework is the easiest way to build mobile health research studies.'
 
 # This description is used to generate tags and improve search results.
@@ -38,13 +38,13 @@ Pod::Spec.new do |s|
     core.dependency 'ReSwift', '~> 3.0'
     core.dependency 'ResearchSuiteTaskBuilder', '~> 0.13'
     core.dependency 'ResearchSuiteResultsProcessor', '~> 0.9'
-    core.dependency 'ResearchSuiteExtensions', '~> 0.19'
+    core.dependency 'ResearchSuiteExtensions', '~> 0.20'
     core.dependency 'Gloss', '~> 2'
     core.dependency 'SimplePDF', '~> 3'
     core.dependency 'GRMustache.swift', '~> 2.1'
     core.dependency 'FSCalendar'
     core.dependency 'SnapKit'
-    core.dependency 'LS2SDK/Common', '~> 0.10'
+    core.dependency 'LS2SDK/Common', '~> 0.11'
   end
 
   s.subspec 'Development' do |dev|
@@ -59,8 +59,8 @@ Pod::Spec.new do |s|
     db.source_files = 'Source/Database/**/*'
     db.dependency 'ResearchSuiteApplicationFramework/Core'
     db.dependency 'RealmSwift'
-    db.dependency 'LS2SDK/Common', '~> 0.10'
-    db.dependency 'LS2SDK/Database', '~> 0.10'
+    db.dependency 'LS2SDK/Common', '~> 0.11'
+    db.dependency 'LS2SDK/Database', '~> 0.11'
   end
 
   s.subspec 'ConfigCaching' do |config|

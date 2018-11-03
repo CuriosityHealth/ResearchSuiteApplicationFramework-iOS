@@ -318,7 +318,7 @@ public struct RSSchedulerEventUpdate {
 
 public protocol RSSchedulerSeries {
     static var monitoredValues: [String] { get }
-    static func generateEvents(schedulerDatabase: RSSchedulerDatabase, state: RSState, extrapolationDuration: TimeInterval) -> [RSScheduleEvent]
+    static func generateEvents(scheduler: RSScheduler, state: RSState, extrapolationDuration: TimeInterval) -> [RSScheduleEvent]
 }
 
 //it can either adopt or emit objects that adopt the dashbaord adaptor protocol
