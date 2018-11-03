@@ -16,7 +16,7 @@ open class RSSchedulerDashboardAdaptor: NSObject, RSDashboardAdaptor, RSSchedule
     weak var collectionView: UICollectionView?
     
     var items: [RSDashboardAdaptorItem] = []
-    var priorityCutoff: Int = 0
+    open var priorityCutoff: Int = 0
     
     //hold onto this in order to unsubscribe later
     weak var scheduler: RSScheduler?
@@ -39,6 +39,16 @@ open class RSSchedulerDashboardAdaptor: NSObject, RSDashboardAdaptor, RSSchedule
         self.collectionView = collectionView
     }
     
+    open func dashboardItems(for events: [RSScheduleEvent]) -> [RSDashboardAdaptorItem] {
+        return events
+            .compactMap { ($0 as? RSDashboardAdaptorItemConvertible)?.toDashboardAdaptorItem() }
+            .filter { $0.shouldPresentItem }
+            .filter { $0.priority >= priorityCutoff }
+            .sorted(by: { (first, second) -> Bool in
+                return first.priority > second.priority
+            })
+    }
+    
     open func newSchedulerEvents(
         scheduler: RSScheduler,
         events: [RSScheduleEvent],
@@ -52,14 +62,8 @@ open class RSSchedulerDashboardAdaptor: NSObject, RSDashboardAdaptor, RSSchedule
         // - no start date or start date in the past
         // - if start date exists, check that window based on start + duration has not elapsed
         // - has not completed
-        
-        self.items = events
-            .compactMap { ($0 as? RSDashboardAdaptorItemConvertible)?.toDashboardAdaptorItem() }
-            .filter { $0.shouldPresentItem }
-            .filter { $0.priority >= priorityCutoff }
-            .sorted(by: { (first, second) -> Bool in
-                return first.priority > second.priority
-            })
+
+        self.items = self.dashboardItems(for: events)
         
         self.collectionView?.reloadData()
     }
