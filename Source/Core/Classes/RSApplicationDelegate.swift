@@ -22,6 +22,7 @@ public enum RSConfiguration: String {
     case testing = "testing"
     case staging = "staging"
     case is_testing = "is_testing"
+    case usability_testing = "usability_testing"
     case production = "production"
     
 }
