@@ -17,6 +17,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         return self.matchedRoute.route.identifier
     }
     
+    public let uuid: UUID = UUID()
+    
     public var matchedRoute: RSMatchedRoute!
     
     public var viewController: UIViewController! {

@@ -15,6 +15,7 @@ open class RSMoreLayoutViewController: RSLayoutViewController {
         
     }
     
+    public let uuid: UUID = UUID()
     
     public init(identifier: String, matchedRoute: RSMatchedRoute, parent: RSLayoutViewController) {
         self.matchedRoute = matchedRoute

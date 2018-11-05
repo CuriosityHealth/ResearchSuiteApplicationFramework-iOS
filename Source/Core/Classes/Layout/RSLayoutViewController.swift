@@ -13,6 +13,7 @@ public protocol RSLayoutViewController {
     
     //these should be unique!!!
     var identifier: String! { get }
+    var uuid: UUID { get }
     var matchedRoute: RSMatchedRoute! { get }
     var layout: RSLayout! { get }
     var viewController: UIViewController! { get }

@@ -28,6 +28,7 @@ open class RSRouter {
         case invalidPath(path: String)
         case redirect(path: String)
         case redirectCycle(path: String)
+        case pathNotConvertibleToURL(path: String)
         
         public var errorDescription: String? {
             switch self {
@@ -39,9 +40,10 @@ open class RSRouter {
                 
             case .redirectCycle(let path):
                 return NSLocalizedString("The path \(path) led to a redirect cycle.", comment: "Redirect Cycle")
+                
+            case .pathNotConvertibleToURL(let path):
+                return NSLocalizedString("The path \(path) is not convertible to a URL.", comment: "Path Not Convertible To URL")
             }
-            
-            
         }
     }
     
@@ -49,17 +51,20 @@ open class RSRouter {
     // If path remains,
     // 2) get layout for route
     // 3) generate child routes for layout
-    open class func getRouteStackHelper(for path: String, parentMatch: RSMatchedRoute?, routes: [RSRoute], state: RSState, routeManager: RSRouteManager) throws -> [RSMatchedRoute] {
+    open class func getRouteStackHelper(for fullURL: URL, uuid: UUID, parentMatch: RSMatchedRoute?, routes: [RSRoute], state: RSState, routeManager: RSRouteManager) throws -> [RSMatchedRoute] {
+        
+        let previousPath = parentMatch?.match.path ?? ""
+        let path = String(fullURL.path.dropFirst(previousPath.count))
+        
         guard path.hasPrefix("/") else {
 //            debugPrint("Path not prefixed by '/'")
             let fullPath = parentMatch == nil ? path : (parentMatch!.match.path + path)
-            throw RSRouterError.invalidPath(path: fullPath)
+            throw RSRouterError.invalidPath(path: fullURL.absoluteString)
         }
         
         //check to see if path is prefixed by any of the route paths
         let matchedRoutes: [RSMatchedRoute] = try routes.compactMap { route in
-            let previousPath = parentMatch?.match.path ?? ""
-            guard let match = try route.match(remainingPath: path, previousPath: previousPath) else {
+            guard let match = try route.match(remainingPath: path, previousPath: previousPath, fullURL: fullURL) else {
                 return nil
             }
             
@@ -93,8 +98,24 @@ open class RSRouter {
                     throw RSRouterError.invalidPath(path: fullPath)
                 }
                 
+                
+//                let newURL = url.
+//                let remainingURLString: String = {
+//                    if let queryString = url.query {
+//                        return "\(remainingPath)?\(queryString)"
+//                    }
+//                    else {
+//                        return remainingPath
+//                    }
+//                }()
+//                
+//                guard let remainingURL = URL(string: remainingURLString) else {
+//                    throw RSRouterError.pathNotConvertibleToURL(path: remainingURLString)
+//                }
+                
                 let matchedRouteStack = try self.getRouteStackHelper(
-                    for: String(remainingPath),
+                    for: fullURL,
+                    uuid: uuid,
                     parentMatch: matchedRoute,
                     routes: childRoutes,
                     state: state,
@@ -104,6 +125,8 @@ open class RSRouter {
                 return [matchedRoute] + matchedRouteStack
             }
             else {
+                
+                //need to do somthing with query string here...
                 return [matchedRoute]
             }
             
@@ -115,7 +138,7 @@ open class RSRouter {
         }
     }
     
-    open class func getRouteStack(for path: String, rootLayoutIdentifier: String, state: RSState, routeManager: RSRouteManager) throws -> [RSMatchedRoute] {
+    open class func getRouteStack(for url: URL, uuid: UUID, rootLayoutIdentifier: String, state: RSState, routeManager: RSRouteManager) throws -> [RSMatchedRoute] {
         
         guard let layout = RSStateSelectors.layout(state, for: rootLayoutIdentifier) else {
             throw RSLayoutError.noMatchingLayout(routeIdentifier: "ROOT", layoutIdentifier: rootLayoutIdentifier)
@@ -125,14 +148,19 @@ open class RSRouter {
         
         let childRoutes: [RSRoute] = layout.childRoutes(routeManager: routeManager, state: state, matchedRoute: nil, parentLayout: nil)
         
-        return try self.getRouteStackHelper(for: path, parentMatch: nil, routes: childRoutes, state: state, routeManager: routeManager)
+        return try self.getRouteStackHelper(for: url, uuid: uuid, parentMatch: nil, routes: childRoutes, state: state, routeManager: routeManager)
     }
     
-    open class func generateRoutingInstructions(path: String, rootLayoutIdentifier: String, state: RSState, routeManager: RSRouteManager) throws -> RSRoutingInstructions {
+    open class func generateRoutingInstructions(path: String, uuid: UUID, rootLayoutIdentifier: String, state: RSState, routeManager: RSRouteManager) throws -> RSRoutingInstructions {
+        
+        
+        guard let url = URL(string: path) else {
+            throw RSRouterError.pathNotConvertibleToURL(path: path)
+        }
         
         do {
             
-            let matchedRouteStack = try self.getRouteStack(for: path, rootLayoutIdentifier: rootLayoutIdentifier, state: state, routeManager: routeManager)
+            let matchedRouteStack = try self.getRouteStack(for: url, uuid: uuid, rootLayoutIdentifier: rootLayoutIdentifier, state: state, routeManager: routeManager)
             return RSRoutingInstructions(
                 path: path,
                 routesStack: matchedRouteStack)
@@ -143,8 +171,28 @@ open class RSRouter {
             if redirectPath == path {
                 throw RSRouterError.redirectCycle(path: redirectPath)
             }
-            return try self.generateRoutingInstructions(path: redirectPath, rootLayoutIdentifier: rootLayoutIdentifier, state: state, routeManager: routeManager)
+            return try self.generateRoutingInstructions(path: redirectPath, uuid: uuid, rootLayoutIdentifier: rootLayoutIdentifier, state: state, routeManager: routeManager)
         }
+    }
+    
+    open class func canRoute(path: String, rootLayoutIdentifier: String, state: RSState, routeManager: RSRouteManager) -> Bool {
+        
+        
+        do {
+            let _ = try RSRouter.generateRoutingInstructions(
+                path: path,
+                uuid: UUID(),
+                rootLayoutIdentifier: rootLayoutIdentifier,
+                state: state,
+                routeManager: routeManager
+            )
+            
+            return true
+        }
+        catch _ {
+            return false
+        }
+        
     }
     
 }

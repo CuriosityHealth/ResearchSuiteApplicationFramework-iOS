@@ -24,7 +24,19 @@ open class RSPathTransformer: RSValueTransformer {
         
         if path_type == "parent",
             let layoutVC = context["layoutViewController"] as? RSLayoutViewController {
-            let parentPath = layoutVC.parentLayoutViewController.matchedRoute.match.path
+            
+            let parentVC: RSLayoutViewController = layoutVC.parentLayoutViewController
+            
+            let parentPath: String = {
+                if let nav = parentVC.viewController.navigationController as? RSNavigationController,
+                    let parentPath = nav.getOriginalPath(for: parentVC) {
+                    return parentPath
+                }
+                else {
+                    return parentVC.matchedRoute.match.path
+                }
+            }()
+            
             return RSValueConvertible(value: parentPath as NSString)
         }
         else if path_type == "back",

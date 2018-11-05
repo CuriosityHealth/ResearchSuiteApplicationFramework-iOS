@@ -46,8 +46,8 @@ open class RSRoute: CustomStringConvertible, Equatable, RSRouteGenerator {
         self.layoutIdentifier = layoutIdentifier
     }
     
-    open func match(remainingPath: String, previousPath: String) throws -> RSMatch? {
-        return self.path.match(remainingPath: remainingPath, previousPath: previousPath)
+    open func match(remainingPath: String, previousPath: String, fullURL: URL) throws -> RSMatch? {
+        return self.path.match(remainingPath: remainingPath, previousPath: previousPath, fullURL: fullURL)
     }
     
 }
@@ -60,9 +60,9 @@ open class RSRedirectRoute: RSRoute {
         super.init(identifier: identifier, path: path, layoutIdentifier: "redirect")
     }
     
-    override open func match(remainingPath: String, previousPath: String) throws -> RSMatch? {
+    override open func match(remainingPath: String, previousPath: String, fullURL: URL) throws -> RSMatch? {
         
-        if let _ = self.path.match(remainingPath: remainingPath, previousPath: previousPath) {
+        if let _ = self.path.match(remainingPath: remainingPath, previousPath: previousPath, fullURL: fullURL) {
             throw RSRouter.RSRouterError.redirect(path: self.redirectPath)
         }
         else {

@@ -18,6 +18,8 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
         return self.matchedRoute.route.identifier
     }
     
+    public let uuid: UUID = UUID()
+    
     public var matchedRoute: RSMatchedRoute!
     
     public var viewController: UIViewController! {

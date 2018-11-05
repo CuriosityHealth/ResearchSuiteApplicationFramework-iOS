@@ -12,7 +12,7 @@ import Gloss
 import ReSwift
 
 public protocol RSPath: CustomStringConvertible {
-    func match(remainingPath: String, previousPath: String) -> RSMatch?
+    func match(remainingPath: String, previousPath: String, fullURL: URL) -> RSMatch?
     func remainder(path: String) -> String
 //    func parameters(path: String) -> [String: AnyObject]?
 }
@@ -31,10 +31,17 @@ open class RSExactPath: RSPath, RSPathGenerator {
         return RSExactPath(path: path)
     }
     
-    public func match(remainingPath: String, previousPath: String) -> RSMatch? {
+    public func match(remainingPath: String, previousPath: String, fullURL: URL) -> RSMatch? {
         
         if self.path == remainingPath {
-            return RSMatch(params: [:], isExact: true, path: previousPath + self.path)
+            let isFinal = self.remainder(path: remainingPath).count == 0
+            return RSMatch(
+                isExact: true,
+                path: previousPath + self.path,
+                params: [:],
+                fullURL: fullURL,
+                isFinal: isFinal
+            )
         }
         else {
             return nil
@@ -74,10 +81,17 @@ open class RSPrefixPath: RSPath, RSPathGenerator {
         return RSPrefixPath(prefix: prefix)
     }
     
-    public func match(remainingPath: String, previousPath: String) -> RSMatch? {
+    public func match(remainingPath: String, previousPath: String, fullURL: URL) -> RSMatch? {
         
         if remainingPath.lowercased().hasPrefix(self.prefix) {
-            return RSMatch(params: [:], isExact: false, path: previousPath + self.prefix)
+            let isFinal = self.remainder(path: remainingPath).count == 0
+            return RSMatch(
+                isExact: false,
+                path: previousPath + self.prefix,
+                params: [:],
+                fullURL: fullURL,
+                isFinal: isFinal
+            )
         }
         
         return nil
@@ -152,7 +166,7 @@ open class RSParamPath: RSPath, RSPathGenerator {
         return RSParamPath(path: path)
     }
 
-    public func match(remainingPath: String, previousPath: String) -> RSMatch? {
+    public func match(remainingPath: String, previousPath: String, fullURL: URL) -> RSMatch? {
 
         //convert /samples/<id> into regex
         
@@ -188,8 +202,15 @@ open class RSParamPath: RSPath, RSPathGenerator {
             
             let remainder = "/\(remainingPath.dropFirst(match.range.length))"
 //            print(remainder)
+            let isFinal = remainder.count == 0
             
-            return RSMatch(params: paramDict, isExact: false, path: previousPath + fullMatchedPath)
+            return RSMatch(
+                isExact: false,
+                path: previousPath + fullMatchedPath,
+                params: paramDict,
+                fullURL: fullURL,
+                isFinal: isFinal
+            )
         }
         else {
             return nil
@@ -305,10 +326,17 @@ open class RSBrowserPath: RSPath, RSPathGenerator {
         return RSBrowserPath(prefix: prefix)
     }
     
-    public func match(remainingPath: String, previousPath: String) -> RSMatch? {
+    public func match(remainingPath: String, previousPath: String, fullURL: URL) -> RSMatch? {
         
         if remainingPath.hasPrefix(self.prefix) {
-            return RSMatch(params: [:], isExact: false, path: previousPath + remainingPath)
+            let isFinal = self.remainder(path: remainingPath).count == 0
+            return RSMatch(
+                isExact: false,
+                path: previousPath + remainingPath,
+                params: [:],
+                fullURL: fullURL,
+                isFinal: isFinal
+            )
         }
         
         return nil

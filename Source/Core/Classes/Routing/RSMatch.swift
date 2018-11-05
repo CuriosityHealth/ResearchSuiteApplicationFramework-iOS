@@ -24,12 +24,43 @@ public struct RSMatch: Equatable, JSONEncodable {
         return lhs.path == rhs.path
     }
     
-    let params: [String: Any]
-    let isExact: Bool
+    
+    public let isExact: Bool
     //this should be the path UP TO THIS POINT!
     //e.g., if we match against /settings, but the entire path is /home/settings/extra
     // path here should be /home/settings
-    let path: String
+    public let path: String
+    public let params: [String: Any]
+    
+    public let fullURL: URL
+    public let isFinal: Bool
+    
+    public var queryString: String? {
+        if self.isFinal {
+            return self.fullURL.query
+        }
+        else {
+            return nil
+        }
+    }
+    
+    public var queryParams: [String: String] {
+        if self.isFinal {
+            return self.fullURL.queryDictionary ?? [:]
+        }
+        else {
+            return [:]
+        }
+    }
+    
+    public var pathAndQuery: String {
+        if let queryString = self.queryString {
+            return "\(self.path)?\(queryString)"
+        }
+        else {
+            return self.path
+        }
+    }
 }
 
 

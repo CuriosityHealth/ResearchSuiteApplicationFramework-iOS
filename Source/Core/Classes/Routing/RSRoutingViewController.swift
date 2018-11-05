@@ -85,6 +85,8 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
         return "ROOT"
     }
     
+    public let uuid: UUID = UUID()
+    
     public var matchedRoute: RSMatchedRoute! {
         return nil
     }
@@ -336,7 +338,7 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             let beginRoutingAction = RoutingStarted(uuid: pathChangeRequest.0)
             self.store?.dispatch(beginRoutingAction)
             
-            self.handleRouteChange(newPath: pathChangeRequest.1, animated: hasRouted, state: state) { (finalPath, error) in
+            self.handleRouteChange(newPath: pathChangeRequest.1, uuid: pathChangeRequest.0, animated: hasRouted, state: state) { (finalPath, error) in
                 
                 if let error = error {
                     let failureAction = ChangePathFailure(uuid: pathChangeRequest.0, requestedPath: pathChangeRequest.1, finalPath: finalPath, error: error)
@@ -370,25 +372,33 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     }
  
     public func canRoute(newPath: String, state: RSState) -> Bool {
-        do {
-            let _ = try RSRouter.generateRoutingInstructions(
-                path: newPath,
-                rootLayoutIdentifier: self.rootLayoutIdentifier,
-                state: state,
-                routeManager: self.routeManager
-            )
-            return true
-        }
-        catch _ {
-            return false
-        }
+//        do {
+//            let _ = try RSRouter.generateRoutingInstructions(
+//                path: newPath,
+//                rootLayoutIdentifier: self.rootLayoutIdentifier,
+//                state: state,
+//                routeManager: self.routeManager
+//            )
+//            return true
+//        }
+//        catch _ {
+//            return false
+//        }
+        
+        return RSRouter.canRoute(
+            path: newPath,
+            rootLayoutIdentifier: self.rootLayoutIdentifier,
+            state: state,
+            routeManager: self.routeManager
+        )
     }
     
-    private func handleRouteChange(newPath: String, animated: Bool, state: RSState, completion: @escaping ((String, Error?) -> ())) {
+    private func handleRouteChange(newPath: String, uuid: UUID, animated: Bool, state: RSState, completion: @escaping ((String, Error?) -> ())) {
         do {
             
             let routingInstructions = try RSRouter.generateRoutingInstructions(
                 path: newPath,
+                uuid: uuid,
                 rootLayoutIdentifier: self.rootLayoutIdentifier,
                 state: state,
                 routeManager: self.routeManager

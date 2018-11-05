@@ -14,6 +14,8 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
     private var popRequestQueue: DispatchQueue!
     private var popRequests: Set<String>!
     
+    private var pathWhenPushed: [UUID: String] = [:]
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = delegate
@@ -35,11 +37,25 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
         }
     }
     
+    public func getOriginalPath(for layoutVC: RSLayoutViewController) -> String? {
+        return self.pathWhenPushed[layoutVC.uuid]
+    }
+    
     public func pushViewController(
-        _ viewController: UIViewController,
+        layoutVC: RSLayoutViewController,
         animated: Bool,
         completion: @escaping () -> Void)
     {
+        
+        let pathAndQuery = layoutVC.matchedRoute.match.pathAndQuery
+        self.pathWhenPushed[layoutVC.uuid] = pathAndQuery
+
+        guard let viewController = layoutVC.viewController else {
+            assertionFailure("Should not be null here...")
+            completion()
+            return
+        }
+        
         self.pushViewController(viewController, animated: animated)
         
         guard animated, let coordinator = self.transitionCoordinator else {
@@ -66,14 +82,16 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
                                   completion: @escaping (UIViewController?) -> Void) {
         
         
-        guard let lvc = self.visibleViewController as? RSLayoutViewController else{
-            completion(nil)
-            return
-        }
+//        guard let lvc = self.visibleViewController as? RSLayoutViewController else{
+//            completion(nil)
+//            return
+//        }
+        
+        super.popToViewController(layoutVC.viewController, animated: false)
         
         assert(layoutVC.viewController == self.visibleViewController)
         
-        let parent:RSLayoutViewController = lvc.parentLayoutViewController
+        let parent:RSLayoutViewController = layoutVC.parentLayoutViewController
         self.popRequestQueue.async {
             self.popRequests = self.popRequests.union([parent.identifier])
         }

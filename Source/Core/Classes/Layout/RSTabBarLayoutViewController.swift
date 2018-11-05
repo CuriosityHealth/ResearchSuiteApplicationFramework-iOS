@@ -42,6 +42,7 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
         }
     }
     
+    public let uuid: UUID = UUID()
     
     public init(identifier: String, matchedRoute: RSMatchedRoute, parent: RSLayoutViewController) {
         self.matchedRoute = matchedRoute
@@ -127,7 +128,16 @@ open class RSTabBarLayoutViewController: UITabBarController, UITabBarControllerD
                     let layout: RSLayout = RSStateSelectors.layout(state, for: layoutIdentifier) {
                     
                     let initialPath = "\(self.matchedRoute.match.path)/\(tab.identifier)"
-                    let match: RSMatch = RSMatch(params: [:], isExact: false, path: initialPath)
+                    let url: URL = URL(string: initialPath)!
+                    
+                    let match: RSMatch = RSMatch(
+                        isExact: false,
+                        path: initialPath,
+                        params: [:],
+                        fullURL: url,
+                        isFinal: true
+                    )
+                    
                     let route: RSRoute = childRoutes.first(where: { $0.identifier == tab.identifier })!
                     
                     do {

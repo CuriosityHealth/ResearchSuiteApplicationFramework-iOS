@@ -55,7 +55,7 @@ extension RSSingleLayoutViewController {
             do {
                 let layoutVC = try matchedRoute.layout.instantiateViewController(parent: self, matchedRoute: matchedRoute)
                 self.childLayoutVCs = self.childLayoutVCs + [layoutVC]
-                nav.pushViewController(layoutVC.viewController, animated: animated) {
+                nav.pushViewController(layoutVC: layoutVC, animated: animated) {
                     completion?(layoutVC, nil)
                 }
             }
