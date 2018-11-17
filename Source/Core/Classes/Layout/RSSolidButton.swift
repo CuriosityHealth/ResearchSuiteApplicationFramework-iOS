@@ -54,6 +54,7 @@ open class RSSolidButton: UIButton {
         self.titleLabel?.font = self.defaultFont
     }
     
+    public var userInfo: [String: Any]? = nil
     var solidBackgroundColor: UIColor?
     public func setColors(titleColor: UIColor, backgroundColor: UIColor?) {
         
