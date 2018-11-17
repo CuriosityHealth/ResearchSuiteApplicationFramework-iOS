@@ -192,6 +192,16 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
             
         }
         
+        let halfOpenRange = VariadicFilter { (boxes: [MustacheBox]) in
+            
+            guard let start = boxes[0].value as? NSNumber,
+                let end = boxes[1].value as? NSNumber else {
+                    return nil
+            }
+            
+            return Array(start.intValue..<end.intValue)
+        }
+        
         template.register(mapSelect, forKey: "mapSelect")
         template.register(contains, forKey: "contains")
         template.register(selectElement, forKey: "select")
@@ -200,6 +210,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
         template.register(StandardLibrary.each, forKey: "each")
         template.register(listOfStrings, forKey: "listOfStrings")
         template.register(removeControlCharacters, forKey: "removeControlCharacters")
+        template.register(halfOpenRange, forKey: "range")
         
         
         let node = RSStepTreeTemplatedNode(

@@ -130,6 +130,16 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
             
         }
         
+        let halfOpenRange = VariadicFilter { (boxes: [MustacheBox]) in
+            
+            guard let start = boxes[0].value as? Int,
+                let end = boxes[1].value as? Int else {
+                    return nil
+            }
+            
+            return start..<end
+        }
+        
         template.register(mapSelect, forKey: "mapSelect")
         template.register(contains, forKey: "contains")
         template.register(selectElement, forKey: "select")
@@ -138,6 +148,7 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
         template.register(StandardLibrary.each, forKey: "each")
         template.register(listOfStrings, forKey: "listOfStrings")
 //        template.register(escapeControlCharacters, forKey: "escapeControlCharacters")
+        template.register(halfOpenRange, forKey: "range")
     }
     
     public static func supportsType(type: String) -> Bool {
