@@ -9,8 +9,8 @@ import UIKit
 import Gloss
 
 public struct RSSortSettings: JSONDecodable {
-    let keyPath: String
-    let ascending: Bool
+    public let keyPath: String
+    public let ascending: Bool
     
     public init?(json: JSON) {
         
