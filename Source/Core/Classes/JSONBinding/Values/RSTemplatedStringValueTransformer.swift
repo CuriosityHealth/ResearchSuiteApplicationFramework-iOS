@@ -155,6 +155,12 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
         return "templatedString" == type
     }
     
+    public static func generateString(templatedString: String, substitutions: [String: Any]) throws -> String {
+        let template = try Template(string: templatedString)
+        self.registerFormatters(template: template)
+        return try template.render(substitutions)
+    }
+    
     public static func generateValue(jsonObject: JSON, state: RSState, context: [String: AnyObject]) -> ValueConvertible? {
         
         let localizationHelper = RSApplicationDelegate.appDelegate.localizationHelper
@@ -197,11 +203,7 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
         
         
         do {
-            
-            let template = try Template(string: template)
-            self.registerFormatters(template: template)
-            let renderedString = try template.render(substitutions)
-            
+            let renderedString = try self.generateString(templatedString: template, substitutions: substitutions)
             return RSValueConvertible(value: renderedString as NSString)
         }
         catch let error {
