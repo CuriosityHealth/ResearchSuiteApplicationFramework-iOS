@@ -12,10 +12,10 @@ import ResearchKit
 
 open class RSStepTreeNode: NSObject {
     
-    let identifier: String
-    let identifierPrefix: String
-    let type: String
-    let parent: RSStepTreeNode?
+    public let identifier: String
+    public let identifierPrefix: String
+    public let type: String
+    public let parent: RSStepTreeNode?
     
     init(identifier: String, identifierPrefix: String, type: String, parent: RSStepTreeNode?) {
         self.identifier = identifier
