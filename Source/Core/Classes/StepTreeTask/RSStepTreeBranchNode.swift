@@ -75,6 +75,11 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         
         assert(children.count > 0, "branch nodes must have children")
         
+        if let startingNavRule = self.navigationRules["START"],
+            let node = self.child(for: startingNavRule, with: result, state: state) {
+            return node.firstLeaf(with: result, state: state)
+        }
+        
         for child in self.children {
             if let leaf = child.firstLeaf(with: result, state: state) {
                 return leaf
