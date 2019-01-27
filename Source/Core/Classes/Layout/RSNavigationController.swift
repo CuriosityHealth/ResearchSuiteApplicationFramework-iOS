@@ -29,7 +29,7 @@ open class RSNavigationController: UINavigationController, UINavigationBarDelega
         }
         
         if let navigationBarTitleColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarTitleColor {
-            self.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: navigationBarTitleColor]
+            self.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: navigationBarTitleColor]
         }
         
         if let navigationBarIconColor = RSApplicationDelegate.appDelegate.applicationTheme?.navigationBarIconColor {

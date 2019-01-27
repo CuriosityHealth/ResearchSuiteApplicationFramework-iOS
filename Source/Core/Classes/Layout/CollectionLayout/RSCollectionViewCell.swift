@@ -9,6 +9,22 @@ import UIKit
 import SnapKit
 import Gloss
 
+open class RSCollectionViewCellConfiguration: NSObject {
+    
+    override public init() {
+        super.init()
+    }
+    
+//    public required init?(json: JSON) {
+//        
+//    }
+//    
+//    public func toJSON() -> JSON? {
+//        return [:]
+//    }
+    
+}
+
 open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     
     open var widthConstraint: NSLayoutConstraint!
@@ -16,7 +32,7 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     
     open var onTap: ((RSCollectionViewCell)->())?
     
-    public static func spacingView(axis: UILayoutConstraintAxis) -> UIView {
+    public static func spacingView(axis: NSLayoutConstraint.Axis) -> UIView {
         let view = UIView()
         view.snp.makeConstraints { (make) in
             if axis == .vertical {
@@ -30,7 +46,7 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
         return view
     }
     
-    public static func lineView(axis: UILayoutConstraintAxis, color: UIColor) -> UIView {
+    public static func lineView(axis: NSLayoutConstraint.Axis, color: UIColor) -> UIView {
         let view = UIView()
         view.snp.makeConstraints { (make) in
             if axis == .vertical {
@@ -130,6 +146,14 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     
     open func configure(paramMap: [String : Any]){
 
+    }
+    
+    //fancy method signature to support variance
+    //see RSCardCollectionViewCell##configure(config: T) for usage
+    //the gist is that we can still support inheritance while specializing the
+    //parameter type as we go up the chain
+    open func configure<T: RSCollectionViewCellConfiguration>(config: T) {
+        
     }
     
     @objc

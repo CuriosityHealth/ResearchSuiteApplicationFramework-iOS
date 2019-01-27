@@ -22,7 +22,7 @@ public struct RSFeedbackItem: Glossy {
         self.feedback = feedback
         self.screenshotBase64 = {
             guard let image = screenshot,
-                let data: Data = UIImagePNGRepresentation(image) else {
+                let data: Data = image.pngData() else {
                     return nil
             }
             

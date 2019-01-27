@@ -18,7 +18,7 @@ public protocol RSCollectionViewCellGenerator {
 
 open class RSCollectionViewCellManager: NSObject {
     
-    let cellGenerators: [RSCollectionViewCellGenerator.Type]
+    public let cellGenerators: [RSCollectionViewCellGenerator.Type]
     
     //init
     public init(cellGenerators: [RSCollectionViewCellGenerator.Type]?) {

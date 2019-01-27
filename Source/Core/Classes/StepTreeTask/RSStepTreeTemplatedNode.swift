@@ -77,9 +77,19 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
         
         //render template
         
+        let renderedTemplateOpt: String? = {
+            do {
+                let render = try self.template.render(parameters)
+                return render
+            }
+            catch let e {
+                debugPrint(e)
+                return nil
+            }
+            
+        }()
         
-        
-        guard let renderedTemplate: String = (try? self.template.render(parameters)) else {
+        guard let renderedTemplate = renderedTemplateOpt else {
             return nil
         }
         

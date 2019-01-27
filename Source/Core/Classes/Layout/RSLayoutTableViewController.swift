@@ -38,6 +38,7 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     var listLayout: RSListLayout! {
         return self.layout as! RSListLayout
     }
+    
     open var layout: RSLayout! {
         return self.matchedRoute.layout
     }

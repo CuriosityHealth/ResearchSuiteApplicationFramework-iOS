@@ -6,6 +6,38 @@
 //
 
 import UIKit
+import Gloss
+
+open class RSTextCardCollectionViewCellConfiguration: RSCardCollectionViewCellConfiguration {
+    
+    let body: String?
+    
+    public init(
+        icon: String?,
+        title: String?,
+        subtitle: String?,
+        body: String?
+        ) {
+        self.body = body
+        super.init(icon: icon, title: title, subtitle: subtitle)
+    }
+    
+//    public required init?(json: JSON) {
+//        self.body = "body" <~~ json
+//        super.init(json: json)
+//    }
+//
+//    public override func toJSON() -> JSON? {
+//
+//        let parent: JSON = super.toJSON() ?? [:]
+//        let this: JSON = jsonify([
+//            "body" ~~> self.body
+//            ]) ?? [:]
+//
+//        return parent.merging(this, uniquingKeysWith: {$1})
+//    }
+    
+}
 
 open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionViewCellGenerator {
 
@@ -61,4 +93,14 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         
     }
     
+    open override func configure<T>(config: T) where T : RSTextCardCollectionViewCellConfiguration {
+        super.configure(config: config)
+        
+        if let bodyText = config.body {
+            self.bodyTextLabel.text = RSApplicationDelegate.localizedString(bodyText)
+        }
+    }
+    
 }
+
+

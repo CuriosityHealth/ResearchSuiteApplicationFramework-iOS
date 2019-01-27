@@ -11,11 +11,11 @@ import UIKit
 
 open class RSToggleCell: UITableViewCell {
     
-    @IBOutlet weak var toggle: UISwitch!
-    @IBOutlet weak var title: UILabel!
+    @IBOutlet public weak var toggle: UISwitch!
+    @IBOutlet public weak var title: UILabel!
     open var onToggle: ((Bool)->())?
     
-    @IBAction func valueChanged(_ sender: UISwitch) {
+    @IBAction public func valueChanged(_ sender: UISwitch) {
         self.onToggle?(sender.isOn)
     }
     

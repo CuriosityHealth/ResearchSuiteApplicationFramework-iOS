@@ -29,7 +29,7 @@ open class RSOpenURLManager: NSObject {
         self.openURLDelegates = self.openURLDelegates.filter { $0.isEqual(delegate) }
     }
     
-    open func handleURL(app: UIApplication, url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
+    open func handleURL(app: UIApplication, url: URL, options: [UIApplication.OpenURLOptionsKey : Any]) -> Bool {
         let delegates = self.openURLDelegates
         
         guard let appDelegate = app.delegate as? RSApplicationDelegate,

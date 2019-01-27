@@ -64,10 +64,10 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
         
         switch error {
         case LocationPermissionRequestError.locationServicesDisabled:
-            let alertController = UIAlertController(title: "Location Services Disabled", message: "Please turn on location services to continue.", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Location Services Disabled", message: "Please turn on location services to continue.", preferredStyle: UIAlertController.Style.alert)
             
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
             }
@@ -76,10 +76,10 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             return alertController
             
         case LocationPermissionRequestError.regionMonitoringNotAvailable:
-            let alertController = UIAlertController(title: "Geofence Monitoring Not Supported", message: "Your phone does not support geofencing.", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Geofence Monitoring Not Supported", message: "Your phone does not support geofencing.", preferredStyle: UIAlertController.Style.alert)
             
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
             }
@@ -88,10 +88,10 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             return alertController
             
         case LocationPermissionRequestError.insufficentPermissions:
-            let alertController = UIAlertController(title: "Insufficient Permissions", message: "In order to function properly, the application always needs location access. You can adjust this in your settings.", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Insufficient Permissions", message: "In order to function properly, the application always needs location access. You can adjust this in your settings.", preferredStyle: UIAlertController.Style.alert)
             
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
             }
@@ -101,10 +101,10 @@ open class RSLocationPermissionRequestStepDelegate: RSPermissionRequestStepDeleg
             
         default:
             
-            let alertController = UIAlertController(title: "Error", message: "An error occurred", preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: "Error", message: "An error occurred", preferredStyle: UIAlertController.Style.alert)
             
             // Replace UIAlertActionStyle.Default by UIAlertActionStyle.default
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+            let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
                 (result : UIAlertAction) -> Void in
                 
             }

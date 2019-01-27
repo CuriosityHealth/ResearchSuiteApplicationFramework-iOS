@@ -73,6 +73,16 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return UIApplication.shared.delegate as! RSApplicationDelegate
     }
     
+    public func color(name: String) -> UIColor? {
+        if let state = RSApplicationDelegate.appDelegate.store?.state,
+            let color: UIColor = RSStateSelectors.getValueInCombinedState(state, for: name) as? UIColor {
+            return color
+        }
+        else {
+            return nil
+        }
+    }
+    
     public var store: Store<RSState>? {
         return self.storeManager?.store
     }
@@ -135,6 +145,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBVideoInstructionStepGenerator(),
             RSEnhancedTimePickerStepGenerator(),
             RSEnhancedDayOfWeekChoiceStepGenerator(),
+            RSGiphyInstructionStepGenerator()
         ]
     }
     
@@ -204,7 +215,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSCalendarLayout.self,
             RSWebLayout.self,
             RSDashboardLayout.self,
-            RSNewDashboardLayout.self
+            RSNewDashboardLayout.self,
+            RSLicenseLayout.self
         ]
     }
     
@@ -771,8 +783,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     }
     
     
-    open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
+    open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "willFinishLaunchingWithOptions")
         
         if UserDefaults.standard.object(forKey: "FirstRun") == nil {
@@ -798,7 +809,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     }
     
     //note that this is invoked after application didFinishLauchingWithOptions
-    open func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any] = [:]) -> Bool {
+    open func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         
         //first check to see if this is a routable url
         if let routingVC = self.routingViewController,
@@ -817,8 +828,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     }
     
     
-    open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
+    open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "didFinishLaunchingWithOptions")
         
         let window: UIWindow = self.window!
@@ -826,7 +836,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         rootVC.lockScreen()
         return true
     }
-
+    
     open func applicationWillResignActive(_ application: UIApplication) {
         
         self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillResignActive")

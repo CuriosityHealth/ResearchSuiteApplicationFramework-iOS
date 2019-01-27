@@ -21,7 +21,7 @@ extension UIImage {
     }
 }
 extension UIButton {
-    func setBackgroundColor(backgroundColor: UIColor?, for state: UIControlState) {
+    func setBackgroundColor(backgroundColor: UIColor?, for state: UIControl.State) {
         if let color = backgroundColor {
             self.setBackgroundImage(UIImage.from(color: color), for: state)
         }
@@ -63,31 +63,31 @@ open class RSSolidButton: UIButton {
         let backgroundColor = backgroundColor ?? UIColor.clear
         
         //normal
-        self.setTitleColor(titleColor, for: UIControlState.normal)
-        self.setBackgroundColor(backgroundColor: backgroundColor, for: UIControlState.normal)
+        self.setTitleColor(titleColor, for: UIControl.State.normal)
+        self.setBackgroundColor(backgroundColor: backgroundColor, for: UIControl.State.normal)
         
         //disabled
-        self.setTitleColor(titleColor.withAlphaComponent(0.7), for: UIControlState.disabled)
-        self.setBackgroundColor(backgroundColor: backgroundColor.withAlphaComponent(0.3), for: UIControlState.disabled)
+        self.setTitleColor(titleColor.withAlphaComponent(0.7), for: UIControl.State.disabled)
+        self.setBackgroundColor(backgroundColor: backgroundColor.withAlphaComponent(0.3), for: UIControl.State.disabled)
         
         //highlighted
-        self.setTitleColor(backgroundColor, for: UIControlState.highlighted)
-        self.setBackgroundColor(backgroundColor: titleColor, for: UIControlState.highlighted)
+        self.setTitleColor(backgroundColor, for: UIControl.State.highlighted)
+        self.setBackgroundColor(backgroundColor: titleColor, for: UIControl.State.highlighted)
         
         //selected
-        self.setTitleColor(backgroundColor, for: UIControlState.selected)
-        self.setBackgroundColor(backgroundColor: titleColor, for: UIControlState.selected)
+        self.setTitleColor(backgroundColor, for: UIControl.State.selected)
+        self.setBackgroundColor(backgroundColor: titleColor, for: UIControl.State.selected)
         
     }
     
 //    private func setTitleColor(_ color: UIColor?) {
-//        self.setTitleColor(color, for: UIControlState.normal)
-//        self.setTitleColor(UIColor.white, for: UIControlState.highlighted)
-//        self.setTitleColor(UIColor.white, for: UIControlState.selected)
-//        self.setTitleColor(UIColor.black.withAlphaComponent(0.3), for: UIControlState.disabled)
+//        self.setTitleColor(color, for: UIControl.State.normal)
+//        self.setTitleColor(UIColor.white, for: UIControl.State.highlighted)
+//        self.setTitleColor(UIColor.white, for: UIControl.State.selected)
+//        self.setTitleColor(UIColor.black.withAlphaComponent(0.3), for: UIControl.State.disabled)
 //
-//        self.setBackgroundColor(backgroundColor: color, for: UIControlState.highlighted)
-//        self.setBackgroundColor(backgroundColor: color, for: UIControlState.selected)
+//        self.setBackgroundColor(backgroundColor: color, for: UIControl.State.highlighted)
+//        self.setBackgroundColor(backgroundColor: color, for: UIControl.State.selected)
 //    }
     
     var configuredColor: UIColor? {
@@ -137,7 +137,7 @@ open class RSSolidButton: UIButton {
     
     open class var defaultFont: UIFont {
         // regular, 14
-        let descriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: UIFontTextStyle.headline)
+        let descriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: UIFont.TextStyle.headline)
         let fontSize: Double = (descriptor.object(forKey: UIFontDescriptor.AttributeName.size) as! NSNumber).doubleValue
         return UIFont.systemFont(ofSize: CGFloat(fontSize))
     }

@@ -33,9 +33,9 @@ public struct RSRoutingEventLog: JSONEncodable {
     
     public func toJSON() -> JSON? {
         
-        var base64Image: String? = {
+        let base64Image: String? = {
             guard let image = self.screenshot,
-                let data: Data = UIImagePNGRepresentation(image) else {
+                let data: Data = image.pngData() else {
                 return nil
             }
             
@@ -128,22 +128,22 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             
             if let rootViewController = self.rootViewController {
                 
-                newViewController.willMove(toParentViewController: nil)
-                self.addChildViewController(newViewController)
+                newViewController.willMove(toParent: nil)
+                self.addChild(newViewController)
                 newViewController.view.frame = self.view.bounds
                 self.view.addSubview(newViewController.view)
-                rootViewController.removeFromParentViewController()
+                rootViewController.removeFromParent()
                 rootViewController.view.removeFromSuperview()
-                newViewController.didMove(toParentViewController: self)
+                newViewController.didMove(toParent: self)
                 self.rootViewController = newViewController
                 
             }
             else {
                 
-                self.addChildViewController(newViewController)
+                self.addChild(newViewController)
                 newViewController.view.frame = self.view.bounds
                 self.view.addSubview(newViewController.view)
-                newViewController.didMove(toParentViewController: self)
+                newViewController.didMove(toParent: self)
                 self.rootViewController = newViewController
                 
             }
@@ -160,13 +160,13 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             return
         }
         
-        rootViewController.willMove(toParentViewController: nil)
-        addChildViewController(newViewController)
+        rootViewController.willMove(toParent: nil)
+        addChild(newViewController)
         
         transition(from: rootViewController, to: newViewController, duration: 0.3, options: [.transitionCrossDissolve, .curveEaseOut], animations: {
         }) { completed in
-            rootViewController.removeFromParentViewController()
-            newViewController.didMove(toParentViewController: self)
+            rootViewController.removeFromParent()
+            newViewController.didMove(toParent: self)
             self.rootViewController = newViewController
             completion?()
         }
@@ -325,7 +325,7 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             let forceReroute = pathChangeRequest.2
             if forceReroute {
                 
-                self.rootViewController.removeFromParentViewController()
+                self.rootViewController.removeFromParent()
                 self.rootViewController.view.removeFromSuperview()
                 self.rootViewController = nil
                 

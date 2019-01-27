@@ -6,6 +6,47 @@
 //
 
 import UIKit
+import Gloss
+
+open class RSCardCollectionViewCellConfiguration: RSCollectionViewCellConfiguration {
+    
+    let icon: String?
+    let title: String?
+    let subtitle: String?
+    
+    public init(
+        icon: String?,
+        title: String?,
+        subtitle: String?
+        ) {
+        self.icon = icon
+        self.title = title
+        self.subtitle = subtitle
+        
+        super.init()
+    }
+    
+//    public required init?(json: JSON) {
+//        self.icon = "icon" <~~ json
+//        self.title = "title" <~~ json
+//        self.subtitle = "subtitle" <~~ json
+//
+//        super.init(json: json)
+//    }
+//
+//    public override func toJSON() -> JSON? {
+//
+//        let parent: JSON = super.toJSON() ?? [:]
+//        let this: JSON = jsonify([
+//            "icon" ~~> self.icon,
+//            "title" ~~> self.title,
+//            "subtitle" ~~> self.subtitle,
+//            ]) ?? [:]
+//
+//        return parent.merging(this, uniquingKeysWith: {$1})
+//    }
+    
+}
 
 open class RSCardCollectionViewCell: RSCollectionViewCell {
     
@@ -142,6 +183,23 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
             self.subtitleLabel.text = RSApplicationDelegate.localizedString(subtitle)
         }
         
+    }
+    
+    open override func configure<T>(config: T) where T : RSCardCollectionViewCellConfiguration {
+        super.configure(config: config)
+        
+        if let iconString = config.icon,
+            let icon = UIImage(named: iconString) {
+            self.iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
+        }
+        
+        if let title = config.title {
+            self.titleLabel.text = RSApplicationDelegate.localizedString(title)
+        }
+        
+        if let subtitle = config.subtitle {
+            self.subtitleLabel.text = RSApplicationDelegate.localizedString(subtitle)
+        }
     }
     
     func updateBorder(tintedBorder: Bool, isHighlighted: Bool) {

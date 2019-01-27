@@ -98,7 +98,7 @@ open class RSDailyNotificationProcessor: NSObject, RSNotificationProcessor {
             let content = UNMutableNotificationContent()
             content.title = RSApplicationDelegate.localizedString(dailyNotification.title)
             content.body = RSApplicationDelegate.localizedString(dailyNotification.body)
-            content.sound = UNNotificationSound.default()
+            content.sound = UNNotificationSound.default
             
             let request = UNNotificationRequest(
                 identifier: "\(dailyNotification.identifier)\(newDay)",

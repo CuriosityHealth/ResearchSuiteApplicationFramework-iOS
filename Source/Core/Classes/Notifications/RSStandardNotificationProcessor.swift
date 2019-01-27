@@ -119,7 +119,7 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
                 let content = UNMutableNotificationContent()
                 content.title = descriptor.title
                 content.body = descriptor.body
-                content.sound = UNNotificationSound.default()
+                content.sound = UNNotificationSound.default
                 
                 let request = UNNotificationRequest(
                     identifier: descriptor.identifier,
@@ -151,7 +151,7 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
                 let content = UNMutableNotificationContent()
                 content.title = RSApplicationDelegate.localizedString(descriptor.title)
                 content.body = RSApplicationDelegate.localizedString(descriptor.body)
-                content.sound = UNNotificationSound.default()
+                content.sound = UNNotificationSound.default
                 
                 let request = UNNotificationRequest(
                     identifier: descriptor.identifier,
@@ -178,7 +178,7 @@ open class RSStandardNotificationProcessor: NSObject, RSNotificationProcessor {
                 let content = UNMutableNotificationContent()
                 content.title = RSApplicationDelegate.localizedString(descriptor.title)
                 content.body = RSApplicationDelegate.localizedString(descriptor.body)
-                content.sound = UNNotificationSound.default()
+                content.sound = UNNotificationSound.default
                 
                 let request = UNNotificationRequest(
                     identifier: descriptor.identifier,

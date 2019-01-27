@@ -11,7 +11,7 @@ import ResearchSuiteExtensions
 open class RSCardCellTitleLabel: RSLabel {
     
     override open var defaultFont: UIFont {
-        return RSFonts.computeFont(startingTextStyle: UIFontTextStyle.headline, defaultSize: 17.0, typeAdjustment: 20.0, weight: UIFont.Weight.light)
+        return RSFonts.computeFont(startingTextStyle: UIFont.TextStyle.headline, defaultSize: 17.0, typeAdjustment: 20.0, weight: UIFont.Weight.light)
     }
     
 }

@@ -157,7 +157,7 @@ extension RSScheduleEvent {
 
 //NOTE: RSScheduler should probably be removed from this
 //W
-public typealias RSDashboardCellGenerator = (RSScheduler, Store<RSState>, RSState, UICollectionView, RSCollectionViewCellManager, RSDashboardAdaptorItem, IndexPath) -> RSCollectionViewCell?
+public typealias RSDashboardCellGenerator = (Store<RSState>, RSState, UICollectionView, RSCollectionViewCellManager, RSDashboardAdaptorItem, IndexPath) -> RSCollectionViewCell?
 
 public protocol RSDashboardAdaptorItemConvertible {
     func toDashboardAdaptorItem() -> RSDashboardAdaptorItem?

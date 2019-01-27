@@ -11,6 +11,7 @@ import LS2SDK
 
 open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollectionDataSourceGenerator {
     
+    public typealias ChildDataSourceGenerator = ( @escaping (RSCollectionDataSource)->(),  @escaping (RSCollectionDataSource, [Int], [Int], [Int]) -> ()) -> [RSCollectionDataSource]
     
     public static func supportsType(type: String) -> Bool {
         return type == "composite"
@@ -86,8 +87,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
     
     public init?(
         identifier: String,
-        childDataSourceDescriptors: [RSCollectionDataSourceDescriptor],
-        dataSourceManager: RSCollectionDataSourceManager,
+        childDataSourceGenerator: ChildDataSourceGenerator,
         state: RSState,
         context: [String: AnyObject],
         readyCallback: ((RSCollectionDataSource)->())?,
@@ -148,25 +148,42 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
             
         }
         
-        
-        
-        let dataSources: [RSCollectionDataSource] = childDataSourceDescriptors.compactMap { (dataSourceDescriptor) -> RSCollectionDataSource? in
-            
-            return dataSourceManager.generateCollectionDataSource(
-                dataSourceDescriptor: dataSourceDescriptor,
-                state: state,
-                context: context,
-                readyCallback: collectionReadyCallback,
-                updateCallback: collectionUpdateCallback
-            )
-            
-        }
+        let dataSources: [RSCollectionDataSource] = childDataSourceGenerator(collectionReadyCallback, collectionUpdateCallback)
         
         self.ready = Dictionary.init(uniqueKeysWithValues: dataSources.map { ($0.identifier, false) })
         readyCallbackQueue.resume()
         
         self.collectionDataSources = dataSources
- 
+        
+    }
+    
+    public convenience init?(
+        identifier: String,
+        childDataSourceDescriptors: [RSCollectionDataSourceDescriptor],
+        dataSourceManager: RSCollectionDataSourceManager,
+        state: RSState,
+        context: [String: AnyObject],
+        readyCallback: ((RSCollectionDataSource)->())?,
+        updateCallback: (((RSCollectionDataSource, [Int], [Int], [Int]) -> ()))?) {
+        
+        let childDataSourceGenerator: ChildDataSourceGenerator = { collectionReadyCallback, collectionUpdateCallback in
+            let dataSources: [RSCollectionDataSource] = childDataSourceDescriptors.compactMap { (dataSourceDescriptor) -> RSCollectionDataSource? in
+                
+                return dataSourceManager.generateCollectionDataSource(
+                    dataSourceDescriptor: dataSourceDescriptor,
+                    state: state,
+                    context: context,
+                    readyCallback: collectionReadyCallback,
+                    updateCallback: collectionUpdateCallback
+                )
+                
+            }
+            
+            return dataSources
+        }
+        
+        self.init(identifier: identifier, childDataSourceGenerator: childDataSourceGenerator, state: state, context: context, readyCallback: readyCallback, updateCallback: updateCallback)
+        
     }
     
     func initializeResults() {

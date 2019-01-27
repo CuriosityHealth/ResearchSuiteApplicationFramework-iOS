@@ -88,7 +88,7 @@ open class RSActionManager: NSObject, RSOpenURLDelegate {
         super.init()
     }
     
-    open func handleURL(app: UIApplication, url: URL, options: [UIApplicationOpenURLOptionsKey : Any], context: [String: AnyObject]) -> Bool {
+    open func handleURL(app: UIApplication, url: URL, options: [UIApplication.OpenURLOptionsKey : Any], context: [String: AnyObject]) -> Bool {
         
         guard let store = context["store"] as? Store<RSState>,
             let actionType = url.host else {

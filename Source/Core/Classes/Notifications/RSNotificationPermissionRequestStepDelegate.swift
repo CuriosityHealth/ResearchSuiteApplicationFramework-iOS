@@ -35,9 +35,9 @@ open class RSNotificationPermissionRequestStepDelegate: RSPermissionRequestStepD
     }
     
     public func alertController(granted: Bool, error: Error) -> UIAlertController {
-        let alertController = UIAlertController(title: "Grant Error", message: "Unable to show notifications. You can update this in your settings.", preferredStyle: UIAlertControllerStyle.alert)
+        let alertController = UIAlertController(title: "Grant Error", message: "Unable to show notifications. You can update this in your settings.", preferredStyle: UIAlertController.Style.alert)
         
-        let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+        let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) {
             (result : UIAlertAction) -> Void in
             
         }

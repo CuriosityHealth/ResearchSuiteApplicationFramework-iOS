@@ -72,7 +72,7 @@ open class RSFilterPopoverTableViewController: UITableViewController {
         items.enumerated().forEach { (offset, pair) in
             
             if pair.1 {
-                self.tableView.selectRow(at: IndexPath(row: offset, section: 0), animated: false, scrollPosition: UITableViewScrollPosition.top)
+                self.tableView.selectRow(at: IndexPath(row: offset, section: 0), animated: false, scrollPosition: UITableView.ScrollPosition.top)
             }
             
         }

@@ -86,8 +86,7 @@ open class RSSchedulerDashboardAdaptor: NSObject, RSDashboardAdaptor, RSSchedule
         let cellWidth = collectionView.bounds.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right)
         
         guard let store = RSApplicationDelegate.appDelegate.store,
-            let scheduler = self.scheduler,
-            let cell = item.generateCell(scheduler, store, store.state, collectionView, self.collectionViewCellManager, item, indexPath) else {
+            let cell = item.generateCell(store, store.state, collectionView, self.collectionViewCellManager, item, indexPath) else {
                 let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
                 cell.setCellWidth(width: cellWidth)
                 return cell

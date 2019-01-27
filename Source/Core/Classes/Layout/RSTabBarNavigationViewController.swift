@@ -23,10 +23,10 @@ open class RSTabBarNavigationViewController: UIViewController {
         
         super.init(nibName: nil, bundle: nil)
         
-        self.addChildViewController(viewController)
+        self.addChild(viewController)
         viewController.view.frame = self.view.bounds
         self.view.addSubview(viewController.view)
-        viewController.didMove(toParentViewController: self)
+        viewController.didMove(toParent: self)
         self.rootViewController = viewController
         
         self.parentMatchedRoute = parentMatchedRoute

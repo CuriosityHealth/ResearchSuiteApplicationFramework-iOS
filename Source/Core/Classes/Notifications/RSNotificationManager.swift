@@ -410,7 +410,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
-        content.sound = UNNotificationSound.default()
+        content.sound = UNNotificationSound.default
         
         let trigger = UNCalendarNotificationTrigger(dateMatching: selectedComponents, repeats: true)
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
