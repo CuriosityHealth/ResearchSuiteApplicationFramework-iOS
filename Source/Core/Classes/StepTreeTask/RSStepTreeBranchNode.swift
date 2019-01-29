@@ -39,7 +39,7 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
         
         var resultTransformMap: [String: RSResultTransform] = [:]
         resultTransforms?.forEach({ (transform) in
-            assert(resultTransformMap[transform.identifier] == nil, "rules cannot have duplicate triggers")
+            assert(resultTransformMap[transform.identifier] == nil, "rules cannot have duplicate transforms")
             resultTransformMap[transform.identifier] = transform
         })
         

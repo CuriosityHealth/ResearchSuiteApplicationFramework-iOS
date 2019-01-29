@@ -66,7 +66,7 @@ open class RSStepTreeResultTransformValueTransformer: RSValueTransformer {
         
         //map -> step result w/ new identifier
         
-        let filteredTaskResult = ORKTaskResult(taskIdentifier: taskResult.identifier, taskRun: UUID(), outputDirectory: nil)
+        let filteredTaskResult = ORKTaskResult(taskIdentifier: taskResult.identifier, taskRun: taskResult.taskRunUUID, outputDirectory: nil)
         filteredTaskResult.results = filteredStepResults
         
 //        debugPrint(filteredTaskResult)

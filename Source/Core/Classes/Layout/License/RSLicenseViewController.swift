@@ -104,85 +104,57 @@ open class RSLicenseViewController: UIViewController {
     }
 
     open var acknowledgementsFilePath: String?
+    private var textView: UITextView!
     open override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
 
+        self.view.backgroundColor = UIColor.white
         if let filePath = self.acknowledgementsFilePath,
             let attributedString = RSLicenseViewController.convertMarkdownFileToAttributedString(markdownFilePath: filePath) {
             
             let textView = UITextView()
+            textView.isEditable = false
             textView.attributedText = attributedString
             self.view.addSubview(textView)
+            
+            let tabBarShown: Bool = {
+                if let tabBarController = self.tabBarController {
+                    return !tabBarController.tabBar.isHidden
+                }
+                else {
+                    return false
+                }
+            }()
             
             textView.snp.makeConstraints { (make) in
                 make.top.equalTo(self.topLayoutGuide.snp.bottom)
                 make.left.equalTo(view)
                 make.right.equalTo(view)
-                make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-44)
+                
+                if tabBarShown {
+                    make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-44)
+                }
+                else {
+                    make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
+                }
+                
             }
             
+            self.textView = textView
             
         }
         
-//        if let plistPath = self.acknowledgementsFilePath,
-//            let acknowledgements = RSLicenseViewController.getAcknowledgements(plistPath: plistPath) {
-//            
-//            //first, add scroll view
-//            let scrollView = UIScrollView()
-//            self.view.addSubview(scrollView)
-//            scrollView.snp.makeConstraints { (make) in
-//                make.top.equalTo(self.topLayoutGuide.snp.bottom)
-//                make.left.equalTo(view)
-//                make.right.equalTo(view)
-//                make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-44)
-//            }
-//            
-//            //then, add stackView to scroll view
-//            let stackView = UIStackView()
-//            scrollView.addSubview(stackView)
-//            stackView.snp.makeConstraints { (make) in
-//                make.top.equalToSuperview()
-//                make.left.equalTo(view)
-//                make.right.equalTo(view)
-//                make.bottom.equalToSuperview()
-//            }
-//            
-//            stackView.axis = .vertical
-//            stackView.alignment = .fill
-//            stackView.distribution = .equalSpacing
-//            stackView.spacing = 8
-//
-//            //then add items to stackView
-//            let titleLabel = RSTitleLabel()
-//            titleLabel.text = acknowledgements.title
-//            titleLabel.numberOfLines = 0
-//            stackView.addArrangedSubview(titleLabel)
-//            
-//            let textLabel = RSTextLabel()
-//            textLabel.text = acknowledgements.text
-//            textLabel.numberOfLines = 0
-//            stackView.addArrangedSubview(textLabel)
-//            
-//            acknowledgements.items.forEach { item in
-//                
-//                let titleLabel = RSTextLabel()
-//                titleLabel.text = item.title
-//                titleLabel.numberOfLines = 0
-//                stackView.addArrangedSubview(titleLabel)
-//                
-//                let licenseLabel = RSLabel()
-//                licenseLabel.text = item.longLicense
-//                licenseLabel.numberOfLines = 0
-//                stackView.addArrangedSubview(licenseLabel)
-//                
-//            }
-//            
-//            
-//        }
-//        
-        
+
     }
+    
+//    open override func viewWillLayoutSubviews() {
+//        super.viewWillLayoutSubviews()
+//        self.textView.scrollRangeToVisible(NSRange(location: 0, length: 1))
+//        let insets = UIEdgeInsets(top: self.topLayoutGuide.length, left: 0, bottom: 0, right: 0)
+//        self.textView.contentInset = insets
+////        self.textView.scrollIndicatorInsets = insets
+//    }
     
 }
