@@ -442,6 +442,7 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     
     open func lockScreen() {
         if ORKPasscodeViewController.isPasscodeStoredInKeychain() {
+            RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .debug, message: "Dispatching Request Passcode")
             self.store!.dispatch(RequestPasscode(uuid: UUID()))
         }
     }
@@ -624,6 +625,8 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     }
     
     open func setContentHidden(hidden: Bool) {
+        
+        RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .debug, message: "Dispatching set content hidden request: \(hidden)")
         
         self.store!.dispatch(RequestSetContentHidden(hidden: hidden))
         

@@ -21,6 +21,9 @@ open class RSLoggingMiddleware: RSMiddlewareProvider {
         return { dispatch, getState in
             return { next in
                 return { action in
+                    
+                    RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Applying action: \(action)")
+                    
                     // perform middleware logic
                     let oldState: RSState? = getState() as? RSState
                     let startTime = Date()

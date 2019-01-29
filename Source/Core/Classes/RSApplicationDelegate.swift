@@ -841,30 +841,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
         self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillResignActive")
         
-        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
-        rootVC.setContentHidden(hidden: true)
+        //the issue here is that every time the system presents an alert, we resign active
+        //this includes things like the facetime alert
+        //maybe check to see if the passcode ivew controller is presented
+//        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+//        rootVC.setContentHidden(hidden: true)
         
-    }
-    
-    open func applicationDidEnterBackground(_ application: UIApplication) {
         
-        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationDidEnterBackground")
         
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    }
-    
-    open func applicationWillEnterForeground(_ application: UIApplication) {
-        
-        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillEnterForeground")
-        
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
-        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
-        rootVC.lockScreen()
-        
-        //reload schedule
-        //can we do this, or would it be better to set a flag in the state and reload when convenient?
-        self.scheduler?.reloadSchedule(state: nil)
     }
     
     open func applicationDidBecomeActive(_ application: UIApplication) {
@@ -874,9 +858,58 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         // Make sure that the content view controller is not hiding content
         
-        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
-        rootVC.setContentHidden(hidden: false)
+        
+        //we become active active after any system alert is presented...
+        //for example, if we present the facetime system alert during passcode, we come here after
+        //the passcode has been dismissed
+        //this creates a problem as we would only want to present the passcode if we are NOT
+        //coming back from a system alert
+        //essentially, we would only want to do this if content is hiddedn
+        
+//        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+//        rootVC.setContentHidden(hidden: false)
+        
     }
+    
+    open func applicationDidEnterBackground(_ application: UIApplication) {
+        
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationDidEnterBackground")
+        
+        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
+        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        
+        if let state = self.store?.state,
+            !RSStateSelectors.isPresentingPasscode(state)
+                && !RSStateSelectors.isDismissingPasscode(state)
+                && !RSStateSelectors.isPasscodePresented(state) {
+            //do this conditionally based on an alert...
+            let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+            //content gets sent to not hidden via the passcode view controller dismiss
+            rootVC.setContentHidden(hidden: true)
+        }
+        
+    }
+    
+    open func applicationWillEnterForeground(_ application: UIApplication) {
+        
+        self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "applicationWillEnterForeground")
+        
+        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+//        let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+//        rootVC.lockScreen()
+        
+        if let state = self.store?.state,
+            state.contentHidden == true {
+            let rootVC: RSRootViewController = self.window!.rootViewController as! RSRootViewController
+            rootVC.lockScreen()
+        }
+        
+        //reload schedule
+        //can we do this, or would it be better to set a flag in the state and reload when convenient?
+        self.scheduler?.reloadSchedule(state: nil)
+    }
+    
+    
     
     open func applicationWillTerminate(_ application: UIApplication) {
         

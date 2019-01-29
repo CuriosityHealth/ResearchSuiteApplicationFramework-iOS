@@ -367,8 +367,8 @@ public class RSReducer: NSObject {
             case _ as SetContentHiddedStarted:
                 return RSState.newState(fromState: state, setContentHiddenRequested: nil as Bool?, settingContentHidden: true)
                 
-            case _ as SetContentHiddedCompleted:
-                return RSState.newState(fromState: state, settingContentHidden: false)
+            case let action as SetContentHiddedCompleted:
+                return RSState.newState(fromState: state, settingContentHidden: false, contentHidden: action.hidden)
                 
             case _ as RequestPasscode:
                 return RSState.newState(fromState: state, passcodeRequested: true)

@@ -83,6 +83,7 @@ public final class RSState: NSObject, StateType {
     //passcode stuff
     public let setContentHiddenRequested: Bool?
     public let settingContentHidden: Bool
+    public let contentHidden: Bool
     
     public let passcodeRequested: Bool
     public let isPresentingPasscode: Bool
@@ -130,6 +131,7 @@ public final class RSState: NSObject, StateType {
                 isVisitMonitoringEnabled: Bool? = nil,
                 setContentHiddenRequested: Bool? = nil,
                 settingContentHidden: Bool = false,
+                contentHidden: Bool = false,
                 passcodeRequested: Bool = false,
                 isPresentingPasscode: Bool = false,
                 passcodeViewController: ORKPasscodeViewController? = nil,
@@ -173,6 +175,7 @@ public final class RSState: NSObject, StateType {
         self.isFetchingLocation = isFetchingLocation
         self.setContentHiddenRequested = setContentHiddenRequested
         self.settingContentHidden = settingContentHidden
+        self.contentHidden = contentHidden
         self.passcodeRequested = passcodeRequested
         self.isPresentingPasscode = isPresentingPasscode
         self.isLocationMonitoringEnabled = isLocationMonitoringEnabled
@@ -220,6 +223,7 @@ public final class RSState: NSObject, StateType {
         isFetchingLocation: Bool? = nil,
         setContentHiddenRequested: Bool?? = nil,
         settingContentHidden: Bool? = nil,
+        contentHidden: Bool? = nil,
         passcodeRequested: Bool? = nil,
         isPresentingPasscode: Bool? = nil,
         isLocationMonitoringEnabled: Bool?? = nil,
@@ -267,6 +271,7 @@ public final class RSState: NSObject, StateType {
             isVisitMonitoringEnabled: isVisitMonitoringEnabled ?? fromState.isVisitMonitoringEnabled,
             setContentHiddenRequested: setContentHiddenRequested ?? fromState.setContentHiddenRequested,
             settingContentHidden: settingContentHidden ?? fromState.settingContentHidden,
+            contentHidden: contentHidden ?? fromState.contentHidden,
             passcodeRequested: passcodeRequested ?? fromState.passcodeRequested,
             isPresentingPasscode: isPresentingPasscode ?? fromState.isPresentingPasscode,
             passcodeViewController: passcodeViewController ?? fromState.passcodeViewController,
