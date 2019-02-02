@@ -44,6 +44,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var localizationHelper: RSTBLocalizationHelper = RSTBLocalizationHelper()
     
     public var activityManager: RSActivityManager!
+    public var measureManager: RSMeasureManager!
     public var actionManager: RSActionManager!
     public var valueManager: RSValueManager!
     public var predicateManager: RSPredicateManager!
@@ -465,6 +466,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.persistentStoreSubscriber = nil
         
         self.activityManager = nil
+        self.measureManager = nil
         self.actionManager = nil
         self.valueManager = nil
         self.predicateManager = nil
@@ -503,6 +505,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             self.persistentStoreSubscriber = nil
 
             self.activityManager = nil
+            self.measureManager = nil
             self.actionManager = nil
             self.valueManager = nil
             self.predicateManager = nil
@@ -621,6 +624,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         store.subscribe(self.persistentStoreSubscriber)
         
         self.activityManager = RSActivityManager()
+        self.measureManager = RSMeasureManager()
         self.layoutManager = RSLayoutManager(layoutGenerators: self.layoutGenerators)
         self.actionManager = RSActionManager(actionCreatorTransforms: self.actionCreatorTransforms)
         self.valueManager = RSValueManager(valueTransforms: self.valueTransforms)

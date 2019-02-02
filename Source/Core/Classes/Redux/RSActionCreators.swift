@@ -123,16 +123,21 @@ public class RSActionCreators: NSObject {
         
     }
     
-    public static func addMeasuresFromFile(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+    public static func addMeasuresFromFile(fileName: String, inDirectory: String? = nil, measureManager: RSMeasureManager, configJSONBaseURL: String? = nil) -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
         
-        return addArrayOfObjectsFromFile(
-            fileName: fileName,
-            inDirectory: inDirectory,
-            configJSONBaseURL: configJSONBaseURL,
-            selector: { "measures" <~~ $0 },
-            flatMapFunc: { RSMeasure(json: $0) },
-            mapFunc: { AddMeasureAction(measure: $0) }
-        )
+        return { state, store in
+            
+            store.dispatch(addArrayOfObjectsFromFile(
+                fileName: fileName,
+                inDirectory: inDirectory,
+                configJSONBaseURL: configJSONBaseURL,
+                selector: { "measures" <~~ $0 },
+                flatMapFunc: { measureManager.generate(jsonObject: $0, state: state) },
+                mapFunc: { AddMeasureAction(measure: $0) }
+            ))
+            
+            return nil
+        }
         
     }
     

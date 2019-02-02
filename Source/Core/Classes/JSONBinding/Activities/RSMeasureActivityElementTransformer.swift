@@ -16,9 +16,14 @@ public class RSMeasureActivityElementTransformer: RSActivityElementTransformer {
     
     public static func generateSteps(jsonObject: JSON, taskBuilder: RSTBTaskBuilder, state: RSState) -> [ORKStep]? {
         
-        guard let measureID: String = "measureID" <~~ jsonObject,
-            let measure = RSStateSelectors.measure(state, for: measureID) else {
-                return nil
+        guard let measureID: String = "measureID" <~~ jsonObject else {
+            return nil
+        }
+        
+        guard let measure = RSStateSelectors.measure(state, for: measureID) else {
+            print("Could not load measure \(measureID)")
+            assertionFailure("Could not load measure \(measureID)")
+            return nil
         }
         
         return taskBuilder.steps(forElement: measure.taskElement as JsonElement)
@@ -31,8 +36,14 @@ public class RSMeasureActivityElementTransformer: RSActivityElementTransformer {
         identifierPrefix: String,
         parent: RSStepTreeNode?
         ) -> RSStepTreeNode? {
-        guard let measureID: String = "measureID" <~~ jsonObject,
-            let measure = RSStateSelectors.measure(state, for: measureID) else {
+        
+        guard let measureID: String = "measureID" <~~ jsonObject else {
+                return nil
+        }
+        
+        guard let measure = RSStateSelectors.measure(state, for: measureID) else {
+                print("Could not load measure \(measureID)")
+                assertionFailure("Could not load measure \(measureID)")
                 return nil
         }
         
