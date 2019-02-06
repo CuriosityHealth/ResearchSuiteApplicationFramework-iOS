@@ -386,13 +386,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     open var stateManagersFileName: String = "state"
     
     open var stateManagerDescriptors: [RSStateManagerDescriptor] {
-        let selector: (JSON)-> [JSON]? = { "stateManagers" <~~ $0 }
-        guard let json = RSHelpers.getJson(forFilename: self.stateManagersFileName) as? JSON,
-            let jsonArray = selector(json) else {
-                return []
-        }
-        
-        return jsonArray.compactMap { RSStateManagerDescriptor(json: $0) }
+        fatalError()
+        return []
     }
     
     open func newState(state: RSState) {

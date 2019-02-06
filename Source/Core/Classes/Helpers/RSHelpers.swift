@@ -16,11 +16,10 @@ import ResearchSuiteExtensions
 
 public class RSHelpers {
     
-    open static func getJSON(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String? = nil) -> JSON? {
+    public static func getJSON(fileName: String, inDirectory: String? = nil, configJSONBaseURL: String) -> JSON? {
         
         let urlPath: String = inDirectory != nil ? inDirectory! + "/" + fileName : fileName
-        guard let urlBase = configJSONBaseURL,
-            let url = URL(string: urlBase + urlPath) else {
+        guard let url = URL(string: configJSONBaseURL + urlPath) else {
                 return nil
         }
         
@@ -79,26 +78,6 @@ public class RSHelpers {
             return false
         }
         
-    }
-    
-    public static func getJson(forFilename filename: String, inBundle bundle: Bundle = Bundle.main, inDirectory: String? = nil) -> JsonElement? {
-        
-        assertionFailure("This method is deprecated. Use getJSON(forURL)")
-        
-        guard let filePath = bundle.path(forResource: filename, ofType: "json", inDirectory: inDirectory) else {
-                assertionFailure("unable to locate file \(filename)")
-                return nil
-        }
-        
-        guard let fileContent = try? Data(contentsOf: URL(fileURLWithPath: filePath))
-            else {
-                assertionFailure("Unable to create NSData with content of file \(filePath)")
-                return nil
-        }
-        
-        let json = try! JSONSerialization.jsonObject(with: fileContent, options: JSONSerialization.ReadingOptions.mutableContainers)
-        
-        return json as JsonElement?
     }
     
     public static func delay(_ delay:TimeInterval, dispatchQueue: DispatchQueue = DispatchQueue.main,  closure:@escaping ()->()) {

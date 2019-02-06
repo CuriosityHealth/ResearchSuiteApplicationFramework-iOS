@@ -33,15 +33,17 @@ open class RSLayoutFile: RSLayoutGenerator {
     }
     
     private static func loadLayoutJSON(descriptor: RSLayoutFileDescriptor, state: RSState) -> JSON? {
-        if let urlBase = RSStateSelectors.getValueInCombinedState(state, for: descriptor.layoutURLBaseKey) as? String,
-            let urlPath = descriptor.layoutURLPath,
+        
+        guard let urlBase = RSStateSelectors.getValueInCombinedState(state, for: descriptor.layoutURLBaseKey) as? String else {
+            return nil
+        }
+        
+        if let urlPath = descriptor.layoutURLPath,
             let url = URL(string: urlBase + urlPath) {
-
             return RSHelpers.getJSON(forURL: url)
-            
         }
         else if let filename = descriptor.layoutFilename {
-            return RSHelpers.getJson(forFilename: filename) as? JSON
+            return RSHelpers.getJSON(fileName: filename, configJSONBaseURL: urlBase)
         }
         else {
             return nil

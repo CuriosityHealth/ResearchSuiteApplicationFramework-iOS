@@ -35,15 +35,17 @@ open class RSActivityFileGenerator: RSActivityGenerator {
     }
     
     private static func loadJSON(descriptor: RSActivityFileDescriptor, state: RSState) -> JSON? {
-        if let urlBase = RSStateSelectors.getValueInCombinedState(state, for: descriptor.URLBaseKey) as? String,
-            let urlPath = descriptor.URLPath,
+        
+        guard let urlBase = RSStateSelectors.getValueInCombinedState(state, for: descriptor.URLBaseKey) as? String else {
+            return nil
+        }
+        
+        if let urlPath = descriptor.URLPath,
             let url = URL(string: urlBase + urlPath) {
-            
             return RSHelpers.getJSON(forURL: url)
-            
         }
         else if let filename = descriptor.filename {
-            return RSHelpers.getJson(forFilename: filename) as? JSON
+            return RSHelpers.getJSON(fileName: filename, configJSONBaseURL: urlBase)
         }
         else {
             return nil

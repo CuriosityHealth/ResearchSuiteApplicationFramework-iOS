@@ -31,15 +31,16 @@ public class RSActionCreators: NSObject {
             
             let json: JSON? = {
                 
+                guard let urlBase = configJSONBaseURL else {
+                    return nil
+                }
+                
                 let urlPath: String = inDirectory != nil ? inDirectory! + "/" + fileName : fileName
-                if  let urlBase = configJSONBaseURL,
-                    let url = URL(string: urlBase + urlPath) {
-                    
+                if let url = URL(string: urlBase + urlPath) {
                     return RSHelpers.getJSON(forURL: url)
-                    
                 }
                 else {
-                    return RSHelpers.getJson(forFilename: fileName, inDirectory: inDirectory) as? JSON
+                    return RSHelpers.getJSON(fileName: fileName, inDirectory: inDirectory, configJSONBaseURL: urlBase)
                 }
                 
             }()
