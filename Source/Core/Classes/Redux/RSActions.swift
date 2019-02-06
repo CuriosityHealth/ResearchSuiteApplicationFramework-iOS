@@ -38,6 +38,9 @@ public struct AddStateValueAction: RSAction {
 
 public struct AddConstantValueAction: Action {
     let constantValue: RSConstantValue
+    public init(constantValue: RSConstantValue) {
+        self.constantValue = constantValue
+    }
 }
 
 public struct AddFunctionValueAction: Action {

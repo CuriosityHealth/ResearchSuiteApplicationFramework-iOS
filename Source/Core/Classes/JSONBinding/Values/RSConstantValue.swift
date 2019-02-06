@@ -17,6 +17,20 @@ public class RSConstantValue: NSObject, Gloss.JSONDecodable, ValueConvertible {
     public let type: String
     public let value: AnyObject?
     
+    public init(
+        identifier: String,
+        type: String,
+        value: AnyObject?
+        ) {
+        
+        self.identifier = identifier
+        self.type = type
+        self.value = value
+        
+        super.init()
+        
+    }
+    
     
     //TODO: Default does not work for boolean
     required public init?(json: JSON) {
