@@ -339,6 +339,7 @@ open class RSScheduler: NSObject, StoreSubscriber {
     
     var subscriptions: [RSSchedulerSubscription] = []
     private var lastState: RSState?
+    public var lastScheduleReloadTime: Date?
     
     func processScheduledActions(state: RSState) {
         
@@ -367,14 +368,17 @@ open class RSScheduler: NSObject, StoreSubscriber {
         
         self.lastState = state
         
+        let now = Date()
         //reloadSchedule could potentially cause another action to be emitted,
         //thus lastState should be set above
         //check for initial load
         if RSStateSelectors.getSchedulerEventUpdate(state) == nil {
             self.reloadSchedule(state: state)
+            self.lastScheduleReloadTime = now
         }
         else if self.shouldReloadSchedule(state: state, lastState: lastState) {
             self.reloadSchedule(state: state)
+            self.lastScheduleReloadTime = now
         }
         
         self.processScheduledActions(state: state)
