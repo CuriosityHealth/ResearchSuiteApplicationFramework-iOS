@@ -31,6 +31,7 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
     public let titleTextColorJSON: JSON?
     public let backgroundColorJSON: JSON?
     public let backgroundImage: UIImage?
+    public let titleToImageViewSpace: CGFloat?
     
     
     
@@ -72,6 +73,8 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
                 return nil
             }
         }()
+        
+        self.titleToImageViewSpace = "titleToImageViewSpace" <~~ json
         
         super.init(json: json)
         

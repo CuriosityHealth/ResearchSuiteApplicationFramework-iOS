@@ -12,7 +12,7 @@ import ResearchSuiteTaskBuilder
 import Gloss
 import Mustache
 import SwiftyMarkdown
-import ResearchSuiteExtensions  
+import ResearchSuiteExtensions
 
 public class RSHelpers {
     
@@ -28,7 +28,6 @@ public class RSHelpers {
     
     public static func getJSON(forURL url: URL) -> JSON? {
         
-//        print(url)
         guard let fileContent = try? Data(contentsOf: url)
             else {
                 assertionFailure("Unable to create NSData with content of file \(url)")

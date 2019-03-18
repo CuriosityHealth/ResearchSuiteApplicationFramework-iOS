@@ -21,7 +21,6 @@ public class RSMeasureActivityElementTransformer: RSActivityElementTransformer {
         }
         
         guard let measure = RSStateSelectors.measure(state, for: measureID) else {
-            print("Could not load measure \(measureID)")
             assertionFailure("Could not load measure \(measureID)")
             return nil
         }
@@ -42,7 +41,6 @@ public class RSMeasureActivityElementTransformer: RSActivityElementTransformer {
         }
         
         guard let measure = RSStateSelectors.measure(state, for: measureID) else {
-                print("Could not load measure \(measureID)")
                 assertionFailure("Could not load measure \(measureID)")
                 return nil
         }

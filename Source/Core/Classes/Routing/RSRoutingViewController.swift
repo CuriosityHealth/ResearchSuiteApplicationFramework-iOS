@@ -445,6 +445,11 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             RSApplicationDelegate.appDelegate.logger?.log(tag: RSRoutingViewController.TAG, level: .debug, message: "Dispatching Request Passcode")
             self.store!.dispatch(RequestPasscode(uuid: UUID()))
         }
+        else {
+            //if passcode is not stored, then we don't need to lock the screen
+            //and since we are presenting, we should unhide content
+            self.setContentHidden(hidden: false)
+        }
     }
     
     private func handleLockScreen(completion: @escaping (Bool)->()) {

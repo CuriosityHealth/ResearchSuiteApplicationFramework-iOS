@@ -151,6 +151,7 @@
                         <outlet property="backgroundImageView" destination="B2c-Wu-jNF" id="Y7T-vV-Vnk"/>
                         <outlet property="imageView" destination="8pM-Mv-Ysp" id="iT6-5w-DvB"/>
                         <outlet property="titleLabel" destination="TH1-3j-kbb" id="Lgb-P5-6Xm"/>
+                        <outlet property="titleToImageViewSpace" destination="rGd-Zy-SOf" id="t4f-G0-5Qg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OzM-3p-ezM" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -130,7 +130,7 @@ open class RSWebLayoutViewController: UIViewController, StoreSubscriber, RSSingl
                 else if UIApplication.shared.canOpenURL(url) {
                     UIApplication.shared.open(url)
 //                    print(url)
-                    print("Redirected to browser. No need to open it locally")
+//                    print("Redirected to browser. No need to open it locally")
                 }
                 
             }

@@ -151,11 +151,8 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
             feedbackButton.layer.cornerRadius = 5;
             feedbackButton.layer.masksToBounds = true;
             
-//            feedbackButton.contentMode = .scaleAspectFit
-//            feedbackButton.sizeToFit()
             feedbackButton.frame = CGRect(origin: CGPoint.zero, size: buttonSize)
             feedbackButton.center = self.defaultCenter(windowSize: window.frame.size, imageSize: buttonSize)
-            debugPrint(feedbackButton)
 
             feedbackButton.isUserInteractionEnabled = true
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))

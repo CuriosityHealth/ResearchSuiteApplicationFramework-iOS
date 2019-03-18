@@ -82,8 +82,7 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
                 let render = try self.template.render(parameters)
                 return render
             }
-            catch let e {
-                debugPrint(e)
+            catch _ {
                 return nil
             }
             

@@ -10,7 +10,7 @@ import Gloss
 
 
 public protocol RSDashboardAdaptor: UICollectionViewDataSource, UICollectionViewDelegate {
-    func configure(collectionView: UICollectionView)
+    func configure(viewController: UIViewController, collectionView: UICollectionView)
 }
 
 open class RSNewDashboardLayout: RSBaseLayout, RSLayoutGenerator  {

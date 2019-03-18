@@ -120,7 +120,7 @@ open class RSNewDashboardLayoutViewController: UIViewController, UICollectionVie
             self.adaptor = adaptor
             self.collectionView.dataSource = adaptor
             self.collectionView.delegate = adaptor
-            adaptor.configure(collectionView: self.collectionView)
+            adaptor.configure(viewController: self, collectionView: self.collectionView)
             
             
             

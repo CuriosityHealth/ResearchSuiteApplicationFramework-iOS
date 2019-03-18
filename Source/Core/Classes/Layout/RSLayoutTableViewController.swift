@@ -319,13 +319,8 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
     
     @objc func handleDebugListItemTap(sender: UITapGestureRecognizer) {
         if sender.state == .ended {
-            print("Debug list item enabled")
-            print(sender)
             if let cell = sender.view as? UITableViewCell,
                 let item = self.itemForRow(row: cell.tag) {
-                
-                print(cell)
-                print(item)
                 
                 if let debugActionsJSON: [JSON] = "debugActions" <~~ item.element {
                     //dispatch debug actions

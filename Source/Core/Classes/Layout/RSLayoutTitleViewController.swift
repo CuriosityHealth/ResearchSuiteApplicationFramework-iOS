@@ -39,6 +39,7 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
     }
     
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var titleToImageViewSpace: NSLayoutConstraint!
     @IBOutlet weak var imageView: UIImageView!
     var button: UIButton!
     @IBOutlet weak var backgroundImageView: UIImageView!
@@ -72,6 +73,10 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
             let backgroundColor = RSValueManager.processValue(jsonObject: backgroundColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
             
             self.backgroundImageView.backgroundColor = backgroundColor
+        }
+        
+        if let titleToImageViewSpace = self.titleLayout.titleToImageViewSpace {
+            self.titleToImageViewSpace.constant = titleToImageViewSpace
         }
         
         //create button only once

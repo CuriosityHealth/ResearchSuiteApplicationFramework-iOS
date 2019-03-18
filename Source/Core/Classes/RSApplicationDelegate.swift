@@ -146,7 +146,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTBVideoInstructionStepGenerator(),
             RSEnhancedTimePickerStepGenerator(),
             RSEnhancedDayOfWeekChoiceStepGenerator(),
-            RSGiphyInstructionStepGenerator()
+            RSGiphyInstructionStepGenerator(),
+            RSFullScreenImageStepGenerator()
         ]
     }
     
@@ -217,7 +218,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSWebLayout.self,
             RSDashboardLayout.self,
             RSNewDashboardLayout.self,
-            RSLicenseLayout.self
+            RSLicenseLayout.self,
+            RSPDFViewerLayout.self
         ]
     }
     

@@ -14,6 +14,7 @@ open class RSSchedulerDashboardAdaptor: NSObject, RSDashboardAdaptor, RSSchedule
     }
     
     weak var collectionView: UICollectionView?
+    weak var viewController: UIViewController?
     
     var items: [RSDashboardAdaptorItem] = []
     open var priorityCutoff: Int = 0
@@ -31,12 +32,13 @@ open class RSSchedulerDashboardAdaptor: NSObject, RSDashboardAdaptor, RSSchedule
         self.scheduler?.unsubscribe(self)
     }
     
-    open func configure(collectionView: UICollectionView) {
+    open func configure(viewController: UIViewController, collectionView: UICollectionView) {
         // Register cell classes
         self.collectionViewCellManager.registerCellsFor(collectionView: collectionView)
         collectionView.isPrefetchingEnabled = false
         collectionView.reloadData()
         self.collectionView = collectionView
+        self.viewController = viewController
     }
     
     open func dashboardItems(for events: [RSScheduleEvent]) -> [RSDashboardAdaptorItem] {
@@ -86,7 +88,8 @@ open class RSSchedulerDashboardAdaptor: NSObject, RSDashboardAdaptor, RSSchedule
         let cellWidth = collectionView.bounds.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right)
         
         guard let store = RSApplicationDelegate.appDelegate.store,
-            let cell = item.generateCell(store, store.state, collectionView, self.collectionViewCellManager, item, indexPath) else {
+            let viewController = self.viewController,
+            let cell = item.generateCell(store, store.state, viewController, collectionView, self.collectionViewCellManager, item, indexPath) else {
                 let cell = self.collectionViewCellManager.defaultCellFor(collectionView: collectionView, indexPath: indexPath)
                 cell.setCellWidth(width: cellWidth)
                 return cell
