@@ -15,7 +15,7 @@ open class RSLocationEvent: RSRPIntermediateResult {
     
     public static let kType = "RSLocationEvent"
     
-    open let location: CLLocation
+    public let location: CLLocation
     init(location: CLLocation, source: String, uuid: UUID) {
         self.location = location
         super.init(

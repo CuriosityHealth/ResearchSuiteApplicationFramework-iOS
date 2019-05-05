@@ -32,7 +32,7 @@ public class RSReducer: NSObject {
     
     final class ActivityReducer: Reducer {
         
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -79,7 +79,7 @@ public class RSReducer: NSObject {
     
     final class MeasureReducer: Reducer {
         
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -101,7 +101,7 @@ public class RSReducer: NSObject {
     
     final class StateValueReducer: Reducer {
         
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -208,7 +208,7 @@ public class RSReducer: NSObject {
     
     final class LayoutReducer: Reducer {
         
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -242,7 +242,7 @@ public class RSReducer: NSObject {
 //    
     final class RouteReducer: Reducer {
         
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -293,7 +293,7 @@ public class RSReducer: NSObject {
 //    }
     
     final class PathReducer: Reducer {
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -334,7 +334,7 @@ public class RSReducer: NSObject {
     
     final class PresentationReducer: Reducer  {
         
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -401,7 +401,7 @@ public class RSReducer: NSObject {
     }
     
     final class DataFlowReducer: Reducer {
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -451,7 +451,7 @@ public class RSReducer: NSObject {
     }
     
     final class AppConfigurationReducer: Reducer {
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -477,7 +477,7 @@ public class RSReducer: NSObject {
     }
     
     final class NotificationReducer: Reducer {
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -515,7 +515,7 @@ public class RSReducer: NSObject {
     }
     
     final class LocationReducer: Reducer {
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             
@@ -554,7 +554,7 @@ public class RSReducer: NSObject {
     
     final class SchedulerReducer: Reducer {
         
-        open func handleAction(action: Action, state: RSState?) -> RSState {
+        public func handleAction(action: Action, state: RSState?) -> RSState {
             
             let state = state ?? RSState.empty()
             

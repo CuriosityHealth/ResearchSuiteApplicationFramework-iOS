@@ -80,20 +80,6 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
         self.store?.unsubscribe(self)
     }
     
-    open func websocketDidConnect(socket: WebSocket) {
-        print("websocket is connected")
-        //launch
-        //        self.store.dispatch(RSActionCreators.queueActivity(activityID: "devActivity"))
-        
-        self.onConnectCallback?(self)
-    }
-    
-    open func websocketDidDisconnect(socket: WebSocket, error: NSError?) {
-        print("websocket is disconnected: \(error?.localizedDescription)")
-        //        self.store.dispatch(RSActionCreators.forceDismissActivity(flushActivityQueue: true))
-        
-    }
-    
     private func valueChanged<T: Equatable>(selector: (RSState) -> T?, state: RSState, lastState: RSState) -> Bool {
 
         if let currentValue = selector(state) {
@@ -268,52 +254,67 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
         
     }
     
-    open func websocketDidReceiveMessage(socket: WebSocket, text: String) {
+    public func websocketDidConnect(socket: WebSocketClient) {
+        print("websocket is connected")
+        //launch
+        //        self.store.dispatch(RSActionCreators.queueActivity(activityID: "devActivity"))
+
+        self.onConnectCallback?(self)
+    }
+
+    public func websocketDidDisconnect(socket: WebSocketClient, error: Error?) {
+        print("websocket is disconnected: \(error?.localizedDescription)")
+        //        self.store.dispatch(RSActionCreators.forceDismissActivity(flushActivityQueue: true))
+        self.socket.connect()
+
+    }
+
+    public func websocketDidReceiveMessage(socket: WebSocketClient, text: String) {
         print("got some text: \(text)")
-        
+
         guard let statusJson = (try? JSONSerialization.jsonObject(with: text.data(using: String.Encoding.utf8)!, options: .allowFragments)) as? JSON,
             let type: String = "type" <~~ statusJson else {
                 print("decoding failed")
                 return
         }
-        
+
         if type == "action",
             let action: JSON = "action" <~~ statusJson,
             let store = self.store {
-            
+
             store.processAction(action: action, context: [:], store: store)
-            
+
         }
-            
+
         else if type == "reloadLayouts",
             let state = self.store?.state,
             let currentPath = RSStateSelectors.currentPath(state) {
-            
+
             RSApplicationDelegate.appDelegate.loadLayouts()
             let action = RSActionCreators.requestPathChange(path: currentPath, forceReroute: true)
             self.store?.dispatch(action)
-            
+
         }
-            
+
         else if type == "reloadState",
             let state = self.store?.state {
             RSApplicationDelegate.appDelegate.loadState()
-            
+
             let reloadTesting = RSStateSelectors.getValueInCombinedState(state, for: "reloadTesting")
 //            debugPrint(reloadTesting)
-            
-            
+
+
         }
-        
+
         else if type == "reloadActivities",
             let state = self.store?.state {
-            
+
             self.store?.dispatch(RSActionCreators.forceDismissActivity(flushActivityQueue: true))
             RSApplicationDelegate.appDelegate.loadMeasures()
             RSApplicationDelegate.appDelegate.loadActivities()
-            
+
         }
-        
+
         //        else if  let message = LoadActivityMessage(json: statusJson) {
         //
         //            print("decoding worked!! \n\(message)")
@@ -324,12 +325,12 @@ open class CHSocketManager: NSObject, WebSocketDelegate, RSActionManagerDelegate
         //            }
         //
         //        }
-        
-        
-        
+
+
+
     }
-    
-    open func websocketDidReceiveData(socket: WebSocket, data: Data) {
+
+    public func websocketDidReceiveData(socket: WebSocketClient, data: Data) {
         print("got some data: \(data.count)")
     }
     

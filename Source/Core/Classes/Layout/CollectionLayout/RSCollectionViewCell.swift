@@ -32,6 +32,9 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     
     open var onTap: ((RSCollectionViewCell)->())?
     
+    open var activeBorderColor: UIColor?
+    open var inactiveBorderColor: UIColor?
+    
     public static func spacingView(axis: NSLayoutConstraint.Axis) -> UIView {
         let view = UIView()
         view.snp.makeConstraints { (make) in
@@ -89,6 +92,10 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     
     open override func prepareForReuse() {
         self.onTap = nil
+        
+        self.activeBorderColor = nil
+        self.inactiveBorderColor = nil
+        
         super.prepareForReuse()
     }
     
@@ -120,7 +127,27 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
         let opacity: Float = shadow ? 0.3 : 0.0
         
 //        self.layer.shadowColor = UIColor.black.cgColor
-        self.layer.shadowColor = (self.onTap == nil) ? UIColor.black.cgColor : self.tintColor.cgColor
+        let shadowColor: CGColor = {
+            let active = (self.onTap == nil)
+            if active {
+                if let color = self.activeBorderColor {
+                    return color.cgColor
+                }
+                else {
+                    return self.tintColor.cgColor
+                }
+            }
+            else {
+                if let color = self.inactiveBorderColor {
+                    return color.cgColor
+                }
+                else {
+                    return UIColor.black.cgColor
+                }
+            }
+            
+        }()
+        self.layer.shadowColor = shadowColor
         self.layer.shadowOffset = CGSize(width: 0.0, height: 2.0)
         self.layer.shadowRadius = 3.0
         
@@ -168,6 +195,12 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override open func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        let height = systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+        layoutAttributes.bounds.size.height = height
+        return layoutAttributes
     }
     
 }

@@ -59,14 +59,21 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
     open var titleLabel: UILabel!
     //subtitle next
     open var subtitleLabel: UILabel!
+    open var subtitleStackView: UIStackView!
     //then content container
     open var contentStackView: UIStackView!
     
     open var containerView: UIView!
     
+    open var unselectedBackgroundColor: UIColor = UIColor.white {
+        didSet {
+            self.updateBackgroundColor(isHighlighted: self.isHighlighted)
+        }
+    }
+    
     open override var onTap: ((RSCollectionViewCell)->())? {
         didSet {
-            self.updateBorder(tintedBorder: self.onTap != nil, isHighlighted: self.isHighlighted)
+            self.updateBorder(active: self.onTap != nil, isHighlighted: self.isHighlighted)
         }
     }
     
@@ -74,7 +81,7 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
         didSet {
             self.updateBackgroundColor(isHighlighted: isHighlighted)
-            self.updateBorder(tintedBorder: self.onTap != nil, isHighlighted: isHighlighted)
+            self.updateBorder(active: self.onTap != nil, isHighlighted: isHighlighted)
         }
         
     }
@@ -82,8 +89,9 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
     override public init(frame: CGRect) {
         super.init(frame: frame)
         
-        let containerView = UIView()
-        self.containerView = containerView
+        self.containerView = UIView()
+        self.containerView.setContentHuggingPriority(.required, for: .vertical)
+        self.contentView.setContentHuggingPriority(.required, for: .vertical)
         self.contentView.addSubview(containerView)
         containerView.snp.makeConstraints { (make) in
             make.width.height.equalToSuperview()
@@ -92,7 +100,8 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
         self.updateBackgroundColor(isHighlighted: false)
         
-        let verticalStackView = UIStackView(frame: self.contentView.bounds)
+        let verticalStackView = UIStackView()
+        verticalStackView.setContentHuggingPriority(.required, for: .vertical)
         verticalStackView.axis = .vertical
         verticalStackView.spacing = 8.0
         
@@ -102,18 +111,29 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
             make.center.equalToSuperview()
             
         }
+//        verticalStackView.setContentHuggingPriority(.required, for: .vertical)
+//        verticalStackView.setContentCompressionResistancePriority(.required, for: .vertical)
+        
         
         self.titleLabel = RSCardCellTitleLabel()
         self.titleLabel.numberOfLines = 0
+//        self.titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         self.subtitleLabel = RSCardCellSubtitleLabel()
         self.subtitleLabel.numberOfLines = 0
+//        self.subtitleLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
+//        self.subtitleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
+        self.subtitleLabel.snp.makeConstraints { (make) in
+            make.height.greaterThanOrEqualTo(1)
+        }
+        
         self.iconImageView = UIImageView()
         self.iconImageView.snp.makeConstraints { (make) in
             make.width.height.equalTo(28)
         }
         
         self.contentStackView = UIStackView()
-        
+//        self.contentStackView.setContentCompressionResistancePriority(.required, for: .vertical)
+//        self.contentStackView.setContentHuggingPriority(.required, for: .vertical)
         //start to add views
         verticalStackView.addArrangedSubview(RSBasicCollectionViewCell.spacingView(axis: .vertical))
         
@@ -129,15 +149,17 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         headerStackView.addArrangedSubview(self.titleLabel)
         headerStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
         
-        let subtitleStackView = UIStackView()
-        verticalStackView.addArrangedSubview(subtitleStackView)
+        self.subtitleStackView = UIStackView()
+        verticalStackView.addArrangedSubview(self.subtitleStackView)
+//        subtitleStackView.setContentCompressionResistancePriority(.required, for: .vertical)
+//        subtitleStackView.setContentHuggingPriority(.required, for: .vertical)
         
-        subtitleStackView.axis = .horizontal
-        subtitleStackView.spacing = 8.0
+        self.subtitleStackView.axis = .horizontal
+        self.subtitleStackView.spacing = 8.0
         
-        subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
-        subtitleStackView.addArrangedSubview(self.subtitleLabel)
-        subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+//        subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+//        subtitleStackView.addArrangedSubview(self.subtitleLabel)
+//        subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
         
         verticalStackView.addArrangedSubview(self.contentStackView)
         
@@ -152,15 +174,17 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
     open override func layoutSubviews()
     {
         super.layoutSubviews()
-        self.updateBorder(tintedBorder: self.onTap != nil, isHighlighted: self.isHighlighted)
+        self.updateBorder(active: self.onTap != nil, isHighlighted: self.isHighlighted)
     }
     
     override open func prepareForReuse() {
         
         self.titleLabel.text = nil
         self.subtitleLabel.text = nil
+        self.subtitleStackView.arrangedSubviews.forEach({$0.removeFromSuperview()})
         self.iconImageView.image = nil
         self.iconImageView.tintColor = nil
+        self.unselectedBackgroundColor = UIColor.white
         
         super.prepareForReuse()
         
@@ -181,6 +205,13 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
         if let subtitle = paramMap["subtitle"] as? String {
             self.subtitleLabel.text = RSApplicationDelegate.localizedString(subtitle)
+            self.subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+            self.subtitleStackView.addArrangedSubview(self.subtitleLabel)
+            self.subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+        }
+        else {
+            //add view of zero height
+            subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .vertical))
         }
         
     }
@@ -199,17 +230,34 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
         if let subtitle = config.subtitle {
             self.subtitleLabel.text = RSApplicationDelegate.localizedString(subtitle)
+            self.subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+            self.subtitleStackView.addArrangedSubview(self.subtitleLabel)
+            self.subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+        }
+        else {
+            //add view of zero height
+            subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .vertical))
         }
     }
     
-    func updateBorder(tintedBorder: Bool, isHighlighted: Bool) {
+    func updateBorder(active: Bool, isHighlighted: Bool) {
         
         self.containerView.layer.borderColor = {
-            if tintedBorder {
-                return self.tintColor.withAlphaComponent(0.3).cgColor
+            if active {
+                if let color = self.activeBorderColor {
+                    return color.cgColor
+                }
+                else {
+                    return self.tintColor.withAlphaComponent(0.3).cgColor
+                }
             }
             else {
-                return UIColor.lightGray.withAlphaComponent(0.3).cgColor
+                if let color = self.inactiveBorderColor {
+                    return color.cgColor
+                }
+                else {
+                    return UIColor.lightGray.withAlphaComponent(0.3).cgColor
+                }
             }
         }()
         
@@ -225,13 +273,13 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
     }
     
     func updateBackgroundColor(isHighlighted: Bool) {
-        self.containerView.backgroundColor = isHighlighted ? UIColor.lightGray.withAlphaComponent(0.2) : UIColor.white
+        self.containerView.backgroundColor = isHighlighted ? UIColor.lightGray.withAlphaComponent(0.2) : self.unselectedBackgroundColor
     }
     
     override open func setCellTint(color: UIColor) {
         super.setCellTint(color: color)
         self.iconImageView.tintColor = color
-        self.updateBorder(tintedBorder: self.onTap != nil, isHighlighted: self.isHighlighted)
+        self.updateBorder(active: self.onTap != nil, isHighlighted: self.isHighlighted)
     }
     
 }

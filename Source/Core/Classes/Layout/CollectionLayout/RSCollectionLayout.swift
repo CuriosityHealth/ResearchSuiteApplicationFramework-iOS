@@ -18,8 +18,8 @@ open class RSCollectionLayout: RSBaseLayout, RSLayoutGenerator {
         return RSCollectionLayout(json: jsonObject)
     }
     
-//    open let dataSource: RSCollectionDataSourceDescriptor
-    open let datapointClasses: [RSDatapointClass]
+//    public let dataSource: RSCollectionDataSourceDescriptor
+    public let datapointClasses: [RSDatapointClass]
     
     public let backgroundColorJSON: JSON?
     public let backgroundImage: UIImage?

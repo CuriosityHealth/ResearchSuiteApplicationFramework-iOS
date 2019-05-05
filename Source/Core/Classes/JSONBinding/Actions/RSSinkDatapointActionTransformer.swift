@@ -15,11 +15,11 @@ extension RSRPIntermediateResult: RSDatapoint {
 }
 
 open class RSSinkDatapointActionTransformer: RSActionTransformer {
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return "sinkDatapoint" == type || "sinkDatapoints" == type
     }
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    public static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         let dataSinkIdentifiersOpt: [String]? = {
             if let dataSinkIdentifiers: [String] = "dataSinkIdentifiers" <~~ jsonObject {

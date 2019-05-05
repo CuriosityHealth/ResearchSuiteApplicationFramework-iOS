@@ -13,13 +13,13 @@ import ResearchSuiteTaskBuilder
 
 open class RSStepTree: NSObject, ORKTask, RSTask {
     
-    open let identifier: String
+    public let identifier: String
     let root: RSStepTreeNode
     let taskBuilder: RSStepTreeTaskBuilder
     let state: RSState
 //    let leafIdentifiers: [String]
-    open let shouldHideCancelButton: Bool
-    open let shouldConfirmCancel: Bool
+    public let shouldHideCancelButton: Bool
+    public let shouldConfirmCancel: Bool
     public init(identifier: String, root: RSStepTreeNode, taskBuilder: RSStepTreeTaskBuilder, state: RSState, shouldHideCancelButton: Bool = false, shouldConfirmCancel: Bool = true) {
         self.identifier = identifier
         self.root = root

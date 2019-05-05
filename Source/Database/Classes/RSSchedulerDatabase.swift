@@ -21,7 +21,7 @@ open class RSSchedulerDatabase: NSObject {
     
     
     var credentialStore: RSCredentialsStore!
-    open let realmFile: URL
+    public let realmFile: URL
     let encryptionEnabled: Bool
     let fileProtection: FileProtectionType
     let schemaVersion: UInt64 = 0

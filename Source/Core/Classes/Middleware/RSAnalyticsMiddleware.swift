@@ -19,7 +19,7 @@ public protocol RSAnalyticsMiddlewareDelegate {
 
 open class RSAnalyticsMiddleware: RSMiddlewareProvider {
     
-    open static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware? {
+    public static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware? {
         
         guard let analyticsDelegate = appDelegate as? RSAnalyticsMiddlewareDelegate else {
             return nil

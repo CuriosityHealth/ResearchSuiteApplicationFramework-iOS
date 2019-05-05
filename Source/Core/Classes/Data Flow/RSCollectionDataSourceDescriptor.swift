@@ -10,9 +10,9 @@ import Gloss
 
 open class RSCollectionDataSourceDescriptor {
 
-    open let identifier: String
-    open let type: String
-    open let json: JSON
+    public let identifier: String
+    public let type: String
+    public let json: JSON
     
     required public init?(json: JSON) {
         guard let identifier: String = "identifier" <~~ json,

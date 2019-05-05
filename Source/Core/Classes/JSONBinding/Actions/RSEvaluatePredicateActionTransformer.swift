@@ -13,11 +13,11 @@ import ReSwift
 
 open class RSEvaluatePredicateActionTransformer: RSActionTransformer {
     
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return "evaluatePredicate" == type
     }
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    public static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         guard let predicate: RSPredicate = "evaluatePredicate" <~~ jsonObject else {
             return nil

@@ -13,11 +13,44 @@ import Gloss
 
 open class RSQueueActivityActionTransformer: RSActionTransformer, RSURLToJSONActionConverter {
     
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return "queueActivity" == type
     }
+    
+    public static func generateExtraOnCompletionActions(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> RSOnCompletionActions? {
+        
+        guard let onCompletionJSON: JSON = "onCompletion" <~~ jsonObject else {
+            return nil
+        }
+        
+        let generateActions: (String) ->  [RSOnCompletionActionGenerator]? = { jsonKey in
+            guard let actionsJSON: [JSON] = jsonKey <~~ onCompletionJSON else {
+                return nil
+            }
+            
+            let actions: [RSOnCompletionActionGenerator] = actionsJSON.map { actionJSON in
+                let actionGenerator: RSOnCompletionActionGenerator = { context in
+                    return { state, store in
+                        actionManager.processAction(action: actionJSON, context: context, store: store)
+                        return nil
+                    }
+                }
+                
+                return actionGenerator
+            }
+            
+            return actions
+        }
+
+        return RSOnCompletionActions(
+            onSuccessActions: generateActions("onSuccess"),
+            onFailureActions: generateActions("onFailure"),
+            finallyActions: generateActions("finally")
+        )
+    }
+    
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    public static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         guard let activityID: String = "activityID" <~~ jsonObject else {
                 return nil
@@ -51,10 +84,12 @@ open class RSQueueActivityActionTransformer: RSActionTransformer, RSURLToJSONAct
                 
             }()
             
+            let extraOnCompletionActions: RSOnCompletionActions? = self.generateExtraOnCompletionActions(jsonObject: jsonObject, context: context, actionManager: actionManager)
+            
             store.dispatch(RSActionCreators.queueActivity(
                 activityID: activityID,
                 context: extraContext,
-                extraOnCompletionActions: nil
+                extraOnCompletionActions: extraOnCompletionActions
             ))
             
             return nil
@@ -62,11 +97,11 @@ open class RSQueueActivityActionTransformer: RSActionTransformer, RSURLToJSONAct
         }
     }
     
-    open static func supportsURLType(type: String) -> Bool {
+    public static func supportsURLType(type: String) -> Bool {
         return "queue_activity" == type
     }
     
-    open static func convertURLToJSONAction(queryParams: [String : String], context: [String : AnyObject], store: Store<RSState>) -> JSON? {
+    public static func convertURLToJSONAction(queryParams: [String : String], context: [String : AnyObject], store: Store<RSState>) -> JSON? {
         
         guard let activityIdentifier: String = queryParams["activity_id"] else {
             return nil

@@ -246,9 +246,9 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
 
 //    private let rootLayoutViewController: RSLayoutViewController
     
-    open let rootLayoutIdentifier: String
-    open let routeManager: RSRouteManager
-    open let activityManager: RSActivityManager
+    public let rootLayoutIdentifier: String
+    public let routeManager: RSRouteManager
+    public let activityManager: RSActivityManager
     weak var store: Store<RSState>?
     
 //    var overlayView: UIView?

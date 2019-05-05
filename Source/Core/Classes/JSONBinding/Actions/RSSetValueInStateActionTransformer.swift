@@ -13,11 +13,11 @@ import ReSwift
 
 open class RSSetValueInStateActionTransformer: RSActionTransformer {
     
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return "setValueInState" == type
     }
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    public static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         //TODO: at some point we want to add in a new type of setValueInState where multiple values can be updated atomicly
         guard let valueJSON: JSON = "value" <~~ jsonObject,

@@ -53,11 +53,11 @@ open class RSRealmScheduleEvent: Object, RSScheduleEvent, RSScheduleEventBuilder
     }
     
     
-    override open static func primaryKey() -> String? {
+    override public static func primaryKey() -> String? {
         return "identifier"
     }
     
-    override open static func indexedProperties() -> [String] {
+    override public static func indexedProperties() -> [String] {
         return ["eventType"]
     }
     

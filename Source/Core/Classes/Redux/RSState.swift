@@ -282,11 +282,11 @@ public final class RSState: NSObject, StateType {
         )
     }
     
-    open class func empty() -> Self {
+    public class func empty() -> Self {
         return self.init()
     }
     
-    open override var description: String {
+    public override var description: String {
         return
             "\n\titeration: \(self.iteration)" +
             "\n\tapplicationState: \(self.applicationState)" +

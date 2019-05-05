@@ -32,9 +32,9 @@ public struct RSSortSettings: JSONDecodable {
 
 open class RSDatabaseCollectionDataSourceDescriptor: RSCollectionDataSourceDescriptor {
     
-    open let dataSourceIdentifier: String
-    open let predicate: RSPredicate
-    open let sortSettings: RSSortSettings?
+    public let dataSourceIdentifier: String
+    public let predicate: RSPredicate
+    public let sortSettings: RSSortSettings?
     
     required public init?(json: JSON) {
         guard let dataSourceIdentifier: String = "dataSourceIdentifier" <~~ json,

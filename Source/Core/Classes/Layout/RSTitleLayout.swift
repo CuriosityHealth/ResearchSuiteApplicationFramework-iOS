@@ -21,11 +21,11 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
     }
     
     
-    open let title: String?
+    public let title: String?
     public let titleJSON: JSON?
-    open let titleFontJSON: JSON?
-    open let image: UIImage?
-    open let button: RSLayoutButton?
+    public let titleFontJSON: JSON?
+    public let image: UIImage?
+    public let button: RSLayoutButton?
     
     //theme
     public let titleTextColorJSON: JSON?
@@ -47,7 +47,8 @@ open class RSTitleLayout: RSBaseLayout, RSLayoutGenerator {
             self.title = nil
         }
         else {
-            return nil
+            self.title = nil
+            self.titleJSON = nil
         }
         
         self.titleFontJSON = "titleFont" <~~ json

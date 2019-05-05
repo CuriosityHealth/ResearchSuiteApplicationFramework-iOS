@@ -69,11 +69,11 @@ open class RSExactPath: RSPath, RSPathGenerator {
 
 open class RSPrefixPath: RSPath, RSPathGenerator {
     
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return type == "prefix"
     }
     
-    open static func generate(jsonObject: JSON, state: RSState) -> RSPath? {
+    public static func generate(jsonObject: JSON, state: RSState) -> RSPath? {
         guard let prefix: String = "path" <~~ jsonObject else {
             return nil
         }
@@ -154,11 +154,11 @@ open class RSParamPath: RSPath, RSPathGenerator {
         let paramType: ParamType
     }
 
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return type == "param"
     }
 
-    open static func generate(jsonObject: JSON, state: RSState) -> RSPath? {
+    public static func generate(jsonObject: JSON, state: RSState) -> RSPath? {
         guard let path: String = "path" <~~ jsonObject else {
             return nil
         }
@@ -314,11 +314,11 @@ open class RSParamPath: RSPath, RSPathGenerator {
 
 open class RSBrowserPath: RSPath, RSPathGenerator {
     
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return type == "browser"
     }
     
-    open static func generate(jsonObject: JSON, state: RSState) -> RSPath? {
+    public static func generate(jsonObject: JSON, state: RSState) -> RSPath? {
         guard let prefix: String = "path" <~~ jsonObject else {
             return nil
         }

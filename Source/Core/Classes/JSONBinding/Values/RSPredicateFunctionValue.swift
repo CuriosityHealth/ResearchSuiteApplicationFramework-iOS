@@ -12,8 +12,8 @@ import Gloss
 
 open class RSPredicateFunctionValue: RSFunctionValue {
 
-    open let identifier: String
-    open let predicate: RSPredicate
+    public let identifier: String
+    public let predicate: RSPredicate
     
     required public init?(json: JSON) {
         

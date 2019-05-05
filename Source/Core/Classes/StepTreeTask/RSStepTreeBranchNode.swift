@@ -17,8 +17,8 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
     private var childMap: [String: RSStepTreeNode] = [:]
     
     private let navigationRules: [String: RSStepTreeNavigationRule]
-    open let resultTransforms: [String: RSResultTransform]
-    open let valueMapping: [String: JSON]
+    public let resultTransforms: [String: RSResultTransform]
+    public let valueMapping: [String: JSON]
     
     public init(
         identifier: String,

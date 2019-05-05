@@ -15,11 +15,11 @@ import ResearchSuiteExtensions
 //This is pretty hacky. We should probably use the state for this
 open class RSShowAlertActionTranformer: RSActionTransformer {
     
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return "showAlertAction" == type
     }
     //this return a closure, of which state and store are injected
-    open static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
+    public static func generateAction(jsonObject: JSON, context: [String: AnyObject], actionManager: RSActionManager) -> ((_ state: RSState, _ store: Store<RSState>) -> Action?)? {
         
         guard let alert = RSAlert(json: jsonObject),
             let layoutVC = context["layoutViewController"] as? UIViewController else {

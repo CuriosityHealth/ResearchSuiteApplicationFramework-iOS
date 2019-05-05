@@ -13,7 +13,7 @@ import ResearchSuiteTaskBuilder
 
 open class RSStepTreeElementFileGenerator: RSStepTreeNodeGenerator {
     
-    open static func getJSON(forURL url: URL) -> JSON? {
+    public static func getJSON(forURL url: URL) -> JSON? {
 
         guard let fileContent = try? Data(contentsOf: url)
             else {
@@ -28,7 +28,7 @@ open class RSStepTreeElementFileGenerator: RSStepTreeNodeGenerator {
         return json
     }
     
-    open static func loadJSONElement(descriptor: RSStepTreeElementFileDescriptor, stepTreeBuilder: RSStepTreeBuilder) -> JSON? {
+    public static func loadJSONElement(descriptor: RSStepTreeElementFileDescriptor, stepTreeBuilder: RSStepTreeBuilder) -> JSON? {
         
         //first, try to load from URL (base + path)
         if let urlBase = stepTreeBuilder.rstb.helper.stateHelper?.valueInState(forKey: descriptor.elementURLBaseKey) as? String,
@@ -45,7 +45,7 @@ open class RSStepTreeElementFileGenerator: RSStepTreeNodeGenerator {
         }
     }
     
-    open static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
+    public static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
         guard let descriptor = RSStepTreeElementFileDescriptor(json: jsonObject),
             let jsonElement = RSStepTreeElementFileGenerator.loadJSONElement(descriptor: descriptor, stepTreeBuilder: stepTreeBuilder) else {
             return nil
@@ -72,7 +72,7 @@ open class RSStepTreeElementFileGenerator: RSStepTreeNodeGenerator {
         return node
     }
     
-    open static func supportsType(type: String) -> Bool {
+    public static func supportsType(type: String) -> Bool {
         return "elementFile" == type
     }
 

@@ -13,8 +13,8 @@ import ReSwift
 
 open class RSDefinedAction: Gloss.JSONDecodable, RSActionTransformer {
 
-    open let identifier: String
-    open let json: JSON
+    public let identifier: String
+    public let json: JSON
     public required init?(json: JSON) {
         
         guard let identifier: String = "identifier" <~~ json else {

@@ -10,7 +10,7 @@ import Gloss
 
 open class RSCompositeCollectionDataSourceDescriptor: RSCollectionDataSourceDescriptor {
     
-    open let childDescriptors: [RSCollectionDataSourceDescriptor]
+    public let childDescriptors: [RSCollectionDataSourceDescriptor]
     
     required public init?(json: JSON) {
         guard let childDescriptorsJSON: [JSON] = "childDescriptors" <~~ json else {

@@ -64,7 +64,7 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
         
     }
     
-    open let identifier: String
+    public let identifier: String
     //
     var collectionDataSources: [RSCollectionDataSource]
 //    var collectionDataSourceMap: [String: RSCollectionDataSource]

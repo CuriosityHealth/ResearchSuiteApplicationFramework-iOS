@@ -23,10 +23,10 @@ open class RSRegionTransitionEvent: RSRPIntermediateResult {
         case startedUnknown = "startedUnknown"
     }
     
-    open let regionGroup: RSRegionGroup
-    open let region: CLRegion
-    open let transition: Transition
-    open let timestamp: Date
+    public let regionGroup: RSRegionGroup
+    public let region: CLRegion
+    public let transition: Transition
+    public let timestamp: Date
 
     init(regionGroup: RSRegionGroup, region: CLRegion, transition: Transition, source: String, uuid: UUID, timestamp: Date) {
         self.regionGroup = regionGroup

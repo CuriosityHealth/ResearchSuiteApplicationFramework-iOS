@@ -23,9 +23,9 @@ public protocol RSFunctionValue {
 
 open class RSDefinedFunctionValue: Gloss.JSONDecodable, RSFunctionValue {
     
-    open let identifier: String
-    open let type: String
-    open let function: ((RSState) -> AnyObject?)?
+    public let identifier: String
+    public let type: String
+    public let function: ((RSState) -> AnyObject?)?
     
     required public init?(json: JSON) {
         

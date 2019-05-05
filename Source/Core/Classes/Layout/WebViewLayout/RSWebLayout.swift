@@ -18,8 +18,8 @@ open class RSWebLayout: RSBaseLayout, RSLayoutGenerator  {
         return RSWebLayout(json: jsonObject)
     }
     
-    open let urlBase: JSON
-    open let urlPath: JSON
+    public let urlBase: JSON
+    public let urlPath: JSON
     
     required public init?(json: JSON) {
         

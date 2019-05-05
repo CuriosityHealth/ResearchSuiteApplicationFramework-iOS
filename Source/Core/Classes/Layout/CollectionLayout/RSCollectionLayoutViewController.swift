@@ -99,7 +99,13 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         if let flowLayout = self.collectionView?.collectionViewLayout as? UICollectionViewFlowLayout,
             let window = UIApplication.shared.windows.first {
             let cellWidth = window.frame.size.width - (flowLayout.sectionInset.right + flowLayout.sectionInset.left)
-            flowLayout.estimatedItemSize = CGSize(width: cellWidth, height: cellWidth)
+//            flowLayout.estimatedItemSize = CGSize(width: cellWidth, height: cellWidth)
+            flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+            if #available(iOS 11.0, *) {
+                flowLayout.sectionInsetReference = .fromLayoutMargins
+            } else {
+                // Fallback on earlier versions
+            }
         }
         
         if let backgroundImage = self.collectionLayout.backgroundImage {
@@ -343,6 +349,31 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         }
         
         return cell
+    }
+    
+    // MARK: - UICollectionViewDelegateFlowLayout -
+    open func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let sectionInset = (collectionViewLayout as! UICollectionViewFlowLayout).sectionInset
+        let referenceHeight: CGFloat = 100 // Approximate height of your cell
+        
+        let referenceWidth: CGFloat = {
+            if #available(iOS 11.0, *) {
+                return collectionView.safeAreaLayoutGuide.layoutFrame.width
+                    - sectionInset.left
+                    - sectionInset.right
+                    - collectionView.contentInset.left
+                    - collectionView.contentInset.right
+            } else {
+                // Fallback on earlier versions
+                return collectionView.frame.width
+                    - sectionInset.left
+                    - sectionInset.right
+                    - collectionView.contentInset.left
+                    - collectionView.contentInset.right
+            }
+        }()
+        
+        return CGSize(width: referenceWidth, height: referenceHeight)
     }
     
     open func layoutDidLoad() {

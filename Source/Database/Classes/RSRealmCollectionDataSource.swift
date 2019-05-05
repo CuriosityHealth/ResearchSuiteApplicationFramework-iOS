@@ -23,7 +23,7 @@ extension LS2RealmDatapoint: RSCollectionDataSourceElement {
 
 open class RSRealmCollectionDataSource: RSCollectionDataSource {
     
-    open let identifier: String
+    public let identifier: String
     var results: Results<LS2RealmDatapoint>? = nil
     var notificationToken: NotificationToken? = nil
     

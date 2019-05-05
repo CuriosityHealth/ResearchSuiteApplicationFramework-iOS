@@ -11,11 +11,11 @@ import UIKit
 import Gloss
 
 open class RSBaseLayout: RSLayout, Gloss.JSONDecodable {   
-    open let identifier: String
-    open let type: String
-    open let onLoadActions: [JSON]
-    open let onFirstAppearanceActions: [JSON]
-    open let onNewStateActions: RSOnNewState = RSOnNewState()
+    public let identifier: String
+    public let type: String
+    public let onLoadActions: [JSON]
+    public let onFirstAppearanceActions: [JSON]
+    public let onNewStateActions: RSOnNewState = RSOnNewState()
     open var hidesNavBar = false
     open var navTitle: String?
     open var navButtonRight: RSLayoutButton?

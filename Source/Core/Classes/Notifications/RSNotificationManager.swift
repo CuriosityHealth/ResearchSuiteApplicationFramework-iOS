@@ -188,7 +188,9 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
                 UNUserNotificationCenter.current().add(notificationRequests) { (error) in
                     DispatchQueue.main.async {
                         self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
-                        RSNotificationManager.printPendingNotifications()
+                        if RSApplicationDelegate.appDelegate.debugMode {
+                            RSNotificationManager.printPendingNotifications()
+                        }
                     }
                 }
             }

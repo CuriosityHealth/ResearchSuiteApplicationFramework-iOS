@@ -58,7 +58,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
         }
     }
     
-    open static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
+    public static func generateNode(jsonObject: JSON, stepTreeBuilder: RSStepTreeBuilder, identifierPrefix: String, parent: RSStepTreeNode?) -> RSStepTreeNode? {
         guard let descriptor = RSStepTreeTemplatedNodeDescriptor(json: jsonObject),
             let template = self.loadTemplate(descriptor: descriptor, stepTreeBuilder: stepTreeBuilder) else {
                 return nil
@@ -227,7 +227,7 @@ open class RSStepTreeTemplatedNodeGenerator: RSStepTreeNodeGenerator {
 
     }
     
-//    open static func supportsType(type: String) -> Bool {
+//    public static func supportsType(type: String) -> Bool {
 //        return "templateFile" == type
 //    }
 

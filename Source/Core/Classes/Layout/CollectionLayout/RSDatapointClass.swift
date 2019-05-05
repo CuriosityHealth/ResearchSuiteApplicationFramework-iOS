@@ -21,7 +21,7 @@ open class RSDatapointClass: JSONDecodable, Hashable, Equatable {
     public let identifier: String
     public let filterPrompt: String
     public let order: Int
-    open let dataSource: RSCollectionDataSourceDescriptor
+    public let dataSource: RSCollectionDataSourceDescriptor
     public let cellIdentifier: String
     public let cellTint: JSON?
     public let cellMapping: [String: JSON]

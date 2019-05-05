@@ -15,8 +15,8 @@ open class RSVisitEvent: RSRPIntermediateResult {
     
     public static let kType = "RSVisitEvent"
     
-    open let visit: CLVisit
-    open let timestamp: Date
+    public let visit: CLVisit
+    public let timestamp: Date
     init(visit: CLVisit, source: String, uuid: UUID, timestamp: Date = Date()) {
         self.visit = visit
         self.timestamp = timestamp

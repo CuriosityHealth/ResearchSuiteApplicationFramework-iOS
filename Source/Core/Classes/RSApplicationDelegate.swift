@@ -145,6 +145,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSTextInstructionStepGenerator(),
             RSTBVideoInstructionStepGenerator(),
             RSEnhancedTimePickerStepGenerator(),
+            RSEnhancedDateTimePickerStepGenerator(),
             RSEnhancedDayOfWeekChoiceStepGenerator(),
             RSGiphyInstructionStepGenerator(),
             RSFullScreenImageStepGenerator()
@@ -185,7 +186,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSEnhancedMultipleChoiceValuesResultTransform.self,
             RSJSONCollectionResultTransformer.self,
             RSEnhancedMultipleChoiceResultTransform.self,
-            RSScaleStepResult.self
+            RSScaleStepResult.self,
+            RSSumResult.self
         ]
     }
     
@@ -374,6 +376,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         
     }
     
+    open var debugMode: Bool {
+        #if DEBUG
+        return true
+        #else
+        return false
+        #endif
+    }
+    
     open var stateManagerGenerators: [RSStateManagerGenerator.Type] {
         return [
             RSFileStateManager.self,
@@ -417,7 +427,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         // we should also prevent us from doing so while processing actions associated with the activity. it appears that this is happening
         // since we don't dismiss the activity until the actions have been processed
         // for now, if there are activities queued up,
-        if state.reloadConfigRequested
+        if self.debugMode
+            && state.reloadConfigRequested
             && !RSStateSelectors.isFetchingNotifications(state)
             && !RSStateSelectors.isPresentingPasscode(state)
             && !RSStateSelectors.isDismissingPasscode(state)
@@ -564,14 +575,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     
     @objc
     public func printRefCount() {
-        #if DEBUG
-        if self.weakStore != nil {
-            print("store ref count: \(CFGetRetainCount(self.weakStore))")
+        if self.debugMode {
+            if self.weakStore != nil {
+                print("store ref count: \(CFGetRetainCount(self.weakStore))")
+            }
+            else {
+                print("store ref count: 0")
+            }
         }
-        else {
-            print("store ref count: 0")
-        }
-        #endif
     }
     
     @discardableResult
@@ -638,7 +649,9 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
                 notificationProcessors: self.notificationProcessors
             )
             store.subscribe(self.notificationManager!)
-            RSNotificationManager.printPendingNotifications()
+            if self.debugMode {
+                RSNotificationManager.printPendingNotifications()
+            }
         }
         
         if self.locationSupport,

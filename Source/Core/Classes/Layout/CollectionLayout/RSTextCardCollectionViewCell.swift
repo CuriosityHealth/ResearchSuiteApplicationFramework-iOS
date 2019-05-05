@@ -51,23 +51,25 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
     
     
     open var bodyTextLabel: UILabel!
+    open var bodyStackView: UIStackView!
     
     override public init(frame: CGRect) {
         super.init(frame: frame)
         
-        
         self.bodyTextLabel = UILabel()
         self.bodyTextLabel.numberOfLines = 0
         
-        let bodyStackView = UIStackView()
-        self.contentStackView.addArrangedSubview(bodyStackView)
+        self.bodyStackView = UIStackView()
+        
         
         bodyStackView.axis = .horizontal
         bodyStackView.spacing = 8.0
         
-        bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
-        bodyStackView.addArrangedSubview(self.bodyTextLabel)
-        bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+//        self.bodyTextLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+//        self.bodyTextLabel.setContentHuggingPriority(.required, for: .vertical)
+//        self.bodyStackView.setContentCompressionResistancePriority(.required, for: .vertical)
+//        self.bodyStackView.setContentHuggingPriority(.required, for: .vertical)
+        
         
     }
     
@@ -78,6 +80,9 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
     override open func prepareForReuse() {
         
         self.bodyTextLabel.text = nil
+        self.bodyStackView.arrangedSubviews.forEach({$0.removeFromSuperview()})
+        self.contentStackView.arrangedSubviews.forEach({$0.removeFromSuperview()})
+        
         
         super.prepareForReuse()
         
@@ -88,7 +93,17 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         super.configure(paramMap: paramMap)
         
         if let bodyText = paramMap["body"] as? String {
+            self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+            self.bodyStackView.addArrangedSubview(self.bodyTextLabel)
+            self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+            
             self.bodyTextLabel.text = RSApplicationDelegate.localizedString(bodyText)
+            
+            self.contentStackView.addArrangedSubview(self.bodyStackView)
+            
+        }
+        else {
+            self.contentStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .vertical))
         }
         
     }
@@ -97,7 +112,15 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         super.configure(config: config)
         
         if let bodyText = config.body {
+            self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+            self.bodyStackView.addArrangedSubview(self.bodyTextLabel)
+            self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
+            
             self.bodyTextLabel.text = RSApplicationDelegate.localizedString(bodyText)
+            
+        }
+        else {
+            self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .vertical))
         }
     }
     

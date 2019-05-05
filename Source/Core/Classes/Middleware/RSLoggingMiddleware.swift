@@ -17,7 +17,7 @@ open class RSLoggingMiddleware: RSMiddlewareProvider {
     static var maxDispatchTime: TimeInterval = 0
     static var maxDispatchAction: Action?
     
-    open static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware? {
+    public static func getMiddleware(appDelegate: RSApplicationDelegate) -> Middleware? {
         return { dispatch, getState in
             return { next in
                 return { action in

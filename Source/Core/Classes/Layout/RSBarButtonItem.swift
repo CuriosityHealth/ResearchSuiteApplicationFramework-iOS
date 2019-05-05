@@ -10,8 +10,8 @@ import ResearchSuiteTaskBuilder
 
 open class RSBarButtonItem: UIBarButtonItem {
     
-    open let layoutButton: RSLayoutButton
-    open let onTap: ((RSBarButtonItem) -> ())?
+    public let layoutButton: RSLayoutButton
+    public let onTap: ((RSBarButtonItem) -> ())?
     
     public init?(layoutButton: RSLayoutButton, onTap: ((RSBarButtonItem) -> ())?, localizationHelper: RSTBLocalizationHelper) {
         

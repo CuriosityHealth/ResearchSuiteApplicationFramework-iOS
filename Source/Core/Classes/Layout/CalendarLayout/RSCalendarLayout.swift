@@ -37,11 +37,11 @@ open class RSCalendarLayout: RSBaseLayout, RSLayoutGenerator  {
         return RSCalendarLayout(json: jsonObject)
     }
     
-//    open let dataSource: RSCollectionDataSourceDescriptor
-    open let filterOptions: JSON?
-    open let datapointClasses: [RSDatapointClass]
-    open let calendarScope: CalendarScope
-    open let calendarAppearance: RSCalendarAppearance?
+//    public let dataSource: RSCollectionDataSourceDescriptor
+    public let filterOptions: JSON?
+    public let datapointClasses: [RSDatapointClass]
+    public let calendarScope: CalendarScope
+    public let calendarAppearance: RSCalendarAppearance?
     
     public let backgroundColorJSON: JSON?
     public let backgroundImage: UIImage?

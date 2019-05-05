@@ -249,9 +249,11 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
             cell.textLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
             cell.detailTextLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "text", element: item.element, state: state))
             
-            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleDebugListItemTap))
-            gestureRecognizer.numberOfTapsRequired = 8
-            cell.addGestureRecognizer(gestureRecognizer)
+            if RSApplicationDelegate.appDelegate.debugMode {
+                let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleDebugListItemTap))
+                gestureRecognizer.numberOfTapsRequired = 8
+                cell.addGestureRecognizer(gestureRecognizer)
+            }
             
         case "toggleItem":
             guard let toggleCell = tableView.dequeueReusableCell(withIdentifier: "toggle_cell", for: indexPath) as? RSToggleCell,

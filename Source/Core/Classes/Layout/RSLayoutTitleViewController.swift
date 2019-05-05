@@ -55,6 +55,9 @@ open class RSLayoutTitleViewController: UIViewController, StoreSubscriber, RSSin
             let title = RSValueManager.processValue(jsonObject: titleJSON, state: state, context: self.context())?.evaluate() as? String {
             self.titleLabel?.text = RSApplicationDelegate.localizedString(title)
         }
+        else {
+            self.titleLabel.isHidden = true
+        }
         
         if let titleTextColorJSON = self.titleLayout.titleTextColorJSON,
             let titleTextColor = RSValueManager.processValue(jsonObject: titleTextColorJSON, state: state, context: self.context())?.evaluate() as? UIColor {
