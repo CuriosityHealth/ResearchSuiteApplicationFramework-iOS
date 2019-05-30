@@ -13,9 +13,19 @@ import ResearchKit
 public protocol RSTask: ORKTask {
     var shouldHideCancelButton: Bool { get }
     var shouldConfirmCancel: Bool { get }
+    var taskViewController: ORKTaskViewController? { get set }
 }
 
 extension ORKOrderedTask: RSTask {
+    public var taskViewController: ORKTaskViewController? {
+        get {
+            return nil
+        }
+        set {
+            
+        }
+    }
+    
     public var shouldHideCancelButton: Bool {
         return false
     }
@@ -23,4 +33,5 @@ extension ORKOrderedTask: RSTask {
     public var shouldConfirmCancel: Bool {
         return true
     }
+    
 }

@@ -420,6 +420,8 @@ public class RSActionCreators: NSObject {
             }
             
             let taskViewController = RSTaskViewController(activityUUID: firstActivity.0, task: task, taskFinishedHandler: taskFinishedHandler)
+            taskViewController.defaultResultSource = (task as? RSStepTree)
+            task.taskViewController = taskViewController
             
             do {
                 let defaultFileManager = FileManager.default
@@ -443,7 +445,7 @@ public class RSActionCreators: NSObject {
             
             let presentRequestAction = PresentActivityRequest(uuid: firstActivity.0, activityID: firstActivity.1)
             store.dispatch(presentRequestAction)
-            taskViewController.modalPresentationStyle = .overCurrentContext
+//            taskViewController.modalPresentationStyle = .overCurrentContext
             
             RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "PresentActivityRequest action has been dispatched for \(firstActivity.1). Presenting Task VC now.")
             

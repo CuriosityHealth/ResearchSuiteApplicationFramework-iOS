@@ -11,7 +11,9 @@ import UIKit
 import ResearchKit
 import ResearchSuiteTaskBuilder
 
-open class RSStepTree: NSObject, ORKTask, RSTask {
+open class RSStepTree: NSObject, ORKTask, RSTask, ORKTaskResultSource {
+    
+    open var taskViewController: ORKTaskViewController? = nil 
     
     public let identifier: String
     let root: RSStepTreeNode
@@ -180,7 +182,14 @@ open class RSStepTree: NSObject, ORKTask, RSTask {
         
     }
 
-    
+    public func stepResult(forStepIdentifier stepIdentifier: String) -> ORKStepResult? {
+        
+        guard let leafNode = self.node(for: stepIdentifier) as? RSStepTreeLeafNode else {
+            return nil
+        }
+        
+        return leafNode.defaultStepResult(taskViewController: self.taskViewController)
+    }
     
     
     

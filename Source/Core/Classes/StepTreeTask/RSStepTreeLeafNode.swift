@@ -15,14 +15,17 @@ import ResearchKit
 open class RSStepTreeLeafNode: RSStepTreeNode {
     
     let stepGenerator: (RSStepTreeTaskBuilder, String, RSStepTreeBranchNode, ORKTaskResult?) -> ORKStep?
+    let defaultStepResultGenerator: ((String, ORKTaskViewController?) -> ORKStepResult?)?
     public init(
         identifier: String,
         identifierPrefix: String,
         type: String,
         parent: RSStepTreeNode?,
-        stepGenerator: @escaping (RSStepTreeTaskBuilder, String, RSStepTreeBranchNode, ORKTaskResult?) -> ORKStep?
+        stepGenerator: @escaping (RSStepTreeTaskBuilder, String, RSStepTreeBranchNode, ORKTaskResult?) -> ORKStep?,
+        defaultStepResultGenerator: ((String, ORKTaskViewController?) -> ORKStepResult?)? = nil
         ) {
         self.stepGenerator = stepGenerator
+        self.defaultStepResultGenerator = defaultStepResultGenerator
         super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type, parent: parent)
     }
     
@@ -35,6 +38,10 @@ open class RSStepTreeLeafNode: RSStepTreeNode {
     
     open override func firstLeaf(with result: ORKTaskResult, state: RSState) -> RSStepTreeLeafNode? {
         return self
+    }
+    
+    open func defaultStepResult(taskViewController: ORKTaskViewController?) -> ORKStepResult? {
+        return self.defaultStepResultGenerator?(self.identifierPrefix, taskViewController)
     }
     
 //    open override func leaves() -> [RSStepTreeLeafNode] {
