@@ -18,6 +18,7 @@ public protocol RSNotificationConverter {
 }
 
 public protocol RSNotificationResponseHandler {
+    static func notificationCategoriesToRegister() -> [UNNotificationCategory]
     static func canHandleNotificationResponse(notificationResponse: UNNotificationResponse) -> Bool
     static func handleNotificationResponse(notificationResponse: UNNotificationResponse, store: Store<RSState>)
 }
@@ -67,6 +68,12 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         self.legacySupport = legacySupport
         super.init()
         UNUserNotificationCenter.current().delegate = self
+        self.initializeNotificationCategories()
+    }
+    
+    public func initializeNotificationCategories() {
+        let notificationCategories = Set(self.notificationResponseHandlers.flatMap { $0.notificationCategoriesToRegister() })
+        UNUserNotificationCenter.current().setNotificationCategories(notificationCategories)
     }
     
     public func cancelNotifications() {
