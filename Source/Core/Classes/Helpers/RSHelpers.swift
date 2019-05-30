@@ -136,12 +136,24 @@ public class RSHelpers {
         
     }
     
-    public static func generateAttributedString(descriptor: RSTemplatedTextDescriptor, helper: RSTBTaskBuilderHelper, fontColor: UIColor? = nil) -> NSAttributedString? {
+    public static func generateAttributedString(descriptor: RSTemplatedTextDescriptor, helper: RSTBTaskBuilderHelper, fontColor: UIColor? = nil, additionalContext: [String: AnyObject]? = nil) -> NSAttributedString? {
         
         let pairs: [(String, Any)] = descriptor.arguments.compactMap { (pair) -> (String, Any)? in
-            guard let stateHelper = helper.stateHelper,
-                let value: Any = stateHelper.valueInState(forKey: pair.value) else {
+            guard let stateHelper = helper.stateHelper else {
                     return nil
+            }
+            
+            let valueOpt: AnyObject? = {
+                if let value: AnyObject = additionalContext?[pair.value] {
+                    return value
+                }
+                else {
+                    return stateHelper.valueInState(forKey: pair.value)
+                }
+            }()
+            
+            guard let value = valueOpt else {
+                return nil
             }
             
             //Do we need to do localization here?
@@ -151,7 +163,6 @@ public class RSHelpers {
             else {
                 return (pair.key, value)
             }
-            
             
         }
         
