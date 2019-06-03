@@ -54,6 +54,7 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     public var collectionViewCellManager: RSCollectionViewCellManager!
     public var stateObjectManager: RSStateObjectManager!
     public var collectionDataSourceManager: RSCollectionDataSourceManager!
+    public var outputDirectoryFileStorage: RSFileStorage!
     
     public var scheduler: RSScheduler?
     
@@ -510,44 +511,50 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         //clear persistent store subscriber
         self.persistentStoreSubscriber.clearState { (completd, error) in
             
-            self.persistentStoreSubscriber = nil
-
-            self.activityManager = nil
-            self.measureManager = nil
-            self.actionManager = nil
-            self.valueManager = nil
-            self.predicateManager = nil
-            self.stateObjectManager = nil
-            
-            if self.notificationSupport {
-                self.notificationManager?.cancelNotifications()
-                self.notificationManager = nil
-            }
-            
-            if self.locationSupport {
-                self.locationManager?.stopMonitoringRegions()
-                self.locationManager = nil
-            }
-            
-            self.layoutManager = nil
-            
-            self.window?.rootViewController = UIViewController()
-            self.window?.makeKeyAndVisible()
-
-            self.routingViewController = nil
-            
-            self.openURLManager = nil
-            
-            
-            //potentially clear the documents directory as well
-            RSKeychainHelper.clearKeychain()
-            
-//            self.perform(#selector(self.printRefCount), with: nil, afterDelay: 5.0)
-            
-            self.initializeApplication(fromReset: true)
-            
-            self.store?.dispatch(RSActionCreators.completeConfiguration())
-            self.onAppLoad()
+            self.outputDirectoryFileStorage.delete(completion: { (fileStorageError) in
+                
+                self.outputDirectoryFileStorage = nil
+                
+                self.persistentStoreSubscriber = nil
+                
+                self.activityManager = nil
+                self.measureManager = nil
+                self.actionManager = nil
+                self.valueManager = nil
+                self.predicateManager = nil
+                self.stateObjectManager = nil
+                
+                if self.notificationSupport {
+                    self.notificationManager?.cancelNotifications()
+                    self.notificationManager = nil
+                }
+                
+                if self.locationSupport {
+                    self.locationManager?.stopMonitoringRegions()
+                    self.locationManager = nil
+                }
+                
+                self.layoutManager = nil
+                
+                self.window?.rootViewController = UIViewController()
+                self.window?.makeKeyAndVisible()
+                
+                self.routingViewController = nil
+                
+                self.openURLManager = nil
+                
+                
+                //potentially clear the documents directory as well
+                RSKeychainHelper.clearKeychain()
+                
+                //            self.perform(#selector(self.printRefCount), with: nil, afterDelay: 5.0)
+                
+                self.initializeApplication(fromReset: true)
+                
+                self.store?.dispatch(RSActionCreators.completeConfiguration())
+                self.onAppLoad()
+                
+            })
             
         }
         
@@ -640,6 +647,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         self.stateObjectManager = RSStateObjectManager(stateObjectTypes: self.stateObjectTypes)
         self.collectionViewCellManager = RSCollectionViewCellManager(cellGenerators: self.collectionViewCellGenerators)
         self.collectionDataSourceManager = RSCollectionDataSourceManager(collectionDataSourceGenerators: self.collectionDataSourceGenerators)
+        
+        self.outputDirectoryFileStorage = RSFileStorage(storageDirectory: "TaskOutputStorage", storageDirectoryFileProtection: .completeUnlessOpen, logger: self.logger)
         
         if notificationSupport {
             self.notificationManager = RSNotificationManager(
@@ -796,6 +805,22 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return .development
     }
     
+    open func generateOutputDirectory(uuid: UUID = UUID()) -> URL {
+        
+        let defaultFileManager = FileManager.default
+        // Create a directory based on the `taskRunUUID` to store output from the task.
+        let outputDirectory = self.outputDirectoryFileStorage.storageDirectory.appendingPathComponent(uuid.uuidString)
+        
+        do {
+            try defaultFileManager.createDirectory(at: outputDirectory, withIntermediateDirectories: true, attributes: nil)
+            return outputDirectory
+        }
+        catch let error as NSError {
+            fatalError("The output directory \(outputDirectory) could not be created. Error: \(error.localizedDescription)")
+        }
+        
+        return self.outputDirectoryFileStorage.storageDirectory.appendingPathComponent(UUID().uuidString)
+    }
     
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "willFinishLaunchingWithOptions")
