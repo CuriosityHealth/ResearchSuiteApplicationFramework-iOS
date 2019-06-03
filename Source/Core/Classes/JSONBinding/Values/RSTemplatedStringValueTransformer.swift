@@ -11,6 +11,34 @@ import Gloss
 
 open class RSTemplatedStringValueTransformer: RSValueTransformer {
     
+    public static func humanReadibleListOfString(strings: [String]) -> String {
+        switch strings.count {
+        case 0:
+            return ""
+        case 1:
+            return strings[0]
+        case 2:
+            return "\(strings[0]) and \(strings[1])"
+        default:
+            return strings.enumerated().reduce("", { (acc, pair) -> String in
+                
+                //                    if last, don't append
+                //if second to last, append ", and "
+                //else, append ", "
+                if pair.offset == strings.count - 1 {
+                    return acc + pair.element
+                }
+                else if pair.offset == strings.count - 2 {
+                    return acc + pair.element + ", and "
+                }
+                else {
+                    return acc + pair.element + ", "
+                }
+                
+            })
+        }
+    }
+    
     public static func registerFormatters(template: Template) {
         let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percent
@@ -102,31 +130,7 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
                 .compactMap({ $0.value as? String })
                 .map { localizationHelper.localizedString($0) }
             
-            switch strings.count {
-            case 0:
-                return ""
-            case 1:
-                return strings[0]
-            case 2:
-                return "\(strings[0]) and \(strings[1])"
-            default:
-                return strings.enumerated().reduce("", { (acc, pair) -> String in
-                    
-                    //                    if last, don't append
-                    //if second to last, append ", and "
-                    //else, append ", "
-                    if pair.offset == strings.count - 1 {
-                        return acc + pair.element
-                    }
-                    else if pair.offset == strings.count - 2 {
-                        return acc + pair.element + ", and "
-                    }
-                    else {
-                        return acc + pair.element + ", "
-                    }
-                    
-                })
-            }
+            return self.humanReadibleListOfString(strings: strings)
             
         }
         
