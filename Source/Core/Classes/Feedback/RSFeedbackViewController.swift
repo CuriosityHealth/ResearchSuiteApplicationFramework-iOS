@@ -184,12 +184,11 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
         }
         let saveAction = UIAlertAction(title: "Save", style: .default, handler: { alert -> Void in
             let firstTextField = alertController.textFields![0] as UITextField
-            debugPrint(firstTextField.text)
             let feedbackItem = RSFeedbackItem(feedback: firstTextField.text!, screenshot: self.currentScreenShot)
             do {
                 try self.feedbackQueue.addGlossyElement(element: feedbackItem)
             } catch let error {
-                debugPrint(error)
+                
             }
             
         })

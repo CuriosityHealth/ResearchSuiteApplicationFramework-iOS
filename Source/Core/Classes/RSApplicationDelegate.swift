@@ -341,7 +341,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSFirstValueTransformer.self,
             RSFontValueTransformer.self,
             RSCollectionCountValueTransformer.self,
-            RSPredicateValueTransformer.self
+            RSPredicateValueTransformer.self,
+            RSSwitchValueTransform.self
         ]
     }
     

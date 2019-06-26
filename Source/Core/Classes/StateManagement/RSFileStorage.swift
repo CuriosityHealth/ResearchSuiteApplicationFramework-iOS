@@ -36,6 +36,24 @@ open class RSFileStorage: NSObject {
         self.testStorageSettings()
     }
     
+    open func isURLRelativeToStorageDirectory(url: URL) -> Bool {
+        return self.storageDirectory.path.prefix(self.storageDirectory.path.count) == url.path.prefix(self.storageDirectory.path.count)
+    }
+    
+    open func getRelativePathToStorageDirectory(url: URL) -> String? {
+        if self.isURLRelativeToStorageDirectory(url: url) {
+            return String(url.path.dropFirst(self.storageDirectory.path.count))
+        }
+        else {
+            assertionFailure()
+            return nil
+        }
+    }
+    
+    open func urlRelativeToStorageDirectory(path: String) -> URL {
+        return self.storageDirectory.appendingPathComponent(path)
+    }
+    
     open func delete(completion: @escaping ((Error?) -> ())) {
         
         do {

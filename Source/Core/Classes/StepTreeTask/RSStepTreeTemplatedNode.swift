@@ -15,13 +15,13 @@ open class RSStepTreeTemplatedNode: RSStepTreeBranchNode {
     let template: Template
     let parameters: JSON?
     let stepTreeBuilder: RSStepTreeBuilder
-    var children: [RSStepTreeNode]
+//    var children: [RSStepTreeNode]
     
     public init(identifier: String, identifierPrefix: String, type: String, template: Template, parameters: JSON?, parent: RSStepTreeNode?, stepTreeBuilder: RSStepTreeBuilder) {
         self.template = template
         self.parameters = parameters
         self.stepTreeBuilder = stepTreeBuilder
-        self.children = []
+//        self.children = []
         super.init(identifier: identifier, identifierPrefix: identifierPrefix, type: type, children: [], parent: parent, navigationRules: nil, resultTransforms: nil, valueMapping: nil)
     }
     

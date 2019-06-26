@@ -13,7 +13,10 @@ import Gloss
 
 open class RSStepTreeBranchNode: RSStepTreeNode {
     
-    private var children: [RSStepTreeNode] = []
+    private var _children: [RSStepTreeNode] = []
+    public var children: [RSStepTreeNode] {
+        return self._children
+    }
     private var childMap: [String: RSStepTreeNode] = [:]
     
     private let navigationRules: [String: RSStepTreeNavigationRule]
@@ -51,7 +54,7 @@ open class RSStepTreeBranchNode: RSStepTreeNode {
     }
     
     public func setChildren(children: [RSStepTreeNode]) {
-        self.children = children
+        self._children = children
         var childMap: [String: RSStepTreeNode] = [:]
         self.children.forEach { (child) in
             
