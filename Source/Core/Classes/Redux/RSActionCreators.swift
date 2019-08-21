@@ -338,7 +338,8 @@ public class RSActionCreators: NSObject {
                 nodeGeneratorServices: RSApplicationDelegate.appDelegate.stepTreeNodeGenerators,
                 elementGeneratorServices: RSApplicationDelegate.appDelegate.elementGeneratorServices,
                 stepGeneratorServices: RSApplicationDelegate.appDelegate.stepGeneratorServices,
-                answerFormatGeneratorServices: RSApplicationDelegate.appDelegate.answerFormatGeneratorServices)
+                answerFormatGeneratorServices: RSApplicationDelegate.appDelegate.answerFormatGeneratorServices,
+                defaultStepResultGeneratorServices: RSApplicationDelegate.appDelegate.defaultStepResultGeneratorServices)
             
             
             guard let task = activityManager.taskForActivity(activity: activity, state: state, stepTreeBuilder: stepTreeBuilder) else {
@@ -935,6 +936,12 @@ public class RSActionCreators: NSObject {
             scheduler.markEventCompleted(eventId: eventId, taskRuns: taskRuns, state: state)
             
             return nil
+        }
+    }
+    
+    public static func NOP() -> (_ state: RSState, _ store: Store<RSState>) -> Action? {
+        return { state, store in
+            return NOPAction()
         }
     }
 

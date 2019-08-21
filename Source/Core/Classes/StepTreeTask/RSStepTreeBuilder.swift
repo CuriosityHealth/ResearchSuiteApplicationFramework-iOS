@@ -12,6 +12,22 @@ import ResearchSuiteTaskBuilder
 import Gloss
 import ResearchKit
 
+public protocol RSDefaultStepResultGenerator {
+    static func supportsType(type: String) -> Bool
+    static func generate(type: String, stepIdentifier: String, jsonObject: JSON, helper: RSTBTaskBuilderHelper) -> ORKStepResult?
+}
+
+public class RSDefaultStepResultDescriptor : RSTBElementDescriptor {
+    public let defaultResultKey: String
+    public required init?(json: JSON) {
+        guard let defaultResultKey: String = "defaultResultKey" <~~ json else {
+                return nil
+        }
+        self.defaultResultKey = defaultResultKey
+        super.init(json: json)
+    }
+}
+
 open class RSStepTreeStateHelper: RSTBStateHelper {
     
     let baseStateHelper: RSTBStateHelper?
@@ -86,17 +102,21 @@ open class RSStepTreeTaskBuilder: RSTBTaskBuilder {
     //before the task has completed execution. RSTBTaskBuilder holds
     //its state helper weakly
     private let stateHelper: RSTBStateHelper?
-    public override init(stateHelper: RSTBStateHelper?,
+    private let defaultStepResultGeneratorServices: [RSDefaultStepResultGenerator.Type]?
+    public init(stateHelper: RSTBStateHelper?,
                          localizationHelper: RSTBLocalizationHelper?,
                          elementGeneratorServices: [RSTBElementGenerator]?,
                          stepGeneratorServices: [RSTBStepGenerator]?,
                          answerFormatGeneratorServices: [RSTBAnswerFormatGenerator]?,
+                         defaultStepResultGeneratorServices: [RSDefaultStepResultGenerator.Type]?,
                          taskGeneratorServices: [RSTBTaskGenerator.Type]? = nil,
                          consentDocumentGeneratorServices: [RSTBConsentDocumentGenerator.Type]? = nil,
                          consentSectionGeneratorServices: [RSTBConsentSectionGenerator.Type]? = nil,
                          consentSignatureGeneratorServices: [RSTBConsentSignatureGenerator.Type]? = nil) {
         
         self.stateHelper = stateHelper
+        self.defaultStepResultGeneratorServices = defaultStepResultGeneratorServices
+        
         super.init(
             stateHelper: stateHelper,
             localizationHelper: localizationHelper,
@@ -110,7 +130,13 @@ open class RSStepTreeTaskBuilder: RSTBTaskBuilder {
         )
         
     }
-    open func createSteps(forType type: String, withJsonObject jsonObject: JsonObject, identifierPrefix: String, parent: RSStepTreeBranchNode, taskResult: ORKTaskResult?) -> [ORKStep]? {
+    open func createSteps(
+        forType type: String,
+        withJsonObject jsonObject: JsonObject,
+        identifierPrefix: String,
+        parent: RSStepTreeBranchNode,
+        taskResult: ORKTaskResult?
+        ) -> [ORKStep]? {
         
         guard let state: RSState = RSApplicationDelegate.appDelegate.store?.state else {
             return nil
@@ -122,6 +148,42 @@ open class RSStepTreeTaskBuilder: RSTBTaskBuilder {
         let helper = RSStepTreeTaskBuilderHelper(taskBuilderHelper: self.helper, valueMapping: parent.valueMapping, state: state, context: context)
         
         return self.stepGeneratorService.generateSteps(type: type, jsonObject: jsonObject, helper: helper, identifierPrefix: identifierPrefix)
+    }
+    
+    open func generateDefaultStepResult(
+        forType type: String,
+        withJsonObject jsonObject: JsonObject,
+        stepIdentifier: String,
+        parent: RSStepTreeBranchNode,
+        taskViewController: ORKTaskViewController?
+        ) -> ORKStepResult? {
+        
+        guard let state: RSState = RSApplicationDelegate.appDelegate.store?.state else {
+            return nil
+        }
+        
+        var context: [String: AnyObject] = ["node": parent as AnyObject]
+        context["taskViewController"] = taskViewController
+        
+        let helper = RSStepTreeTaskBuilderHelper(
+            taskBuilderHelper: self.helper,
+            valueMapping: parent.valueMapping,
+            state: state,
+            context: context
+        )
+        
+        let service = self.defaultStepResultGeneratorServices?.first(where: { $0.supportsType(type: type) })
+        
+        return service?.generate(
+            type: type,
+            stepIdentifier: stepIdentifier,
+            jsonObject: jsonObject as JSON,
+            helper: helper
+        )
+    }
+    
+    open func defaultStepResultGenerator(forType type: String, withJsonObject jsonObject: JsonObject) -> ((String, ORKTaskViewController?) -> ORKStepResult?)? {
+        return nil
     }
     
 }
@@ -138,7 +200,8 @@ open class RSStepTreeBuilder: NSObject {
         nodeGeneratorServices: [RSStepTreeNodeGenerator.Type]?,
         elementGeneratorServices: [RSTBElementGenerator]?,
         stepGeneratorServices: [RSTBStepGenerator]?,
-        answerFormatGeneratorServices: [RSTBAnswerFormatGenerator]?
+        answerFormatGeneratorServices: [RSTBAnswerFormatGenerator]?,
+        defaultStepResultGeneratorServices: [RSDefaultStepResultGenerator.Type]?
     ) {
         
         self.rstb = RSStepTreeTaskBuilder(
@@ -146,7 +209,8 @@ open class RSStepTreeBuilder: NSObject {
             localizationHelper: localizationHelper,
             elementGeneratorServices: nil,
             stepGeneratorServices: stepGeneratorServices,
-            answerFormatGeneratorServices: answerFormatGeneratorServices)
+            answerFormatGeneratorServices: answerFormatGeneratorServices,
+            defaultStepResultGeneratorServices: defaultStepResultGeneratorServices)
     
         
         if let _services = nodeGeneratorServices {
@@ -201,6 +265,8 @@ open class RSStepTreeBuilder: NSObject {
             
 //            let step = steps.first!
             
+//            let defaultStepResultGenerator = self.rstb.defaultStepResultGenerator(forType: descriptor.type, withJsonObject: json as JsonObject)
+            
             let node = RSStepTreeLeafNode(
                 identifier: descriptor.identifier,
                 identifierPrefix: identifierPrefix,
@@ -214,6 +280,17 @@ open class RSStepTreeBuilder: NSObject {
                         identifierPrefix: identifierPrefix,
                         parent: branchNode,
                         taskResult: taskResult)?.first
+            },
+                defaultStepResultGenerator: { (rstb, identifierPrefix, taskViewController) -> ORKStepResult? in
+                    
+                    let stepIdentifier = "\(identifierPrefix).\(descriptor.identifier)"
+                    return rstb.generateDefaultStepResult(
+                        forType: descriptor.type,
+                        withJsonObject: json as JsonObject,
+                        stepIdentifier: stepIdentifier,
+                        parent: branchNode,
+                        taskViewController: taskViewController
+                    )
             })
             
             return node

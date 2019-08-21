@@ -393,6 +393,10 @@ public struct UpdateScheduler: Action {
     let schedulerEventUpdate: RSSchedulerEventUpdate
 }
 
+public struct NOPAction: Action {
+    
+}
+
 
 
 

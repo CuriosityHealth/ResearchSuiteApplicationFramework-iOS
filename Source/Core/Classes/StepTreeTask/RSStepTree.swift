@@ -188,7 +188,7 @@ open class RSStepTree: NSObject, ORKTask, RSTask, ORKTaskResultSource {
             return nil
         }
         
-        return leafNode.defaultStepResult(taskViewController: self.taskViewController)
+        return leafNode.defaultStepResult(taskBuilder: self.taskBuilder, taskViewController: self.taskViewController)
     }
     
     
