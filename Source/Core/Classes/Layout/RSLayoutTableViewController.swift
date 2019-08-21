@@ -255,6 +255,15 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
                 cell.addGestureRecognizer(gestureRecognizer)
             }
             
+        case "multitapItem":
+            cell = tableView.dequeueReusableCell(withIdentifier: "text_only_cell", for: indexPath)
+            cell.textLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "title", element: item.element, state: state))
+            cell.detailTextLabel?.text = RSApplicationDelegate.localizedString(self.generateString(key: "text", element: item.element, state: state))
+            
+            let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleListItemMultiTap))
+            gestureRecognizer.numberOfTapsRequired = 8
+            cell.addGestureRecognizer(gestureRecognizer)
+            
         case "toggleItem":
             guard let toggleCell = tableView.dequeueReusableCell(withIdentifier: "toggle_cell", for: indexPath) as? RSToggleCell,
                 let toggleItem = RSToggleListItem(json: item.element),
@@ -325,6 +334,20 @@ open class RSLayoutTableViewController: UITableViewController, StoreSubscriber, 
                 let item = self.itemForRow(row: cell.tag) {
                 
                 if let debugActionsJSON: [JSON] = "debugActions" <~~ item.element {
+                    //dispatch debug actions
+                    debugActionsJSON.forEach { self.processAction(action: $0) }
+                }
+                
+            }
+        }
+    }
+    
+    @objc func handleListItemMultiTap(sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            if let cell = sender.view as? UITableViewCell,
+                let item = self.itemForRow(row: cell.tag) {
+                
+                if let debugActionsJSON: [JSON] = "onMultitap" <~~ item.element {
                     //dispatch debug actions
                     debugActionsJSON.forEach { self.processAction(action: $0) }
                 }

@@ -96,7 +96,7 @@ open class RSNewDashboardLayoutViewController: UIViewController, UICollectionVie
         if let flowLayout = self.collectionView?.collectionViewLayout as? UICollectionViewFlowLayout,
             let window = UIApplication.shared.windows.first {
             let cellWidth = window.frame.size.width - (flowLayout.sectionInset.right + flowLayout.sectionInset.left)
-            flowLayout.estimatedItemSize = CGSize(width: cellWidth, height: cellWidth)
+            flowLayout.estimatedItemSize = CGSize(width: cellWidth, height: 100.0)
         }
         
         if let backgroundImage = self.dashboardLayout.backgroundImage {
@@ -127,10 +127,6 @@ open class RSNewDashboardLayoutViewController: UIViewController, UICollectionVie
         }
         
     }
-    
-    
-    
-    
     
     open func newState(state: RSState) {
         

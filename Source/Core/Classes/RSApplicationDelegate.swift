@@ -169,6 +169,12 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         ]
     }
     
+    open var defaultStepResultGeneratorServices: [RSDefaultStepResultGenerator.Type] {
+        return [
+            RSTextFieldDefaultStepResultGenerator.self
+        ]
+    }
+    
     open var elementGeneratorServices: [RSTBElementGenerator] {
         return [
             RSTBElementListGenerator(),
@@ -349,7 +355,8 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     open var collectionViewCellGenerators: [RSCollectionViewCellGenerator.Type] {
         return [
             RSBasicCollectionViewCell.self,
-//            RSCardCollectionViewCell.self
+//            RSCardCollectionViewCell.self,
+            RSBasicCardCollectionViewCell.self,
             RSTextCardCollectionViewCell.self,
             RSMarkdownCardCollectionViewCell.self
         ]
