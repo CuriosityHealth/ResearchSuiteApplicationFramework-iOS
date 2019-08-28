@@ -13,7 +13,7 @@ import ResearchSuiteTaskBuilder
 
 open class RSStepTree: NSObject, ORKTask, RSTask, ORKTaskResultSource {
     
-    open var taskViewController: ORKTaskViewController? = nil 
+    open weak var taskViewController: ORKTaskViewController? = nil 
     
     public let identifier: String
     let root: RSStepTreeNode

@@ -98,6 +98,10 @@ open class RSRealmCollectionDataSource: RSCollectionDataSource {
         self.notificationToken?.invalidate()
     }
     
+    open func invalidate() {
+        self.notificationToken?.invalidate()
+    }
+    
     open var count: Int? {
         
         guard let results = self.results,

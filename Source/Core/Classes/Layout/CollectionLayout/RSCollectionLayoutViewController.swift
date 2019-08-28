@@ -175,9 +175,21 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "updateDataSource - updateCallback")
 //            self.collectionView!.reloadData()
             
-            self.collectionView!.insertItems(at: insertions.map({ IndexPath(row: $0, section: 0) }))
-            self.collectionView!.deleteItems(at: deletions.map({ IndexPath(row: $0, section: 0) }))
-            self.collectionView!.reloadItems(at: modifications.map({ IndexPath(row: $0, section: 0) }))
+            let insertionPaths = insertions.map({ IndexPath(row: $0, section: 0) })
+            if insertionPaths.count > 0 {
+                self.collectionView!.insertItems(at: insertionPaths)
+            }
+            
+            let deletionPaths = deletions.map({ IndexPath(row: $0, section: 0) })
+            if deletionPaths.count > 0 {
+                self.collectionView!.deleteItems(at: deletionPaths)
+            }
+            
+            let modificationPaths = modifications.map({ IndexPath(row: $0, section: 0) })
+            if modificationPaths.count > 0 {
+                self.collectionView!.reloadItems(at: modificationPaths)
+            }
+            
             
             //            self.collectionView!.beginUpdates()
             //            self.collectionView!.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }),
@@ -308,7 +320,9 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             return cell
         }
         
-        let cellWidth = collectionView.bounds.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right)
+        let boundsWidth = collectionView.bounds.width
+        let insetWidth = flowLayout.sectionInset.left + flowLayout.sectionInset.right
+        let cellWidth = boundsWidth - insetWidth
         
         self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "Generating cell")
         guard let datapoint = self.collectionDataSource?.get(for: indexPath.row),
@@ -332,7 +346,14 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
         if datapointClass.onTapActions.count > 0 {
             let onTap: (RSCollectionViewCell)->() = { [unowned self] cell in
                 datapointClass.onTapActions.forEach({ (action) in
-                    self.processAction(action: action)
+                    let extraContext: [String : AnyObject]? = {
+                        guard let datapointJSON = datapoint.toJSON() else {
+                            return nil
+                        }
+                        return ["element": datapointJSON as AnyObject]
+                    }()
+                        
+                    self.processAction(action: action, extraContext: extraContext)
                 })
             }
             cell.onTap = onTap

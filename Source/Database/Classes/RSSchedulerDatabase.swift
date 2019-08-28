@@ -28,7 +28,7 @@ open class RSSchedulerDatabase: NSObject {
     
     //realm config
     var _realmConfig: Realm.Configuration?
-    var realmConfig: Realm.Configuration {
+    public var realmConfig: Realm.Configuration {
         if let config = self._realmConfig {
             return config
         }

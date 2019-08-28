@@ -144,6 +144,10 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
             return start..<end
         }
         
+        let lowercased = Filter { (s: String?) -> Any? in
+            return s?.lowercased()
+        }
+        
         template.register(mapSelect, forKey: "mapSelect")
         template.register(contains, forKey: "contains")
         template.register(selectElement, forKey: "select")
@@ -153,6 +157,7 @@ open class RSTemplatedStringValueTransformer: RSValueTransformer {
         template.register(listOfStrings, forKey: "listOfStrings")
 //        template.register(escapeControlCharacters, forKey: "escapeControlCharacters")
         template.register(halfOpenRange, forKey: "range")
+        template.register(lowercased, forKey: "lowercased")
     }
     
     public static func supportsType(type: String) -> Bool {

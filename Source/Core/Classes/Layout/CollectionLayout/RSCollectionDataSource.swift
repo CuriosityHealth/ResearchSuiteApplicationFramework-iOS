@@ -45,7 +45,7 @@ public protocol RSCollectionDataSource {
     func generateDictionary() -> [Int: RSCollectionDataSourceElement]?
     func toArray() -> [RSCollectionDataSourceElement]?
     
-    
+    func invalidate()
     
 }
 

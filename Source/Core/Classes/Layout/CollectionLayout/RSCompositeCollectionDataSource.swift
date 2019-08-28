@@ -283,6 +283,10 @@ open class RSCompositeCollectionDataSource: RSCollectionDataSource, RSCollection
         
     }
     
+    public func invalidate() {
+        self.collectionDataSources.forEach { $0.invalidate() }
+    }
+    
     public var count: Int? {
         return self.toArray()?.count
     }
