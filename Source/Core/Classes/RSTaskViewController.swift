@@ -16,6 +16,8 @@ open class RSTaskViewController: ORKTaskViewController, ORKTaskViewControllerDel
     
     let activityUUID: UUID
     
+    public var shouldConfirmCancelOverride: Bool? = nil
+    
     public init(activityUUID: UUID, task: ORKTask, taskFinishedHandler: @escaping ((ORKTaskViewController, ORKTaskViewControllerFinishReason, Error?) -> ())) {
         
         self.activityUUID = activityUUID
@@ -43,6 +45,11 @@ open class RSTaskViewController: ORKTaskViewController, ORKTaskViewControllerDel
     }
     
     open func taskViewControllerShouldConfirmCancel(_ taskViewController: ORKTaskViewController) -> Bool {
+        
+        if let shouldConfirmCancelOverride = self.shouldConfirmCancelOverride {
+            return shouldConfirmCancelOverride
+        }
+        
         if let task = self.task as? RSTask {
             return task.shouldConfirmCancel
         }
