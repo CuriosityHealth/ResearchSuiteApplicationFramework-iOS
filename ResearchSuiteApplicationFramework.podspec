@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'ResearchSuiteApplicationFramework'
-  s.version          = '0.27.0'
+  s.version          = '0.28.0'
   s.summary          = 'The ResearchSuite Application Framework is the easiest way to build mobile health research studies.'
 
 # This description is used to generate tags and improve search results.
@@ -22,10 +22,10 @@ Pod::Spec.new do |s|
   NOTE: VERY EXPERIMENTAL!!
                        DESC
 
-  s.homepage         = 'https://github.com/jdkizer9/ResearchSuiteApplicationFramework-iOS'
+  s.homepage         = 'https://github.com/CuriosityHealth/ResearchSuiteApplicationFramework-iOS'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.author           = { 'jdkizer9' => 'jdkizer9@users.noreply.github.com' }
-  s.source           = { :git => 'https://github.com/jdkizer9/ResearchSuiteApplicationFramework-iOS.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/CuriosityHealth/ResearchSuiteApplicationFramework-iOS.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '10.0'

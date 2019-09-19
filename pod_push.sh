@@ -1,1 +1,1 @@
-pod repo push curiosityhealth --allow-warnings --sources=master,researchsuite,curiosityhealth
+pod repo push curiosityhealth --allow-warnings --sources=master,researchsuite,curiosityhealth --use-json

@@ -1,1 +1,1 @@
-pod lib lint --allow-warnings --sources=master,researchsuite,curiosityhealth
+pod lib lint --verbose --allow-warnings --sources=master,researchsuite,curiosityhealth --no-clean
