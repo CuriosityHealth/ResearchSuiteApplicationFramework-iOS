@@ -175,20 +175,22 @@ open class RSCollectionLayoutViewController: UICollectionViewController, UIColle
             self.logger?.log(tag: RSCollectionLayoutViewController.TAG, level: .info, message: "updateDataSource - updateCallback")
 //            self.collectionView!.reloadData()
             
-            let insertionPaths = insertions.map({ IndexPath(row: $0, section: 0) })
-            if insertionPaths.count > 0 {
-                self.collectionView!.insertItems(at: insertionPaths)
-            }
-            
-            let deletionPaths = deletions.map({ IndexPath(row: $0, section: 0) })
-            if deletionPaths.count > 0 {
-                self.collectionView!.deleteItems(at: deletionPaths)
-            }
-            
-            let modificationPaths = modifications.map({ IndexPath(row: $0, section: 0) })
-            if modificationPaths.count > 0 {
-                self.collectionView!.reloadItems(at: modificationPaths)
-            }
+            self.collectionView.performBatchUpdates({
+                let insertionPaths = insertions.map({ IndexPath(row: $0, section: 0) })
+                if insertionPaths.count > 0 {
+                    self.collectionView!.insertItems(at: insertionPaths)
+                }
+                
+                let deletionPaths = deletions.map({ IndexPath(row: $0, section: 0) })
+                if deletionPaths.count > 0 {
+                    self.collectionView!.deleteItems(at: deletionPaths)
+                }
+                
+                let modificationPaths = modifications.map({ IndexPath(row: $0, section: 0) })
+                if modificationPaths.count > 0 {
+                    self.collectionView!.reloadItems(at: modificationPaths)
+                }
+            }, completion: nil)
             
             
             //            self.collectionView!.beginUpdates()
