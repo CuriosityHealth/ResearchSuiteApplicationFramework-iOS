@@ -134,7 +134,11 @@ extension RSScheduleEvent {
 //        return now < startTime.addingTimeInterval(duration)
 //    }
     
-    public var primaryDate: Date? {
+    public var isValid: Bool {
+        return true
+    }
+    
+    public var primaryDate: Date {
         return self.startTime
     }
     

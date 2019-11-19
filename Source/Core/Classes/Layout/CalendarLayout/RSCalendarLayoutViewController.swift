@@ -275,6 +275,14 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         super.viewDidAppear(animated)
         self.layoutDidAppear(initialAppearance: !self.hasAppeared)
         self.hasAppeared = true
+//        self.initializeNavBar()
+        
+        self.navigationItem.leftBarButtonItems?.forEach({ (item) in
+            if let color = item.tintColor {
+                print(color)
+            }
+        })
+        
     }
     
     @objc func filterClicked(_ sender: UIBarButtonItem) {
@@ -330,6 +338,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     func date(for datapointIndex: Int) -> Date? {
         guard let compositeDataSource = self.calendarDataSource,
             let datapoint = compositeDataSource.get(for: datapointIndex),
+            datapoint.isValid,
             let datapointClass = self.datapointClass(for: datapointIndex) else {
             return nil
         }
@@ -351,7 +360,7 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         let dateMap: [Date: [Int]] = Dictionary.init(grouping: range, by: { (index) -> Date in
             
             guard let date = self.date(for: index) else {
-                assertionFailure("Could not generate date. What can we do here?")
+//                assertionFailure("Could not generate date. What can we do here?")
                 return Date.distantPast
             }
             
@@ -373,7 +382,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
 
         let pairs: [((Int,RSCollectionDataSourceElement), Date)] = indices.compactMap { (index) -> ((Int, RSCollectionDataSourceElement), Date)? in
             guard let date = self.date(for: index),
-                let datapoint = self.calendarDataSource?.get(for: index) else {
+                let datapoint = self.calendarDataSource?.get(for: index),
+                datapoint.isValid else {
                 return nil
             }
             
@@ -510,7 +520,11 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
 
         return classifiedIndices.mapValues({ (pairs) -> [RSCollectionDataSourceElement] in
             return pairs.compactMap({ (pair) -> RSCollectionDataSourceElement? in
-                return self.calendarDataSource?.get(for: pair.1)
+                guard let element = self.calendarDataSource?.get(for: pair.1),
+                    element.isValid else {
+                        return nil
+                }
+                return element
             })
         })
         

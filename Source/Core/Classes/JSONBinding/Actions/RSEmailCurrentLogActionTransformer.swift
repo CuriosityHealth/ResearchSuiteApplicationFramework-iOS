@@ -62,6 +62,7 @@ open class RSEmailCurrentLogActionTransformer: RSActionTransformer {
                         // Present the view controller modally.
                         
                         if let routingViewController = RSApplicationDelegate.appDelegate.window?.rootViewController as? RSRoutingViewController {
+                            composeVC.modalPresentationStyle = .fullScreen
                             routingViewController.topViewController.present(composeVC, animated: true, completion: nil)
                         }
                         

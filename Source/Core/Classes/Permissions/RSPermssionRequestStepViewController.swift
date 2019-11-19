@@ -12,6 +12,8 @@ import ResearchSuiteExtensions
 
 open class RSPermissionRequestStepViewController: RSQuestionViewController {
     
+    var stackView: UIStackView!
+    
     open var requestDelegate: RSPermissionRequestStepDelegate?
     private var requested = false
     
@@ -22,6 +24,20 @@ open class RSPermissionRequestStepViewController: RSQuestionViewController {
         
         if let step = self.step as? RSPermissionRequestStep {
             self.requestDelegate = step.delegate
+            
+            var stackedViews: [UIView] = []
+            if let image = step.image {
+                let imageView = UIImageView(image: image)
+                imageView.contentMode = .scaleAspectFit
+                stackedViews.append(imageView)
+            }
+            
+            let stackView = UIStackView(arrangedSubviews: stackedViews)
+            stackView.distribution = .equalCentering
+            stackView.frame = self.contentView.bounds
+            self.stackView = stackView
+            
+            self.contentView.addSubview(stackView)
         }
         
         self.requestDelegate?.permissionRequestViewControllerDidLoad(viewController: self)
@@ -59,6 +75,16 @@ open class RSPermissionRequestStepViewController: RSQuestionViewController {
             self.notifyDelegateAndMoveForward()
         }
         
+    }
+    
+    override open func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.stackView.frame = self.contentView.bounds
+    }
+    
+    override open func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.stackView.frame = self.contentView.bounds
     }
     
 }

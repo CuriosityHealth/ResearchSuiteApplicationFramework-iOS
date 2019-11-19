@@ -14,11 +14,13 @@ import ResearchSuiteExtensions
 open class RSPermissionRequestStep: RSStep {
     
     let delegate: RSPermissionRequestStepDelegate
+    open var image: UIImage?
     
     public init(identifier: String,
                 title: String? = nil,
                 text: String? = nil,
                 buttonText: String? = nil,
+                image: UIImage? = nil,
                 delegate: RSPermissionRequestStepDelegate) {
         
         let title = title ?? "Permissions"
@@ -30,6 +32,7 @@ open class RSPermissionRequestStep: RSStep {
         self.title = title
         self.text = text
         self.buttonText = buttonText ?? "Grant Permissions"
+        self.image = image
         
     }
     

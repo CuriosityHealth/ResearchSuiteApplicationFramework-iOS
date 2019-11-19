@@ -23,14 +23,18 @@ import LS2SDK
 
 public protocol RSCollectionDataSourceElement: JSONEncodable {
     
-    var primaryDate: Date? { get }
+    var primaryDate: Date { get }
+    var isValid: Bool { get }
     
 }
 
 extension LS2ConcreteDatapoint: RSCollectionDataSourceElement {
+    public var isValid: Bool {
+        return self.header != nil
+    }
     
-    public var primaryDate: Date? {
-        return self.header?.acquisitionProvenance.sourceCreationDateTime
+    public var primaryDate: Date {
+        return self.header!.acquisitionProvenance.sourceCreationDateTime
     }
     
 }

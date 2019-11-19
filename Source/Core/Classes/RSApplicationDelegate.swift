@@ -105,6 +105,10 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             ).first!
     }
     
+    open func passcodeScreenText(state: RSState) -> String? {
+        return nil
+    }
+    
     weak var weakStore: Store<RSState>?
     
     private var lastState: RSState?
@@ -831,6 +835,11 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
     }
     
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        
+        if #available(iOS 13.0, *) { // disable dark mode
+            window?.overrideUserInterfaceStyle = .light
+        }
+            
         self.logger?.log(tag: RSApplicationDelegate.TAG, level: .info, message: "willFinishLaunchingWithOptions")
         
         if UserDefaults.standard.object(forKey: "FirstRun") == nil {
@@ -994,6 +1003,11 @@ extension RSApplicationDelegate {
     
     public class func localizedString(_ string: String?) -> String? {
         return self.appDelegate.localizationHelper.localizedString(string)
+    }
+    
+    public class func preferredLanguage() -> String {
+        let preferredLanguage = Locale.preferredLanguages.first
+        return preferredLanguage!
     }
 }
 

@@ -38,6 +38,11 @@ open class RSNotificationPermissionsRequestStepGenerator: RSTBBaseStepGenerator 
         
         step.isOptional = stepDescriptor.optional
         
+        if let imageTitle = stepDescriptor.imageTitle,
+            let image = UIImage(named: imageTitle) {
+            step.image = image
+        }
+        
         return step
     }
     

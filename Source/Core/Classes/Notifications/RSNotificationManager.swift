@@ -404,6 +404,10 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         
     }
     
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .sound])
+    }
+    
     static public func setNotification(identifier: String, components: DateComponents, title: String, body: String, completion: @escaping (Error?)->() ) {
         
 //        debugPrint("Setting notification: \(identifier): \(components)")

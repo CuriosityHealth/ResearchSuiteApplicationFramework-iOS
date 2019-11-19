@@ -11,14 +11,17 @@ import Gloss
 open class RSTextCardCollectionViewCellConfiguration: RSCardCollectionViewCellConfiguration {
     
     let body: String?
+    let maxLines: Int
     
     public init(
         icon: String?,
         title: String?,
         subtitle: String?,
-        body: String?
+        body: String?,
+        maxLines: Int = 0
         ) {
         self.body = body
+        self.maxLines = maxLines
         super.init(icon: icon, title: title, subtitle: subtitle)
     }
     
@@ -93,6 +96,9 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         super.configure(paramMap: paramMap)
         
         if let bodyText = paramMap["body"] as? String {
+            
+            self.bodyTextLabel.numberOfLines = (paramMap["maxLines"] as? Int) ?? 0
+            
             self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
             self.bodyStackView.addArrangedSubview(self.bodyTextLabel)
             self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
@@ -112,15 +118,18 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         super.configure(config: config)
         
         if let bodyText = config.body {
+            self.bodyTextLabel.numberOfLines = config.maxLines
             self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
             self.bodyStackView.addArrangedSubview(self.bodyTextLabel)
             self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
             
             self.bodyTextLabel.text = RSApplicationDelegate.localizedString(bodyText)
             
+            self.contentStackView.addArrangedSubview(self.bodyStackView)
+            
         }
         else {
-            self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .vertical))
+            self.contentStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .vertical))
         }
     }
     

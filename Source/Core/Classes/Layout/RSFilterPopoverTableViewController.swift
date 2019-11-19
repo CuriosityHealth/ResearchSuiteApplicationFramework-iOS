@@ -31,7 +31,7 @@ open class RSFilterPopoverTableViewController: UITableViewController {
     override open func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = "Filter"
+        self.navigationItem.title = RSApplicationDelegate.localizedString("Filter") as String
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 

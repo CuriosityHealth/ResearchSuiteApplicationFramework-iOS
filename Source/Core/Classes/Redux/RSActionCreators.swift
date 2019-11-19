@@ -416,7 +416,8 @@ public class RSActionCreators: NSObject {
                 
                 RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Task finished handler: Actions have been processed, dismissing activity")
                 //dismiss view controller
-                store.dispatch(RSActionCreators.dismissActivity(firstActivity.0, activity: activity, viewController: viewController, activityManager: activityManager))
+                let dismissingViewController: UIViewController = taskViewController.presentingViewController!
+                store.dispatch(RSActionCreators.dismissActivity(firstActivity.0, activity: activity, viewController: dismissingViewController, activityManager: activityManager))
                 
             }
 
@@ -433,7 +434,11 @@ public class RSActionCreators: NSObject {
             
             RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "PresentActivityRequest action has been dispatched for \(firstActivity.1). Presenting Task VC now.")
             
-            viewController.present(taskViewController, animated: true, completion: {
+            taskViewController.modalPresentationStyle = .fullScreen
+            
+            let presentingViewController = (extraContext["presentingViewControllerOverride"] as? UIViewController) ?? viewController
+            
+            presentingViewController.present(taskViewController, animated: true, completion: {
                 
                 RSApplicationDelegate.appDelegate.logger?.log(tag: "RSActionCreators.presentActivity", level: .info, message: "Task VC for \(firstActivity.1) has been presented. Dispatching PresentActivitySuccess action.")
                 

@@ -97,7 +97,24 @@ open class RSLicenseViewController: UIViewController {
         md.body.fontName = bodyFont.fontName
         
         
-        let attributedString = md.attributedString()
+        let attributedString = NSMutableAttributedString(attributedString: md.attributedString())
+        
+        attributedString.enumerateAttributes(in: NSRange(location: 0, length: attributedString.length), options: []) { (attributes, range, finish) in
+            
+            guard let font = attributes[NSAttributedString.Key.font] as? UIFont,
+                let traits = font.fontDescriptor.fontAttributes[UIFontDescriptor.AttributeName.traits] as? [UIFontDescriptor.TraitKey: Any],
+                let weightValue = traits[UIFontDescriptor.TraitKey.weight] as? NSNumber else {
+                return
+            }
+            
+            let weight = UIFont.Weight(CGFloat(weightValue.floatValue))
+            let newFont = UIFont.systemFont(ofSize: font.pointSize, weight: weight)
+            let newAttributes = attributes.merging([NSAttributedString.Key.font: newFont]) { (first, second) -> Any in
+                second
+            }
+            attributedString.setAttributes(newAttributes, range: range)
+            
+        }
         
         return attributedString
         
@@ -129,18 +146,35 @@ open class RSLicenseViewController: UIViewController {
             }()
             
             textView.snp.makeConstraints { (make) in
-                make.top.equalTo(self.topLayoutGuide.snp.bottom)
-                make.left.equalTo(view)
-                make.right.equalTo(view)
                 
-                if tabBarShown {
-                    make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-44)
+                if #available(iOS 11.0, *) {
+                    //Bottom guide
+                    make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottomMargin)
+                    //Top guide
+                    make.top.equalTo(self.view.safeAreaLayoutGuide.snp.topMargin)
+                    //Leading guide
+                    make.leading.equalTo(self.view.safeAreaLayoutGuide.snp.leadingMargin)
+                    //Trailing guide
+                    make.trailing.equalTo(self.view.safeAreaLayoutGuide.snp.trailingMargin)
+                    
+                } else {
+                    make.top.equalTo(self.topLayoutGuide.snp.bottom)
+                    make.left.equalTo(view)
+                    make.right.equalTo(view)
+                    
+                    if tabBarShown {
+                        make.bottom.equalTo(self.bottomLayoutGuide.snp.top).offset(-44)
+                    }
+                    else {
+                        make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
+                    }
                 }
-                else {
-                    make.bottom.equalTo(self.bottomLayoutGuide.snp.top)
-                }
+                
+                
                 
             }
+            
+            textView.setContentOffset(CGPoint.zero, animated: false)
             
             self.textView = textView
             
@@ -149,12 +183,9 @@ open class RSLicenseViewController: UIViewController {
 
     }
     
-//    open override func viewWillLayoutSubviews() {
-//        super.viewWillLayoutSubviews()
-//        self.textView.scrollRangeToVisible(NSRange(location: 0, length: 1))
-//        let insets = UIEdgeInsets(top: self.topLayoutGuide.length, left: 0, bottom: 0, right: 0)
-//        self.textView.contentInset = insets
-////        self.textView.scrollIndicatorInsets = insets
-//    }
+    open override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        print(self.textView.contentOffset)
+    }
     
 }

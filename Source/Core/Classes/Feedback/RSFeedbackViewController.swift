@@ -232,6 +232,7 @@ open class RSFeedbackViewController: NSObject, MFMailComposeViewControllerDelega
 
                     // Present the view controller modally.
                     if let routingViewController = self.window.rootViewController as? RSRoutingViewController {
+                        composeVC.modalPresentationStyle = .fullScreen
                         routingViewController.topViewController.present(composeVC, animated: true, completion: nil)
                     }
 

@@ -460,7 +460,10 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
             return
         }
         
-        let vc = ORKPasscodeViewController.passcodeAuthenticationViewController(withText: nil, delegate: self)
+        let vc = ORKPasscodeViewController.passcodeAuthenticationViewController(
+            withText: RSApplicationDelegate.appDelegate.passcodeScreenText(state: state),
+            delegate: self
+        )
         
         vc.modalPresentationStyle = .fullScreen
         vc.modalTransitionStyle = .coverVertical
@@ -521,14 +524,16 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
     
     open func passcodeViewControllerForgotPasscodeTapped(_ viewController: UIViewController) {
         
-        let title = "Reset Passcode"
-        let message = "In order to reset your passcode, you'll need to log out of the app completely and log back in using your email and password."
+        let title = NSLocalizedString("Reset Passcode", comment: "")
+        let message = NSLocalizedString("In order to reset your passcode, you'll need to log out of the app completely and log back in using your email and password.", comment: "")
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        let cancel = NSLocalizedString("Cancel", comment: "")
+        let cancelAction = UIAlertAction(title: cancel, style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         
-        let logoutAction = UIAlertAction(title: "Log Out", style: .destructive, handler: { _ in
+        let logOut = NSLocalizedString("Log Out", comment: "")
+        let logoutAction = UIAlertAction(title: logOut, style: .destructive, handler: { _ in
             self.resetPasscode()
         })
         alert.addAction(logoutAction)
@@ -555,58 +560,70 @@ open class RSRoutingViewController: UIViewController, StoreSubscriber, RSLayoutV
                 
                 let vc = self.topViewController
                 logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Presenting initial view controller")
-                vc.present(viewController, animated: false) {
+                let imageView = UIImageView(frame: vc.view.bounds)
+                imageView.image = UIImage(named: "lock")
+                imageView.contentMode = .scaleToFill
+                vc.view.addSubview(imageView)
+                
+                self.hiddenViewControllerImageViews = self.hiddenViewControllerImageViews + [imageView]
+                
+                completion()
+                
+                self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
+                
+//                viewController.modalPresentationStyle = .fullScreen
+//                vc.present(viewController, animated: false) {
+//
+//                    logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Presented initial view controller")
+//
+//                    var screenshotImage:UIImage?
+//                    let layer = UIApplication.shared.keyWindow!.layer
+//                    let scale = UIScreen.main.scale
+//                    UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale)
+//
+//                    if let context = UIGraphicsGetCurrentContext() {
+//                        layer.render(in:context)
+//                        screenshotImage = UIGraphicsGetImageFromCurrentImageContext()
+//                        UIGraphicsEndImageContext()
+//
+//                        if let image = screenshotImage {
+//
+//                            logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Got screenshot")
+//
+//                            let imageView = UIImageView(frame: vc.view.bounds)
+//                            imageView.image = image
+//                            imageView.contentMode = .scaleToFill
+//                            vc.view.addSubview(imageView)
+//
+////                            self.hiddenViewControllers = self.hiddenViewControllers + [vc]
+//                            self.hiddenViewControllerImageViews = self.hiddenViewControllerImageViews + [imageView]
+//
+//                            logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissing View Controller")
+//                            viewController.dismiss(animated: false, completion: {
+//                                logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissed View Controller")
+//                                completion()
+//
+//                                self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
+//                            })
+//                            return
+//                        }
+//                    }
+//
+////                    vc.view.isHidden = hidden
+////                    self.hiddenViewControllers = self.hiddenViewControllers + [vc]
+//                    logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Couldn't get screenshipt, dismissing View Controller")
+//                    viewController.dismiss(animated: false, completion: {
+//                        logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissed View Controller")
+//                        completion()
+//                        self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
+//                    })
+//                    return
                     
-                    logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Presented initial view controller")
-                    
-                    var screenshotImage:UIImage?
-                    let layer = UIApplication.shared.keyWindow!.layer
-                    let scale = UIScreen.main.scale
-                    UIGraphicsBeginImageContextWithOptions(layer.frame.size, false, scale)
-                    
-                    if let context = UIGraphicsGetCurrentContext() {
-                        layer.render(in:context)
-                        screenshotImage = UIGraphicsGetImageFromCurrentImageContext()
-                        UIGraphicsEndImageContext()
-                        
-                        if let image = screenshotImage {
-                            
-                            logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Got screenshot")
-                            
-                            let imageView = UIImageView(frame: vc.view.bounds)
-                            imageView.image = image
-                            imageView.contentMode = .scaleToFill
-                            vc.view.addSubview(imageView)
-                            
-                            self.hiddenViewControllers = self.hiddenViewControllers + [vc]
-                            self.hiddenViewControllerImageViews = self.hiddenViewControllerImageViews + [imageView]
-                            
-                            logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissing View Controller")
-                            viewController.dismiss(animated: false, completion: {
-                                logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissed View Controller")
-                                completion()
-                                
-                                self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
-                            })
-                            return
-                        }
-                    }
-                    
-                    vc.view.isHidden = hidden
-                    self.hiddenViewControllers = self.hiddenViewControllers + [vc]
-                    logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Couldn't get screenshipt, dismissing View Controller")
-                    viewController.dismiss(animated: false, completion: {
-                        logger?.log(tag: RSRoutingViewController.TAG, level: .info, message: "Dismissed View Controller")
-                        completion()
-                        self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))
-                    })
-                    return
-                    
-                }
+//                }
                 
             }
             else {
-                self.hiddenViewControllers.forEach({ $0.view.isHidden = false })
+//                self.hiddenViewControllers.forEach({ $0.view.isHidden = false })
                 self.hiddenViewControllerImageViews.forEach({ $0.removeFromSuperview() })
                 completion()
                 self.store!.dispatch(SetContentHiddedCompleted(uuid: uuid, hidden: hidden))

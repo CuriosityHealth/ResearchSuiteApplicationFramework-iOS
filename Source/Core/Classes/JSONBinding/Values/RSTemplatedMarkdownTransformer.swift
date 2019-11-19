@@ -142,7 +142,21 @@ open class RSTemplatedMarkdownTransformer: RSValueTransformer {
         md.body.fontName = bodyFont.fontName
         
         
-        let attributedString = md.attributedString()
+        let attributedString = NSMutableAttributedString(attributedString: md.attributedString())
+        
+        attributedString.enumerateAttributes(in: NSRange(location: 0, length: attributedString.length), options: []) { (attributes, range, finish) in
+            
+            guard let font = attributes[NSAttributedString.Key.font] as? UIFont else {
+                return
+            }
+            
+            let newFont = UIFont.systemFont(ofSize: font.pointSize)
+            let newAttributes = attributes.merging([NSAttributedString.Key.font: newFont]) { (first, second) -> Any in
+                second
+            }
+            attributedString.setAttributes(newAttributes, range: range)
+            
+        }
         
         return attributedString
     }

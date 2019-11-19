@@ -196,7 +196,11 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
         if let iconString = paramMap["icon"] as? String,
             let icon = UIImage(named: iconString) {
-            self.iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
+            if #available(iOS 13.0, *) {
+                self.iconImageView.image = icon.withTintColor(UIColor.red)
+            } else {
+                self.iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
+            }
         }
         
         if let title = paramMap["title"] as? String {

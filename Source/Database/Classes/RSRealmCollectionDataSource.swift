@@ -15,8 +15,12 @@ public protocol RSRealmDataSource: RSDataSource {
 
 extension LS2RealmDatapoint: RSCollectionDataSourceElement {
     
-    public var primaryDate: Date? {
-        return self.header?.acquisitionProvenance.sourceCreationDateTime
+    public var isValid: Bool {
+        return !self.isInvalidated && self.header != nil
+    }
+    
+    public var primaryDate: Date {
+        return self.header!.acquisitionProvenance.sourceCreationDateTime
     }
     
 }

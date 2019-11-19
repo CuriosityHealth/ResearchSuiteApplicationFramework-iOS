@@ -15,12 +15,14 @@ import Gloss
 open class RSNotificationPermissionRequestStepDescriptor: RSTBStepDescriptor {
     
     public let buttonText: String
+    public let imageTitle: String?
     
     required public init?(json: JSON) {
         guard let buttonText: String = "buttonText" <~~ json else {
             return nil
         }
         self.buttonText = buttonText
+        self.imageTitle = "imageTitle" <~~ json
         super.init(json: json)
     }
     
