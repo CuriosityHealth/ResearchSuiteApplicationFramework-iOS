@@ -274,7 +274,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
     }
 
     private func processLegacyNotifications(state: RSState, lastState: RSState, pendingNotificationIdentifiers: [String]) {
-        
+        assertionFailure()
         //Legacy Notifications
         let notifications = RSStateSelectors.notifications(state)
         
