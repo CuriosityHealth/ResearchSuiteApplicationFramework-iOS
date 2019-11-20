@@ -50,6 +50,28 @@ extension UNUserNotificationCenter {
     }
 }
 
+class Debouncer: NSObject {
+    var callback: (() -> ())?
+    var delay: Double
+    weak var timer: Timer?
+    
+    init(delay: Double) {
+        self.delay = delay
+    }
+    
+    func call(callback: @escaping (() -> ())) {
+        self.callback = callback
+        timer?.invalidate()
+        let nextTimer = Timer.scheduledTimer(timeInterval: delay, target: self, selector: #selector(Debouncer.fireNow), userInfo: nil, repeats: false)
+        timer = nextTimer
+    }
+    
+    @objc func fireNow() {
+        self.callback?()
+        self.callback = nil
+    }
+}
+
 open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationCenterDelegate {
     
     weak var store: Store<RSState>?
@@ -60,6 +82,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
 
     let notificationProcessors: [RSNotificationProcessor]
     let notificationResponseHandlers: [RSNotificationResponseHandler.Type]
+    let debouncer = Debouncer(delay: 2.0)
     
     public init(store: Store<RSState>, notificationResponseHandlers: [RSNotificationResponseHandler.Type], legacySupport: Bool, notificationProcessors: [RSNotificationProcessor]) {
         self.store = store
@@ -69,6 +92,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         super.init()
         UNUserNotificationCenter.current().delegate = self
         self.initializeNotificationCategories()
+        
     }
     
     public func initializeNotificationCategories() {
@@ -130,7 +154,7 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         }
 
     }
-    
+
     private func processScheduleEventNotifications(state: RSState, lastState: RSState, pendingNotificationIdentifiers: Set<String>) {
         
         var shouldFetchNotifications = false
@@ -154,59 +178,97 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
         //Actually, it looks like this will get called with the initial state of the system
         //(i.e., see that lastState.iteration == 0)
         if shouldUpdate {
-            //get deleted + modified events
-            let deletedAndModifiedIndices = newSchedule.changes.deletions + newSchedule.changes.modifications
-            let deletedAndModifiedEvents = deletedAndModifiedIndices.map { newSchedule.oldEvents[$0] }
             
-            //check to see if they support notifications
-            let notificationConvertersToCancel = deletedAndModifiedEvents.compactMap { $0 as? RSNotificationConverter }
-            //if so, generate ID's and remove them, provided that they are in the list of pending notificaitons
-            let identifiersToCancel: [String] = notificationConvertersToCancel
-                .flatMap { $0.notificationRequestIdentifiers }
-                .filter { pendingNotificationIdentifiers.contains($0) }
+//            print("\(newSchedule.events.count) events")
+//            newSchedule.events
+//                .sorted(by: { $0.startTime < $1.startTime })
+//                .forEach { (event) in
+//                let dateFormatter = DateFormatter()
+//                dateFormatter.locale = Locale.current
+//                dateFormatter.dateStyle = .medium
+//                dateFormatter.timeStyle = .medium
+//
+//                let eventString = "\(event.eventType) : \(event.identifier) : \(dateFormatter.string(from:event.startTime))"
+//                print(eventString)
+//            }
             
-            if identifiersToCancel.count > 0 {
-                shouldFetchNotifications = true
-                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
-            }
+//            //get deleted + modified events
+//            let deletedAndModifiedIndices = newSchedule.changes.deletions + newSchedule.changes.modifications
+//            let deletedAndModifiedEvents = deletedAndModifiedIndices.map { newSchedule.oldEvents[$0] }
+//
+//            //check to see if they support notifications
+//            let notificationConvertersToCancel = deletedAndModifiedEvents.compactMap { $0 as? RSNotificationConverter }
+//            //if so, generate ID's and remove them, provided that they are in the list of pending notificaitons
+//            let identifiersToCancel: [String] = notificationConvertersToCancel
+//                .flatMap { $0.notificationRequestIdentifiers }
+//                .filter { pendingNotificationIdentifiers.contains($0) }
+//
+//            if identifiersToCancel.count > 0 {
+//                shouldFetchNotifications = true
+//                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+//            }
+//
+//            let modifiedEvents:[RSScheduleEvent] = {
+//                //modification indicies map to old events, so we need to pull these from the oldSchedule
+//                if newSchedule.changes.modifications.count > 0 {
+//                    let modificationIdentifiers = newSchedule.changes.modifications.map { newSchedule.oldEvents[$0].identifier }
+//                    let newEventDict: [String: RSScheduleEvent] =  Dictionary.init(uniqueKeysWithValues: newSchedule.events.map { ($0.identifier, $0) })
+//                    let newlyModifiedEvents = modificationIdentifiers.compactMap { newEventDict[$0] }
+//                    return newlyModifiedEvents
+//                }
+//                else {
+//                    return []
+//                }
+//            }()
+//
+//            let addedEvents:[RSScheduleEvent] = newSchedule.changes.additions.map { newSchedule.events[$0] }
+//
+//            let notificationRequests: [UNNotificationRequest] = (addedEvents + modifiedEvents)
+//                .compactMap { $0 as? RSNotificationConverter }
+//                .compactMap { $0.generateNotificationRequests(state: state) }
+//                .flatMap { $0 }
             
-            let modifiedEvents:[RSScheduleEvent] = {
-                //modification indicies map to old events, so we need to pull these from the oldSchedule
-                if newSchedule.changes.modifications.count > 0 {
-                    let modificationIdentifiers = newSchedule.changes.modifications.map { newSchedule.oldEvents[$0].identifier }
-                    let newEventDict: [String: RSScheduleEvent] =  Dictionary.init(uniqueKeysWithValues: newSchedule.events.map { ($0.identifier, $0) })
-                    let newlyModifiedEvents = modificationIdentifiers.compactMap { newEventDict[$0] }
-                    return newlyModifiedEvents
-                }
-                else {
-                    return []
-                }
-            }()
             
-            let addedEvents:[RSScheduleEvent] = newSchedule.changes.additions.map { newSchedule.events[$0] }
-            
-            let notificationRequests: [UNNotificationRequest] = (addedEvents + modifiedEvents)
-                .compactMap { $0 as? RSNotificationConverter }
-                .compactMap { $0.generateNotificationRequests(state: state) }
-                .flatMap { $0 }
-            
-            if notificationRequests.count > 0 {
-                //need to do this recursively due to notification center call
-                UNUserNotificationCenter.current().add(notificationRequests) { (error) in
-                    DispatchQueue.main.async {
-                        self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
-                        if RSApplicationDelegate.appDelegate.debugMode {
-                            RSNotificationManager.printPendingNotifications()
+            debouncer.call {
+//                print("\(newSchedule.events.count) events")
+//                newSchedule.events
+//                    .sorted(by: { $0.startTime < $1.startTime })
+//                    .forEach { (event) in
+//                    let dateFormatter = DateFormatter()
+//                    dateFormatter.locale = Locale.current
+//                    dateFormatter.dateStyle = .medium
+//                    dateFormatter.timeStyle = .medium
+//
+//                    let eventString = "\(event.eventType) : \(event.identifier) : \(dateFormatter.string(from:event.startTime))"
+//                    print(eventString)
+//                }
+                
+                UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                RSNotificationManager.printPendingNotificationsByDateAndIdentifier()
+                
+                let notificationRequests: [UNNotificationRequest] = newSchedule.events
+                    .compactMap { $0 as? RSNotificationConverter }
+                    .compactMap { $0.generateNotificationRequests(state: state) }
+                    .flatMap { $0 }
+                
+                if notificationRequests.count > 0 {
+                    //need to do this recursively due to notification center call
+                    UNUserNotificationCenter.current().add(notificationRequests) { (error) in
+                        DispatchQueue.main.async {
+                            self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
+                            if RSApplicationDelegate.appDelegate.debugMode {
+    //                            RSNotificationManager.printPendingNotifications()
+                                RSNotificationManager.printPendingNotificationsByDateAndIdentifier()
+                            }
                         }
                     }
                 }
-            }
-            else {
-                if shouldFetchNotifications {
-                    self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
+                else {
+                    if shouldFetchNotifications {
+                        self.store?.dispatch(RSActionCreators.fetchPendingNotifications())
+                    }
                 }
             }
-        
         }
         
     }
@@ -447,21 +509,65 @@ open class RSNotificationManager: NSObject, StoreSubscriber, UNUserNotificationC
     
     static public func printPendingNotifications() {
         UNUserNotificationCenter.current().getPendingNotificationRequests(completionHandler: { (notificationRequests) in
-            var debugString = "PENDING NOTIFICATINS\n"
+            var debugString = "\(notificationRequests.count) PENDING NOTIFICATIONS\n"
             //            debugPrint("PENDING NOTIFICATINS")
             notificationRequests.forEach { notification in
                 debugString.append("\(notification.debugDescription)\n")
                 if let trigger: UNCalendarNotificationTrigger = notification.trigger as? UNCalendarNotificationTrigger,
                     let fireDate = trigger.nextTriggerDate() {
-                    debugString.append("\(fireDate)\n")
+                    debugString.append("\(fireDate)\n\n")
                 }
                 else if let trigger: UNTimeIntervalNotificationTrigger = notification.trigger as? UNTimeIntervalNotificationTrigger,
                     let fireDate = trigger.nextTriggerDate() {
-                    debugString.append("\(fireDate)\n")
+                    debugString.append("\(fireDate)\n\n")
                 }
             }
             
-            debugPrint(debugString)
+            print(debugString)
+        })
+    }
+    
+    static public func printPendingNotificationsByDateAndIdentifier() {
+        UNUserNotificationCenter.current().getPendingNotificationRequests(completionHandler: { (notificationRequests) in
+            var debugString = "\(notificationRequests.count) PENDING NOTIFICATIONS\n"
+            //            debugPrint("PENDING NOTIFICATINS")
+            
+            let pairs: [(String, Date, String)] = notificationRequests.compactMap { notificationRequest in
+                
+                let userInfo = notificationRequest.content.userInfo
+                guard let scheduleEventType = userInfo["scheduleEventType"] as? String else {
+                    assertionFailure()
+                    return nil
+                }
+                
+                
+                if let trigger: UNCalendarNotificationTrigger = notificationRequest.trigger as? UNCalendarNotificationTrigger,
+                    let fireDate = trigger.nextTriggerDate() {
+                    return (scheduleEventType, fireDate, notificationRequest.identifier)
+                }
+                else if let trigger: UNTimeIntervalNotificationTrigger = notificationRequest.trigger as? UNTimeIntervalNotificationTrigger,
+                    let fireDate = trigger.nextTriggerDate() {
+                    return (scheduleEventType, fireDate, notificationRequest.identifier)
+                }
+                else {
+                    assertionFailure()
+                    return nil
+                }
+            }
+            
+            let sortedPairs = pairs.sorted { (pairA, pairB) -> Bool in
+                return pairA.1 < pairB.1
+            }
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale.current
+            dateFormatter.dateStyle = .medium
+            dateFormatter.timeStyle = .medium
+            
+            sortedPairs.forEach { (pair) in
+                debugString.append("\(pair.0) : \(pair.2) : \(dateFormatter.string(from: pair.1))\n")
+            }
+            print(debugString)
         })
     }
     
