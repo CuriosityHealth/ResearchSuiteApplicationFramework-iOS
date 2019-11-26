@@ -101,14 +101,23 @@ open class RSLicenseViewController: UIViewController {
         
         attributedString.enumerateAttributes(in: NSRange(location: 0, length: attributedString.length), options: []) { (attributes, range, finish) in
             
-            guard let font = attributes[NSAttributedString.Key.font] as? UIFont,
-                let traits = font.fontDescriptor.fontAttributes[UIFontDescriptor.AttributeName.traits] as? [UIFontDescriptor.TraitKey: Any],
-                let weightValue = traits[UIFontDescriptor.TraitKey.weight] as? NSNumber else {
+            guard let font = attributes[NSAttributedString.Key.font] as? UIFont else {
                 return
             }
             
-            let weight = UIFont.Weight(CGFloat(weightValue.floatValue))
-            let newFont = UIFont.systemFont(ofSize: font.pointSize, weight: weight)
+            
+//            let newFont: UIFont = {
+//                print(font.fontDescriptor.fontAttributes[UIFontDescriptor.AttributeName.traits])
+//                if let traits = font.fontDescriptor.fontAttributes[UIFontDescriptor.AttributeName.traits] as? [UIFontDescriptor.TraitKey: Any],
+//                    let weightValue = traits[UIFontDescriptor.TraitKey.weight] as? NSNumber {
+//                    let weight = UIFont.Weight(CGFloat(weightValue.floatValue))
+//                    return UIFont.systemFont(ofSize: font.pointSize, weight: weight)
+//                }
+//                else {
+//                    
+//                }
+//            }()
+            let newFont = UIFont.systemFont(ofSize: font.pointSize)
             let newAttributes = attributes.merging([NSAttributedString.Key.font: newFont]) { (first, second) -> Any in
                 second
             }
