@@ -438,7 +438,12 @@ open class RSScheduler: NSObject, StoreSubscriber {
     }
     
     open func unsubscribe(_ subscriber: RSSchedulerSubscriber) {
-        self.subscriptions = self.subscriptions.filter { return $0.subscriber === subscriber }
+        self.subscriptions = self.subscriptions.filter {
+            guard let localSubscriber = $0.subscriber else {
+                return false
+            }
+            return localSubscriber !== subscriber
+        }
     }
     
     open func computeChanges(newEvents: [RSScheduleEvent], oldEvents: [RSScheduleEvent]) -> RSSchedulerEventChanges? {

@@ -23,6 +23,7 @@ open class RSMarkdownCardCollectionViewCell: RSCardCollectionViewCell, RSCollect
         super.init(frame: frame)
         
         self.bodyTextView = UITextView()
+        self.bodyTextView.backgroundColor = UIColor.clear
         self.bodyTextView.dataDetectorTypes = .all
         self.bodyTextView.isEditable = false
         self.bodyTextView.isScrollEnabled = false
