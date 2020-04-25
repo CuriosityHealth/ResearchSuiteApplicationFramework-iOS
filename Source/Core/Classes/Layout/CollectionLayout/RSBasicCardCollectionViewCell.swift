@@ -147,15 +147,20 @@ open class RSBasicCardCollectionViewCell: RSCollectionViewCell, RSCollectionView
         
     }
     
-    open override func configure<T>(config: T) where T : RSCardCollectionViewCellConfiguration {
+    open override func configure(config: RSCollectionViewCellConfiguration) {
+        
         super.configure(config: config)
         
-        if let iconString = config.icon,
+        guard let typedConfig = config as? RSCardCollectionViewCellConfiguration else {
+            return
+        }
+        
+        if let iconString = typedConfig.icon,
             let icon = UIImage(named: iconString) {
             self.iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
         }
-        
-        if let title = config.title {
+
+        if let title = typedConfig.title {
             self.titleLabel.text = RSApplicationDelegate.localizedString(title)
         }
         

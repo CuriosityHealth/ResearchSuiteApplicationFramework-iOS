@@ -49,7 +49,7 @@ public class RSActivity: Gloss.JSONDecodable {
         )
         
         self.shouldHideCancelButton = "hideCancelButton" <~~ json ?? false
-        self.shouldConfirmCancel = "confirmCancel" <~~ json ?? true
+        self.shouldConfirmCancel = "confirmCancel" <~~ json ?? RSApplicationDelegate.shouldConfirmCancelDefault()
         
     }
     

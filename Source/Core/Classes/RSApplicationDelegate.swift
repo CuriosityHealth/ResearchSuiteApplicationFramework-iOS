@@ -834,6 +834,14 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
         return self.outputDirectoryFileStorage.storageDirectory.appendingPathComponent(UUID().uuidString)
     }
     
+    static func shouldConfirmCancelDefault() -> Bool {
+        return self.appDelegate.shouldConfirmCancelDefault()
+    }
+    
+    open func shouldConfirmCancelDefault() -> Bool {
+        return true
+    }
+    
     open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
         if #available(iOS 13.0, *) { // disable dark mode
@@ -1010,4 +1018,3 @@ extension RSApplicationDelegate {
         return preferredLanguage!
     }
 }
-

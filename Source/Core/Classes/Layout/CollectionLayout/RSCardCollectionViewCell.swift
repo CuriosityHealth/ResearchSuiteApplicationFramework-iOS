@@ -220,19 +220,23 @@ open class RSCardCollectionViewCell: RSCollectionViewCell {
         
     }
     
-    open override func configure<T>(config: T) where T : RSCardCollectionViewCellConfiguration {
+    open override func configure(config: RSCollectionViewCellConfiguration) {
         super.configure(config: config)
+
+        guard let typedConfig = config as? RSCardCollectionViewCellConfiguration else {
+            return
+        }
         
-        if let iconString = config.icon,
+        if let iconString = typedConfig.icon,
             let icon = UIImage(named: iconString) {
             self.iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
         }
-        
-        if let title = config.title {
+
+        if let title = typedConfig.title {
             self.titleLabel.text = RSApplicationDelegate.localizedString(title)
         }
-        
-        if let subtitle = config.subtitle {
+
+        if let subtitle = typedConfig.subtitle {
             self.subtitleLabel.text = RSApplicationDelegate.localizedString(subtitle)
             self.subtitleStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
             self.subtitleStackView.addArrangedSubview(self.subtitleLabel)

@@ -179,7 +179,7 @@ open class RSCollectionViewCell: UICollectionViewCell, CAAnimationDelegate {
     //see RSCardCollectionViewCell##configure(config: T) for usage
     //the gist is that we can still support inheritance while specializing the
     //parameter type as we go up the chain
-    open func configure<T: RSCollectionViewCellConfiguration>(config: T) {
+    open func configure(config: RSCollectionViewCellConfiguration) {
         
     }
     

@@ -27,9 +27,12 @@ open class RSShowAlertActionTranformer: RSActionTransformer {
         }
 
         return { state, store in
-            let alertVC = UIAlertController(title: alert.title, message: alert.text, preferredStyle: .alert)
+            let title = RSApplicationDelegate.localizedString(alert.title)
+            let message = RSApplicationDelegate.localizedString(alert.text)
+            let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.choices.forEach { choice in
-                let alertAction = UIAlertAction(title: choice.title, style: choice.style, handler: { _ in
+                let title = RSApplicationDelegate.localizedString(choice.title)
+                let alertAction = UIAlertAction(title: title, style: choice.style, handler: { _ in
                     choice.onTapActions.forEach { store.processAction(action: $0, context: ["layoutViewController":layoutVC], store: store) }
                 })
                 alertVC.addAction(alertAction)

@@ -114,11 +114,15 @@ open class RSTextCardCollectionViewCell: RSCardCollectionViewCell, RSCollectionV
         
     }
     
-    open override func configure<T>(config: T) where T : RSTextCardCollectionViewCellConfiguration {
+    open override func configure(config: RSCollectionViewCellConfiguration) {
         super.configure(config: config)
         
-        if let bodyText = config.body {
-            self.bodyTextLabel.numberOfLines = config.maxLines
+        guard let typedConfig = config as? RSTextCardCollectionViewCellConfiguration else {
+            return
+        }
+        
+        if let bodyText = typedConfig.body {
+            self.bodyTextLabel.numberOfLines = typedConfig.maxLines
             self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
             self.bodyStackView.addArrangedSubview(self.bodyTextLabel)
             self.bodyStackView.addArrangedSubview(RSCollectionViewCell.spacingView(axis: .horizontal))
