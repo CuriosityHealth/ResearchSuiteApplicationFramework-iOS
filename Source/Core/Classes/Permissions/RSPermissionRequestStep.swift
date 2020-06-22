@@ -20,6 +20,8 @@ open class RSPermissionRequestStep: RSStep {
                 title: String? = nil,
                 text: String? = nil,
                 buttonText: String? = nil,
+                skipButtonText: String? = nil,
+                skipButtonHasBorder: Bool = false,
                 image: UIImage? = nil,
                 delegate: RSPermissionRequestStepDelegate) {
         
@@ -32,6 +34,8 @@ open class RSPermissionRequestStep: RSStep {
         self.title = title
         self.text = text
         self.buttonText = buttonText ?? "Grant Permissions"
+        self.skipButtonText = skipButtonText
+        self.skipButtonHasBorder = skipButtonHasBorder
         self.image = image
         
     }

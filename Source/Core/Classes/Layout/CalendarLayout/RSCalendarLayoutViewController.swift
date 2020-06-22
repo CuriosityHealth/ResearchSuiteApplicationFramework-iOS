@@ -71,6 +71,10 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
     
     open func initializeNavBar() {
         
+        guard let state = self.store?.state else {
+            return
+        }
+        
         self.navigationItem.title = self.localizationHelper.localizedString(self.layout.navTitle)
         
         var rightBarButtonItems: [UIBarButtonItem] = []
@@ -93,7 +97,16 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
                 }
             }
             
-            let rightBarButtons = rightButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
+            let filteredRightNavButtons = rightButtons.filter {
+                if let predicate = $0.predicate {
+                    return RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+                }
+                else {
+                    return true
+                }
+            }
+            
+            let rightBarButtons = filteredRightNavButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
                 return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
             }
             
@@ -145,7 +158,16 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
                 }
             }
             
-            self.navigationItem.leftBarButtonItems =  leftNavButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
+            let filteredLeftNavButtons = leftNavButtons.filter {
+                if let predicate = $0.predicate {
+                    return RSPredicateManager.evaluatePredicate(predicate: predicate, state: state, context: [:])
+                }
+                else {
+                    return true
+                }
+            }
+            
+            self.navigationItem.leftBarButtonItems = filteredLeftNavButtons.compactMap { (layoutButton) -> UIBarButtonItem? in
                 return RSBarButtonItem(layoutButton: layoutButton, onTap: onTap, localizationHelper: self.localizationHelper)
             }
             
@@ -159,6 +181,8 @@ open class RSCalendarLayoutViewController: UIViewController, StoreSubscriber, RS
         self.calendarView?.reloadData()
         self.collectionView?.reloadData()
         self.childLayoutVCs.forEach({$0.reloadLayout()})
+        
+        self.layoutDidLoad()
     }
     
     

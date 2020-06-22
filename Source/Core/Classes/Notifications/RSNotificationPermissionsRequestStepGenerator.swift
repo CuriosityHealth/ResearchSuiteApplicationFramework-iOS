@@ -33,6 +33,8 @@ open class RSNotificationPermissionsRequestStepGenerator: RSTBBaseStepGenerator 
             title: helper.localizationHelper.localizedString(stepDescriptor.title),
             text: helper.localizationHelper.localizedString(stepDescriptor.text),
             buttonText: buttonText,
+            skipButtonText: helper.localizationHelper.localizedString(stepDescriptor.skipButtonText),
+            skipButtonHasBorder: stepDescriptor.skipButtonHasBorder,
             delegate: RSNotificationPermissionRequestStepDelegate()
         )
         

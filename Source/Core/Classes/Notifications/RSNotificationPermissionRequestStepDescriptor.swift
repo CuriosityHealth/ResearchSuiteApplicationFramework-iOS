@@ -15,6 +15,8 @@ import Gloss
 open class RSNotificationPermissionRequestStepDescriptor: RSTBStepDescriptor {
     
     public let buttonText: String
+    public let skipButtonText: String?
+    public let skipButtonHasBorder: Bool
     public let imageTitle: String?
     
     required public init?(json: JSON) {
@@ -22,6 +24,8 @@ open class RSNotificationPermissionRequestStepDescriptor: RSTBStepDescriptor {
             return nil
         }
         self.buttonText = buttonText
+        self.skipButtonText = "skipButtonText" <~~ json
+        self.skipButtonHasBorder = "skipButtonHasBorder" <~~ json ?? false
         self.imageTitle = "imageTitle" <~~ json
         super.init(json: json)
     }

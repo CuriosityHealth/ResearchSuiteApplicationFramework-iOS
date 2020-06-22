@@ -28,6 +28,17 @@ public class RSDefaultStepResultDescriptor : RSTBElementDescriptor {
     }
 }
 
+public class RSFormStepResultDescriptor : RSTBElementDescriptor {
+    public let defaultResultMap: [String: String]
+    public required init?(json: JSON) {
+        guard let defaultResultMap: [String: String] = "defaultResultMap" <~~ json else {
+                return nil
+        }
+        self.defaultResultMap = defaultResultMap
+        super.init(json: json)
+    }
+}
+
 open class RSStepTreeStateHelper: RSTBStateHelper {
     
     let baseStateHelper: RSTBStateHelper?
@@ -172,14 +183,54 @@ open class RSStepTreeTaskBuilder: RSTBTaskBuilder {
             context: context
         )
         
-        let service = self.defaultStepResultGeneratorServices?.first(where: { $0.supportsType(type: type) })
-        
-        return service?.generate(
-            type: type,
-            stepIdentifier: stepIdentifier,
-            jsonObject: jsonObject as JSON,
-            helper: helper
-        )
+        if type == "form" {
+            guard let items: [JSON] = "items" <~~ jsonObject else {
+                return nil
+            }
+            
+            let results: [ORKResult] = items.compactMap { (json) -> ORKResult? in
+                
+                guard let descriptor = RSTBElementDescriptor(json: json) else {
+                    return nil
+                }
+                
+                let itemStepIdentifier = "\(stepIdentifier).\(descriptor.identifier)"
+                
+                let service = self.defaultStepResultGeneratorServices?.first(where: { $0.supportsType(type: descriptor.type) })
+                
+                let stepResult = service?.generate(
+                    type: descriptor.type,
+                    stepIdentifier: itemStepIdentifier,
+                    jsonObject: json as JSON,
+                    helper: helper
+                )
+                
+                return stepResult?.firstResult
+            }
+            
+            
+            if results.count > 0 {                
+                return ORKStepResult(
+                    stepIdentifier: stepIdentifier,
+                    results: results
+                )
+            }
+            else {
+                return nil
+            }
+            
+            
+        }
+        else {
+            let service = self.defaultStepResultGeneratorServices?.first(where: { $0.supportsType(type: type) })
+            
+            return service?.generate(
+                type: type,
+                stepIdentifier: stepIdentifier,
+                jsonObject: jsonObject as JSON,
+                helper: helper
+            )
+        }
     }
     
     open func defaultStepResultGenerator(forType type: String, withJsonObject jsonObject: JsonObject) -> ((String, ORKTaskViewController?) -> ORKStepResult?)? {
