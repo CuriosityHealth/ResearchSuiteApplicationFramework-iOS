@@ -76,6 +76,11 @@ public class RSStateValue: Glossy {
             return RSValueConvertible(value: value as NSArray)
             
         case "JSON":
+            
+            if let nullValue = value as? NSNull {
+                return RSValueConvertible(value: nullValue)
+            }
+            
             guard let value = value as? JSON else {
                 return nil
             }
