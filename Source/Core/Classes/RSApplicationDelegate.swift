@@ -152,7 +152,6 @@ open class RSApplicationDelegate: UIResponder, UIApplicationDelegate, StoreSubsc
             RSEnhancedTimePickerStepGenerator(),
             RSEnhancedDateTimePickerStepGenerator(),
             RSEnhancedDayOfWeekChoiceStepGenerator(),
-            RSGiphyInstructionStepGenerator(),
             RSFullScreenImageStepGenerator()
         ]
     }
