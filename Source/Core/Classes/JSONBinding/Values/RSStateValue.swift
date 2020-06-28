@@ -51,8 +51,8 @@ public class RSStateValue: Glossy {
             
         case "StringArray":
             
-            if let nullValue = value as? NSNull {
-                return RSValueConvertible(value: nullValue)
+            if value is NSNull {
+                return RSValueConvertible(value: nil)
             }
             
             guard let value = value as? [String] else {
@@ -62,6 +62,11 @@ public class RSStateValue: Glossy {
             return RSValueConvertible(value: value as NSArray)
             
         case "IntArray":
+            
+            if value is NSNull {
+                return RSValueConvertible(value: nil)
+            }
+            
             guard let value = value as? [Int] else {
                 return nil
             }
@@ -69,6 +74,11 @@ public class RSStateValue: Glossy {
             return RSValueConvertible(value: value as NSArray)
             
         case "JSONArray":
+            
+            if value is NSNull {
+                return RSValueConvertible(value: nil)
+            }
+            
             guard let value = value as? [JSON] else {
                 return nil
             }
@@ -77,8 +87,8 @@ public class RSStateValue: Glossy {
             
         case "JSON":
             
-            if let nullValue = value as? NSNull {
-                return RSValueConvertible(value: nullValue)
+            if value is NSNull {
+                return RSValueConvertible(value: nil)
             }
             
             guard let value = value as? JSON else {
